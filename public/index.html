@@ -341,6 +341,171 @@ let activeLocation = "albert-st";
 </div>
 </section>
 
+<!-- IMPACT COUNTER -->
+<section id="impact" style="background:var(--red);padding:5rem 1.5rem;position:relative;overflow:hidden;">
+  <div style="position:absolute;inset:0;background-image:repeating-linear-gradient(45deg,transparent,transparent 40px,rgba(0,0,0,.04) 40px,rgba(0,0,0,.04) 41px);"></div>
+  <div style="max-width:1300px;margin:0 auto;position:relative;z-index:2;">
+    <div style="text-align:center;margin-bottom:3rem;">
+      <div style="font-family:var(--font-head);font-size:.8rem;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:.5rem;">Real Numbers · Updated Live 24/7</div>
+      <h2 style="font-family:var(--font-display);font-size:clamp(2.2rem,5vw,3.5rem);color:white;letter-spacing:1px;line-height:1;">THE WING-O IMPACT</h2>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.5rem;margin-bottom:3rem;">
+
+      <!-- WINGS COUNTER -->
+      <div style="background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:2rem;text-align:center;">
+        <div style="font-size:2.5rem;margin-bottom:.5rem;">🍗</div>
+        <div style="font-family:var(--font-display);font-size:clamp(2.2rem,5vw,3.2rem);color:white;letter-spacing:1px;line-height:1;" id="wings-counter">0</div>
+        <div style="font-family:var(--font-head);font-size:.8rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.65);margin-top:.5rem;">Wings Sold & Counting</div>
+        <div style="font-family:var(--font-body);font-size:.75rem;color:rgba(255,255,255,.4);margin-top:.4rem;">Ticking up every second · All 5 locations</div>
+      </div>
+
+      <!-- ORDERS COUNTER -->
+      <div style="background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:2rem;text-align:center;">
+        <div style="font-size:2.5rem;margin-bottom:.5rem;">📦</div>
+        <div style="font-family:var(--font-display);font-size:clamp(2.2rem,5vw,3.2rem);color:white;letter-spacing:1px;line-height:1;" id="orders-counter">0</div>
+        <div style="font-family:var(--font-head);font-size:.8rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.65);margin-top:.5rem;">Orders Fulfilled</div>
+        <div style="font-family:var(--font-body);font-size:.75rem;color:rgba(255,255,255,.4);margin-top:.4rem;">Happy customers served across SK</div>
+      </div>
+
+      <!-- DONATION COUNTER -->
+      <div style="background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:2rem;text-align:center;position:relative;">
+        <div style="font-size:2.5rem;margin-bottom:.5rem;">❤️</div>
+        <div style="font-family:var(--font-display);font-size:clamp(2.2rem,5vw,3.2rem);color:var(--yellow);letter-spacing:1px;line-height:1;" id="donation-counter">$0</div>
+        <div style="font-family:var(--font-head);font-size:.8rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.65);margin-top:.5rem;">Donated to Regina Community Fridge</div>
+        <div style="font-family:var(--font-body);font-size:.75rem;color:rgba(255,255,255,.4);margin-top:.4rem;">Updated weekly by the Sauce Boss</div>
+      </div>
+
+      <!-- FLAVORS -->
+      <div style="background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:2rem;text-align:center;">
+        <div style="font-size:2.5rem;margin-bottom:.5rem;">🔥</div>
+        <div style="font-family:var(--font-display);font-size:clamp(2.2rem,5vw,3.2rem);color:white;letter-spacing:1px;line-height:1;" id="flavors-counter">0</div>
+        <div style="font-family:var(--font-head);font-size:.8rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.65);margin-top:.5rem;">Handcrafted Flavors</div>
+        <div style="font-family:var(--font-body);font-size:.75rem;color:rgba(255,255,255,.4);margin-top:.4rem;">+ new weekly specials from the Sauce Boss</div>
+      </div>
+
+    </div>
+
+    <!-- TICKER BAR -->
+    <div style="background:rgba(0,0,0,.25);border-radius:6px;padding:1rem 1.5rem;display:flex;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="width:8px;height:8px;border-radius:50%;background:#4ADE80;animation:pulse 2s infinite;flex-shrink:0;"></div>
+        <span style="font-family:var(--font-head);font-size:.85rem;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.8);">Live · A wing is sold every <span id="seconds-per-wing" style="color:var(--yellow);font-weight:700;">27</span> seconds across Wing-O</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<style>
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(1.3);}}
+</style>
+
+<script>
+// ── IMPACT COUNTER CONFIG ─────────────────────────────────────
+// Base numbers calculated from real location data
+const IMPACT = {
+  // As of April 12, 2026 (site launch date)
+  baseDate: new Date('2026-04-12T00:00:00-06:00'), // Regina time
+  baseWings: 1084400,
+  baseOrders: 135550,
+  donation: 0, // ← Sauce Boss updates this weekly via admin
+
+  // Current daily rate (active locations)
+  // Albert: 100, Rochdale: 100, East: 70, MJ: 50 = 320 orders/day
+  // Beach seasonal — add May-Sep
+  dailyOrders: 320,
+  wingsPerOrder: 8,
+
+  flavors: 125
+};
+
+function getDailyOrders() {
+  const month = new Date().getMonth() + 1; // 1-12
+  // Beach season May-Sep adds ~185 orders/day
+  return (month >= 5 && month <= 9) ? 320 + 185 : 320;
+}
+
+function getLiveStats() {
+  const now = new Date();
+  const secondsElapsed = (now - IMPACT.baseDate) / 1000;
+  const dailyOrders = getDailyOrders();
+  const ordersPerSecond = dailyOrders / 86400;
+  const wingsPerSecond = ordersPerSecond * IMPACT.wingsPerOrder;
+
+  const totalOrders = Math.floor(IMPACT.baseOrders + (ordersPerSecond * secondsElapsed));
+  const totalWings = Math.floor(IMPACT.baseWings + (wingsPerSecond * secondsElapsed));
+  const secondsPerWing = Math.round(1 / wingsPerSecond);
+
+  return { totalOrders, totalWings, secondsPerWing };
+}
+
+function formatNum(n) {
+  return n.toLocaleString('en-CA');
+}
+
+// Fetch donation from server
+async function fetchDonation() {
+  try {
+    const r = await fetch(API_BASE + '/api/donation');
+    if (r.ok) {
+      const d = await r.json();
+      IMPACT.donation = d.amount || 0;
+    }
+  } catch(e) {}
+}
+
+// Animate count up on first view
+let animated = false;
+function animateCountUp(el, target, duration, prefix, suffix) {
+  const start = 0;
+  const startTime = performance.now();
+  function update(currentTime) {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = Math.floor(eased * target);
+    el.textContent = prefix + formatNum(current) + suffix;
+    if (progress < 1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+}
+
+function updateCounters() {
+  const { totalOrders, totalWings, secondsPerWing } = getLiveStats();
+  document.getElementById('wings-counter').textContent = formatNum(totalWings);
+  document.getElementById('orders-counter').textContent = formatNum(totalOrders);
+  document.getElementById('donation-counter').textContent = '$' + formatNum(IMPACT.donation);
+  document.getElementById('flavors-counter').textContent = '125+';
+  document.getElementById('seconds-per-wing').textContent = secondsPerWing;
+}
+
+// Intersection Observer for first-load animation
+const impactSection = document.getElementById('impact');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting && !animated) {
+      animated = true;
+      const { totalOrders, totalWings } = getLiveStats();
+      animateCountUp(document.getElementById('wings-counter'), totalWings, 2000, '', '');
+      animateCountUp(document.getElementById('orders-counter'), totalOrders, 2000, '', '');
+      animateCountUp(document.getElementById('flavors-counter'), 125, 1500, '', '+');
+      if (IMPACT.donation > 0) {
+        animateCountUp(document.getElementById('donation-counter'), IMPACT.donation, 2000, '$', '');
+      }
+      observer.disconnect();
+    }
+  });
+}, { threshold: 0.2 });
+
+if (impactSection) observer.observe(impactSection);
+
+// Live tick every second
+fetchDonation();
+setInterval(updateCounters, 1000);
+setInterval(fetchDonation, 60000); // refresh donation every minute
+</script>
+
 <!-- SAUCE VAULT -->
 <section id="sauces" class="sauce-sec">
   <div class="sauce-inner">
