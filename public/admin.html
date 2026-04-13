@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wing-O Admin · Donation Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;600&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:#0D0D0D;font-family:'Barlow',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;}
+  .card{background:#1A1A1A;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:2.5rem;width:min(480px,100%);border-top:4px solid #E8190A;}
+  .logo{font-family:'Anton',sans-serif;font-size:2.5rem;color:white;letter-spacing:2px;margin-bottom:.25rem;}
+  .logo span{color:#E8190A;}
+  .subtitle{font-family:'Oswald',sans-serif;font-size:.85rem;letter-spacing:3px;text-transform:uppercase;color:#555;margin-bottom:2rem;}
+  .section-title{font-family:'Oswald',sans-serif;font-size:.8rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#888;margin-bottom:.5rem;}
+  .current-amount{font-family:'Anton',sans-serif;font-size:3rem;color:#F5A800;margin-bottom:2rem;letter-spacing:1px;}
+  label{font-family:'Oswald',sans-serif;font-size:.8rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#888;display:block;margin-bottom:.4rem;}
+  input{width:100%;background:#222;border:1.5px solid #333;border-radius:6px;padding:.8rem 1rem;font-family:'Barlow',sans-serif;font-size:1.1rem;color:white;outline:none;margin-bottom:1rem;transition:border-color .15s;}
+  input:focus{border-color:#E8190A;}
+  .btn{width:100%;background:#E8190A;color:white;border:none;padding:1rem;font-family:'Anton',sans-serif;font-size:1.2rem;letter-spacing:2px;cursor:pointer;border-radius:6px;transition:background .15s;text-transform:uppercase;}
+  .btn:hover{background:#A8120A;}
+  .btn:disabled{background:#333;cursor:not-allowed;}
+  .msg{margin-top:1rem;padding:.75rem 1rem;border-radius:6px;font-family:'Oswald',sans-serif;font-size:.9rem;font-weight:500;letter-spacing:1px;text-align:center;display:none;}
+  .msg.ok{background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3);color:#4ADE80;}
+  .msg.err{background:rgba(232,25,10,.1);border:1px solid rgba(232,25,10,.3);color:#E8190A;}
+  .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:2rem;}
+  .stat-box{background:#222;border-radius:8px;padding:1rem;text-align:center;}
+  .stat-num{font-family:'Anton',sans-serif;font-size:1.5rem;color:white;letter-spacing:1px;}
+  .stat-lbl{font-family:'Oswald',sans-serif;font-size:.7rem;letter-spacing:1px;text-transform:uppercase;color:#555;margin-top:2px;}
+  .divider{border:none;border-top:1px solid #2A2A2A;margin:1.5rem 0;}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">WING<span>-O</span></div>
+  <div class="subtitle">Sauce Boss Admin · Impact Dashboard</div>
+
+  <div class="section-title">Current Donation Total</div>
+  <div class="current-amount" id="current-display">Loading...</div>
+
+  <div class="stats-grid" id="stats-grid">
+    <div class="stat-box"><div class="stat-num" id="stat-wings">—</div><div class="stat-lbl">Wings Sold</div></div>
+    <div class="stat-box"><div class="stat-num" id="stat-orders">—</div><div class="stat-lbl">Total Orders</div></div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-title" style="margin-bottom:1.25rem;">Update Community Fridge Donation</div>
+
+  <div>
+    <label>New Total Donated ($)</label>
+    <input type="number" id="amount-input" placeholder="e.g. 1250" min="0" step="0.01">
+
+    <label>Admin Password</label>
+    <input type="password" id="password-input" placeholder="Enter password">
+
+    <button class="btn" id="update-btn" onclick="updateDonation()">Update Donation 🔥</button>
+    <div class="msg" id="msg"></div>
+  </div>
+</div>
+
+<script>
+const API = window.location.origin;
+
+const BASE = { date: new Date('2026-04-12T00:00:00-06:00'), wings: 1084400, orders: 135550 };
+
+function getLive() {
+  const secs = (Date.now() - BASE.date) / 1000;
+  const month = new Date().getMonth() + 1;
+  const daily = month >= 5 && month <= 9 ? 505 : 320;
+  const ops = daily / 86400;
+  return {
+    wings: Math.floor(BASE.wings + ops * 8 * secs),
+    orders: Math.floor(BASE.orders + ops * secs)
+  };
+}
+
+function fmt(n) { return n.toLocaleString('en-CA'); }
+
+async function loadCurrent() {
+  try {
+    const r = await fetch(API + '/api/donation');
+    const d = await r.json();
+    document.getElementById('current-display').textContent = '$' + fmt(d.amount || 0);
+  } catch { document.getElementById('current-display').textContent = '$0'; }
+  const { wings, orders } = getLive();
+  document.getElementById('stat-wings').textContent = fmt(wings);
+  document.getElementById('stat-orders').textContent = fmt(orders);
+}
+
+async function updateDonation() {
+  const amount = document.getElementById('amount-input').value;
+  const password = document.getElementById('password-input').value;
+  const btn = document.getElementById('update-btn');
+  const msg = document.getElementById('msg');
+
+  if (!amount || !password) { showMsg('Fill in both fields', 'err'); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Updating...';
+
+  try {
+    const r = await fetch(API + '/api/donation', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount: Number(amount), password })
+    });
+    const d = await r.json();
+    if (d.success) {
+      showMsg('✓ Donation updated to $' + fmt(Number(amount)) + ' — live on the website!', 'ok');
+      document.getElementById('current-display').textContent = '$' + fmt(Number(amount));
+      document.getElementById('amount-input').value = '';
+      document.getElementById('password-input').value = '';
+    } else {
+      showMsg('Wrong password!', 'err');
+    }
+  } catch { showMsg('Server error — try again', 'err'); }
+
+  btn.disabled = false;
+  btn.textContent = 'Update Donation 🔥';
+}
+
+function showMsg(text, type) {
+  const el = document.getElementById('msg');
+  el.textContent = text;
+  el.className = 'msg ' + type;
+  el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 4000);
+}
+
+loadCurrent();
+setInterval(loadCurrent, 5000);
+</script>
+</body>
+</html>
