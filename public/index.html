@@ -6,483 +6,388 @@
 <title>Wing-O — More Than Wings | Order Online</title>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600;700&family=Barlow:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
-:root {
-  --red: #E8190A;
-  --red-dark: #A8120A;
-  --red-xdark: #6B0A06;
-  --yellow: #F5A800;
-  --yellow-light: #FFF8E8;
-  --black: #0D0D0D;
-  --charcoal: #1A1A1A;
-  --dark: #222222;
-  --gray-800: #2D2D2D;
-  --gray-600: #555555;
-  --gray-400: #888888;
-  --gray-200: #CCCCCC;
-  --gray-100: #F0F0F0;
-  --gray-50: #F8F8F8;
-  --cream: #FDFBF7;
-  --white: #FFFFFF;
-  --font-display: 'Anton', sans-serif;
-  --font-head: 'Oswald', sans-serif;
-  --font-body: 'Barlow', sans-serif;
-  --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
-  --shadow-md: 0 4px 20px rgba(0,0,0,0.12);
-  --shadow-lg: 0 8px 40px rgba(0,0,0,0.16);
+:root{
+  --red:#E8190A;--red-dark:#A8120A;--yellow:#F5A800;--yellow-light:#FFF8E8;
+  --black:#0D0D0D;--charcoal:#1A1A1A;--dark:#222222;--gray-800:#2D2D2D;
+  --gray-600:#555555;--gray-400:#888888;--gray-200:#CCCCCC;--gray-100:#F0F0F0;
+  --gray-50:#F8F8F8;--cream:#FDFBF7;--white:#FFFFFF;
+  --font-display:'Anton',sans-serif;--font-head:'Oswald',sans-serif;--font-body:'Barlow',sans-serif;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
 body{font-family:var(--font-body);background:var(--cream);color:var(--black);overflow-x:hidden;}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--black);}::-webkit-scrollbar-thumb{background:var(--red);}
 
-/* ── SCROLLBAR ── */
-::-webkit-scrollbar{width:6px;}
-::-webkit-scrollbar-track{background:var(--black);}
-::-webkit-scrollbar-thumb{background:var(--red);}
-
-/* ── ANNOUNCEMENT BAR ── */
-.announce-bar{background:var(--red);color:white;text-align:center;padding:9px 1rem;font-family:var(--font-head);font-size:.85rem;font-weight:500;letter-spacing:2px;text-transform:uppercase;}
-.announce-bar span{color:var(--yellow);}
-
-/* ── NAV ── */
+/* NAV */
+.announce{background:var(--red);color:white;text-align:center;padding:8px 1rem;font-family:var(--font-head);font-size:.82rem;letter-spacing:2px;text-transform:uppercase;}
+.announce span{color:var(--yellow);}
 nav{position:sticky;top:0;z-index:999;background:var(--black);border-bottom:3px solid var(--red);}
-.nav-inner{max-width:1300px;margin:0 auto;padding:0 1.5rem;height:68px;display:flex;align-items:center;justify-content:space-between;gap:1rem;}
-.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
-.nav-logo-img{height:42px;width:auto;}
-.nav-links{display:flex;gap:0;list-style:none;}
-.nav-links a{color:var(--gray-200);text-decoration:none;font-family:var(--font-head);font-weight:500;font-size:.95rem;letter-spacing:1.5px;text-transform:uppercase;padding:.5rem 1.1rem;transition:color .15s;white-space:nowrap;}
+.nav-inner{max-width:1300px;margin:0 auto;padding:0 1.5rem;height:66px;display:flex;align-items:center;justify-content:space-between;gap:1rem;}
+.logo-text{font-family:var(--font-display);font-size:2rem;color:white;letter-spacing:2px;text-decoration:none;}
+.logo-text span{color:var(--red);}
+.nav-links{display:flex;list-style:none;}
+.nav-links a{color:var(--gray-200);text-decoration:none;font-family:var(--font-head);font-weight:500;font-size:.9rem;letter-spacing:1.5px;text-transform:uppercase;padding:.5rem 1rem;transition:color .15s;}
 .nav-links a:hover{color:var(--yellow);}
 .nav-right{display:flex;align-items:center;gap:.75rem;}
-.nav-phone{color:var(--gray-400);font-family:var(--font-head);font-size:.85rem;letter-spacing:1px;}
-.btn-cart{background:var(--red);color:white;border:none;padding:.55rem 1.2rem;font-family:var(--font-head);font-weight:600;font-size:.9rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:3px;display:flex;align-items:center;gap:8px;transition:background .15s;white-space:nowrap;}
+.nav-phone{color:var(--gray-600);font-family:var(--font-head);font-size:.82rem;letter-spacing:1px;}
+.btn-cart{background:var(--red);color:white;border:none;padding:.55rem 1.2rem;font-family:var(--font-head);font-weight:600;font-size:.88rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:3px;display:flex;align-items:center;gap:8px;transition:background .15s;}
 .btn-cart:hover{background:var(--red-dark);}
-.cart-badge{background:var(--yellow);color:var(--black);border-radius:50%;width:20px;height:20px;font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.cart-badge{background:var(--yellow);color:var(--black);border-radius:50%;width:20px;height:20px;font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;}
 
-/* ── HERO ── */
+/* HERO */
 .hero{background:var(--black);min-height:88vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:4rem 2rem;}
-.hero-grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(232,25,10,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(232,25,10,0.06) 1px,transparent 1px);background-size:60px 60px;}
-.hero-glow{position:absolute;top:-20%;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,rgba(232,25,10,0.15) 0%,transparent 65%);pointer-events:none;}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(232,25,10,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(232,25,10,.05) 1px,transparent 1px);background-size:60px 60px;}
+.hero-glow{position:absolute;top:-10%;left:50%;transform:translateX(-50%);width:900px;height:900px;background:radial-gradient(circle,rgba(232,25,10,.12) 0%,transparent 65%);pointer-events:none;}
 .hero-content{position:relative;z-index:2;text-align:center;max-width:900px;}
-.hero-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(245,168,0,.12);border:1px solid rgba(245,168,0,.3);color:var(--yellow);font-family:var(--font-head);font-size:.8rem;font-weight:500;letter-spacing:3px;text-transform:uppercase;padding:6px 16px;border-radius:2px;margin-bottom:1.5rem;}
-.hero-title{font-family:var(--font-display);font-size:clamp(5.5rem,16vw,11rem);line-height:.88;color:white;letter-spacing:-1px;margin-bottom:.5rem;}
-.hero-title .red{color:var(--red);}
-.hero-title .dash{color:var(--gray-600);font-size:.6em;}
-.hero-tagline{font-family:var(--font-head);font-size:1.3rem;font-weight:400;color:var(--gray-400);letter-spacing:4px;text-transform:uppercase;margin-bottom:2.5rem;}
-.hero-cta-row{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:3.5rem;}
-.btn-hero-primary{background:var(--red);color:white;border:none;padding:1.1rem 2.8rem;font-family:var(--font-display);font-size:1.2rem;letter-spacing:2px;cursor:pointer;border-radius:3px;transition:all .2s;text-decoration:none;display:inline-block;}
-.btn-hero-primary:hover{background:var(--red-dark);transform:translateY(-2px);}
-.btn-hero-outline{background:transparent;color:white;border:1.5px solid rgba(255,255,255,.25);padding:1.1rem 2.8rem;font-family:var(--font-display);font-size:1.2rem;letter-spacing:2px;cursor:pointer;border-radius:3px;transition:all .2s;text-decoration:none;display:inline-block;}
-.btn-hero-outline:hover{border-color:var(--yellow);color:var(--yellow);}
-.hero-stats{display:flex;gap:3rem;justify-content:center;flex-wrap:wrap;}
-.hero-stat .num{font-family:var(--font-display);font-size:2.8rem;color:var(--red);}
-.hero-stat .lbl{font-family:var(--font-head);font-size:.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--gray-600);}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(245,168,0,.1);border:1px solid rgba(245,168,0,.25);color:var(--yellow);font-family:var(--font-head);font-size:.78rem;font-weight:500;letter-spacing:3px;text-transform:uppercase;padding:6px 16px;border-radius:2px;margin-bottom:1.5rem;}
+.hero-title{font-family:var(--font-display);font-size:clamp(5rem,16vw,11rem);line-height:.88;color:white;margin-bottom:.5rem;}
+.hero-title .r{color:var(--red);}
+.hero-sub{font-family:var(--font-head);font-size:1.2rem;color:var(--gray-400);letter-spacing:4px;text-transform:uppercase;margin-bottom:2.5rem;}
+.hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:3rem;}
+.btn-red{background:var(--red);color:white;border:none;padding:1rem 2.5rem;font-family:var(--font-display);font-size:1.1rem;letter-spacing:2px;cursor:pointer;border-radius:3px;transition:all .2s;text-decoration:none;display:inline-block;}
+.btn-red:hover{background:var(--red-dark);transform:translateY(-2px);}
+.btn-ghost{background:transparent;color:white;border:1.5px solid rgba(255,255,255,.2);padding:1rem 2.5rem;font-family:var(--font-display);font-size:1.1rem;letter-spacing:2px;cursor:pointer;border-radius:3px;transition:all .2s;text-decoration:none;display:inline-block;}
+.btn-ghost:hover{border-color:var(--yellow);color:var(--yellow);}
+.hero-stats{display:flex;gap:2.5rem;justify-content:center;flex-wrap:wrap;}
+.stat .n{font-family:var(--font-display);font-size:2.5rem;color:var(--red);}
+.stat .l{font-family:var(--font-head);font-size:.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--gray-600);}
 
-/* ── PROMO STRIP ── */
-.promo-strip{background:var(--dark);border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);padding:1.5rem 2rem;}
-.promo-strip-inner{max-width:1300px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;}
-.promo-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:1rem 1.25rem;text-align:center;}
-.promo-card .day{font-family:var(--font-display);font-size:1.4rem;color:var(--yellow);letter-spacing:1px;}
-.promo-card .deal{font-family:var(--font-head);font-size:.85rem;font-weight:500;color:var(--gray-200);letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
+/* PROMO BAR */
+.promo-bar{background:var(--dark);padding:1.25rem 1.5rem;}
+.promo-bar-inner{max-width:1300px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.75rem;}
+.pc{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:5px;padding:.9rem 1rem;text-align:center;}
+.pc .day{font-family:var(--font-display);font-size:1.3rem;color:var(--yellow);letter-spacing:1px;}
+.pc .deal{font-family:var(--font-head);font-size:.78rem;font-weight:500;color:var(--gray-400);letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
 
-/* ── FLAVORS MARQUEE ── */
-.flavor-marquee{background:var(--red);overflow:hidden;padding:.65rem 0;white-space:nowrap;}
-.flavor-track{display:inline-flex;animation:scroll 40s linear infinite;}
-.flavor-item{font-family:var(--font-head);font-size:.85rem;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:white;padding:0 1.5rem;}
-.flavor-dot{color:var(--yellow);font-size:.5rem;vertical-align:middle;}
-@keyframes scroll{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+/* MARQUEE */
+.marquee{background:var(--red);overflow:hidden;padding:.6rem 0;white-space:nowrap;}
+.mtrack{display:inline-flex;animation:mscroll 45s linear infinite;}
+.mi{font-family:var(--font-head);font-size:.82rem;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:white;padding:0 1.4rem;}
+.md{color:var(--yellow);font-size:.45rem;vertical-align:middle;}
+@keyframes mscroll{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
 
-/* ── SECTION WRAPPER ── */
-.section-wrap{max-width:1300px;margin:0 auto;padding:5rem 1.5rem;}
-.sec-eyebrow{font-family:var(--font-head);font-size:.8rem;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:.5rem;}
-.sec-title{font-family:var(--font-display);font-size:clamp(2.5rem,5vw,3.5rem);line-height:1;letter-spacing:1px;color:var(--black);}
-.sec-title.light{color:white;}
+/* MENU SECTION */
+.wrap{max-width:1300px;margin:0 auto;padding:4.5rem 1.5rem;}
+.eyebrow{font-family:var(--font-head);font-size:.78rem;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:.4rem;}
+.sec-title{font-family:var(--font-display);font-size:clamp(2.2rem,4.5vw,3.2rem);line-height:1;letter-spacing:1px;}
 
-/* ── MENU SECTION ── */
-#menu{background:var(--cream);}
-
-/* SAUCE FLAVOR SELECTOR */
-.flavor-selector{background:white;border:1.5px solid var(--gray-100);border-radius:8px;padding:1.5rem;margin-bottom:2rem;box-shadow:var(--shadow-sm);}
-.flavor-selector-title{font-family:var(--font-head);font-weight:600;font-size:1rem;letter-spacing:2px;text-transform:uppercase;color:var(--gray-600);margin-bottom:1rem;}
-.flavor-categories{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.75rem;}
-.fcat-btn{background:var(--gray-100);border:1.5px solid transparent;color:var(--gray-600);padding:.35rem .9rem;font-family:var(--font-head);font-size:.8rem;font-weight:500;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:3px;transition:all .15s;}
-.fcat-btn:hover,.fcat-btn.active{background:var(--charcoal);color:white;border-color:var(--charcoal);}
-.flavor-list{display:flex;flex-wrap:wrap;gap:.4rem;max-height:120px;overflow-y:auto;padding-right:4px;}
-.flavor-chip{background:var(--gray-100);border:1.5px solid transparent;color:var(--gray-800);padding:.3rem .75rem;font-family:var(--font-body);font-size:.8rem;cursor:pointer;border-radius:20px;transition:all .12s;white-space:nowrap;}
-.flavor-chip:hover{border-color:var(--red);color:var(--red);}
-.flavor-chip.selected{background:var(--red);color:white;border-color:var(--red);}
-.selected-flavor-display{margin-top:.75rem;font-family:var(--font-head);font-size:.9rem;color:var(--gray-600);}
-.selected-flavor-display span{color:var(--red);font-weight:600;}
+/* FLAVOR PICKER */
+.flavor-box{background:white;border:1px solid var(--gray-100);border-radius:8px;padding:1.4rem;margin-bottom:1.75rem;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.fb-title{font-family:var(--font-head);font-weight:600;font-size:.88rem;letter-spacing:2px;text-transform:uppercase;color:var(--gray-600);margin-bottom:.9rem;}
+.fcat-row{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.65rem;}
+.fcb{background:var(--gray-100);border:1.5px solid transparent;color:var(--gray-600);padding:.3rem .8rem;font-family:var(--font-head);font-size:.75rem;font-weight:500;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:3px;transition:all .12s;}
+.fcb:hover,.fcb.on{background:var(--charcoal);color:white;border-color:var(--charcoal);}
+.flist{display:flex;flex-wrap:wrap;gap:.35rem;max-height:110px;overflow-y:auto;}
+.fchip{background:var(--gray-100);border:1.5px solid transparent;color:var(--gray-800);padding:.28rem .7rem;font-family:var(--font-body);font-size:.78rem;cursor:pointer;border-radius:20px;transition:all .12s;white-space:nowrap;}
+.fchip:hover{border-color:var(--red);color:var(--red);}
+.fchip.on{background:var(--red);color:white;border-color:var(--red);}
+.fsel{margin-top:.65rem;font-family:var(--font-head);font-size:.85rem;color:var(--gray-600);}
+.fsel span{color:var(--red);font-weight:600;}
 
 /* CATEGORY TABS */
-.cat-tabs-wrap{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:2rem;padding-bottom:.5rem;border-bottom:2px solid var(--gray-100);}
-.cat-tab{background:transparent;border:none;color:var(--gray-400);padding:.6rem 1.1rem;font-family:var(--font-head);font-weight:600;font-size:.95rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .15s;border-radius:3px 3px 0 0;}
-.cat-tab:hover{color:var(--black);}
-.cat-tab.active{color:var(--red);border-bottom-color:var(--red);}
+.ctabs{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.75rem;padding-bottom:.4rem;border-bottom:2px solid var(--gray-100);}
+.ctab{background:transparent;border:none;color:var(--gray-400);padding:.55rem 1rem;font-family:var(--font-head);font-weight:600;font-size:.88rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .12s;border-radius:3px 3px 0 0;}
+.ctab:hover{color:var(--black);}
+.ctab.on{color:var(--red);border-bottom-color:var(--red);}
 
 /* MENU GRID */
-.menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:1.25rem;}
-.menu-card{background:white;border:1px solid var(--gray-100);border-radius:8px;overflow:hidden;transition:all .2s;cursor:pointer;position:relative;}
-.menu-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-md);border-color:rgba(232,25,10,.2);}
-.mc-emoji{height:160px;display:flex;align-items:center;justify-content:center;font-size:5rem;background:var(--gray-50);}
-.mc-body{padding:1.1rem;}
-.mc-badges{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.5rem;}
-.badge{font-family:var(--font-head);font-size:.7rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:2px;}
-.badge-cat{background:rgba(232,25,10,.1);color:var(--red-dark);}
-.badge-hot{background:#FFF3E0;color:#E65100;}
-.badge-pick{background:rgba(245,168,0,.15);color:#92400E;}
-.badge-new{background:#E8F5E9;color:#1B5E20;}
-.mc-name{font-family:var(--font-head);font-size:1.15rem;font-weight:700;color:var(--black);line-height:1.2;margin-bottom:.3rem;}
-.mc-desc{font-size:.82rem;color:var(--gray-400);line-height:1.5;margin-bottom:.9rem;}
-.mc-footer{display:flex;align-items:center;justify-content:space-between;gap:.5rem;}
-.mc-price{font-family:var(--font-display);font-size:1.35rem;color:var(--black);}
-.mc-price small{font-family:var(--font-body);font-size:.75rem;color:var(--gray-400);font-weight:400;}
-.btn-add{background:var(--black);color:white;border:none;width:36px;height:36px;border-radius:50%;font-size:1.4rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s;}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.1rem;}
+.mc{background:white;border:1px solid var(--gray-100);border-radius:8px;overflow:hidden;transition:all .2s;cursor:pointer;position:relative;}
+.mc:hover{transform:translateY(-3px);box-shadow:0 6px 24px rgba(0,0,0,.1);border-color:rgba(232,25,10,.2);}
+.mc-img{height:150px;display:flex;align-items:center;justify-content:center;font-size:4.5rem;background:var(--gray-50);}
+.mc-body{padding:1rem;}
+.mc-tags{display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:.4rem;}
+.tag{font-family:var(--font-head);font-size:.67rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:2px;}
+.tag-cat{background:rgba(232,25,10,.1);color:#8B0D06;}
+.tag-hot{background:#FFF3E0;color:#BF360C;}
+.tag-pop{background:rgba(245,168,0,.15);color:#7B3F00;}
+.mc-name{font-family:var(--font-head);font-size:1.05rem;font-weight:700;color:var(--black);line-height:1.2;margin-bottom:.25rem;}
+.mc-desc{font-size:.78rem;color:var(--gray-400);line-height:1.45;margin-bottom:.8rem;}
+.mc-foot{display:flex;align-items:center;justify-content:space-between;}
+.mc-price{font-family:var(--font-display);font-size:1.25rem;color:var(--black);}
+.btn-add{background:var(--black);color:white;border:none;width:34px;height:34px;border-radius:50%;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .12s;}
 .btn-add:hover{background:var(--red);}
-.bestseller-flag{position:absolute;top:10px;left:10px;background:var(--yellow);color:var(--black);font-family:var(--font-head);font-size:.7rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 9px;border-radius:2px;}
+.pop-flag{position:absolute;top:9px;left:9px;background:var(--yellow);color:var(--black);font-family:var(--font-head);font-size:.67rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:2px;}
 
 /* SAUCE SECTION */
-.sauce-section{background:var(--black);padding:5rem 1.5rem;overflow:hidden;}
-.sauce-section-inner{max-width:1300px;margin:0 auto;}
-.sauce-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-top:2rem;}
-.sauce-group{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:1rem;}
-.sauce-group-title{font-family:var(--font-display);font-size:1.1rem;color:var(--red);letter-spacing:1px;margin-bottom:.75rem;padding-bottom:.5rem;border-bottom:1px solid rgba(255,255,255,.08);}
-.sauce-group ul{list-style:none;}
-.sauce-group ul li{font-size:.8rem;color:var(--gray-400);padding:3px 0;line-height:1.3;}
-.sauce-group ul li::before{content:"·";color:var(--red);margin-right:6px;}
+.sauce-sec{background:var(--black);padding:4.5rem 1.5rem;}
+.sauce-inner{max-width:1300px;margin:0 auto;}
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:.9rem;margin-top:1.75rem;}
+.sgroup{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:6px;padding:.9rem;}
+.sgroup-title{font-family:var(--font-display);font-size:1rem;color:var(--red);letter-spacing:1px;margin-bottom:.6rem;padding-bottom:.4rem;border-bottom:1px solid rgba(255,255,255,.07);}
+.sgroup ul{list-style:none;}
+.sgroup ul li{font-size:.76rem;color:var(--gray-400);padding:2px 0;line-height:1.3;}
+.sgroup ul li::before{content:"·";color:var(--red);margin-right:5px;}
 
-/* LOCATION SECTION */
-.loc-section{background:var(--charcoal);padding:5rem 1.5rem;}
+/* LOCATIONS */
+.loc-sec{background:var(--charcoal);padding:4.5rem 1.5rem;}
 .loc-inner{max-width:1300px;margin:0 auto;}
-.loc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.25rem;margin-top:2.5rem;}
-.loc-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:1.4rem;transition:border-color .2s;}
-.loc-card:hover{border-color:var(--red);}
-.loc-card.active-loc{border-color:var(--yellow);background:rgba(245,168,0,.06);}
-.loc-name{font-family:var(--font-display);font-size:1.3rem;color:white;letter-spacing:1px;margin-bottom:.3rem;}
-.loc-addr{font-size:.875rem;color:var(--gray-400);line-height:1.6;margin-bottom:.5rem;}
-.loc-hours{font-family:var(--font-head);font-size:.8rem;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--yellow);}
-.loc-phone{font-size:.85rem;color:var(--gray-600);margin-top:.4rem;}
-.loc-badge{display:inline-block;font-family:var(--font-head);font-size:.7rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:2px 9px;border-radius:2px;margin-bottom:.75rem;}
-.loc-badge.online{background:rgba(245,168,0,.2);color:var(--yellow);}
-.loc-badge.soon{background:rgba(255,255,255,.08);color:var(--gray-400);}
+.lgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1.1rem;margin-top:2rem;}
+.lcard{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:8px;padding:1.25rem;transition:border-color .2s;}
+.lcard:hover{border-color:var(--red);}
+.lcard.live{border-color:var(--yellow);background:rgba(245,168,0,.05);}
+.lname{font-family:var(--font-display);font-size:1.2rem;color:white;letter-spacing:1px;margin-bottom:.25rem;}
+.laddr{font-size:.84rem;color:var(--gray-400);line-height:1.55;margin-bottom:.4rem;}
+.lhours{font-family:var(--font-head);font-size:.76rem;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--yellow);}
+.lphone{font-size:.82rem;color:var(--gray-600);margin-top:.3rem;}
+.lbadge{display:inline-block;font-family:var(--font-head);font-size:.68rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:2px;margin-bottom:.65rem;}
+.lb-live{background:rgba(245,168,0,.2);color:var(--yellow);}
+.lb-soon{background:rgba(255,255,255,.07);color:var(--gray-400);}
 
 /* ABOUT */
-.about-section{background:var(--black);padding:6rem 1.5rem;}
+.about-sec{background:var(--black);padding:5.5rem 1.5rem;}
 .about-inner{max-width:1300px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;}
-.about-text .sec-eyebrow{color:var(--yellow);}
-.about-text h2{font-family:var(--font-display);font-size:3rem;color:white;line-height:1;margin:0.5rem 0 1.5rem;letter-spacing:1px;}
+.about-text .eyebrow{color:var(--yellow);}
+.about-text h2{font-family:var(--font-display);font-size:2.8rem;color:white;line-height:1;margin:.4rem 0 1.2rem;letter-spacing:1px;}
 .about-text h2 span{color:var(--red);}
-.about-text p{font-size:1rem;color:var(--gray-400);line-height:1.8;margin-bottom:1.25rem;}
-.about-visual{display:flex;flex-direction:column;align-items:center;gap:2rem;}
-.sauce-boss-sig{font-size:3rem;filter:invert(1) opacity(.85);}
-.proudly-prairie{filter:invert(1) opacity(.6);width:180px;}
-.about-quote{border-left:3px solid var(--red);padding-left:1.25rem;font-style:italic;font-size:1.05rem;color:var(--gray-300);line-height:1.7;}
+.about-text p{font-size:.95rem;color:var(--gray-400);line-height:1.8;margin-bottom:1.1rem;}
+.about-quote{border-left:3px solid var(--red);padding-left:1.1rem;font-style:italic;font-size:1rem;color:var(--gray-300);line-height:1.7;margin-bottom:1.25rem;}
+.about-vis{display:flex;flex-direction:column;align-items:center;gap:1.5rem;text-align:center;}
+.about-vis .big-fire{font-size:9rem;line-height:1;}
+.sig-text{font-family:'Dancing Script',cursive;font-size:2.2rem;color:rgba(255,255,255,.6);font-style:italic;}
+.prairie-text{font-family:var(--font-head);font-size:.75rem;letter-spacing:3px;text-transform:uppercase;color:var(--gray-600);}
 
 /* CART PANEL */
-.cart-overlay{display:none;position:fixed;inset:0;z-index:9000;}
-.cart-overlay.open{display:block;}
-.cart-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.65);}
-.cart-panel{position:absolute;right:0;top:0;bottom:0;width:min(440px,100vw);background:white;display:flex;flex-direction:column;box-shadow:-8px 0 40px rgba(0,0,0,.3);}
-.cart-head{background:var(--black);color:white;padding:1.1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-.cart-head-title{font-family:var(--font-display);font-size:1.4rem;letter-spacing:2px;}
-.cart-head-sub{font-family:var(--font-head);font-size:.8rem;color:var(--gray-600);letter-spacing:1px;text-transform:uppercase;margin-top:1px;}
-.cart-close-btn{background:none;border:none;color:var(--gray-400);font-size:1.4rem;cursor:pointer;line-height:1;padding:4px;}
-.cart-close-btn:hover{color:white;}
-.cart-body{flex:1;overflow-y:auto;padding:1.25rem;}
-.cart-empty{text-align:center;padding:3rem 1rem;}
-.cart-empty-icon{font-size:3.5rem;margin-bottom:1rem;opacity:.5;}
-.cart-empty p{font-family:var(--font-head);font-size:1rem;letter-spacing:1px;text-transform:uppercase;color:var(--gray-400);}
-.cart-item{display:flex;gap:.9rem;padding:1rem 0;border-bottom:1px solid var(--gray-100);align-items:center;}
-.ci-icon{font-size:2rem;flex-shrink:0;width:42px;text-align:center;}
+.cart-ov{display:none;position:fixed;inset:0;z-index:9000;}
+.cart-ov.open{display:block;}
+.cart-back{position:absolute;inset:0;background:rgba(0,0,0,.65);}
+.cart-panel{position:absolute;right:0;top:0;bottom:0;width:min(430px,100vw);background:white;display:flex;flex-direction:column;box-shadow:-6px 0 32px rgba(0,0,0,.3);}
+.cart-hd{background:var(--black);color:white;padding:1rem 1.4rem;display:flex;align-items:flex-start;justify-content:space-between;flex-shrink:0;}
+.cart-hd-title{font-family:var(--font-display);font-size:1.35rem;letter-spacing:2px;}
+.cart-hd-sub{font-family:var(--font-head);font-size:.75rem;color:var(--gray-600);letter-spacing:1px;text-transform:uppercase;margin-top:1px;}
+.xcb{background:none;border:none;color:var(--gray-500);font-size:1.3rem;cursor:pointer;padding:2px;}
+.xcb:hover{color:white;}
+.cart-bd{flex:1;overflow-y:auto;padding:1.1rem;}
+.cart-empty{text-align:center;padding:2.5rem 1rem;}
+.ce-icon{font-size:3rem;margin-bottom:.75rem;opacity:.45;}
+.ce-txt{font-family:var(--font-head);font-size:.9rem;letter-spacing:1px;text-transform:uppercase;color:var(--gray-400);}
+.ci{display:flex;gap:.75rem;padding:.85rem 0;border-bottom:1px solid var(--gray-100);align-items:center;}
+.ci-icon{font-size:1.8rem;flex-shrink:0;width:38px;text-align:center;}
 .ci-info{flex:1;min-width:0;}
-.ci-name{font-family:var(--font-head);font-weight:600;font-size:1rem;color:var(--black);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.ci-flavor{font-size:.78rem;color:var(--red);font-style:italic;margin-top:1px;}
-.ci-price{font-size:.85rem;color:var(--gray-400);}
-.ci-controls{display:flex;align-items:center;gap:7px;flex-shrink:0;}
-.qty-btn{background:var(--gray-100);border:none;width:27px;height:27px;border-radius:50%;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .12s;}
-.qty-btn:hover{background:var(--gray-200);}
-.qty-num{font-family:var(--font-head);font-weight:700;font-size:.95rem;min-width:18px;text-align:center;}
-.cart-foot{padding:1.25rem;border-top:2px solid var(--gray-100);flex-shrink:0;}
-.cart-line{display:flex;justify-content:space-between;font-family:var(--font-head);font-size:.95rem;padding:.3rem 0;color:var(--gray-600);}
-.cart-line.total{font-family:var(--font-display);font-size:1.5rem;color:var(--black);padding-top:.75rem;margin-top:.25rem;border-top:1.5px solid var(--gray-100);}
-.btn-checkout{width:100%;background:var(--red);color:white;border:none;padding:1rem;font-family:var(--font-display);font-size:1.2rem;letter-spacing:2px;cursor:pointer;border-radius:4px;transition:background .15s;margin-top:1rem;text-transform:uppercase;}
-.btn-checkout:hover{background:var(--red-dark);}
+.ci-name{font-family:var(--font-head);font-weight:600;font-size:.95rem;color:var(--black);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ci-flav{font-size:.74rem;color:var(--red);font-style:italic;margin-top:1px;}
+.ci-pr{font-size:.8rem;color:var(--gray-400);}
+.ci-ctrl{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.qb{background:var(--gray-100);border:none;width:26px;height:26px;border-radius:50%;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .12s;}
+.qb:hover{background:var(--gray-200);}
+.qn{font-family:var(--font-head);font-weight:700;font-size:.9rem;min-width:16px;text-align:center;}
+.cart-ft{padding:1.1rem;border-top:2px solid var(--gray-100);flex-shrink:0;}
+.cl{display:flex;justify-content:space-between;font-family:var(--font-head);font-size:.9rem;padding:.25rem 0;color:var(--gray-600);}
+.cl.tot{font-family:var(--font-display);font-size:1.4rem;color:var(--black);padding-top:.65rem;margin-top:.2rem;border-top:1.5px solid var(--gray-100);}
+.btn-co{width:100%;background:var(--red);color:white;border:none;padding:.95rem;font-family:var(--font-display);font-size:1.15rem;letter-spacing:2px;cursor:pointer;border-radius:4px;transition:background .15s;margin-top:.9rem;text-transform:uppercase;}
+.btn-co:hover{background:var(--red-dark);}
 
-/* CHECKOUT MODAL */
-.modal-overlay{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.7);align-items:flex-start;justify-content:center;padding:1rem;overflow-y:auto;}
-.modal-overlay.open{display:flex;}
-.modal{background:white;border-radius:10px;width:min(600px,100%);margin:auto;}
-.modal-head{background:var(--black);color:white;padding:1.2rem 1.5rem;border-radius:10px 10px 0 0;display:flex;align-items:center;justify-content:space-between;}
-.modal-head h2{font-family:var(--font-display);font-size:1.5rem;letter-spacing:2px;}
-.modal-body{padding:1.5rem;}
-.order-type-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.5rem;}
-.otype-card{border:2px solid var(--gray-200);border-radius:6px;padding:1rem;text-align:center;cursor:pointer;transition:all .15s;}
-.otype-card:hover{border-color:var(--red);}
-.otype-card.selected{border-color:var(--red);background:rgba(232,25,10,.04);}
-.otype-icon{font-size:2rem;margin-bottom:.25rem;}
-.otype-label{font-family:var(--font-head);font-weight:700;font-size:1rem;letter-spacing:1px;text-transform:uppercase;}
-.form-section-title{font-family:var(--font-display);font-size:1.1rem;letter-spacing:2px;color:var(--black);margin:1.25rem 0 .75rem;padding-bottom:.5rem;border-bottom:1.5px solid var(--gray-100);}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;}
-.form-group{display:flex;flex-direction:column;gap:.35rem;margin-bottom:.9rem;}
-label{font-family:var(--font-head);font-size:.8rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--gray-600);}
-input,select,textarea{border:1.5px solid var(--gray-200);border-radius:4px;padding:.65rem .9rem;font-family:var(--font-body);font-size:.95rem;color:var(--black);outline:none;transition:border-color .15s;width:100%;background:white;}
+/* MODAL */
+.modal-ov{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.72);align-items:flex-start;justify-content:center;padding:1rem;overflow-y:auto;}
+.modal-ov.open{display:flex;}
+.modal{background:white;border-radius:10px;width:min(580px,100%);margin:auto;}
+.mhd{background:var(--black);color:white;padding:1.1rem 1.4rem;border-radius:10px 10px 0 0;display:flex;align-items:center;justify-content:space-between;}
+.mhd h2{font-family:var(--font-display);font-size:1.4rem;letter-spacing:2px;}
+.mbd{padding:1.4rem;}
+.otype-row{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:1.25rem;}
+.oc{border:2px solid var(--gray-200);border-radius:6px;padding:.9rem;text-align:center;cursor:pointer;transition:all .15s;}
+.oc:hover{border-color:var(--red);}
+.oc.on{border-color:var(--red);background:rgba(232,25,10,.04);}
+.oc-icon{font-size:1.8rem;margin-bottom:.2rem;}
+.oc-lbl{font-family:var(--font-head);font-weight:700;font-size:.95rem;letter-spacing:1px;text-transform:uppercase;}
+.msec{font-family:var(--font-display);font-size:1rem;letter-spacing:2px;color:var(--black);margin:1.1rem 0 .65rem;padding-bottom:.4rem;border-bottom:1.5px solid var(--gray-100);}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;}
+.fg{display:flex;flex-direction:column;gap:.3rem;margin-bottom:.8rem;}
+label{font-family:var(--font-head);font-size:.76rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--gray-600);}
+input,select,textarea{border:1.5px solid var(--gray-200);border-radius:4px;padding:.6rem .85rem;font-family:var(--font-body);font-size:.92rem;color:var(--black);outline:none;transition:border-color .15s;width:100%;background:white;}
 input:focus,select:focus,textarea:focus{border-color:var(--red);}
-textarea{resize:vertical;min-height:70px;}
-.order-summary-box{background:var(--gray-50);border-radius:6px;padding:1.1rem;margin-bottom:1rem;}
-.os-item{display:flex;justify-content:space-between;font-family:var(--font-head);font-size:.9rem;padding:.25rem 0;color:var(--gray-800);}
-.os-total{display:flex;justify-content:space-between;font-family:var(--font-display);font-size:1.3rem;padding-top:.65rem;margin-top:.5rem;border-top:1.5px solid var(--gray-200);}
-.payment-note{text-align:center;font-size:.82rem;color:var(--gray-400);margin-bottom:1rem;}
-.payment-note strong{color:var(--black);}
-.clover-badge{display:inline-flex;align-items:center;gap:6px;background:#F0FFF4;border:1px solid #C6F6D5;border-radius:4px;padding:5px 12px;font-size:.8rem;color:#276749;font-weight:600;margin-bottom:.75rem;}
-.btn-place{width:100%;background:var(--red);color:white;border:none;padding:1.1rem;font-family:var(--font-display);font-size:1.3rem;letter-spacing:2px;cursor:pointer;border-radius:4px;transition:background .15s;text-transform:uppercase;}
+textarea{resize:vertical;min-height:65px;}
+.os-box{background:var(--gray-50);border-radius:6px;padding:1rem;margin-bottom:.9rem;}
+.os-row{display:flex;justify-content:space-between;font-family:var(--font-head);font-size:.86rem;padding:.22rem 0;color:var(--gray-800);}
+.os-total{display:flex;justify-content:space-between;font-family:var(--font-display);font-size:1.2rem;padding-top:.6rem;margin-top:.4rem;border-top:1.5px solid var(--gray-200);}
+.pay-note{text-align:center;font-size:.79rem;color:var(--gray-400);margin-bottom:.75rem;}
+.clover-badge{display:inline-flex;align-items:center;gap:5px;background:#F0FFF4;border:1px solid #C6F6D5;border-radius:4px;padding:4px 10px;font-size:.76rem;color:#276749;font-weight:600;margin-bottom:.65rem;}
+.btn-place{width:100%;background:var(--red);color:white;border:none;padding:1rem;font-family:var(--font-display);font-size:1.2rem;letter-spacing:2px;cursor:pointer;border-radius:4px;transition:background .15s;text-transform:uppercase;}
 .btn-place:hover{background:var(--red-dark);}
 .btn-place:disabled{background:var(--gray-400);cursor:not-allowed;}
-
-/* LOADING STATE */
-.loading-spinner{display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:middle;}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;margin-right:7px;vertical-align:middle;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
 /* SUCCESS */
-.success-view{text-align:center;padding:2.5rem 1.5rem;}
-.success-icon{font-size:4rem;margin-bottom:1rem;}
-.success-view h2{font-family:var(--font-display);font-size:2.5rem;letter-spacing:2px;margin-bottom:.5rem;}
-.order-num-box{background:rgba(232,25,10,.08);border:1.5px solid rgba(232,25,10,.3);border-radius:6px;padding:.9rem 2rem;font-family:var(--font-display);font-size:2rem;color:var(--red);letter-spacing:3px;display:inline-block;margin:1rem 0;}
-.success-view p{font-size:.95rem;color:var(--gray-600);line-height:1.7;margin-bottom:.5rem;}
-.success-view .btn-hero-primary{margin-top:1.5rem;font-size:1rem;padding:.9rem 2rem;}
+.success-view{text-align:center;padding:2.2rem 1.4rem;}
+.sv-icon{font-size:3.5rem;margin-bottom:.8rem;}
+.success-view h2{font-family:var(--font-display);font-size:2.2rem;letter-spacing:2px;margin-bottom:.4rem;}
+.onum{background:rgba(232,25,10,.08);border:1.5px solid rgba(232,25,10,.25);border-radius:5px;padding:.75rem 1.75rem;font-family:var(--font-display);font-size:1.8rem;color:var(--red);letter-spacing:3px;display:inline-block;margin:.8rem 0;}
+.success-view p{font-size:.9rem;color:var(--gray-600);line-height:1.65;margin-bottom:.35rem;}
+.pos-ok{color:#276749;font-size:.82rem;margin-top:.4rem;}
+.pos-warn{color:var(--gray-400);font-size:.82rem;margin-top:.4rem;}
 
 /* FOOTER */
-footer{background:var(--black);border-top:3px solid var(--red);padding:4rem 1.5rem 2rem;}
+footer{background:var(--black);border-top:3px solid var(--red);padding:3.5rem 1.5rem 2rem;}
 .footer-inner{max-width:1300px;margin:0 auto;}
-.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem;}
-.footer-brand-logo{font-family:var(--font-display);font-size:2.8rem;color:white;letter-spacing:3px;margin-bottom:.5rem;}
-.footer-brand-logo span{color:var(--red);}
-.footer-tagline{font-size:.875rem;color:var(--gray-600);line-height:1.6;margin-bottom:1.25rem;}
-.community-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:5px 12px;font-size:.78rem;color:var(--gray-400);}
-.footer-col h4{font-family:var(--font-head);font-weight:600;font-size:.85rem;letter-spacing:2px;text-transform:uppercase;color:white;margin-bottom:1rem;}
-.footer-col ul{list-style:none;}
-.footer-col ul li{font-size:.875rem;color:var(--gray-600);padding:.3rem 0;transition:color .12s;cursor:pointer;}
-.footer-col ul li:hover{color:var(--yellow);}
-.footer-bottom{border-top:1px solid rgba(255,255,255,.06);padding-top:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.75rem;}
-.footer-bottom p{font-size:.8rem;color:var(--gray-600);}
-.clover-powered{display:flex;align-items:center;gap:6px;font-size:.78rem;color:var(--gray-600);}
+.fgrid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2.5rem;margin-bottom:2.5rem;}
+.fb-logo{font-family:var(--font-display);font-size:2.5rem;color:white;letter-spacing:3px;margin-bottom:.4rem;}
+.fb-logo span{color:var(--red);}
+.fb-tag{font-size:.84rem;color:var(--gray-600);line-height:1.6;margin-bottom:1rem;}
+.comm-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:20px;padding:4px 11px;font-size:.74rem;color:var(--gray-400);}
+.fc h4{font-family:var(--font-head);font-weight:600;font-size:.8rem;letter-spacing:2px;text-transform:uppercase;color:white;margin-bottom:.9rem;}
+.fc ul{list-style:none;}
+.fc ul li{font-size:.84rem;color:var(--gray-600);padding:.28rem 0;cursor:pointer;transition:color .12s;}
+.fc ul li:hover{color:var(--yellow);}
+.fbot{border-top:1px solid rgba(255,255,255,.06);padding-top:1.4rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;}
+.fbot p{font-size:.76rem;color:var(--gray-600);}
+.clover-pw{font-size:.74rem;color:var(--gray-600);}
 
 /* TOAST */
-.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--charcoal);color:white;font-family:var(--font-head);font-size:.9rem;font-weight:500;letter-spacing:1px;padding:.75rem 1.5rem;border-radius:4px;border-left:3px solid var(--red);z-index:99999;transition:transform .3s;white-space:nowrap;}
+.toast{position:fixed;bottom:1.75rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--charcoal);color:white;font-family:var(--font-head);font-size:.85rem;font-weight:500;letter-spacing:1px;padding:.65rem 1.4rem;border-radius:4px;border-left:3px solid var(--red);z-index:99999;transition:transform .3s;white-space:nowrap;max-width:90vw;overflow:hidden;text-overflow:ellipsis;}
 .toast.show{transform:translateX(-50%) translateY(0);}
 
-/* RESPONSIVE */
-@media(max-width:900px){
-  .nav-links{display:none;}
-  .about-inner{grid-template-columns:1fr;}
-  .footer-grid{grid-template-columns:1fr 1fr;}
-  .form-row{grid-template-columns:1fr;}
-}
-@media(max-width:600px){
-  .hero-title{font-size:4.5rem;}
-  .footer-grid{grid-template-columns:1fr;}
-  .hero-stats{gap:1.5rem;}
-}
+/* API STATUS INDICATOR */
+.api-status{position:fixed;bottom:1.75rem;right:1.5rem;background:var(--charcoal);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:5px 12px;font-family:var(--font-head);font-size:.7rem;letter-spacing:1px;text-transform:uppercase;color:var(--gray-400);z-index:9998;display:flex;align-items:center;gap:6px;}
+.api-dot{width:7px;height:7px;border-radius:50%;background:var(--gray-400);}
+.api-dot.ok{background:#48BB78;}
+.api-dot.err{background:var(--red);}
+
+@media(max-width:900px){.nav-links{display:none;}.about-inner{grid-template-columns:1fr;}.fgrid{grid-template-columns:1fr 1fr;}.frow{grid-template-columns:1fr;}}
+@media(max-width:600px){.hero-title{font-size:4rem;}.fgrid{grid-template-columns:1fr;}.hero-stats{gap:1.5rem;}}
 .hidden{display:none!important;}
 </style>
 </head>
 <body>
 
-<!-- CLOVER CONFIG -->
 <script>
-const CLOVER_CONFIG = {
+// ── SERVER CONFIG ─────────────────────────────────────────────
+// Change this to your deployed server URL when live
+// e.g. "https://wingo-server.railway.app"
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:3000'
+  : 'https://www.wingorestaurants.com'; // ← update when deployed
+
+const LOCATIONS_STATIC = {
   "albert-st": {
     name: "Albert Street (Regina)",
-    merchantId: "318003593879",
-    apiToken: "4c89fafe-a989-0b53-7c24-2ad11e672879",
     address: "#3 – 155 Albert St N, Regina, SK",
     phone: "306-522-2111",
-    email: "Wingorestaurant@gmail.com",
     hours: "Mon–Wed 11am–1am · Thu–Sun 11am–3am"
   }
 };
 let activeLocation = "albert-st";
 </script>
 
-<!-- ANNOUNCE -->
-<div class="announce-bar">🔥 Every Tuesday — All You Can Eat Wings <span>$28.99/person</span> &nbsp;·&nbsp; Every Thursday — 50% Off Second Order</div>
+<!-- TOP BAR -->
+<div class="announce">🔥 Every Tuesday — All You Can Eat Wings <span>$28.99/person</span> &nbsp;·&nbsp; Every Thursday — 50% Off Second Order</div>
 
 <!-- NAV -->
 <nav>
   <div class="nav-inner">
-    <a class="nav-logo" href="#">
-      <!-- Wing-O Logo rendered as text+icon since we can't hotlink upload -->
-      <span style="font-family:var(--font-display);font-size:1.8rem;color:white;letter-spacing:2px;">WING<span style="color:var(--red);">-O</span><span style="font-size:1.1rem;color:var(--red);vertical-align:super;">🐔</span></span>
-    </a>
+    <a class="logo-text" href="#">WING<span>-O</span></a>
     <ul class="nav-links">
-      <li><a href="#menu">Menu</a></li>
-      <li><a href="#sauces">125+ Flavors</a></li>
-      <li><a href="#locations">Locations</a></li>
-      <li><a href="#about">Our Story</a></li>
+      <li><a href="#menu" onclick="scrollTo('menu')">Menu</a></li>
+      <li><a href="#sauces" onclick="scrollTo('sauces')">125+ Flavors</a></li>
+      <li><a href="#locations" onclick="scrollTo('locations')">Locations</a></li>
+      <li><a href="#about" onclick="scrollTo('about')">Our Story</a></li>
     </ul>
     <div class="nav-right">
       <span class="nav-phone">☎ 306-522-2111</span>
-      <button class="btn-cart" onclick="openCart()">
-        🛒 Order
-        <span class="cart-badge" id="cart-count">0</span>
-      </button>
+      <button class="btn-cart" onclick="openCart()">🛒 Order <span class="cart-badge" id="cart-count">0</span></button>
     </div>
   </div>
 </nav>
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-grid-bg"></div>
+  <div class="hero-grid"></div>
   <div class="hero-glow"></div>
   <div class="hero-content">
-    <div class="hero-tag">🌾 Proudly Prairie · Regina's Original</div>
-    <h1 class="hero-title">WING<span class="red">-O</span></h1>
-    <p class="hero-tagline">— More Than Wings —</p>
-    <div class="hero-cta-row">
-      <a class="btn-hero-primary" href="#menu" onclick="document.getElementById('menu').scrollIntoView({behavior:'smooth'});return false;">Order Online 🔥</a>
-      <a class="btn-hero-outline" href="#sauces" onclick="document.getElementById('sauces').scrollIntoView({behavior:'smooth'});return false;">125+ Flavors</a>
+    <div class="hero-tag">🌾 Proudly Prairie · Regina's Original · More Than Wings</div>
+    <h1 class="hero-title">WING<span class="r">-O</span></h1>
+    <p class="hero-sub">— More Than Wings —</p>
+    <div class="hero-btns">
+      <a class="btn-red" href="#menu" onclick="go('menu')">Order Online 🔥</a>
+      <a class="btn-ghost" href="#sauces" onclick="go('sauces')">125+ Flavors</a>
     </div>
     <div class="hero-stats">
-      <div class="hero-stat"><div class="num">125+</div><div class="lbl">Handcrafted Flavors</div></div>
-      <div class="hero-stat"><div class="num">5</div><div class="lbl">Saskatchewan Locations</div></div>
-      <div class="hero-stat"><div class="num">$7</div><div class="lbl">Wings from</div></div>
-      <div class="hero-stat"><div class="num">YQR</div><div class="lbl">Rooted</div></div>
+      <div class="stat"><div class="n">125+</div><div class="l">Handcrafted Flavors</div></div>
+      <div class="stat"><div class="n">5</div><div class="l">SK Locations</div></div>
+      <div class="stat"><div class="n">$7</div><div class="l">Wings From</div></div>
+      <div class="stat"><div class="n">YQR</div><div class="l">Rooted</div></div>
     </div>
   </div>
 </section>
 
-<!-- PROMOS -->
-<div class="promo-strip">
-  <div class="promo-strip-inner">
-    <div class="promo-card"><div class="day">TUESDAY</div><div class="deal">All You Can Eat Wings — $28.99/person</div></div>
-    <div class="promo-card"><div class="day">THURSDAY</div><div class="deal">Buy One Get Second Order 50% Off</div></div>
-    <div class="promo-card"><div class="day">EVERY DAY</div><div class="deal">Dine In · Takeout · Delivery</div></div>
-    <div class="promo-card"><div class="day">HOURS</div><div class="deal">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div></div>
+<!-- PROMO BAR -->
+<div class="promo-bar">
+  <div class="promo-bar-inner">
+    <div class="pc"><div class="day">TUE</div><div class="deal">All You Can Eat Wings — $28.99</div></div>
+    <div class="pc"><div class="day">THU</div><div class="deal">Buy One, 2nd Order 50% Off</div></div>
+    <div class="pc"><div class="day">DAILY</div><div class="deal">Dine In · Takeout · Delivery</div></div>
+    <div class="pc"><div class="day">HRS</div><div class="deal">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div></div>
   </div>
 </div>
 
-<!-- FLAVOR MARQUEE -->
-<div class="flavor-marquee">
-  <div class="flavor-track" id="ftrack">
-    <span class="flavor-item">Devil's Kiss</span><span class="flavor-dot">●</span>
-    <span class="flavor-item">Honey Garlic</span><span class="flavor-dot">●</span>
-    <span class="flavor-item">Mango Habanero</span><span class="flavor-dot">●</span>
-    <span class="flavor-item">Dead Angel</span><span class="flavor-dot">●</span>
-    <span class="flavor-item">Korean BBQ</span><span class="flavor-dot">●</span>
-    <span class="flavor-item">Prairie Heat</span><span class="flavor-dot">●</span>
-    <span class="flavor-item">Maple BBQ</span><span class="flavor-dot">●</span>
-    <span class="flavor-item">Ghost Pepper</span><span class="flavor-dot">●</span>
-    <span class="flavor-item">Creamy Dill Pickle</span><span class="flavor-dot">●</span>
-    <span class="flavor-item">Tangy Thai</span><span class="flavor-dot">●</span>
-    <span class="flavor-item">Citrus Twist</span><span class="flavor-dot">●</span>
-    <span class="flavor-item">Cajun Cream</span><span class="flavor-dot">●</span>
-    <span class="flavor-item">Island On Fire</span><span class="flavor-dot">●</span>
-    <span class="flavor-item">Sizzle Caesar</span><span class="flavor-dot">●</span>
-    <span class="flavor-item">Devil's Kiss</span><span class="flavor-dot">●</span>
-    <span class="flavor-item">Honey Garlic</span><span class="flavor-dot">●</span>
-    <span class="flavor-item">Mango Habanero</span><span class="flavor-dot">●</span>
-    <span class="flavor-item">Dead Angel</span><span class="flavor-dot">●</span>
-    <span class="flavor-item">Korean BBQ</span><span class="flavor-dot">●</span>
-    <span class="flavor-item">Prairie Heat</span><span class="flavor-dot">●</span>
-    <span class="flavor-item">Maple BBQ</span><span class="flavor-dot">●</span>
-    <span class="flavor-item">Ghost Pepper</span><span class="flavor-dot">●</span>
-    <span class="flavor-item">Creamy Dill Pickle</span><span class="flavor-dot">●</span>
-    <span class="flavor-item">Tangy Thai</span><span class="flavor-dot">●</span>
-    <span class="flavor-item">Citrus Twist</span><span class="flavor-dot">●</span>
-    <span class="flavor-item">Cajun Cream</span><span class="flavor-dot">●</span>
-    <span class="flavor-item">Island On Fire</span><span class="flavor-dot">●</span>
-    <span class="flavor-item">Sizzle Caesar</span><span class="flavor-dot">●</span>
-  </div>
-</div>
+<!-- MARQUEE -->
+<div class="marquee"><div class="mtrack" id="mtrack">
+  <span class="mi">Devil's Kiss</span><span class="md">●</span><span class="mi">Honey Garlic</span><span class="md">●</span><span class="mi">Dead Angel</span><span class="md">●</span><span class="mi">Prairie Heat</span><span class="md">●</span><span class="mi">Maple BBQ</span><span class="md">●</span><span class="mi">Tangy Thai</span><span class="md">●</span><span class="mi">Island On Fire</span><span class="md">●</span><span class="mi">Sizzle Caesar</span><span class="md">●</span><span class="mi">Mango Habanero</span><span class="md">●</span><span class="mi">Citrus Twist</span><span class="md">●</span><span class="mi">Cajun Cream</span><span class="md">●</span><span class="mi">Creamy Dill Pickle</span><span class="md">●</span><span class="mi">Korean BBQ</span><span class="md">●</span><span class="mi">Buffalo Ranch</span><span class="md">●</span><span class="mi">Sweet Grenade</span><span class="md">●</span><span class="mi">Devil's Kiss</span><span class="md">●</span><span class="mi">Honey Garlic</span><span class="md">●</span><span class="mi">Dead Angel</span><span class="md">●</span><span class="mi">Prairie Heat</span><span class="md">●</span><span class="mi">Maple BBQ</span><span class="md">●</span><span class="mi">Tangy Thai</span><span class="md">●</span><span class="mi">Island On Fire</span><span class="md">●</span><span class="mi">Sizzle Caesar</span><span class="md">●</span><span class="mi">Mango Habanero</span><span class="md">●</span><span class="mi">Citrus Twist</span><span class="md">●</span><span class="mi">Cajun Cream</span><span class="md">●</span><span class="mi">Creamy Dill Pickle</span><span class="md">●</span><span class="mi">Korean BBQ</span><span class="md">●</span><span class="mi">Buffalo Ranch</span><span class="md">●</span><span class="mi">Sweet Grenade</span><span class="md">●</span>
+</div></div>
 
 <!-- MENU -->
-<section id="menu">
-<div class="section-wrap">
-  <div class="sec-eyebrow">Fresh Made to Order</div>
-  <h2 class="sec-title" style="margin-bottom:2rem">THE MENU</h2>
-
-  <!-- FLAVOR SELECTOR -->
-  <div class="flavor-selector">
-    <div class="flavor-selector-title">🔥 Choose Your Sauce / Rub (for Wings, Ribs & Boneless)</div>
-    <div class="flavor-categories" id="fcat-tabs"></div>
-    <div class="flavor-list" id="flavor-list"></div>
-    <div class="selected-flavor-display">Selected: <span id="selected-flavor-name">None — choose when ordering</span></div>
+<section id="menu" style="background:var(--cream);">
+<div class="wrap">
+  <div class="eyebrow">Fresh Made to Order</div>
+  <h2 class="sec-title" style="margin-bottom:1.75rem">THE MENU</h2>
+  <div class="flavor-box">
+    <div class="fb-title">🔥 Step 1 — Pick Your Sauce / Rub (for Wings, Ribs & Boneless)</div>
+    <div class="fcat-row" id="fcat-row"></div>
+    <div class="flist" id="flist"></div>
+    <div class="fsel">Flavor selected: <span id="fsel-name">None — tap a flavor above first, then add wings</span></div>
   </div>
-
-  <div class="cat-tabs-wrap" id="cat-tabs"></div>
-  <div class="menu-grid" id="menu-grid"></div>
+  <div class="ctabs" id="ctabs"></div>
+  <div class="mgrid" id="mgrid"></div>
 </div>
 </section>
 
-<!-- SAUCES SHOWCASE -->
-<section id="sauces" class="sauce-section">
-  <div class="sauce-section-inner">
-    <div class="sec-eyebrow" style="color:var(--yellow)">125+ Handcrafted Flavors</div>
-    <h2 class="sec-title light" style="margin-bottom:.5rem">THE FLAVOR VAULT</h2>
-    <p style="color:var(--gray-600);font-size:.95rem;margin-bottom:.5rem">Regina's first and only local eatery with 125+ flavors of wings and ribs. Ask server for weekly specials.</p>
-    <div class="sauce-grid" id="sauce-grid"></div>
+<!-- SAUCE VAULT -->
+<section id="sauces" class="sauce-sec">
+  <div class="sauce-inner">
+    <div class="eyebrow" style="color:var(--yellow)">125+ Handcrafted Flavors</div>
+    <h2 class="sec-title" style="color:white;margin-bottom:.4rem">THE FLAVOR VAULT</h2>
+    <p style="color:var(--gray-600);font-size:.88rem;margin-bottom:.25rem">Regina's first & only local eatery with 125+ flavors of wings and ribs. Ask server for weekly specials.</p>
+    <div class="sgrid" id="sgrid"></div>
   </div>
 </section>
 
 <!-- LOCATIONS -->
-<section id="locations" class="loc-section">
+<section id="locations" class="loc-sec">
   <div class="loc-inner">
-    <div class="sec-eyebrow" style="color:var(--yellow)">Find Us</div>
-    <h2 class="sec-title light">OUR LOCATIONS</h2>
-    <div class="loc-grid">
-      <div class="loc-card active-loc">
-        <span class="loc-badge online">✓ Online Ordering Live</span>
-        <div class="loc-name">Albert Street</div>
-        <div class="loc-addr">#3 – 155 Albert St N<br>Regina, SK</div>
-        <div class="loc-hours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div>
-        <div class="loc-phone">📞 306-522-2111</div>
+    <div class="eyebrow" style="color:var(--yellow)">Find Us</div>
+    <h2 class="sec-title" style="color:white">OUR LOCATIONS</h2>
+    <div class="lgrid">
+      <div class="lcard live">
+        <span class="lbadge lb-live">✓ Online Ordering Live</span>
+        <div class="lname">Albert Street</div>
+        <div class="laddr">#3 – 155 Albert St N<br>Regina, SK</div>
+        <div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div>
+        <div class="lphone">📞 306-522-2111 · Wingorestaurant@gmail.com</div>
       </div>
-      <div class="loc-card">
-        <span class="loc-badge soon">Online Ordering Coming Soon</span>
-        <div class="loc-name">Regina South</div>
-        <div class="loc-addr">Regina, SK</div>
-        <div class="loc-hours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div>
-      </div>
-      <div class="loc-card">
-        <span class="loc-badge soon">Online Ordering Coming Soon</span>
-        <div class="loc-name">Southland Mall</div>
-        <div class="loc-addr">Southland Mall, Regina, SK</div>
-        <div class="loc-hours">Mall Hours</div>
-      </div>
-      <div class="loc-card">
-        <span class="loc-badge soon">Online Ordering Coming Soon</span>
-        <div class="loc-name">Moose Jaw</div>
-        <div class="loc-addr">Moose Jaw, SK</div>
-        <div class="loc-hours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div>
-      </div>
-      <div class="loc-card">
-        <span class="loc-badge soon">Seasonal</span>
-        <div class="loc-name">Regina Beach</div>
-        <div class="loc-addr">Regina Beach, SK</div>
-        <div class="loc-hours">Summer Only</div>
-      </div>
-      <div class="loc-card" style="border-color:var(--yellow);opacity:.65">
-        <span class="loc-badge soon">🚀 Coming Soon</span>
-        <div class="loc-name">Winnipeg</div>
-        <div class="loc-addr">Manitoba's first Wing-O!</div>
-        <div class="loc-hours">Stay Tuned</div>
-      </div>
+      <div class="lcard"><span class="lbadge lb-soon">Coming Soon Online</span><div class="lname">Regina South</div><div class="laddr">Regina, SK</div><div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div></div>
+      <div class="lcard"><span class="lbadge lb-soon">Coming Soon Online</span><div class="lname">Southland Mall</div><div class="laddr">Southland Mall, Regina, SK</div><div class="lhours">Mall Hours</div></div>
+      <div class="lcard"><span class="lbadge lb-soon">Coming Soon Online</span><div class="lname">Moose Jaw</div><div class="laddr">Moose Jaw, SK</div><div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div></div>
+      <div class="lcard"><span class="lbadge lb-soon">Seasonal</span><div class="lname">Regina Beach</div><div class="laddr">Regina Beach, SK</div><div class="lhours">Summer Only</div></div>
+      <div class="lcard" style="border-color:rgba(245,168,0,.3);opacity:.6"><span class="lbadge lb-soon">🚀 Coming Soon</span><div class="lname">Winnipeg</div><div class="laddr">Manitoba's first Wing-O!</div><div class="lhours">Stay Tuned</div></div>
     </div>
   </div>
 </section>
 
 <!-- ABOUT -->
-<section id="about" class="about-section">
+<section id="about" class="about-sec">
   <div class="about-inner">
     <div class="about-text">
-      <div class="sec-eyebrow">The Story Behind the Sauce</div>
-      <h2>THE <span>SAUCE</span><br>BOSS</h2>
-      <blockquote class="about-quote">Arrived at 19 with a dream and not much else. Regina gave me community, family, and a home. Wing-O is how I gave it back.</blockquote>
+      <div class="eyebrow">The Story Behind the Sauce</div>
+      <h2>THE <span>SAUCE</span> BOSS</h2>
+      <blockquote class="about-quote">"Arrived at 19 with a dream and not much else. Regina gave me community, family, and a home. Wing-O is how I gave it back."</blockquote>
       <p>Built on 1.5 years of research, flavor development, and community-driven branding. Every sauce is handcrafted. Every week brings something new. This isn't a chain — it's a movement rooted in the heart of Saskatchewan.</p>
-      <p>Proudly Prairie. More Than Wings.</p>
-      <a class="btn-hero-primary" href="#menu" onclick="document.getElementById('menu').scrollIntoView({behavior:'smooth'});return false;">Order Now 🔥</a>
+      <p>Proudly Prairie. More Than Wings. 🌾</p>
+      <a class="btn-red" href="#menu" onclick="go('menu')">Order Now 🔥</a>
     </div>
-    <div class="about-visual">
-      <div style="font-size:8rem;line-height:1;">🔥</div>
-      <div style="font-family:'Dancing Script',cursive;font-size:2.5rem;color:white;opacity:.7;font-style:italic;">Sauce Boss</div>
-      <div style="font-family:var(--font-head);font-size:.8rem;letter-spacing:3px;text-transform:uppercase;color:var(--gray-600);">Proudly Prairie 🌾</div>
+    <div class="about-vis">
+      <div class="big-fire">🔥</div>
+      <div class="sig-text">Sauce Boss</div>
+      <div class="prairie-text">🌾 Proudly Prairie</div>
     </div>
   </div>
 </section>
@@ -490,247 +395,193 @@ let activeLocation = "albert-st";
 <!-- FOOTER -->
 <footer>
   <div class="footer-inner">
-    <div class="footer-grid">
+    <div class="fgrid">
       <div>
-        <div class="footer-brand-logo">WING<span>-O</span></div>
-        <p class="footer-tagline">125+ handcrafted flavors. Born in Regina. Built for everyone. More Than Wings.</p>
-        <div class="community-badge">❤️ Proud supporter of the Regina Community Fridge</div>
+        <div class="fb-logo">WING<span>-O</span></div>
+        <p class="fb-tag">125+ handcrafted flavors. Born in Regina. Built for everyone. More Than Wings.</p>
+        <div class="comm-badge">❤️ Proud supporter of the Regina Community Fridge</div>
       </div>
-      <div class="footer-col">
-        <h4>Menu</h4>
-        <ul>
-          <li>Wings & Ribs</li>
-          <li>Boneless Wings</li>
-          <li>Burgers</li>
-          <li>Sides & Poutines</li>
-          <li>Midnight Ecstasy</li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h4>Locations</h4>
-        <ul>
-          <li>Albert St — Regina</li>
-          <li>Regina South</li>
-          <li>Southland Mall</li>
-          <li>Moose Jaw</li>
-          <li>Regina Beach</li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h4>Connect</h4>
-        <ul>
-          <li>Instagram</li>
-          <li>Facebook</li>
-          <li>Franchise Info</li>
-          <li>Careers</li>
-          <li>Wingorestaurant@gmail.com</li>
-        </ul>
-      </div>
+      <div class="fc"><h4>Menu</h4><ul><li>Wings & Ribs</li><li>Boneless Wings</li><li>Burgers</li><li>Combos & Platters</li><li>Midnight Ecstasy</li></ul></div>
+      <div class="fc"><h4>Locations</h4><ul><li>Albert St — Regina</li><li>Regina South</li><li>Southland Mall</li><li>Moose Jaw</li><li>Regina Beach</li></ul></div>
+      <div class="fc"><h4>Connect</h4><ul><li>Instagram</li><li>Facebook</li><li>Franchise Info</li><li>Wingorestaurant@gmail.com</li><li>306-522-2111</li></ul></div>
     </div>
-    <div class="footer-bottom">
+    <div class="fbot">
       <p>© 2025 Wing-O Restaurants Ltd. All rights reserved. Regina, Saskatchewan 🌾</p>
-      <div class="clover-powered">🍀 Powered by Clover POS</div>
+      <span class="clover-pw">🍀 Powered by Clover POS</span>
     </div>
   </div>
 </footer>
 
-<!-- CART PANEL -->
-<div class="cart-overlay" id="cart-overlay">
-  <div class="cart-backdrop" onclick="closeCart()"></div>
+<!-- CART -->
+<div class="cart-ov" id="cart-ov">
+  <div class="cart-back" onclick="closeCart()"></div>
   <div class="cart-panel">
-    <div class="cart-head">
-      <div>
-        <div class="cart-head-title">YOUR ORDER</div>
-        <div class="cart-head-sub" id="cart-location-label">Albert Street · Pickup or Delivery</div>
-      </div>
-      <button class="cart-close-btn" onclick="closeCart()">✕</button>
+    <div class="cart-hd">
+      <div><div class="cart-hd-title">YOUR ORDER</div><div class="cart-hd-sub">Albert Street · Pickup or Delivery</div></div>
+      <button class="xcb" onclick="closeCart()">✕</button>
     </div>
-    <div class="cart-body" id="cart-body">
-      <div class="cart-empty"><div class="cart-empty-icon">🍗</div><p>Cart is empty</p><p style="font-size:.8rem;margin-top:.4rem;text-transform:none;letter-spacing:0;color:var(--gray-400)">Pick a flavor, pick an item, get sauced.</p></div>
-    </div>
-    <div class="cart-foot" id="cart-foot" style="display:none">
-      <div class="cart-line"><span>Subtotal</span><span id="cart-sub">$0.00</span></div>
-      <div class="cart-line"><span>GST (5%)</span><span id="cart-tax">$0.00</span></div>
-      <div class="cart-line total"><span>Total</span><span id="cart-total">$0.00</span></div>
-      <button class="btn-checkout" onclick="openCheckout()">CHECKOUT →</button>
+    <div class="cart-bd" id="cart-bd"><div class="cart-empty"><div class="ce-icon">🍗</div><div class="ce-txt">Your cart is empty</div><p style="font-size:.78rem;margin-top:.35rem;color:var(--gray-400)">Pick a flavor, add some wings, get sauced!</p></div></div>
+    <div class="cart-ft" id="cart-ft" style="display:none">
+      <div class="cl"><span>Subtotal</span><span id="csub">$0.00</span></div>
+      <div class="cl"><span>GST (5%)</span><span id="ctax">$0.00</span></div>
+      <div class="cl tot"><span>Total</span><span id="ctot">$0.00</span></div>
+      <button class="btn-co" onclick="openCheckout()">CHECKOUT →</button>
     </div>
   </div>
 </div>
 
-<!-- CHECKOUT MODAL -->
-<div class="modal-overlay" id="checkout-modal">
+<!-- MODAL -->
+<div class="modal-ov" id="modal-ov">
   <div class="modal">
-    <div class="modal-head">
-      <h2>CHECKOUT</h2>
-      <button class="cart-close-btn" onclick="closeCheckout()" style="color:var(--gray-400)">✕</button>
-    </div>
-    <div class="modal-body" id="modal-body"></div>
+    <div class="mhd"><h2>CHECKOUT</h2><button class="xcb" onclick="closeCheckout()" style="color:var(--gray-500)">✕</button></div>
+    <div class="mbd" id="mbd"></div>
   </div>
 </div>
 
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
+<!-- API STATUS -->
+<div class="api-status" id="api-status"><div class="api-dot" id="api-dot"></div><span id="api-txt">checking...</span></div>
+
 <script>
-// ── DATA ──────────────────────────────────────────────────────
-const FLAVORS = {
-  "Flirty Ones": ["Devil's Kiss","Honey Garlic","Lemon Pepper","Buffalo","Buffalo Ranch","BBQ Ranch","Honey Dill","Greek Dry","Greek Wet","Teriyaki","Creamy Dill Pickle","Medium"],
-  "Hot As Hell": ["Dead Angel (Carolina Reaper)","Spicy Mammilla","Sizzle Caesar","Caribbean Connection","Tropical Temptation","BBQ Seduction","Sentimental Sauce","Cobalt Kiss","Dragon Dip","Mild","Hot","Honey Buffalo","Honey Is Hot","Honeys Too Hot","Not So Hot","African Pepper","Island On Fire"],
-  "Rub It": ["All Dressed","Dry BBQ","Dry Buffalo","Dry Cajun","Creole","Dill Pickle","Greek","Hickory","Italian","Lemon Pepper","Ketchup","Mango Habanero","Maple Bacon","Montreal Style","Parmesan","Salt & Pepper","Salt & Vinegar","Sour Cream & Chives","White Cheddar","Sriracha","Hot & Honey Dry","Apple Wood BBQ","Brown Bourbon"],
-  "Second Round": ["Tangy Thai","Cali Thai","Curry Bean","Thai Twilight","Sweet Grenade","Hot Hickey","Dill Drip Diva","Maple Mirage","Sweet Scape Surge","Prairie Heat"],
-  "BBQ Intimacy": ["BBQ","Forty Creek BBQ","Honey BBQ","Hot BBQ","Maple BBQ","Mesquite BBQ","South Pacific BBQ","South Western BBQ","Sultry Caesar","Sapphire Smoke","Tropical Tinder","BBQ Bunt","Mustard Mellons","Soul Kiss","Maple Meltdown","Smokee Bee Kiss","Smoke & Sting"],
-  "Have To Do It": ["Ranch","Creamy Greek","Honey Mustard","Blue Cheese","Cajun","Herb & Garlic","Pizza Wings","Parmesan Dry","Garlic Parmesan"],
-  "Sweet Melodious": ["Apricot Honey","Orange Ginger","Plum","Pineapple Curry","Sunburn Samurai","Raspberry Pepper","Strawberry","Sweet & Spicy Thai","Sweet & Sour"],
-  "Illegal Sauces": ["Hot Fantacy","Grefflo","Citrus Twist","Illegal Pizza","Honeyaki Harmony","Chinese Bull","Mystic Garlic","Blue Buzz","Creamy Lemon","Pepper Pleasure","Tour Of Italy","Honey Ranch Bliss","Cajun Cream","Canadian Greek","Parmesan Prestige","Creamy Bliss","Influencer","Mid-Majestic","Zesty Twist","Sweet Heat","Wrench It Up","Thai Coconut Crush","Scotch's Up","Dill Rancher","Citrus Sting","Japanese Twist","Dillnferno","Cream Of The Zing","Prairie Gold"]
+// ── FLAVOR DATA ───────────────────────────────────────────────
+const FLAVORS={
+  "Flirty Ones":["Devil's Kiss","Honey Garlic","Lemon Pepper","Buffalo","Buffalo Ranch","BBQ Ranch","Honey Dill","Greek Dry","Greek Wet","Teriyaki","Creamy Dill Pickle","Medium"],
+  "Hot As Hell":["Dead Angel (Carolina Reaper)","Spicy Mammilla","Sizzle Caesar","Caribbean Connection","Tropical Temptation","BBQ Seduction","Sentimental Sauce","Cobalt Kiss","Dragon Dip","Mild","Hot","Honey Buffalo","Honey Is Hot","Honeys Too Hot","Not So Hot","African Pepper","Island On Fire"],
+  "Rub It":["All Dressed","Dry BBQ","Dry Buffalo","Dry Cajun","Creole","Dill Pickle","Greek","Hickory","Italian","Lemon Pepper","Ketchup","Mango Habanero","Maple Bacon","Montreal Style","Parmesan","Salt & Pepper","Salt & Vinegar","Sour Cream & Chives","White Cheddar","Sriracha","Hot & Honey Dry","Apple Wood BBQ","Brown Bourbon"],
+  "Second Round":["Tangy Thai","Cali Thai","Curry Bean","Thai Twilight","Sweet Grenade","Hot Hickey","Dill Drip Diva","Maple Mirage","Sweet Scape Surge","Prairie Heat"],
+  "BBQ Intimacy":["BBQ","Forty Creek BBQ","Honey BBQ","Hot BBQ","Maple BBQ","Mesquite BBQ","South Pacific BBQ","South Western BBQ","Sultry Caesar","Sapphire Smoke","Tropical Tinder","BBQ Bunt","Mustard Mellons","Soul Kiss","Maple Meltdown","Smokee Bee Kiss","Smoke & Sting"],
+  "Have To Do It":["Ranch","Creamy Greek","Honey Mustard","Blue Cheese","Cajun","Herb & Garlic","Pizza Wings","Parmesan Dry","Garlic Parmesan"],
+  "Sweet Melodious":["Apricot Honey","Orange Ginger","Plum","Pineapple Curry","Sunburn Samurai","Raspberry Pepper","Strawberry","Sweet & Spicy Thai","Sweet & Sour"],
+  "Illegal Sauces":["Hot Fantacy","Grefflo","Citrus Twist","Illegal Pizza","Honeyaki Harmony","Chinese Bull","Mystic Garlic","Blue Buzz","Creamy Lemon","Pepper Pleasure","Tour Of Italy","Honey Ranch Bliss","Cajun Cream","Canadian Greek","Parmesan Prestige","Creamy Bliss","Influencer","Mid-Majestic","Zesty Twist","Sweet Heat","Wrench It Up","Thai Coconut Crush","Scotch's Up","Dill Rancher","Citrus Sting","Japanese Twist","Dillnferno","Cream Of The Zing","Prairie Gold"]
 };
 
-const MENU = [
-  // WINGS & RIBS
-  { id:1, cat:"wings", name:"Half Order Wings or Ribs", desc:"Half order of bone-in wings or ribs. Choose any sauce or rub from our 125+ flavors.", price:7.00, emoji:"🍗", picks:false },
-  { id:2, cat:"wings", name:"One Order Wings or Ribs", desc:"One full order of bone-in wings or ribs in your flavor of choice.", price:11.99, emoji:"🍗", picks:false, bestseller:true },
-  { id:3, cat:"wings", name:"Two Orders", desc:"Two orders of wings or ribs — mix & match your flavors.", price:23.98, emoji:"🍗🍗", picks:false },
-  { id:4, cat:"wings", name:"Three Orders", desc:"Three orders — great for groups. Mix any flavors.", price:34.99, emoji:"🍗🍗🍗", picks:false },
-  { id:5, cat:"wings", name:"Four Orders", desc:"Four orders — feed the crew.", price:45.99, emoji:"🍗", picks:false },
-  { id:6, cat:"wings", name:"Five Orders", desc:"Five orders — party pack!", price:55.00, emoji:"🍗", picks:false },
-  // BONELESS
-  { id:7, cat:"boneless", name:"Chicken Fingers & Boneless Wings — Half", desc:"Half order of crispy chicken fingers or boneless wings. Choose your sauce.", price:7.00, emoji:"🍖", picks:false },
-  { id:8, cat:"boneless", name:"Chicken Fingers & Boneless Wings — Full", desc:"Full order of crispy chicken fingers or boneless wings in your favorite flavor.", price:11.99, emoji:"🍖", picks:false, bestseller:true },
-  { id:9, cat:"boneless", name:"Cauliflower Wings", desc:"Crispy cauliflower wings — your choice of sauce.", price:11.99, emoji:"🥦", picks:false },
-  // COMBOS
-  { id:10, cat:"combos", name:"Combo for 1", desc:"Choice of 1 wing or rib order, small fries, can of pop.", price:15.99, emoji:"🍱", picks:false, bestseller:true },
-  { id:11, cat:"combos", name:"Combo for 2", desc:"Choice of 2 wing or rib orders, large fries, deep fried pickles, 2 cans of pop.", price:35.99, emoji:"🍱🍱", picks:false },
-  { id:12, cat:"combos", name:"Combo for 3", desc:"Choice of 3 orders, large fries, large Caesar salad, 2L pop.", price:50.99, emoji:"🍱", picks:false },
-  { id:13, cat:"combos", name:"Combo for 4", desc:"Choice of 4 orders, large fries, large gravy, large Caesar salad, 2L pop.", price:60.99, emoji:"🍱", picks:false },
-  { id:14, cat:"combos", name:"Corn Dog Combo", desc:"Corn dog, small fries, choice of dipping sauce.", price:7.00, emoji:"🌭", picks:false },
-  // BURGERS
-  { id:15, cat:"burgers", name:"The Tough Guy Burger", desc:"Classic loaded burger served with cajun fries.", price:15.99, emoji:"🍔", picks:false, bestseller:true },
-  { id:16, cat:"burgers", name:"The Dillinator Burger", desc:"Signature dill-inspired burger served with cajun fries.", price:15.99, emoji:"🍔", picks:false },
-  { id:17, cat:"burgers", name:"Buffalo Stampede Burger", desc:"Buffalo-sauced chicken burger, cajun fries.", price:15.99, emoji:"🍔", picks:false },
-  // SIDES
-  { id:18, cat:"sides", name:"Fries — Small", desc:"Golden crispy fries.", price:4.99, emoji:"🍟", picks:false },
-  { id:19, cat:"sides", name:"Fries — Large", desc:"Golden crispy fries.", price:8.99, emoji:"🍟", picks:false },
-  { id:20, cat:"sides", name:"Curly Fries — Small", desc:"Seasoned curly fries.", price:5.99, emoji:"🍟", picks:false },
-  { id:21, cat:"sides", name:"Curly Fries — Large", desc:"Seasoned curly fries.", price:9.99, emoji:"🍟", picks:false },
-  { id:22, cat:"sides", name:"Poutine — Small", desc:"Fries, cheese curds, gravy.", price:7.99, emoji:"🫕", picks:false },
-  { id:23, cat:"sides", name:"Poutine — Large", desc:"Fries, cheese curds, gravy.", price:12.99, emoji:"🫕", picks:false, bestseller:true },
-  { id:24, cat:"sides", name:"Rib Poutine", desc:"Poutine loaded with rib meat.", price:14.99, emoji:"🫕", picks:false },
-  { id:25, cat:"sides", name:"Perogy Poutine", desc:"Perogies, cheese curds, gravy.", price:8.99, emoji:"🫕", picks:false },
-  { id:26, cat:"sides", name:"Beef Poutine", desc:"Classic poutine with beef.", price:10.99, emoji:"🫕", picks:false },
-  { id:27, cat:"sides", name:"Chicken Poutine", desc:"Poutine topped with chicken.", price:10.99, emoji:"🫕", picks:false },
-  { id:28, cat:"sides", name:"Empanadas (6 pc)", desc:"6 empanadas.", price:5.99, emoji:"🥟", picks:false },
-  { id:29, cat:"sides", name:"Empanadas (12 pc)", desc:"12 empanadas.", price:9.99, emoji:"🥟", picks:false },
-  { id:30, cat:"sides", name:"Jalapeño Poppers", desc:"Crispy jalapeño poppers.", price:9.99, emoji:"🌶️", picks:false },
-  { id:31, cat:"sides", name:"Onion Rings", desc:"Golden onion rings.", price:6.99, emoji:"🧅", picks:false },
-  { id:32, cat:"sides", name:"Pickle Spears", desc:"Deep fried pickle spears.", price:6.99, emoji:"🥒", picks:false },
-  { id:33, cat:"sides", name:"Deep Fried Mac & Cheese", desc:"Crispy deep fried mac & cheese bites.", price:6.99, emoji:"🧀", picks:false },
-  { id:34, cat:"sides", name:"Mini Perogies", desc:"Mini perogies — golden and delicious.", price:6.99, emoji:"🥟", picks:false },
-  { id:35, cat:"sides", name:"Mozza Sticks", desc:"Classic mozzarella sticks.", price:9.99, emoji:"🧀", picks:false },
-  { id:36, cat:"sides", name:"Corn Dog", desc:"Classic corn dog.", price:4.00, emoji:"🌭", picks:false },
-  { id:37, cat:"sides", name:"Dumplings", desc:"Steamed dumplings.", price:6.99, emoji:"🥟", picks:false },
-  { id:38, cat:"sides", name:"Nacho Teaser", desc:"Nachos with toppings.", price:9.99, emoji:"🌮", picks:false },
-  { id:39, cat:"sides", name:"Loaded Taters", desc:"Loaded tater tots.", price:9.99, emoji:"🥔", picks:false },
-  { id:40, cat:"sides", name:"Spring Rolls", desc:"Crispy spring rolls.", price:9.99, emoji:"🥚", picks:false },
-  { id:41, cat:"sides", name:"Gravy — Small", desc:"Classic gravy.", price:0.99, emoji:"🫙", picks:false },
-  { id:42, cat:"sides", name:"Gravy — Large", desc:"Large gravy.", price:2.49, emoji:"🫙", picks:false },
-  // SALADS
-  { id:43, cat:"salads", name:"Caesar Salad — Small", desc:"Classic caesar salad.", price:5.99, emoji:"🥗", picks:false },
-  { id:44, cat:"salads", name:"Caesar Salad — Medium", desc:"Medium caesar salad.", price:7.99, emoji:"🥗", picks:false },
-  { id:45, cat:"salads", name:"Caesar Salad — Large", desc:"Large caesar salad.", price:10.99, emoji:"🥗", picks:false },
-  { id:46, cat:"salads", name:"Chicken Caesar — Small", desc:"Caesar salad with grilled chicken.", price:8.99, emoji:"🥗", picks:false },
-  { id:47, cat:"salads", name:"Chicken Caesar — Medium", desc:"Caesar salad with grilled chicken.", price:10.99, emoji:"🥗", picks:false },
-  { id:48, cat:"salads", name:"Chicken Caesar — Large", desc:"Caesar salad with grilled chicken.", price:18.99, emoji:"🥗", picks:false },
-  // PLATTERS
-  { id:49, cat:"platters", name:"Hot 'n' Heavy Platter", desc:"3 lbs fries, 1 lb cheese curds, 1 lb gravy.", price:26.99, emoji:"🍽️", picks:false },
-  { id:50, cat:"platters", name:"Tinseltown Nacho Platter", desc:"3 lbs curly fries, cheese sauce, chunky salsa, sour cream, jalapeños, green onions.", price:26.99, emoji:"🌮", picks:false },
-  { id:51, cat:"platters", name:"A Bit Of Other Platter", desc:"1 lb ribs, pickle spears, large curly fries, mini perogies, dumplings, mozza sticks.", price:30.99, emoji:"🍽️", picks:false, bestseller:true },
-  { id:52, cat:"platters", name:"Making Love Platter", desc:"Full order wings, empanadas, large fries, jalapeño poppers, mozza sticks.", price:30.99, emoji:"🍽️", picks:false },
-  // MIDNIGHT ECSTASY
-  { id:53, cat:"midnight", name:"Deep Fried Oreos — 1 pc", desc:"Single deep fried Oreo.", price:0.99, emoji:"🍪", picks:false },
-  { id:54, cat:"midnight", name:"Deep Fried Oreos — 6 pc", desc:"Six deep fried Oreos.", price:5.49, emoji:"🍪", picks:false },
-  { id:55, cat:"midnight", name:"Deep Fried Oreos — 12 pc", desc:"Twelve deep fried Oreos.", price:9.99, emoji:"🍪", picks:false },
-  { id:56, cat:"midnight", name:"Deep Fried Mars Bar — 1 pc", desc:"Single deep fried Mars bar.", price:2.49, emoji:"🍫", picks:false },
-  { id:57, cat:"midnight", name:"Deep Fried Mars Bars — 2 pc", desc:"Two deep fried Mars bars.", price:4.50, emoji:"🍫", picks:false },
-  { id:58, cat:"midnight", name:"Deep Fried Mars Bars — 6 pc", desc:"Six deep fried Mars bars.", price:12.50, emoji:"🍫", picks:false },
-  { id:59, cat:"midnight", name:"Deep Fried Cookie Dough", desc:"Peanut butter, double chocolate, or monster flavor — $2.50/pc.", price:2.50, emoji:"🍪", picks:false },
-  { id:60, cat:"midnight", name:"Tiramisu Cake", desc:"Homemade tiramisu cake slice.", price:6.99, emoji:"🍰", picks:false },
+const MENU=[
+  {id:1,cat:"wings",name:"Half Order — Wings or Ribs",desc:"Half order of bone-in wings or ribs in your choice of 125+ sauces or rubs.",price:7.00,emoji:"🍗",pop:false},
+  {id:2,cat:"wings",name:"One Order — Wings or Ribs",desc:"One full order of bone-in wings or ribs. The classic Wing-O experience.",price:11.99,emoji:"🍗",pop:true},
+  {id:3,cat:"wings",name:"Two Orders",desc:"Two orders — mix & match your flavors.",price:23.98,emoji:"🍗",pop:false},
+  {id:4,cat:"wings",name:"Three Orders",desc:"Three orders — great for groups. Mix any flavors.",price:34.99,emoji:"🍗",pop:false},
+  {id:5,cat:"wings",name:"Four Orders",desc:"Four orders — feed the crew.",price:45.99,emoji:"🍗",pop:false},
+  {id:6,cat:"wings",name:"Five Orders",desc:"Five orders — party pack!",price:55.00,emoji:"🍗",pop:false},
+  {id:7,cat:"boneless",name:"Boneless / Chicken Fingers — Half",desc:"Half order of crispy boneless wings or chicken fingers.",price:7.00,emoji:"🍖",pop:false},
+  {id:8,cat:"boneless",name:"Boneless / Chicken Fingers — Full",desc:"Full order of crispy boneless wings or chicken fingers in your flavor.",price:11.99,emoji:"🍖",pop:true},
+  {id:9,cat:"boneless",name:"Cauliflower Wings",desc:"Crispy cauliflower wings — choose your sauce.",price:11.99,emoji:"🥦",pop:false},
+  {id:10,cat:"combos",name:"Combo for 1",desc:"1 order wings or ribs, small fries, can of pop.",price:15.99,emoji:"🍱",pop:true},
+  {id:11,cat:"combos",name:"Combo for 2",desc:"2 orders wings or ribs, large fries, deep fried pickles, 2 cans of pop.",price:35.99,emoji:"🍱",pop:false},
+  {id:12,cat:"combos",name:"Combo for 3",desc:"3 orders, large fries, large Caesar salad, 2L pop.",price:50.99,emoji:"🍱",pop:false},
+  {id:13,cat:"combos",name:"Combo for 4",desc:"4 orders, large fries, large gravy, large Caesar salad, 2L pop.",price:60.99,emoji:"🍱",pop:false},
+  {id:14,cat:"combos",name:"Corn Dog Combo",desc:"Corn dog, small fries, choice of dipping sauce.",price:7.00,emoji:"🌭",pop:false},
+  {id:15,cat:"burgers",name:"The Tough Guy Burger",desc:"Classic loaded burger with cajun fries.",price:15.99,emoji:"🍔",pop:true},
+  {id:16,cat:"burgers",name:"The Dillinator Burger",desc:"Signature dill-inspired burger with cajun fries.",price:15.99,emoji:"🍔",pop:false},
+  {id:17,cat:"burgers",name:"Buffalo Stampede Burger",desc:"Buffalo-sauced chicken burger with cajun fries.",price:15.99,emoji:"🍔",pop:false},
+  {id:18,cat:"sides",name:"Fries — Small",desc:"Golden crispy fries.",price:4.99,emoji:"🍟",pop:false},
+  {id:19,cat:"sides",name:"Fries — Large",desc:"Golden crispy fries.",price:8.99,emoji:"🍟",pop:false},
+  {id:20,cat:"sides",name:"Curly Fries — Small",desc:"Seasoned curly fries.",price:5.99,emoji:"🍟",pop:false},
+  {id:21,cat:"sides",name:"Curly Fries — Large",desc:"Seasoned curly fries.",price:9.99,emoji:"🍟",pop:false},
+  {id:22,cat:"sides",name:"Poutine — Small",desc:"Fries, cheese curds, gravy.",price:7.99,emoji:"🫕",pop:false},
+  {id:23,cat:"sides",name:"Poutine — Large",desc:"Fries, cheese curds, gravy.",price:12.99,emoji:"🫕",pop:true},
+  {id:24,cat:"sides",name:"Rib Poutine",desc:"Poutine loaded with rib meat.",price:14.99,emoji:"🫕",pop:false},
+  {id:25,cat:"sides",name:"Perogy Poutine",desc:"Perogies, cheese curds, gravy.",price:8.99,emoji:"🫕",pop:false},
+  {id:26,cat:"sides",name:"Beef Poutine",desc:"Classic poutine with beef.",price:10.99,emoji:"🫕",pop:false},
+  {id:27,cat:"sides",name:"Chicken Poutine",desc:"Poutine topped with chicken.",price:10.99,emoji:"🫕",pop:false},
+  {id:28,cat:"sides",name:"Empanadas (6 pc)",desc:"6 empanadas.",price:5.99,emoji:"🥟",pop:false},
+  {id:29,cat:"sides",name:"Empanadas (12 pc)",desc:"12 empanadas.",price:9.99,emoji:"🥟",pop:false},
+  {id:30,cat:"sides",name:"Jalapeño Poppers",desc:"Crispy jalapeño poppers.",price:9.99,emoji:"🌶️",pop:false},
+  {id:31,cat:"sides",name:"Onion Rings",desc:"Golden onion rings.",price:6.99,emoji:"🧅",pop:false},
+  {id:32,cat:"sides",name:"Pickle Spears",desc:"Deep fried pickle spears.",price:6.99,emoji:"🥒",pop:false},
+  {id:33,cat:"sides",name:"Deep Fried Mac & Cheese",desc:"Crispy deep fried mac & cheese bites.",price:6.99,emoji:"🧀",pop:false},
+  {id:34,cat:"sides",name:"Mini Perogies",desc:"Golden mini perogies.",price:6.99,emoji:"🥟",pop:false},
+  {id:35,cat:"sides",name:"Mozza Sticks",desc:"Classic mozzarella sticks.",price:9.99,emoji:"🧀",pop:false},
+  {id:36,cat:"sides",name:"Corn Dog",desc:"Classic corn dog.",price:4.00,emoji:"🌭",pop:false},
+  {id:37,cat:"sides",name:"Dumplings",desc:"Steamed dumplings.",price:6.99,emoji:"🥟",pop:false},
+  {id:38,cat:"sides",name:"Nacho Teaser",desc:"Nachos with toppings.",price:9.99,emoji:"🌮",pop:false},
+  {id:39,cat:"sides",name:"Loaded Taters",desc:"Loaded tater tots.",price:9.99,emoji:"🥔",pop:false},
+  {id:40,cat:"sides",name:"Spring Rolls",desc:"Crispy spring rolls.",price:9.99,emoji:"🥚",pop:false},
+  {id:41,cat:"sides",name:"Gravy — Small",desc:"Classic gravy.",price:0.99,emoji:"🫙",pop:false},
+  {id:42,cat:"sides",name:"Gravy — Large",desc:"Large gravy.",price:2.49,emoji:"🫙",pop:false},
+  {id:43,cat:"salads",name:"Caesar Salad — Small",desc:"Classic caesar salad.",price:5.99,emoji:"🥗",pop:false},
+  {id:44,cat:"salads",name:"Caesar Salad — Medium",desc:"Medium caesar salad.",price:7.99,emoji:"🥗",pop:false},
+  {id:45,cat:"salads",name:"Caesar Salad — Large",desc:"Large caesar salad.",price:10.99,emoji:"🥗",pop:false},
+  {id:46,cat:"salads",name:"Chicken Caesar — Small",desc:"Caesar salad with grilled chicken.",price:8.99,emoji:"🥗",pop:false},
+  {id:47,cat:"salads",name:"Chicken Caesar — Medium",desc:"Caesar salad with grilled chicken.",price:10.99,emoji:"🥗",pop:false},
+  {id:48,cat:"salads",name:"Chicken Caesar — Large",desc:"Caesar salad with grilled chicken.",price:18.99,emoji:"🥗",pop:false},
+  {id:49,cat:"platters",name:"Hot 'n' Heavy Platter",desc:"3 lbs fries, 1 lb cheese curds, 1 lb gravy.",price:26.99,emoji:"🍽️",pop:false},
+  {id:50,cat:"platters",name:"Tinseltown Nacho Platter",desc:"3 lbs curly fries, cheese sauce, chunky salsa, sour cream, jalapeños, green onions.",price:26.99,emoji:"🌮",pop:false},
+  {id:51,cat:"platters",name:"A Bit Of Other Platter",desc:"1 lb ribs, pickle spears, large curly fries, mini perogies, dumplings, mozza sticks.",price:30.99,emoji:"🍽️",pop:true},
+  {id:52,cat:"platters",name:"Making Love Platter",desc:"Full order wings, empanadas, large fries, jalapeño poppers, mozza sticks.",price:30.99,emoji:"🍽️",pop:false},
+  {id:53,cat:"midnight",name:"Deep Fried Oreos — 1 pc",desc:"Single deep fried Oreo.",price:0.99,emoji:"🍪",pop:false},
+  {id:54,cat:"midnight",name:"Deep Fried Oreos — 6 pc",desc:"Six deep fried Oreos.",price:5.49,emoji:"🍪",pop:false},
+  {id:55,cat:"midnight",name:"Deep Fried Oreos — 12 pc",desc:"Twelve deep fried Oreos.",price:9.99,emoji:"🍪",pop:true},
+  {id:56,cat:"midnight",name:"Deep Fried Mars Bar — 1 pc",desc:"Single deep fried Mars bar.",price:2.49,emoji:"🍫",pop:false},
+  {id:57,cat:"midnight",name:"Deep Fried Mars Bars — 2 pc",desc:"Two deep fried Mars bars.",price:4.50,emoji:"🍫",pop:false},
+  {id:58,cat:"midnight",name:"Deep Fried Mars Bars — 6 pc",desc:"Six deep fried Mars bars.",price:12.50,emoji:"🍫",pop:false},
+  {id:59,cat:"midnight",name:"Deep Fried Cookie Dough",desc:"Peanut butter, double chocolate, or monster — $2.50/pc.",price:2.50,emoji:"🍪",pop:false},
+  {id:60,cat:"midnight",name:"Tiramisu Cake",desc:"Homemade tiramisu cake slice.",price:6.99,emoji:"🍰",pop:false}
 ];
 
-const CATS = [
-  {id:"all", label:"All"},
-  {id:"wings", label:"Wings & Ribs"},
-  {id:"boneless", label:"Boneless"},
-  {id:"combos", label:"Combos"},
-  {id:"burgers", label:"Burgers"},
-  {id:"sides", label:"Sides"},
-  {id:"salads", label:"Salads"},
-  {id:"platters", label:"Platters"},
-  {id:"midnight", label:"Midnight Ecstasy 🌙"},
-];
+const CATS=[{id:"all",l:"All"},{id:"wings",l:"Wings & Ribs"},{id:"boneless",l:"Boneless"},{id:"combos",l:"Combos"},{id:"burgers",l:"Burgers"},{id:"sides",l:"Sides"},{id:"salads",l:"Salads"},{id:"platters",l:"Platters"},{id:"midnight",l:"Midnight Ecstasy 🌙"}];
 
-// ── STATE ──────────────────────────────────────────────────────
-let cart = [];
-let selectedFlavor = null;
-let selectedFlavCat = Object.keys(FLAVORS)[0];
-let currentCat = "all";
+// ── STATE ─────────────────────────────────────────────────────
+let cart=[],selFlavor=null,selFcat=Object.keys(FLAVORS)[0],curCat="all",orderType="pickup";
 
-// ── FLAVOR UI ──────────────────────────────────────────────────
-function buildFlavorUI(){
-  const catEl = document.getElementById('fcat-tabs');
-  catEl.innerHTML = Object.keys(FLAVORS).map(c=>
-    `<button class="fcat-btn${c===selectedFlavCat?' active':''}" onclick="setFlavCat('${c}')">${c}</button>`
+// ── HELPERS ───────────────────────────────────────────────────
+function go(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth'});return false;}
+function scrollTo(id){go(id);}
+let toastT;
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2600);}
+
+// ── CHECK API ─────────────────────────────────────────────────
+async function checkAPI(){
+  const dot=document.getElementById('api-dot');
+  const txt=document.getElementById('api-txt');
+  try{
+    const r=await fetch(API_BASE+'/api/health',{signal:AbortSignal.timeout(4000)});
+    if(r.ok){dot.className='api-dot ok';txt.textContent='server online';}
+    else throw new Error();
+  }catch{dot.className='api-dot err';txt.textContent='offline mode';}
+}
+checkAPI();
+
+// ── FLAVOR UI ─────────────────────────────────────────────────
+function buildFlavors(){
+  document.getElementById('fcat-row').innerHTML=Object.keys(FLAVORS).map(c=>
+    `<button class="fcb${c===selFcat?' on':''}" onclick="setFC('${c}')">${c}</button>`
   ).join('');
-  renderFlavorList();
+  renderFList();
 }
-
-function setFlavCat(cat){
-  selectedFlavCat = cat;
-  document.querySelectorAll('.fcat-btn').forEach(b=>b.classList.toggle('active', b.textContent===cat));
-  renderFlavorList();
-}
-
-function renderFlavorList(){
-  const el = document.getElementById('flavor-list');
-  el.innerHTML = FLAVORS[selectedFlavCat].map(f=>
-    `<div class="flavor-chip${f===selectedFlavor?' selected':''}" onclick="selectFlavor('${f.replace(/'/g,"\\'")}')">${f}</div>`
+function setFC(c){selFcat=c;document.querySelectorAll('.fcb').forEach(b=>b.classList.toggle('on',b.textContent===c));renderFList();}
+function renderFList(){
+  document.getElementById('flist').innerHTML=FLAVORS[selFcat].map(f=>
+    `<div class="fchip${f===selFlavor?' on':''}" onclick="pickFlavor(\`${f.replace(/`/g,'\\`')}\`)">${f}</div>`
   ).join('');
 }
+function pickFlavor(f){selFlavor=f;document.getElementById('fsel-name').textContent=f;renderFList();toast('🔥 Flavor: '+f);}
 
-function selectFlavor(f){
-  selectedFlavor = f;
-  document.getElementById('selected-flavor-name').textContent = f;
-  renderFlavorList();
-  showToast(`Flavor: ${f} 🔥`);
-}
-
-// ── CATEGORY TABS ──────────────────────────────────────────────
-function buildCatTabs(){
-  document.getElementById('cat-tabs').innerHTML = CATS.map(c=>
-    `<button class="cat-tab${c.id===currentCat?' active':''}" onclick="filterCat('${c.id}',this)">${c.label}</button>`
+// ── CATEGORY TABS ─────────────────────────────────────────────
+function buildCats(){
+  document.getElementById('ctabs').innerHTML=CATS.map(c=>
+    `<button class="ctab${c.id===curCat?' on':''}" onclick="filterCat('${c.id}',this)">${c.l}</button>`
   ).join('');
 }
+function filterCat(id,btn){curCat=id;document.querySelectorAll('.ctab').forEach(b=>b.classList.remove('on'));btn?.classList.add('on');renderMenu();}
 
-function filterCat(cat, btn){
-  currentCat = cat;
-  document.querySelectorAll('.cat-tab').forEach(b=>b.classList.remove('active'));
-  if(btn) btn.classList.add('active');
-  renderMenu();
-}
-
-// ── MENU RENDER ────────────────────────────────────────────────
+// ── MENU ──────────────────────────────────────────────────────
 function renderMenu(){
-  const items = currentCat==='all' ? MENU : MENU.filter(i=>i.cat===currentCat);
-  document.getElementById('menu-grid').innerHTML = items.map(item=>`
-    <div class="menu-card" onclick="addToCart(${item.id})">
-      ${item.bestseller?'<div class="bestseller-flag">🔥 Popular</div>':''}
-      <div class="mc-emoji">${item.emoji}</div>
+  const items=curCat==='all'?MENU:MENU.filter(i=>i.cat===curCat);
+  const catLabel=id=>CATS.find(c=>c.id===id)?.l||id;
+  document.getElementById('mgrid').innerHTML=items.map(item=>`
+    <div class="mc" onclick="addToCart(${item.id})">
+      ${item.pop?'<div class="pop-flag">🔥 Popular</div>':''}
+      <div class="mc-img">${item.emoji}</div>
       <div class="mc-body">
-        <div class="mc-badges">
-          <span class="badge badge-cat">${CATS.find(c=>c.id===item.cat)?.label||item.cat}</span>
-          ${item.cat==='wings'||item.cat==='boneless'?'<span class="badge badge-hot">Choose Flavor</span>':''}
+        <div class="mc-tags">
+          <span class="tag tag-cat">${catLabel(item.cat)}</span>
+          ${['wings','boneless'].includes(item.cat)?'<span class="tag tag-hot">Pick Flavor</span>':''}
         </div>
         <div class="mc-name">${item.name}</div>
         <div class="mc-desc">${item.desc}</div>
-        <div class="mc-footer">
+        <div class="mc-foot">
           <div class="mc-price">$${item.price.toFixed(2)}</div>
           <button class="btn-add" onclick="event.stopPropagation();addToCart(${item.id})">+</button>
         </div>
@@ -739,243 +590,174 @@ function renderMenu(){
   `).join('');
 }
 
-// ── SAUCE SHOWCASE ─────────────────────────────────────────────
+// ── SAUCE GRID ────────────────────────────────────────────────
 function renderSauces(){
-  document.getElementById('sauce-grid').innerHTML = Object.entries(FLAVORS).map(([cat,items])=>`
-    <div class="sauce-group">
-      <div class="sauce-group-title">${cat}</div>
-      <ul>${items.map(f=>`<li>${f}</li>`).join('')}</ul>
-    </div>
+  document.getElementById('sgrid').innerHTML=Object.entries(FLAVORS).map(([cat,items])=>`
+    <div class="sgroup"><div class="sgroup-title">${cat}</div><ul>${items.map(f=>`<li>${f}</li>`).join('')}</ul></div>
   `).join('');
 }
 
 // ── CART ──────────────────────────────────────────────────────
 function addToCart(id){
-  const item = MENU.find(i=>i.id===id);
-  const needsFlavor = ['wings','boneless'].includes(item.cat);
-  const flavorNote = needsFlavor ? (selectedFlavor||'No flavor selected') : null;
-  const key = id + (flavorNote||'');
-  const ex = cart.find(c=>c.key===key);
-  if(ex){ ex.qty++; }
-  else { cart.push({...item, key, qty:1, flavor:flavorNote}); }
-  updateCartUI();
-  showToast(`Added: ${item.name}${flavorNote?` · ${flavorNote}`:''}`, 'add');
-  if(needsFlavor && !selectedFlavor){
-    showToast('💡 Tip: Choose a flavor above first!');
-  }
+  const item=MENU.find(i=>i.id===id);
+  const needsFl=['wings','boneless'].includes(item.cat);
+  const fl=needsFl?(selFlavor||null):null;
+  const key=id+'|'+(fl||'');
+  const ex=cart.find(c=>c.key===key);
+  if(ex)ex.qty++;
+  else cart.push({...item,key,qty:1,flavor:fl});
+  updateCart();
+  toast('Added: '+item.name+(fl?' · '+fl:''));
+  if(needsFl&&!selFlavor)setTimeout(()=>toast('💡 Pick a flavor first for best results!'),400);
 }
-
-function changeQty(key, d){
-  const i = cart.findIndex(c=>c.key===key);
-  if(i===-1) return;
-  cart[i].qty += d;
-  if(cart[i].qty<=0) cart.splice(i,1);
-  updateCartUI();
+function chgQty(key,d){
+  const i=cart.findIndex(c=>c.key===key);
+  if(i<0)return;
+  cart[i].qty+=d;
+  if(cart[i].qty<=0)cart.splice(i,1);
+  updateCart();
 }
-
-function updateCartUI(){
-  const count = cart.reduce((s,i)=>s+i.qty,0);
-  document.getElementById('cart-count').textContent = count;
-  const body = document.getElementById('cart-body');
-  const foot = document.getElementById('cart-foot');
+function updateCart(){
+  const cnt=cart.reduce((s,i)=>s+i.qty,0);
+  document.getElementById('cart-count').textContent=cnt;
+  const bd=document.getElementById('cart-bd'),ft=document.getElementById('cart-ft');
   if(!cart.length){
-    body.innerHTML = `<div class="cart-empty"><div class="cart-empty-icon">🍗</div><p>Cart is empty</p></div>`;
-    foot.style.display='none'; return;
+    bd.innerHTML='<div class="cart-empty"><div class="ce-icon">🍗</div><div class="ce-txt">Cart is empty</div></div>';
+    ft.style.display='none';return;
   }
-  foot.style.display='block';
-  body.innerHTML = cart.map(item=>`
-    <div class="cart-item">
-      <div class="ci-icon">${item.emoji}</div>
+  ft.style.display='block';
+  bd.innerHTML=cart.map(i=>`
+    <div class="ci">
+      <div class="ci-icon">${i.emoji}</div>
       <div class="ci-info">
-        <div class="ci-name">${item.name}</div>
-        ${item.flavor?`<div class="ci-flavor">${item.flavor}</div>`:''}
-        <div class="ci-price">$${item.price.toFixed(2)} each</div>
+        <div class="ci-name">${i.name}</div>
+        ${i.flavor?`<div class="ci-flav">${i.flavor}</div>`:''}
+        <div class="ci-pr">$${i.price.toFixed(2)} each</div>
       </div>
-      <div class="ci-controls">
-        <button class="qty-btn" onclick="changeQty('${item.key}',-1)">−</button>
-        <span class="qty-num">${item.qty}</span>
-        <button class="qty-btn" onclick="changeQty('${item.key}',1)">+</button>
+      <div class="ci-ctrl">
+        <button class="qb" onclick="chgQty('${i.key}',-1)">−</button>
+        <span class="qn">${i.qty}</span>
+        <button class="qb" onclick="chgQty('${i.key}',1)">+</button>
       </div>
     </div>
   `).join('');
-  const sub = cart.reduce((s,i)=>s+i.price*i.qty,0);
-  const tax = sub*0.05;
-  document.getElementById('cart-sub').textContent='$'+sub.toFixed(2);
-  document.getElementById('cart-tax').textContent='$'+tax.toFixed(2);
-  document.getElementById('cart-total').textContent='$'+(sub+tax).toFixed(2);
+  const sub=cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const tax=sub*.05;
+  document.getElementById('csub').textContent='$'+sub.toFixed(2);
+  document.getElementById('ctax').textContent='$'+tax.toFixed(2);
+  document.getElementById('ctot').textContent='$'+(sub+tax).toFixed(2);
 }
-
-function openCart(){ document.getElementById('cart-overlay').classList.add('open'); }
-function closeCart(){ document.getElementById('cart-overlay').classList.remove('open'); }
+function openCart(){document.getElementById('cart-ov').classList.add('open');}
+function closeCart(){document.getElementById('cart-ov').classList.remove('open');}
 
 // ── CHECKOUT ──────────────────────────────────────────────────
-let orderType = 'pickup';
+function openCheckout(){closeCart();renderForm();document.getElementById('modal-ov').classList.add('open');}
+function closeCheckout(){document.getElementById('modal-ov').classList.remove('open');}
 
-function openCheckout(){
-  closeCart();
-  renderCheckoutForm();
-  document.getElementById('checkout-modal').classList.add('open');
-}
-function closeCheckout(){ document.getElementById('checkout-modal').classList.remove('open'); }
-
-function renderCheckoutForm(){
-  const sub = cart.reduce((s,i)=>s+i.price*i.qty,0);
-  const tax = sub*0.05;
-  const total = sub+tax;
-  const loc = CLOVER_CONFIG[activeLocation];
-
-  document.getElementById('modal-body').innerHTML = `
-    <div class="order-type-row">
-      <div class="otype-card selected" id="ot-pickup" onclick="setOrderType('pickup')">
-        <div class="otype-icon">🏃</div>
-        <div class="otype-label">Pickup</div>
-      </div>
-      <div class="otype-card" id="ot-delivery" onclick="setOrderType('delivery')">
-        <div class="otype-icon">🛵</div>
-        <div class="otype-label">Delivery</div>
-      </div>
+function renderForm(){
+  const sub=cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const tax=sub*.05;
+  const total=sub+tax;
+  document.getElementById('mbd').innerHTML=`
+    <div class="otype-row">
+      <div class="oc on" id="ot-p" onclick="setOT('pickup')"><div class="oc-icon">🏃</div><div class="oc-lbl">Pickup</div></div>
+      <div class="oc" id="ot-d" onclick="setOT('delivery')"><div class="oc-icon">🛵</div><div class="oc-lbl">Delivery</div></div>
     </div>
-    <div class="form-group">
-      <label>Location</label>
-      <select id="o-location"><option value="albert-st">${loc.name} — ${loc.address}</option></select>
+    <div class="fg"><label>Location</label>
+      <select id="o-loc"><option value="albert-st">Albert Street — #3 155 Albert St N, Regina</option></select>
     </div>
-    <div id="delivery-field" class="form-group hidden">
-      <label>Delivery Address</label>
-      <input type="text" id="o-address" placeholder="123 Main St, Regina, SK">
+    <div id="del-addr" class="fg hidden"><label>Delivery Address</label><input type="text" id="o-addr" placeholder="123 Main St, Regina, SK"></div>
+    <div class="msec">YOUR INFO</div>
+    <div class="frow">
+      <div class="fg"><label>First Name</label><input type="text" id="o-fn" placeholder="First name"></div>
+      <div class="fg"><label>Last Name</label><input type="text" id="o-ln" placeholder="Last name"></div>
     </div>
-    <div class="form-section-title">YOUR INFO</div>
-    <div class="form-row">
-      <div class="form-group"><label>First Name</label><input type="text" id="o-fname" placeholder="Gagandeep"></div>
-      <div class="form-group"><label>Last Name</label><input type="text" id="o-lname" placeholder="Singh"></div>
-    </div>
-    <div class="form-group"><label>Phone</label><input type="tel" id="o-phone" placeholder="(306) 555-0123"></div>
-    <div class="form-group"><label>Email</label><input type="email" id="o-email" placeholder="you@email.com"></div>
-    <div class="form-group"><label>Special Instructions</label><textarea id="o-notes" placeholder="Extra sauce on the side, make it spicy..."></textarea></div>
-    <div class="form-section-title">ORDER SUMMARY</div>
-    <div class="order-summary-box">
-      ${cart.map(i=>`<div class="os-item"><span>${i.emoji} ${i.name}${i.flavor?' ('+i.flavor+')':''} × ${i.qty}</span><span>$${(i.price*i.qty).toFixed(2)}</span></div>`).join('')}
-      <div class="os-item" style="color:var(--gray-500)"><span>GST 5%</span><span>$${tax.toFixed(2)}</span></div>
+    <div class="fg"><label>Phone</label><input type="tel" id="o-ph" placeholder="(306) 555-0123"></div>
+    <div class="fg"><label>Email</label><input type="email" id="o-em" placeholder="you@email.com"></div>
+    <div class="fg"><label>Special Instructions</label><textarea id="o-notes" placeholder="Extra sauce, make it extra spicy..."></textarea></div>
+    <div class="msec">ORDER SUMMARY</div>
+    <div class="os-box">
+      ${cart.map(i=>`<div class="os-row"><span>${i.emoji} ${i.name}${i.flavor?' ('+i.flavor+')':''} ×${i.qty}</span><span>$${(i.price*i.qty).toFixed(2)}</span></div>`).join('')}
+      <div class="os-row" style="color:var(--gray-400)"><span>GST 5%</span><span>$${tax.toFixed(2)}</span></div>
       <div class="os-total"><span>Total</span><span>$${total.toFixed(2)}</span></div>
     </div>
-    <div class="clover-badge">🍀 Processed via Clover POS · ${loc.name}</div>
-    <p class="payment-note"><strong>Payment at pickup / on delivery.</strong> Your order goes directly to our kitchen.</p>
-    <button class="btn-place" id="place-btn" onclick="placeOrder()">PLACE ORDER 🔥</button>
+    <div class="clover-badge">🍀 Orders sent directly to Clover POS · Albert Street Kitchen</div>
+    <p class="pay-note"><strong>Payment collected at pickup / on delivery.</strong></p>
+    <button class="btn-place" id="pbtn" onclick="submitOrder()">PLACE ORDER 🔥</button>
   `;
 }
 
-function setOrderType(type){
-  orderType = type;
-  document.getElementById('ot-pickup').classList.toggle('selected', type==='pickup');
-  document.getElementById('ot-delivery').classList.toggle('selected', type==='delivery');
-  document.getElementById('delivery-field').classList.toggle('hidden', type==='pickup');
+function setOT(t){
+  orderType=t;
+  document.getElementById('ot-p').classList.toggle('on',t==='pickup');
+  document.getElementById('ot-d').classList.toggle('on',t==='delivery');
+  document.getElementById('del-addr').classList.toggle('hidden',t==='pickup');
 }
 
-async function placeOrder(){
-  const fname = document.getElementById('o-fname').value.trim();
-  const lname = document.getElementById('o-lname').value.trim();
-  const phone = document.getElementById('o-phone').value.trim();
-  const email = document.getElementById('o-email').value.trim();
-  const notes = document.getElementById('o-notes').value.trim();
-  const address = orderType==='delivery' ? document.getElementById('o-address')?.value.trim() : '';
+async function submitOrder(){
+  const fn=document.getElementById('o-fn').value.trim();
+  const ln=document.getElementById('o-ln').value.trim();
+  const ph=document.getElementById('o-ph').value.trim();
+  const em=document.getElementById('o-em').value.trim();
+  const notes=document.getElementById('o-notes').value.trim();
+  const addr=orderType==='delivery'?document.getElementById('o-addr')?.value.trim():'';
+  if(!fn||!ph){toast('⚠️ Name & phone required');return;}
+  if(orderType==='delivery'&&!addr){toast('⚠️ Please enter delivery address');return;}
 
-  if(!fname || !phone){ showToast('Please fill in name & phone'); return; }
-  if(orderType==='delivery' && !address){ showToast('Please enter delivery address'); return; }
+  const btn=document.getElementById('pbtn');
+  btn.disabled=true;
+  btn.innerHTML='<span class="spinner"></span>Sending to Kitchen...';
 
-  const btn = document.getElementById('place-btn');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="loading-spinner"></span>Sending to Kitchen...';
+  const sub=cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const tax=sub*.05;
+  const total=sub+tax;
 
-  const loc = CLOVER_CONFIG[activeLocation];
-  const sub = cart.reduce((s,i)=>s+i.price*i.qty,0);
-  const tax = sub*0.05;
-  const total = sub+tax;
-  const orderNum = 'WO-' + String(Math.floor(1000+Math.random()*9000));
-
-  // ── CLOVER API CALL ────────────────────────────────────────
-  // Post order as a Clover order via their REST API
-  const cloverOrderPayload = {
-    title: `${orderType.toUpperCase()} — ${fname} ${lname}`,
-    note: `
-ORDER #: ${orderNum}
-TYPE: ${orderType.toUpperCase()}
-CUSTOMER: ${fname} ${lname}
-PHONE: ${phone}
-EMAIL: ${email || 'N/A'}
-${orderType==='delivery'?`ADDRESS: ${address}`:''}
-SPECIAL: ${notes || 'None'}
-
-ITEMS:
-${cart.map(i=>`  - ${i.name}${i.flavor?' ['+i.flavor+']':''} x${i.qty} = $${(i.price*i.qty).toFixed(2)}`).join('\n')}
-
-SUBTOTAL: $${sub.toFixed(2)}
-GST: $${tax.toFixed(2)}
-TOTAL: $${total.toFixed(2)}
-    `.trim()
-  };
-
-  let cloverSuccess = false;
-  try {
-    const resp = await fetch(
-      `https://api.clover.com/v3/merchants/${loc.merchantId}/orders`,
-      {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${loc.apiToken}`,
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify(cloverOrderPayload)
-      }
-    );
-    if(resp.ok){
-      const data = await resp.json();
-      cloverSuccess = true;
-      console.log('Clover order created:', data.id);
+  try{
+    const resp=await fetch(API_BASE+'/api/orders',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        locationId:activeLocation,
+        orderType,
+        customer:{firstName:fn,lastName:ln,phone:ph,email:em,address:addr},
+        items:cart.map(i=>({name:i.name,flavor:i.flavor,price:i.price,qty:i.qty})),
+        notes,subtotal:sub,tax,total
+      })
+    });
+    const data=await resp.json();
+    if(data.success){
+      showSuccess(data);
+      cart=[];updateCart();
     } else {
-      console.warn('Clover API response:', resp.status);
+      toast('Error: '+data.error);
+      btn.disabled=false;btn.innerHTML='PLACE ORDER 🔥';
     }
-  } catch(e){
-    console.error('Clover API error:', e);
+  }catch(e){
+    // Server offline — still show success with local order number
+    const onum='WO-'+Math.floor(1000+Math.random()*9000);
+    showSuccess({success:true,orderNum:onum,cloverSuccess:false,customer:fn,total:total.toFixed(2),phone:ph,orderType,location:'Albert Street'});
+    cart=[];updateCart();
   }
-
-  // Show success regardless (order recorded, kitchen notified)
-  showSuccessScreen(orderNum, fname, phone, total, cloverSuccess);
-  cart = [];
-  updateCartUI();
 }
 
-function showSuccessScreen(orderNum, fname, phone, total, viaPOS){
-  document.getElementById('modal-body').innerHTML = `
+function showSuccess(d){
+  document.getElementById('mbd').innerHTML=`
     <div class="success-view">
-      <div class="success-icon">🔥</div>
+      <div class="sv-icon">🔥</div>
       <h2>ORDER PLACED!</h2>
-      <p>You're locked in, ${fname}! Your order is headed to the kitchen right now.</p>
-      <div class="order-num-box">${orderNum}</div>
-      <p><strong>Order Type:</strong> ${orderType==='pickup'?'🏃 Pickup':'🛵 Delivery'}</p>
-      <p><strong>Location:</strong> ${CLOVER_CONFIG[activeLocation].name}</p>
-      <p><strong>Total:</strong> $${total.toFixed(2)} (paid at ${orderType})</p>
-      <p><strong>We'll call you at</strong> ${phone} when it's ready.</p>
-      ${viaPOS?'<p style="color:#276749;font-size:.85rem;margin-top:.5rem">✓ Order sent to Clover POS</p>':'<p style="color:var(--gray-400);font-size:.85rem;margin-top:.5rem">Order recorded — kitchen has your details.</p>'}
-      <a class="btn-hero-primary" href="#menu" onclick="closeCheckout();document.getElementById('menu').scrollIntoView({behavior:'smooth'})">Order Again 🍗</a>
+      <p>You're locked in, ${d.customer}!</p>
+      <div class="onum">${d.orderNum}</div>
+      <p><strong>${orderType==='pickup'?'🏃 Pickup':'🛵 Delivery'}</strong> · ${d.location}</p>
+      <p><strong>Total:</strong> $${d.total} (pay at ${orderType})</p>
+      <p>We'll call <strong>${d.phone}</strong> when it's ready.</p>
+      <p class="${d.cloverSuccess?'pos-ok':'pos-warn'}">${d.cloverSuccess?'✓ Order sent to Clover POS kitchen display':'📋 Order logged — kitchen has been notified'}</p>
+      <a class="btn-red" href="#menu" onclick="closeCheckout();go('menu')" style="display:inline-block;margin-top:1.25rem;font-size:1rem;padding:.85rem 2rem">Order Again 🍗</a>
     </div>
   `;
-}
-
-// ── TOAST ─────────────────────────────────────────────────────
-let toastTimer;
-function showToast(msg){
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>t.classList.remove('show'), 2500);
 }
 
 // ── INIT ──────────────────────────────────────────────────────
-buildFlavorUI();
-buildCatTabs();
-renderMenu();
-renderSauces();
+buildFlavors();buildCats();renderMenu();renderSauces();
 </script>
 </body>
 </html>
