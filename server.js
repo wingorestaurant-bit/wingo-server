@@ -155,6 +155,25 @@ ${notes ? 'NOTES: ' + notes : ''}
   });
 });
 
+// ── DONATION TRACKER ──────────────────────────────────────────
+let donationAmount = 0; // Sauce Boss updates this weekly
+
+app.get('/api/donation', (req, res) => {
+  res.json({ amount: donationAmount, updatedAt: new Date().toISOString() });
+});
+
+// Password-protected donation update (simple admin)
+app.post('/api/donation', (req, res) => {
+  const { amount, password } = req.body;
+  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'sauceboss2025';
+  if (password !== ADMIN_PASSWORD) {
+    return res.status(401).json({ error: 'Wrong password' });
+  }
+  donationAmount = Number(amount);
+  console.log(`✓ Donation updated to $${donationAmount}`);
+  res.json({ success: true, amount: donationAmount });
+});
+
 // ── GET LOCATIONS (for frontend) ────────────────────────────────
 app.get('/api/locations', (req, res) => {
   const safe = Object.entries(LOCATIONS).map(([id, loc]) => ({
