@@ -1,17 +1,18 @@
 {
   "name": "wingo-server",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Wing-O Online Ordering Backend — Clover POS Integration",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "dev": "node server.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "cors": "^2.8.6",
-    "express": "^5.2.1",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
     "node-fetch": "^2.7.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
   }
 }
