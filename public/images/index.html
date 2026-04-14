@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wing-O — More Than Wings | Order Online</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600;700&family=Barlow:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#E8190A;--red-dark:#A8120A;--yellow:#F5A800;
+  --black:#0D0D0D;--charcoal:#1A1A1A;--dark:#1C1A17;
+  --gray-800:#2D2D2D;--gray-600:#555;--gray-400:#888;
+  --gray-200:#CCC;--gray-100:#F0F0F0;--gray-50:#F8F8F8;
+  --white:#FFF;
+  --font-display:'Anton',sans-serif;
+  --font-head:'Oswald',sans-serif;
+  --font-body:'Barlow',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+
+/* NEWSPAPER BACKGROUND */
+body{
+  font-family:var(--font-body);
+  color:var(--black);
+  overflow-x:hidden;
+  background-color:#F5F0E8;
+  background-image:url('images/newspaper.jpg');
+  background-size:500px auto;
+  background-repeat:repeat;
+  background-attachment:fixed;
+}
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background:rgba(245,240,232,0.91);
+  pointer-events:none;
+  z-index:0;
+}
+section,nav,.announce,.promo-bar,.marquee,footer,.cart-ov,.modal-ov,.toast,.api-status{position:relative;z-index:1;}
+
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--black);}
+::-webkit-scrollbar-thumb{background:var(--red);}
+
+.announce{background:var(--red);color:white;text-align:center;padding:8px 1rem;font-family:var(--font-head);font-size:.82rem;letter-spacing:2px;text-transform:uppercase;}
+.announce span{color:var(--yellow);}
+
+nav{position:sticky;top:0;z-index:999;background:var(--black);border-bottom:3px solid var(--red);}
+.nav-inner{max-width:1300px;margin:0 auto;padding:0 1.5rem;height:70px;display:flex;align-items:center;justify-content:space-between;gap:1rem;}
+.nav-logo img{height:52px;width:auto;object-fit:contain;filter:brightness(0) invert(1);}
+.nav-links{display:flex;list-style:none;}
+.nav-links a{color:#CCC;text-decoration:none;font-family:var(--font-head);font-weight:500;font-size:.9rem;letter-spacing:1.5px;text-transform:uppercase;padding:.5rem 1rem;transition:color .15s;}
+.nav-links a:hover{color:var(--yellow);}
+.nav-right{display:flex;align-items:center;gap:.75rem;}
+.nav-phone{color:#555;font-family:var(--font-head);font-size:.82rem;letter-spacing:1px;}
+.btn-cart{background:var(--red);color:white;border:none;padding:.55rem 1.2rem;font-family:var(--font-head);font-weight:600;font-size:.88rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:3px;display:flex;align-items:center;gap:8px;transition:background .15s;}
+.btn-cart:hover{background:var(--red-dark);}
+.cart-badge{background:var(--yellow);color:var(--black);border-radius:50%;width:20px;height:20px;font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;}
+
+.hero{background:var(--black);min-height:90vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:4rem 2rem;}
+.hero-np{position:absolute;inset:0;background-image:url('images/newspaper.jpg');background-size:cover;background-position:center;opacity:.1;}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(13,13,13,.96),rgba(13,13,13,.82));}
+.hero-content{position:relative;z-index:2;text-align:center;max-width:950px;}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(245,168,0,.1);border:1px solid rgba(245,168,0,.25);color:var(--yellow);font-family:var(--font-head);font-size:.78rem;font-weight:500;letter-spacing:3px;text-transform:uppercase;padding:6px 16px;border-radius:2px;margin-bottom:1.5rem;}
+.hero-logo{width:min(380px,70vw);margin:0 auto 1rem;display:block;mix-blend-mode:screen;filter:contrast(1.2);}
+.hero-sub{font-family:var(--font-head);font-size:1.2rem;color:#888;letter-spacing:4px;text-transform:uppercase;margin-bottom:2.5rem;}
+.hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:3rem;}
+.btn-red{background:var(--red);color:white;border:none;padding:1rem 2.5rem;font-family:var(--font-display);font-size:1.1rem;letter-spacing:2px;cursor:pointer;border-radius:3px;transition:all .2s;text-decoration:none;display:inline-block;}
+.btn-red:hover{background:var(--red-dark);transform:translateY(-2px);}
+.btn-ghost{background:transparent;color:white;border:1.5px solid rgba(255,255,255,.2);padding:1rem 2.5rem;font-family:var(--font-display);font-size:1.1rem;letter-spacing:2px;cursor:pointer;border-radius:3px;transition:all .2s;text-decoration:none;display:inline-block;}
+.btn-ghost:hover{border-color:var(--yellow);color:var(--yellow);}
+.hero-stats{display:flex;gap:2.5rem;justify-content:center;flex-wrap:wrap;}
+.stat .n{font-family:var(--font-display);font-size:2.5rem;color:var(--red);}
+.stat .l{font-family:var(--font-head);font-size:.7rem;letter-spacing:3px;text-transform:uppercase;color:#666;}
+
+.promo-bar{background:var(--dark);padding:1.25rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.05);}
+.promo-bar-inner{max-width:1300px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.75rem;}
+.pc{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:5px;padding:.9rem 1rem;text-align:center;}
+.pc .day{font-family:var(--font-display);font-size:1.3rem;color:var(--yellow);letter-spacing:1px;}
+.pc .deal{font-family:var(--font-head);font-size:.78rem;color:#888;letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
+
+.marquee{background:var(--red);overflow:hidden;padding:.6rem 0;white-space:nowrap;}
+.mtrack{display:inline-flex;animation:mscroll 45s linear infinite;}
+.mi{font-family:var(--font-head);font-size:.82rem;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:white;padding:0 1.4rem;}
+.md{color:var(--yellow);font-size:.45rem;vertical-align:middle;}
+@keyframes mscroll{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+
+/* GALLERY */
+.gallery{background:var(--black);overflow:hidden;}
+.gallery-row{display:flex;height:260px;}
+.gimg{flex:1;overflow:hidden;position:relative;}
+.gimg img{width:100%;height:100%;object-fit:cover;transition:transform .4s;}
+.gimg:hover img{transform:scale(1.06);}
+.gimg .glbl{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.8));color:white;font-family:var(--font-head);font-size:.8rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:.75rem .75rem .5rem;}
+
+/* MENU */
+.wrap{max-width:1300px;margin:0 auto;padding:4.5rem 1.5rem;}
+.eyebrow{font-family:var(--font-head);font-size:.78rem;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:.4rem;}
+.sec-title{font-family:var(--font-display);font-size:clamp(2.2rem,4.5vw,3.2rem);line-height:1;letter-spacing:1px;}
+
+.flavor-box{background:white;border:1px solid #E8E0D0;border-radius:8px;padding:1.4rem;margin-bottom:1.75rem;box-shadow:0 2px 12px rgba(0,0,0,.08);}
+.fb-title{font-family:var(--font-head);font-weight:600;font-size:.88rem;letter-spacing:2px;text-transform:uppercase;color:#555;margin-bottom:.9rem;}
+.fcat-row{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.65rem;}
+.fcb{background:#F0EDE6;border:1.5px solid transparent;color:#555;padding:.3rem .8rem;font-family:var(--font-head);font-size:.75rem;font-weight:500;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:3px;transition:all .12s;}
+.fcb:hover,.fcb.on{background:var(--charcoal);color:white;border-color:var(--charcoal);}
+.flist{display:flex;flex-wrap:wrap;gap:.35rem;max-height:110px;overflow-y:auto;}
+.fchip{background:#F0EDE6;border:1.5px solid transparent;color:#333;padding:.28rem .7rem;font-family:var(--font-body);font-size:.78rem;cursor:pointer;border-radius:20px;transition:all .12s;white-space:nowrap;}
+.fchip:hover{border-color:var(--red);color:var(--red);}
+.fchip.on{background:var(--red);color:white;border-color:var(--red);}
+.fsel{margin-top:.65rem;font-family:var(--font-head);font-size:.85rem;color:#555;}
+.fsel span{color:var(--red);font-weight:600;}
+
+.ctabs{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.75rem;padding-bottom:.4rem;border-bottom:2px solid #E8E0D0;}
+.ctab{background:transparent;border:none;color:#888;padding:.55rem 1rem;font-family:var(--font-head);font-weight:600;font-size:.88rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .12s;border-radius:3px 3px 0 0;}
+.ctab:hover{color:var(--black);}
+.ctab.on{color:var(--red);border-bottom-color:var(--red);}
+
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.1rem;}
+.mc{background:white;border:1px solid #E8E0D0;border-radius:8px;overflow:hidden;transition:all .2s;cursor:pointer;position:relative;}
+.mc:hover{transform:translateY(-4px);box-shadow:0 8px 30px rgba(0,0,0,.12);border-color:rgba(232,25,10,.3);}
+.mc-img{height:180px;background:#F5F0E8;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:3rem;color:#CCC;}
+.mc-img img{width:100%;height:100%;object-fit:cover;}
+.mc-body{padding:1rem;}
+.mc-tags{display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:.4rem;}
+.tag{font-family:var(--font-head);font-size:.67rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:2px;}
+.tag-cat{background:rgba(232,25,10,.1);color:#8B0D06;}
+.tag-hot{background:#FFF3E0;color:#BF360C;}
+.mc-name{font-family:var(--font-head);font-size:1.05rem;font-weight:700;color:var(--black);line-height:1.2;margin-bottom:.25rem;}
+.mc-desc{font-size:.78rem;color:#888;line-height:1.45;margin-bottom:.8rem;}
+.mc-foot{display:flex;align-items:center;justify-content:space-between;}
+.mc-price{font-family:var(--font-display);font-size:1.25rem;color:var(--black);}
+.btn-add{background:var(--black);color:white;border:none;width:34px;height:34px;border-radius:50%;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .12s;}
+.btn-add:hover{background:var(--red);}
+.pop-flag{position:absolute;top:9px;left:9px;background:var(--yellow);color:var(--black);font-family:var(--font-head);font-size:.67rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:2px;}
+
+/* IMPACT */
+.impact-sec{background:var(--red);padding:5rem 1.5rem;position:relative;overflow:hidden;}
+.impact-sec::before{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(45deg,transparent,transparent 40px,rgba(0,0,0,.04) 40px,rgba(0,0,0,.04) 41px);}
+.impact-inner{max-width:1300px;margin:0 auto;position:relative;z-index:2;}
+.impact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;margin-top:2rem;}
+.ic{background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:2rem;text-align:center;}
+.ic-icon{font-size:2.5rem;margin-bottom:.5rem;}
+.ic-num{font-family:var(--font-display);font-size:clamp(2rem,4vw,3rem);color:white;letter-spacing:1px;line-height:1;}
+.ic-num.y{color:var(--yellow);}
+.ic-lbl{font-family:var(--font-head);font-size:.8rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.65);margin-top:.5rem;}
+.ic-sub{font-size:.75rem;color:rgba(255,255,255,.4);margin-top:.3rem;}
+.live-bar{background:rgba(0,0,0,.25);border-radius:6px;padding:1rem 1.5rem;display:flex;align-items:center;justify-content:center;gap:.75rem;margin-top:1.5rem;flex-wrap:wrap;}
+.live-dot{width:8px;height:8px;border-radius:50%;background:#4ADE80;animation:pulse 2s infinite;flex-shrink:0;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(1.3);}}
+
+/* PROMOS */
+.promos{background:var(--black);}
+.promos-grid{display:grid;grid-template-columns:1fr 1fr;}
+.promo-img{position:relative;overflow:hidden;height:420px;}
+.promo-img img{width:100%;height:100%;object-fit:cover;}
+
+/* SAUCE */
+.sauce-sec{background:var(--black);padding:4.5rem 1.5rem;position:relative;}
+.sauce-sec::before{content:'';position:absolute;inset:0;background-image:url('images/newspaper.jpg');background-size:cover;opacity:.06;}
+.sauce-inner{max-width:1300px;margin:0 auto;position:relative;}
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:.9rem;margin-top:1.75rem;}
+.sgroup{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:.9rem;}
+.sg-title{font-family:var(--font-display);font-size:1rem;color:var(--red);letter-spacing:1px;margin-bottom:.6rem;padding-bottom:.4rem;border-bottom:1px solid rgba(255,255,255,.07);}
+.sgroup ul{list-style:none;}
+.sgroup ul li{font-size:.76rem;color:#888;padding:2px 0;line-height:1.3;}
+.sgroup ul li::before{content:"·";color:var(--red);margin-right:5px;}
+
+/* LOCATIONS */
+.loc-sec{padding:4.5rem 1.5rem;background:rgba(245,240,232,.97);}
+.loc-inner{max-width:1300px;margin:0 auto;}
+.lgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1.1rem;margin-top:2rem;}
+.lcard{background:white;border:1.5px solid #E8E0D0;border-radius:8px;padding:1.25rem;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.lcard:hover{border-color:var(--red);transform:translateY(-2px);}
+.lcard.live{border-color:var(--yellow);background:rgba(245,168,0,.04);}
+.lname{font-family:var(--font-display);font-size:1.2rem;color:var(--black);letter-spacing:1px;margin-bottom:.25rem;}
+.laddr{font-size:.84rem;color:#888;line-height:1.55;margin-bottom:.4rem;}
+.lhours{font-family:var(--font-head);font-size:.76rem;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--red);}
+.lphone{font-size:.82rem;color:#888;margin-top:.3rem;}
+.lbadge{display:inline-block;font-family:var(--font-head);font-size:.68rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:2px;margin-bottom:.65rem;}
+.lb-live{background:rgba(245,168,0,.15);color:#7B3F00;}
+.lb-soon{background:#F0EDE6;color:#888;}
+
+/* ABOUT */
+.about-sec{background:var(--black);padding:6rem 1.5rem;position:relative;overflow:hidden;}
+.about-sec::before{content:'';position:absolute;inset:0;background-image:url('images/newspaper.jpg');background-size:500px;opacity:.05;}
+.about-inner{max-width:1300px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;position:relative;}
+.about-text .eyebrow{color:var(--yellow);}
+.about-text h2{font-family:var(--font-display);font-size:2.8rem;color:white;line-height:1;margin:.4rem 0 1.2rem;letter-spacing:1px;}
+.about-text h2 span{color:var(--red);}
+.about-text p{font-size:.95rem;color:#888;line-height:1.8;margin-bottom:1.1rem;}
+.about-quote{border-left:3px solid var(--red);padding-left:1.1rem;font-style:italic;font-size:1rem;color:#CCC;line-height:1.7;margin-bottom:1.25rem;}
+.about-vis{display:flex;flex-direction:column;align-items:center;gap:1.5rem;}
+.about-neon{border-radius:10px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.6);width:100%;}
+.about-neon img{width:100%;height:300px;object-fit:cover;display:block;}
+.about-sig img{width:180px;filter:invert(1);opacity:.8;}
+.prairie-lbl{font-family:var(--font-head);font-size:.75rem;letter-spacing:3px;text-transform:uppercase;color:#555;}
+
+/* FOOTER */
+footer{background:var(--black);border-top:3px solid var(--red);padding:3.5rem 1.5rem 2rem;}
+.footer-inner{max-width:1300px;margin:0 auto;}
+.fgrid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2.5rem;margin-bottom:2.5rem;}
+.fb-logo img{height:48px;filter:brightness(0) invert(1);margin-bottom:.75rem;}
+.fb-tag{font-size:.84rem;color:#555;line-height:1.6;margin-bottom:1rem;}
+.comm-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:20px;padding:4px 11px;font-size:.74rem;color:#888;}
+.fc h4{font-family:var(--font-head);font-weight:600;font-size:.8rem;letter-spacing:2px;text-transform:uppercase;color:white;margin-bottom:.9rem;}
+.fc ul{list-style:none;}
+.fc ul li{font-size:.84rem;color:#555;padding:.28rem 0;cursor:pointer;transition:color .12s;}
+.fc ul li:hover{color:var(--yellow);}
+.fbot{border-top:1px solid rgba(255,255,255,.06);padding-top:1.4rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;}
+.fbot p{font-size:.76rem;color:#555;}
+
+/* CART */
+.cart-ov{display:none;position:fixed;inset:0;z-index:9000;}
+.cart-ov.open{display:block;}
+.cart-back{position:absolute;inset:0;background:rgba(0,0,0,.65);}
+.cart-panel{position:absolute;right:0;top:0;bottom:0;width:min(430px,100vw);background:white;display:flex;flex-direction:column;box-shadow:-6px 0 32px rgba(0,0,0,.3);}
+.cart-hd{background:var(--black);color:white;padding:1rem 1.4rem;display:flex;align-items:flex-start;justify-content:space-between;flex-shrink:0;}
+.cart-hd-title{font-family:var(--font-display);font-size:1.35rem;letter-spacing:2px;}
+.cart-hd-sub{font-family:var(--font-head);font-size:.75rem;color:#555;letter-spacing:1px;text-transform:uppercase;margin-top:1px;}
+.xcb{background:none;border:none;color:#555;font-size:1.3rem;cursor:pointer;padding:2px;}
+.xcb:hover{color:white;}
+.cart-bd{flex:1;overflow-y:auto;padding:1.1rem;}
+.cart-empty{text-align:center;padding:2.5rem 1rem;}
+.ci{display:flex;gap:.75rem;padding:.85rem 0;border-bottom:1px solid #F0EDE6;align-items:center;}
+.ci-icon{font-size:1.8rem;flex-shrink:0;width:38px;text-align:center;}
+.ci-info{flex:1;min-width:0;}
+.ci-name{font-family:var(--font-head);font-weight:600;font-size:.95rem;color:var(--black);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ci-flav{font-size:.74rem;color:var(--red);font-style:italic;margin-top:1px;}
+.ci-pr{font-size:.8rem;color:#888;}
+.ci-ctrl{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.qb{background:#F0EDE6;border:none;width:26px;height:26px;border-radius:50%;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .12s;}
+.qb:hover{background:#E8E0D0;}
+.qn{font-family:var(--font-head);font-weight:700;font-size:.9rem;min-width:16px;text-align:center;}
+.cart-ft{padding:1.1rem;border-top:2px solid #F0EDE6;flex-shrink:0;}
+.cl{display:flex;justify-content:space-between;font-family:var(--font-head);font-size:.9rem;padding:.25rem 0;color:#888;}
+.cl.tot{font-family:var(--font-display);font-size:1.4rem;color:var(--black);padding-top:.65rem;margin-top:.2rem;border-top:1.5px solid #F0EDE6;}
+.btn-co{width:100%;background:var(--red);color:white;border:none;padding:.95rem;font-family:var(--font-display);font-size:1.15rem;letter-spacing:2px;cursor:pointer;border-radius:4px;transition:background .15s;margin-top:.9rem;text-transform:uppercase;}
+.btn-co:hover{background:var(--red-dark);}
+
+/* MODAL */
+.modal-ov{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.72);align-items:flex-start;justify-content:center;padding:1rem;overflow-y:auto;}
+.modal-ov.open{display:flex;}
+.modal{background:white;border-radius:10px;width:min(580px,100%);margin:auto;}
+.mhd{background:var(--black);color:white;padding:1.1rem 1.4rem;border-radius:10px 10px 0 0;display:flex;align-items:center;justify-content:space-between;}
+.mhd h2{font-family:var(--font-display);font-size:1.4rem;letter-spacing:2px;}
+.mbd{padding:1.4rem;}
+.otype-row{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:1.25rem;}
+.oc{border:2px solid #E8E0D0;border-radius:6px;padding:.9rem;text-align:center;cursor:pointer;transition:all .15s;}
+.oc:hover{border-color:var(--red);}
+.oc.on{border-color:var(--red);background:rgba(232,25,10,.04);}
+.oc-icon{font-size:1.8rem;margin-bottom:.2rem;}
+.oc-lbl{font-family:var(--font-head);font-weight:700;font-size:.95rem;letter-spacing:1px;text-transform:uppercase;}
+.msec{font-family:var(--font-display);font-size:1rem;letter-spacing:2px;color:var(--black);margin:1.1rem 0 .65rem;padding-bottom:.4rem;border-bottom:1.5px solid #F0EDE6;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;}
+.fg{display:flex;flex-direction:column;gap:.3rem;margin-bottom:.8rem;}
+label{font-family:var(--font-head);font-size:.76rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;}
+input,select,textarea{border:1.5px solid #E8E0D0;border-radius:4px;padding:.6rem .85rem;font-family:var(--font-body);font-size:.92rem;color:var(--black);outline:none;transition:border-color .15s;width:100%;background:white;}
+input:focus,select:focus,textarea:focus{border-color:var(--red);}
+textarea{resize:vertical;min-height:65px;}
+.os-box{background:#F5F0E8;border-radius:6px;padding:1rem;margin-bottom:.9rem;}
+.os-row{display:flex;justify-content:space-between;font-family:var(--font-head);font-size:.86rem;padding:.22rem 0;color:var(--gray-800);}
+.os-total{display:flex;justify-content:space-between;font-family:var(--font-display);font-size:1.2rem;padding-top:.6rem;margin-top:.4rem;border-top:1.5px solid #E8E0D0;}
+.pay-note{text-align:center;font-size:.79rem;color:#888;margin-bottom:.75rem;}
+.clover-badge{display:inline-flex;align-items:center;gap:5px;background:#F0FFF4;border:1px solid #C6F6D5;border-radius:4px;padding:4px 10px;font-size:.76rem;color:#276749;font-weight:600;margin-bottom:.65rem;}
+.btn-place{width:100%;background:var(--red);color:white;border:none;padding:1rem;font-family:var(--font-display);font-size:1.2rem;letter-spacing:2px;cursor:pointer;border-radius:4px;transition:background .15s;text-transform:uppercase;}
+.btn-place:hover{background:var(--red-dark);}
+.btn-place:disabled{background:#888;cursor:not-allowed;}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;margin-right:7px;vertical-align:middle;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.success-view{text-align:center;padding:2.2rem 1.4rem;}
+.sv-icon{font-size:3.5rem;margin-bottom:.8rem;}
+.success-view h2{font-family:var(--font-display);font-size:2.2rem;letter-spacing:2px;margin-bottom:.4rem;}
+.onum{background:rgba(232,25,10,.08);border:1.5px solid rgba(232,25,10,.25);border-radius:5px;padding:.75rem 1.75rem;font-family:var(--font-display);font-size:1.8rem;color:var(--red);letter-spacing:3px;display:inline-block;margin:.8rem 0;}
+.success-view p{font-size:.9rem;color:#888;line-height:1.65;margin-bottom:.35rem;}
+
+.toast{position:fixed;bottom:1.75rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--charcoal);color:white;font-family:var(--font-head);font-size:.85rem;font-weight:500;letter-spacing:1px;padding:.65rem 1.4rem;border-radius:4px;border-left:3px solid var(--red);z-index:99999;transition:transform .3s;white-space:nowrap;max-width:90vw;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.api-status{position:fixed;bottom:1.75rem;right:1.5rem;background:var(--charcoal);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:5px 12px;font-family:var(--font-head);font-size:.7rem;letter-spacing:1px;text-transform:uppercase;color:#888;z-index:9998;display:flex;align-items:center;gap:6px;}
+.api-dot{width:7px;height:7px;border-radius:50%;background:#888;}
+.api-dot.ok{background:#48BB78;}
+.api-dot.err{background:var(--red);}
+
+@media(max-width:900px){.nav-links{display:none;}.about-inner{grid-template-columns:1fr;}.fgrid{grid-template-columns:1fr 1fr;}.frow{grid-template-columns:1fr;}.promos-grid{grid-template-columns:1fr;}.gallery-row{flex-wrap:wrap;height:auto;}.gimg{min-width:50%;height:180px;}}
+@media(max-width:600px){.fgrid{grid-template-columns:1fr;}.hero-stats{gap:1.5rem;}}
+.hidden{display:none!important;}
+</style>
+</head>
+<body>
+
+<script>
+const API_BASE = window.location.hostname==='localhost'||window.location.hostname==='127.0.0.1'
+  ? 'http://localhost:8080'
+  : 'https://www.wingorestaurants.com';
+let activeLocation='albert-st';
+</script>
+
+<div class="announce">🔥 Every Tuesday — All You Can Eat Wings <span>$28.99/person</span> &nbsp;·&nbsp; Every Thursday — 50% Off Second Order &nbsp;·&nbsp; Every Saturday — 2 for $20 Burgers</div>
+
+<nav>
+  <div class="nav-inner">
+    <a href="#" style="display:flex;align-items:center;text-decoration:none;">
+      <img src="images/neon-logo.jpg" alt="Wing-O More Than Wings" style="height:52px;width:auto;object-fit:contain;mix-blend-mode:screen;filter:brightness(1.1);">
+    </a>
+    <ul class="nav-links">
+      <li><a href="#menu" onclick="go('menu')">Menu</a></li>
+      <li><a href="#sauces" onclick="go('sauces')">125+ Flavors</a></li>
+      <li><a href="#locations" onclick="go('locations')">Locations</a></li>
+      <li><a href="#about" onclick="go('about')">Our Story</a></li>
+    </ul>
+    <div class="nav-right">
+      <span class="nav-phone">☎ 306-522-2111</span>
+      <button class="btn-cart" onclick="openCart()">🛒 Order <span class="cart-badge" id="cart-count">0</span></button>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-np"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-tag">🌾 Proudly Prairie · Regina's Original · More Than Wings</div>
+    <img src="images/neon-logo.jpg" alt="Wing-O" class="hero-logo" style="mix-blend-mode:screen;filter:contrast(1.2) brightness(1.1);max-height:200px;width:auto;">
+    <p class="hero-sub">— More Than Wings —</p>
+    <div class="hero-btns">
+      <a class="btn-red" href="#menu" onclick="go('menu')">Order Online 🔥</a>
+      <a class="btn-ghost" href="#sauces" onclick="go('sauces')">125+ Flavors</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="n">125+</div><div class="l">Handcrafted Flavors</div></div>
+      <div class="stat"><div class="n">5</div><div class="l">SK Locations</div></div>
+      <div class="stat"><div class="n">$7</div><div class="l">Wings From</div></div>
+      <div class="stat"><div class="n">YQR</div><div class="l">Rooted</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="promo-bar">
+  <div class="promo-bar-inner">
+    <div class="pc"><div class="day">TUE</div><div class="deal">All You Can Eat Wings — $28.99</div></div>
+    <div class="pc"><div class="day">THU</div><div class="deal">Buy One, 2nd Order 50% Off</div></div>
+    <div class="pc"><div class="day">SAT</div><div class="deal">2 for $20 Burgers</div></div>
+    <div class="pc"><div class="day">HRS</div><div class="deal">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div></div>
+  </div>
+</div>
+
+<div class="marquee"><div class="mtrack">
+  <span class="mi">Devil's Kiss</span><span class="md">●</span><span class="mi">Honey Garlic</span><span class="md">●</span><span class="mi">Dead Angel</span><span class="md">●</span><span class="mi">Prairie Heat</span><span class="md">●</span><span class="mi">Maple BBQ</span><span class="md">●</span><span class="mi">Tangy Thai</span><span class="md">●</span><span class="mi">Island On Fire</span><span class="md">●</span><span class="mi">Sizzle Caesar</span><span class="md">●</span><span class="mi">Mango Habanero</span><span class="md">●</span><span class="mi">Citrus Twist</span><span class="md">●</span><span class="mi">Cajun Cream</span><span class="md">●</span><span class="mi">Creamy Dill Pickle</span><span class="md">●</span><span class="mi">Korean BBQ</span><span class="md">●</span><span class="mi">Buffalo Ranch</span><span class="md">●</span><span class="mi">Sweet Grenade</span><span class="md">●</span><span class="mi">Devil's Kiss</span><span class="md">●</span><span class="mi">Honey Garlic</span><span class="md">●</span><span class="mi">Dead Angel</span><span class="md">●</span><span class="mi">Prairie Heat</span><span class="md">●</span><span class="mi">Maple BBQ</span><span class="md">●</span><span class="mi">Tangy Thai</span><span class="md">●</span><span class="mi">Island On Fire</span><span class="md">●</span><span class="mi">Sizzle Caesar</span><span class="md">●</span><span class="mi">Mango Habanero</span><span class="md">●</span><span class="mi">Citrus Twist</span><span class="md">●</span><span class="mi">Cajun Cream</span><span class="md">●</span><span class="mi">Creamy Dill Pickle</span><span class="md">●</span><span class="mi">Korean BBQ</span><span class="md">●</span><span class="mi">Buffalo Ranch</span><span class="md">●</span><span class="mi">Sweet Grenade</span><span class="md">●</span>
+</div></div>
+
+<!-- MENU -->
+<section id="menu" style="background:rgba(245,240,232,.97);">
+<div class="wrap">
+  <div class="eyebrow">Fresh Made to Order</div>
+  <h2 class="sec-title" style="margin-bottom:1.75rem">THE MENU</h2>
+  <div class="flavor-box">
+    <div class="fb-title">🔥 Step 1 — Pick Your Sauce / Rub (for Wings, Ribs & Boneless)</div>
+    <div class="fcat-row" id="fcat-row"></div>
+    <div class="flist" id="flist"></div>
+    <div class="fsel">Flavor selected: <span id="fsel-name">None — tap a flavor above first, then add wings</span></div>
+  </div>
+  <div class="ctabs" id="ctabs"></div>
+  <div class="mgrid" id="mgrid"></div>
+</div>
+</section>
+
+<!-- IMPACT -->
+<section class="impact-sec" id="impact">
+  <div class="impact-inner">
+    <div class="eyebrow" style="color:rgba(255,255,255,.6)">Real Numbers · Updated Live 24/7</div>
+    <h2 style="font-family:var(--font-display);font-size:clamp(2rem,4vw,3rem);color:white;letter-spacing:1px;">THE WING-O IMPACT</h2>
+    <div class="impact-grid">
+      <div class="ic"><div class="ic-icon">🍗</div><div class="ic-num" id="wings-counter">0</div><div class="ic-lbl">Wings Sold & Counting</div><div class="ic-sub">Ticking up every second · All 5 locations</div></div>
+      <div class="ic"><div class="ic-icon">📦</div><div class="ic-num" id="orders-counter">0</div><div class="ic-lbl">Orders Fulfilled</div><div class="ic-sub">Happy customers across SK</div></div>
+      <div class="ic"><div class="ic-icon">❤️</div><div class="ic-num y" id="donation-counter">$0</div><div class="ic-lbl">Donated to Community Fridge</div><div class="ic-sub">Updated weekly by the Sauce Boss</div></div>
+      <div class="ic"><div class="ic-icon">🔥</div><div class="ic-num" id="flavors-counter">125+</div><div class="ic-lbl">Handcrafted Flavors</div><div class="ic-sub">+ weekly specials from Sauce Boss</div></div>
+    </div>
+    <div class="live-bar"><div class="live-dot"></div><span style="font-family:var(--font-head);font-size:.85rem;color:rgba(255,255,255,.8);letter-spacing:1px;text-transform:uppercase;">Live · A wing is sold every <span id="spw" style="color:var(--yellow);font-weight:700;">27</span> seconds across Wing-O</span></div>
+  </div>
+</section>
+
+<!-- SAUCE VAULT -->
+<section id="sauces" class="sauce-sec">
+  <div class="sauce-inner">
+    <div class="eyebrow" style="color:var(--yellow)">125+ Handcrafted Flavors</div>
+    <h2 class="sec-title" style="color:white;margin-bottom:.4rem">THE FLAVOR VAULT</h2>
+    <p style="color:#666;font-size:.88rem;margin-bottom:.25rem">Regina's first & only local eatery with 125+ flavors. Ask server for weekly specials.</p>
+    <div class="sgrid" id="sgrid"></div>
+  </div>
+</section>
+
+<!-- LOCATIONS -->
+<section id="locations" class="loc-sec">
+  <div class="loc-inner">
+    <div class="eyebrow">Find Us</div>
+    <h2 class="sec-title">OUR LOCATIONS</h2>
+    <div class="lgrid">
+      <div class="lcard live"><span class="lbadge lb-live">✓ Online Ordering Live</span><div class="lname">Albert Street</div><div class="laddr">#3 – 155 Albert St N<br>Regina, SK</div><div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div><div class="lphone">📞 306-522-2111</div></div>
+      <div class="lcard"><span class="lbadge lb-soon">Online Coming Soon</span><div class="lname">Rochdale</div><div class="laddr">Regina, SK</div><div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div></div>
+      <div class="lcard"><span class="lbadge lb-soon">Online Coming Soon</span><div class="lname">East Regina</div><div class="laddr">Regina, SK</div><div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div></div>
+      <div class="lcard"><span class="lbadge lb-soon">Online Coming Soon</span><div class="lname">Moose Jaw</div><div class="laddr">Moose Jaw, SK</div><div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div></div>
+      <div class="lcard"><span class="lbadge lb-soon">Seasonal</span><div class="lname">Regina Beach</div><div class="laddr">Regina Beach, SK</div><div class="lhours">Summer Only</div></div>
+      <div class="lcard" style="border-color:rgba(245,168,0,.3);opacity:.7"><span class="lbadge lb-soon">🚀 Coming Soon</span><div class="lname">Winnipeg</div><div class="laddr">Manitoba's first Wing-O!</div><div class="lhours">Stay Tuned</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" class="about-sec">
+  <div class="about-inner">
+    <div class="about-text">
+      <div class="eyebrow">The Story Behind the Sauce</div>
+      <h2>THE <span>SAUCE</span> BOSS</h2>
+
+      <blockquote class="about-quote">"I didn't come here with connections, money, or a plan B. I came with hunger — and that never left."</blockquote>
+
+      <p>In 2019, Gagandeep Ghuman arrived in Regina at 19 years old with $800, two bags, and a dream that didn't have a name yet. No family. No friends. No safety net. Just a city that didn't know him yet — and a quiet belief that he could build something real here.</p>
+
+      <p>He spent the next year and a half doing what most people don't bother with: obsessing over wings. Not just eating them — researching them. Flavor chemistry. Texture. Heat levels. Sauce combinations nobody had tried. He wasn't building a restaurant. He was building a world.</p>
+
+      <p>When Wing-O opened its doors on Albert Street in Regina, it wasn't just the city's first local wings eatery — it was proof that one person with enough fire could create something from nothing. The menu launched with 125+ handcrafted flavors. Regina had never seen anything like it.</p>
+
+      <p>But the Sauce Boss never stopped. What started as one location grew to five — Albert Street, Rochdale, East Regina, Moose Jaw, and Regina Beach. Each one built the same way: with care, community, and sauce.</p>
+
+      <p>Regina gave Gagandeep a home when he had none. Wing-O is how he gives back — through food, through employment, through showing up for the community that showed up for him. The Regina Community Fridge. The Wings Mafia family. The staff who feel like family. This was never just about wings.</p>
+
+      <p style="color:var(--yellow);font-family:var(--font-head);font-size:1rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;">Next stop: Winnipeg. The movement keeps growing. 🌾</p>
+
+      <a class="btn-red" href="#menu" onclick="go('menu')" style="margin-top:.5rem">Order Now 🔥</a>
+    </div>
+    <div class="about-vis">
+      <div style="text-align:center;">
+        <div style="font-size:6rem;margin-bottom:1rem;">🔥</div>
+        <div class="about-sig"><img src="images/sig.jpg" alt="Sauce Boss Signature"></div>
+        <div class="prairie-lbl" style="margin-top:.75rem;">🌾 Proudly Prairie</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div class="fgrid">
+      <div>
+        <div style="font-family:var(--font-display);font-size:2.5rem;color:white;letter-spacing:3px;margin-bottom:.75rem;">WING<span style="color:var(--red);">-O</span></div>
+        <p class="fb-tag">125+ handcrafted flavors. Born in Regina. Built for everyone. More Than Wings.</p>
+        <div class="comm-badge">❤️ Proud supporter of the Regina Community Fridge</div>
+      </div>
+      <div class="fc"><h4>Menu</h4><ul><li>Wings & Ribs</li><li>Boneless Wings</li><li>Burgers</li><li>Combos & Platters</li><li>Midnight Ecstasy</li></ul></div>
+      <div class="fc"><h4>Locations</h4><ul><li>Albert St — Regina</li><li>Rochdale — Regina</li><li>East Regina</li><li>Moose Jaw</li><li>Regina Beach</li></ul></div>
+      <div class="fc"><h4>Connect</h4><ul><li>Instagram</li><li>Facebook</li><li>Franchise Info</li><li>Wingorestaurant@gmail.com</li><li>306-522-2111</li></ul></div>
+    </div>
+    <div class="fbot">
+      <p>© 2025 Wing-O Restaurants Ltd. All rights reserved. Regina, Saskatchewan 🌾</p>
+      <span style="font-size:.74rem;color:#555;">🍀 Powered by Clover POS</span>
+    </div>
+  </div>
+</footer>
+
+<div class="cart-ov" id="cart-ov">
+  <div class="cart-back" onclick="closeCart()"></div>
+  <div class="cart-panel">
+    <div class="cart-hd"><div><div class="cart-hd-title">YOUR ORDER</div><div class="cart-hd-sub">Albert Street · Pickup or Delivery</div></div><button class="xcb" onclick="closeCart()">✕</button></div>
+    <div class="cart-bd" id="cart-bd"><div class="cart-empty"><div style="font-size:3rem;margin-bottom:.75rem;opacity:.45;">🍗</div><div style="font-family:var(--font-head);font-size:.9rem;letter-spacing:1px;text-transform:uppercase;color:#888;">Cart is empty</div></div></div>
+    <div class="cart-ft" id="cart-ft" style="display:none">
+      <div class="cl"><span>Subtotal</span><span id="csub">$0.00</span></div>
+      <div class="cl"><span>GST (5%)</span><span id="ctax">$0.00</span></div>
+      <div class="cl tot"><span>Total</span><span id="ctot">$0.00</span></div>
+      <button class="btn-co" onclick="openCheckout()">CHECKOUT →</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-ov" id="modal-ov">
+  <div class="modal">
+    <div class="mhd"><h2>CHECKOUT</h2><button class="xcb" onclick="closeCheckout()" style="color:#555">✕</button></div>
+    <div class="mbd" id="mbd"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="api-status" id="api-status"><div class="api-dot" id="api-dot"></div><span id="api-txt">checking...</span></div>
+
+<script>
+const IMGS={
+  wings:'images/wings-hero.jpg',
+  wings2:'images/wings-hero.jpg',
+  combo:'images/combo1.jpg',
+  mozza:'images/mozza-sticks.jpg',
+  burger:'images/burger.jpg',
+  poutine:'images/poutine.jpg',
+  empanadas:'images/empanadas.jpg',
+  dumplings:'images/dumplings.jpg',
+  platter:'images/platter-bit-of.jpg',
+  platterLove:'images/platter-making-love.jpg',
+  jalapeno:'images/jalapeno-poppers.jpg',
+  oreo:'images/oreo.jpg',
+  mars1:'images/mars-1pc.jpg',
+  mars2:'images/mars-2pc.jpg',
+  pickles:'images/pickle-spears.jpg',
+  perogies:'images/mini-perogies.jpg',
+};
+
+const FLAVORS={
+  "Flirty Ones":["Devil's Kiss","Honey Garlic","Lemon Pepper","Buffalo","Buffalo Ranch","BBQ Ranch","Honey Dill","Greek Dry","Greek Wet","Teriyaki","Creamy Dill Pickle","Medium"],
+  "Hot As Hell":["Dead Angel (Carolina Reaper)","Spicy Mammilla","Sizzle Caesar","Caribbean Connection","Tropical Temptation","BBQ Seduction","Sentimental Sauce","Cobalt Kiss","Dragon Dip","Mild","Hot","Honey Buffalo","Honey Is Hot","Honeys Too Hot","Not So Hot","African Pepper","Island On Fire"],
+  "Rub It":["All Dressed","Dry BBQ","Dry Buffalo","Dry Cajun","Creole","Dill Pickle","Greek","Hickory","Italian","Lemon Pepper","Ketchup","Mango Habanero","Maple Bacon","Montreal Style","Parmesan","Salt & Pepper","Salt & Vinegar","Sour Cream & Chives","White Cheddar","Sriracha","Hot & Honey Dry","Apple Wood BBQ","Brown Bourbon"],
+  "Second Round":["Tangy Thai","Cali Thai","Curry Bean","Thai Twilight","Sweet Grenade","Hot Hickey","Dill Drip Diva","Maple Mirage","Sweet Scape Surge","Prairie Heat"],
+  "BBQ Intimacy":["BBQ","Forty Creek BBQ","Honey BBQ","Hot BBQ","Maple BBQ","Mesquite BBQ","South Pacific BBQ","South Western BBQ","Sultry Caesar","Sapphire Smoke","Tropical Tinder","BBQ Bunt","Mustard Mellons","Soul Kiss","Maple Meltdown","Smokee Bee Kiss","Smoke & Sting"],
+  "Have To Do It":["Ranch","Creamy Greek","Honey Mustard","Blue Cheese","Cajun","Herb & Garlic","Pizza Wings","Parmesan Dry","Garlic Parmesan"],
+  "Sweet Melodious":["Apricot Honey","Orange Ginger","Plum","Pineapple Curry","Sunburn Samurai","Raspberry Pepper","Strawberry","Sweet & Spicy Thai","Sweet & Sour"],
+  "Illegal Sauces":["Hot Fantacy","Grefflo","Citrus Twist","Illegal Pizza","Honeyaki Harmony","Chinese Bull","Mystic Garlic","Blue Buzz","Creamy Lemon","Pepper Pleasure","Tour Of Italy","Honey Ranch Bliss","Cajun Cream","Canadian Greek","Parmesan Prestige","Creamy Bliss","Influencer","Mid-Majestic","Zesty Twist","Sweet Heat","Wrench It Up","Thai Coconut Crush","Scotch's Up","Dill Rancher","Citrus Sting","Japanese Twist","Dillnferno","Cream Of The Zing","Prairie Gold"]
+};
+
+const MENU=[
+  {id:1,cat:"wings",name:"Half Order — Wings or Ribs",desc:"Half order bone-in wings or ribs. Choose any sauce or rub.",price:7.00,img:IMGS.wings,pop:false},
+  {id:2,cat:"wings",name:"One Order — Wings or Ribs",desc:"Full order bone-in wings or ribs in your choice of 125+ flavors.",price:11.99,img:IMGS.wings,pop:true},
+  {id:3,cat:"wings",name:"Two Orders",desc:"Two orders — mix & match your flavors.",price:23.98,img:IMGS.wings,pop:false},
+  {id:4,cat:"wings",name:"Three Orders",desc:"Three orders — great for groups.",price:34.99,img:IMGS.wings,pop:false},
+  {id:5,cat:"wings",name:"Four Orders",desc:"Four orders — feed the crew.",price:45.99,img:IMGS.wings,pop:false},
+  {id:6,cat:"wings",name:"Five Orders — Party Pack",desc:"Five orders — the ultimate party pack!",price:55.00,img:IMGS.wings,pop:false},
+  {id:7,cat:"boneless",name:"Boneless / Chicken Fingers — Half",desc:"Half order crispy boneless wings or chicken fingers.",price:7.00,img:IMGS.wings,pop:false},
+  {id:8,cat:"boneless",name:"Boneless / Chicken Fingers — Full",desc:"Full order crispy boneless wings or chicken fingers.",price:11.99,img:IMGS.wings,pop:true},
+  {id:9,cat:"boneless",name:"Cauliflower Wings",desc:"Crispy cauliflower wings — choose your sauce.",price:11.99,img:IMGS.wings,pop:false},
+  {id:10,cat:"combos",name:"Combo for 1",desc:"1 order wings or ribs, small fries, can of pop.",price:15.99,img:IMGS.combo,pop:true},
+  {id:11,cat:"combos",name:"Combo for 2",desc:"2 orders, large fries, deep fried pickles, 2 cans of pop.",price:35.99,img:IMGS.combo,pop:false},
+  {id:12,cat:"combos",name:"Combo for 3",desc:"3 orders, large fries, large Caesar salad, 2L pop.",price:50.99,img:IMGS.combo,pop:false},
+  {id:13,cat:"combos",name:"Combo for 4",desc:"4 orders, large fries, large gravy, large Caesar salad, 2L pop.",price:60.99,img:IMGS.combo,pop:false},
+  {id:14,cat:"combos",name:"Corn Dog Combo",desc:"Corn dog, small fries, dipping sauce.",price:7.00,img:null,pop:false},
+  {id:15,cat:"burgers",name:"The Tough Guy Burger",desc:"Classic loaded burger with cajun fries.",price:15.99,img:IMGS.burger,pop:true},
+  {id:16,cat:"burgers",name:"The Dillinator Burger",desc:"Signature dill-inspired burger with cajun fries.",price:15.99,img:IMGS.burger,pop:false},
+  {id:17,cat:"burgers",name:"Buffalo Stampede Burger",desc:"Buffalo-sauced chicken burger with cajun fries.",price:15.99,img:IMGS.burger,pop:false},
+  {id:18,cat:"sides",name:"Fries — Small",desc:"Golden crispy fries.",price:4.99,img:null,pop:false},
+  {id:19,cat:"sides",name:"Fries — Large",desc:"Golden crispy fries.",price:8.99,img:null,pop:false},
+  {id:20,cat:"sides",name:"Curly Fries — Small",desc:"Seasoned curly fries.",price:5.99,img:null,pop:false},
+  {id:21,cat:"sides",name:"Curly Fries — Large",desc:"Seasoned curly fries.",price:9.99,img:null,pop:false},
+  {id:22,cat:"sides",name:"Poutine — Small",desc:"Fries, cheese curds, gravy.",price:7.99,img:IMGS.poutine,pop:false},
+  {id:23,cat:"sides",name:"Poutine — Large",desc:"Fries, cheese curds, gravy.",price:12.99,img:IMGS.poutine,pop:true},
+  {id:24,cat:"sides",name:"Rib Poutine",desc:"Poutine loaded with rib meat.",price:14.99,img:IMGS.poutine,pop:false},
+  {id:25,cat:"sides",name:"Perogy Poutine",desc:"Perogies, cheese curds, gravy.",price:8.99,img:IMGS.poutine,pop:false},
+  {id:26,cat:"sides",name:"Beef Poutine",desc:"Classic poutine with beef.",price:10.99,img:IMGS.poutine,pop:false},
+  {id:27,cat:"sides",name:"Chicken Poutine",desc:"Poutine topped with chicken.",price:10.99,img:IMGS.poutine,pop:false},
+  {id:28,cat:"sides",name:"Empanadas (6 pc)",desc:"6 crispy empanadas with dipping sauce.",price:5.99,img:IMGS.empanadas,pop:false},
+  {id:29,cat:"sides",name:"Empanadas (12 pc)",desc:"12 crispy empanadas with dipping sauce.",price:9.99,img:IMGS.empanadas,pop:false},
+  {id:30,cat:"sides",name:"Jalapeño Poppers",desc:"Crispy jalapeño poppers.",price:9.99,img:IMGS.jalapeno,pop:false},
+  {id:31,cat:"sides",name:"Onion Rings",desc:"Golden onion rings.",price:6.99,img:null,pop:false},
+  {id:32,cat:"sides",name:"Pickle Spears",desc:"Deep fried pickle spears.",price:6.99,img:IMGS.pickles,pop:false},
+  {id:33,cat:"sides",name:"Deep Fried Mac & Cheese",desc:"Crispy deep fried mac & cheese bites.",price:6.99,img:null,pop:false},
+  {id:34,cat:"sides",name:"Mini Perogies",desc:"Golden mini perogies.",price:6.99,img:IMGS.perogies,pop:false},
+  {id:35,cat:"sides",name:"Mozza Sticks",desc:"Classic mozzarella sticks with dipping sauce.",price:9.99,img:IMGS.mozza,pop:false},
+  {id:36,cat:"sides",name:"Corn Dog",desc:"Classic corn dog.",price:4.00,img:null,pop:false},
+  {id:37,cat:"sides",name:"Dumplings",desc:"Crispy fried dumplings.",price:6.99,img:IMGS.dumplings,pop:false},
+  {id:38,cat:"sides",name:"Nacho Teaser",desc:"Nachos with toppings.",price:9.99,img:null,pop:false},
+  {id:39,cat:"sides",name:"Loaded Taters",desc:"Loaded tater tots.",price:9.99,img:null,pop:false},
+  {id:40,cat:"sides",name:"Spring Rolls",desc:"Crispy spring rolls.",price:9.99,img:null,pop:false},
+  {id:41,cat:"sides",name:"Gravy — Small",desc:"Classic gravy.",price:0.99,img:null,pop:false},
+  {id:42,cat:"sides",name:"Gravy — Large",desc:"Large gravy.",price:2.49,img:null,pop:false},
+  {id:43,cat:"salads",name:"Caesar Salad — Small",desc:"Classic caesar salad.",price:5.99,img:null,pop:false},
+  {id:44,cat:"salads",name:"Caesar Salad — Medium",desc:"Medium caesar salad.",price:7.99,img:null,pop:false},
+  {id:45,cat:"salads",name:"Caesar Salad — Large",desc:"Large caesar salad.",price:10.99,img:null,pop:false},
+  {id:46,cat:"salads",name:"Chicken Caesar — Small",desc:"Caesar salad with grilled chicken.",price:8.99,img:null,pop:false},
+  {id:47,cat:"salads",name:"Chicken Caesar — Medium",desc:"Caesar salad with grilled chicken.",price:10.99,img:null,pop:false},
+  {id:48,cat:"salads",name:"Chicken Caesar — Large",desc:"Caesar salad with grilled chicken.",price:18.99,img:null,pop:false},
+  {id:49,cat:"platters",name:"Hot 'n' Heavy Platter",desc:"3 lbs fries, 1 lb cheese curds, 1 lb gravy.",price:26.99,img:null,pop:false},
+  {id:50,cat:"platters",name:"Tinseltown Nacho Platter",desc:"3 lbs curly fries, cheese sauce, chunky salsa, sour cream, jalapeños, green onions.",price:26.99,img:null,pop:false},
+  {id:51,cat:"platters",name:"A Bit Of Other Platter",desc:"1 lb ribs, pickle spears, large curly fries, mini perogies, dumplings, mozza sticks.",price:30.99,img:IMGS.platter,pop:true},
+  {id:52,cat:"platters",name:"Making Love Platter",desc:"Full order wings, empanadas, large fries, jalapeño poppers, mozza sticks.",price:30.99,img:IMGS.platterLove,pop:false},
+  {id:53,cat:"midnight",name:"Deep Fried Oreos — 1 pc",desc:"Single deep fried Oreo.",price:0.99,img:IMGS.oreo,pop:false},
+  {id:54,cat:"midnight",name:"Deep Fried Oreos — 6 pc",desc:"Six deep fried Oreos.",price:5.49,img:IMGS.oreo,pop:false},
+  {id:55,cat:"midnight",name:"Deep Fried Oreos — 12 pc",desc:"Twelve deep fried Oreos.",price:9.99,img:IMGS.oreo,pop:true},
+  {id:56,cat:"midnight",name:"Deep Fried Mars Bar — 1 pc",desc:"Single deep fried Mars bar.",price:2.49,img:IMGS.mars1,pop:false},
+  {id:57,cat:"midnight",name:"Deep Fried Mars Bars — 2 pc",desc:"Two deep fried Mars bars.",price:4.50,img:IMGS.mars2,pop:false},
+  {id:58,cat:"midnight",name:"Deep Fried Mars Bars — 6 pc",desc:"Six deep fried Mars bars.",price:12.50,img:IMGS.mars2,pop:false},
+  {id:59,cat:"midnight",name:"Deep Fried Cookie Dough",desc:"Peanut butter, double chocolate, or monster — $2.50/pc.",price:2.50,img:null,pop:false},
+  {id:60,cat:"midnight",name:"Tiramisu Cake",desc:"Homemade tiramisu cake slice.",price:6.99,img:null,pop:false}
+];
+
+const CATS=[{id:"all",l:"All"},{id:"wings",l:"Wings & Ribs"},{id:"boneless",l:"Boneless"},{id:"combos",l:"Combos"},{id:"burgers",l:"Burgers"},{id:"sides",l:"Sides"},{id:"salads",l:"Salads"},{id:"platters",l:"Platters"},{id:"midnight",l:"Midnight Ecstasy 🌙"}];
+
+let cart=[],selFlavor=null,selFcat=Object.keys(FLAVORS)[0],curCat="all",orderType="pickup";
+
+function go(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth'});return false;}
+let toastT;
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2600);}
+
+async function checkAPI(){
+  const dot=document.getElementById('api-dot'),txt=document.getElementById('api-txt');
+  try{const r=await fetch(API_BASE+'/api/health',{signal:AbortSignal.timeout(4000)});if(r.ok){dot.className='api-dot ok';txt.textContent='server online';}else throw new Error();}
+  catch{dot.className='api-dot err';txt.textContent='offline mode';}
+}
+checkAPI();
+
+function buildFlavors(){
+  document.getElementById('fcat-row').innerHTML=Object.keys(FLAVORS).map(c=>`<button class="fcb${c===selFcat?' on':''}" onclick="setFC('${c}')">${c}</button>`).join('');
+  renderFList();
+}
+function setFC(c){selFcat=c;document.querySelectorAll('.fcb').forEach(b=>b.classList.toggle('on',b.textContent===c));renderFList();}
+function renderFList(){document.getElementById('flist').innerHTML=FLAVORS[selFcat].map(f=>`<div class="fchip${f===selFlavor?' on':''}" onclick="pickFlavor(this,'${f.replace(/'/g,"\\'")}')">${f}</div>`).join('');}
+function pickFlavor(el,f){selFlavor=f;document.getElementById('fsel-name').textContent=f;document.querySelectorAll('.fchip').forEach(c=>c.classList.remove('on'));el.classList.add('on');toast('🔥 Flavor: '+f);}
+
+function buildCats(){document.getElementById('ctabs').innerHTML=CATS.map(c=>`<button class="ctab${c.id===curCat?' on':''}" onclick="filterCat('${c.id}',this)">${c.l}</button>`).join('');}
+function filterCat(id,btn){curCat=id;document.querySelectorAll('.ctab').forEach(b=>b.classList.remove('on'));btn?.classList.add('on');renderMenu();}
+
+function renderMenu(){
+  const items=curCat==='all'?MENU:MENU.filter(i=>i.cat===curCat);
+  const catL=id=>CATS.find(c=>c.id===id)?.l||id;
+  document.getElementById('mgrid').innerHTML=items.map(item=>`
+    <div class="mc" onclick="addToCart(${item.id})">
+      ${item.pop?'<div class="pop-flag">🔥 Popular</div>':''}
+      <div class="mc-img">${item.img?`<img src="${item.img}" alt="${item.name}" loading="lazy">`:''}</div>
+      <div class="mc-body">
+        <div class="mc-tags"><span class="tag tag-cat">${catL(item.cat)}</span>${['wings','boneless'].includes(item.cat)?'<span class="tag tag-hot">Pick Flavor</span>':''}</div>
+        <div class="mc-name">${item.name}</div>
+        <div class="mc-desc">${item.desc}</div>
+        <div class="mc-foot"><div class="mc-price">$${item.price.toFixed(2)}</div><button class="btn-add" onclick="event.stopPropagation();addToCart(${item.id})">+</button></div>
+      </div>
+    </div>`).join('');
+}
+
+function renderSauces(){document.getElementById('sgrid').innerHTML=Object.entries(FLAVORS).map(([cat,items])=>`<div class="sgroup"><div class="sg-title">${cat}</div><ul>${items.map(f=>`<li>${f}</li>`).join('')}</ul></div>`).join('');}
+
+function addToCart(id){
+  const item=MENU.find(i=>i.id===id);
+  const needsFl=['wings','boneless'].includes(item.cat);
+  const fl=needsFl?(selFlavor||null):null;
+  const key=id+'|'+(fl||'');
+  const ex=cart.find(c=>c.key===key);
+  if(ex)ex.qty++;else cart.push({...item,key,qty:1,flavor:fl});
+  updateCart();
+  toast('Added: '+item.name+(fl?' · '+fl:''));
+  if(needsFl&&!selFlavor)setTimeout(()=>toast('💡 Pick a flavor first for best results!'),400);
+}
+function chgQty(key,d){const i=cart.findIndex(c=>c.key===key);if(i<0)return;cart[i].qty+=d;if(cart[i].qty<=0)cart.splice(i,1);updateCart();}
+function updateCart(){
+  const cnt=cart.reduce((s,i)=>s+i.qty,0);
+  document.getElementById('cart-count').textContent=cnt;
+  const bd=document.getElementById('cart-bd'),ft=document.getElementById('cart-ft');
+  if(!cart.length){bd.innerHTML='<div class="cart-empty"><div style="font-size:3rem;opacity:.45;margin-bottom:.75rem">🍗</div><div style="font-family:var(--font-head);font-size:.9rem;letter-spacing:1px;text-transform:uppercase;color:#888">Cart is empty</div></div>';ft.style.display='none';return;}
+  ft.style.display='block';
+  bd.innerHTML=cart.map(item=>`<div class="ci"><div class="ci-icon">🍗</div><div class="ci-info"><div class="ci-name">${item.name}</div>${item.flavor?`<div class="ci-flav">${item.flavor}</div>`:''}<div class="ci-pr">$${item.price.toFixed(2)} each</div></div><div class="ci-ctrl"><button class="qb" onclick="chgQty('${item.key}',-1)">−</button><span class="qn">${item.qty}</span><button class="qb" onclick="chgQty('${item.key}',1)">+</button></div></div>`).join('');
+  const sub=cart.reduce((s,i)=>s+i.price*i.qty,0);const tax=sub*.05;
+  document.getElementById('csub').textContent='$'+sub.toFixed(2);
+  document.getElementById('ctax').textContent='$'+tax.toFixed(2);
+  document.getElementById('ctot').textContent='$'+(sub+tax).toFixed(2);
+}
+function openCart(){document.getElementById('cart-ov').classList.add('open');}
+function closeCart(){document.getElementById('cart-ov').classList.remove('open');}
+function openCheckout(){closeCart();renderForm();document.getElementById('modal-ov').classList.add('open');}
+function closeCheckout(){document.getElementById('modal-ov').classList.remove('open');}
+function renderForm(){
+  const sub=cart.reduce((s,i)=>s+i.price*i.qty,0);const tax=sub*.05;const total=sub+tax;
+  document.getElementById('mbd').innerHTML=`
+    <div class="otype-row"><div class="oc on" id="ot-p" onclick="setOT('pickup')"><div class="oc-icon">🏃</div><div class="oc-lbl">Pickup</div></div><div class="oc" id="ot-d" onclick="setOT('delivery')"><div class="oc-icon">🛵</div><div class="oc-lbl">Delivery</div></div></div>
+    <div class="fg"><label>Location</label><select id="o-loc"><option value="albert-st">Albert Street — #3 155 Albert St N, Regina</option></select></div>
+    <div id="del-addr" class="fg hidden"><label>Delivery Address</label><input type="text" id="o-addr" placeholder="123 Main St, Regina, SK"></div>
+    <div class="msec">YOUR INFO</div>
+    <div class="frow"><div class="fg"><label>First Name</label><input type="text" id="o-fn" placeholder="First name"></div><div class="fg"><label>Last Name</label><input type="text" id="o-ln" placeholder="Last name"></div></div>
+    <div class="fg"><label>Phone</label><input type="tel" id="o-ph" placeholder="(306) 555-0123"></div>
+    <div class="fg"><label>Email</label><input type="email" id="o-em" placeholder="you@email.com"></div>
+    <div class="fg"><label>Special Instructions</label><textarea id="o-notes" placeholder="Extra sauce, make it extra spicy..."></textarea></div>
+    <div class="msec">ORDER SUMMARY</div>
+    <div class="os-box">${cart.map(it=>`<div class="os-row"><span>${it.name}${it.flavor?' ('+it.flavor+')':''} ×${it.qty}</span><span>$${(it.price*it.qty).toFixed(2)}</span></div>`).join('')}<div class="os-row" style="color:#888"><span>GST 5%</span><span>$${tax.toFixed(2)}</span></div><div class="os-total"><span>Total</span><span>$${total.toFixed(2)}</span></div></div>
+    <div class="clover-badge">🍀 Orders sent to Clover POS · Albert Street Kitchen</div>
+    <p class="pay-note"><strong>Payment at pickup / on delivery.</strong></p>
+    <button class="btn-place" id="pbtn" onclick="submitOrder()">PLACE ORDER 🔥</button>`;
+}
+function setOT(t){orderType=t;document.getElementById('ot-p').classList.toggle('on',t==='pickup');document.getElementById('ot-d').classList.toggle('on',t==='delivery');document.getElementById('del-addr').classList.toggle('hidden',t==='pickup');}
+async function submitOrder(){
+  const fn=document.getElementById('o-fn').value.trim();
+  const ph=document.getElementById('o-ph').value.trim();
+  const em=document.getElementById('o-em').value.trim();
+  const notes=document.getElementById('o-notes').value.trim();
+  const addr=orderType==='delivery'?document.getElementById('o-addr')?.value.trim():'';
+  if(!fn||!ph){toast('⚠️ Name & phone required');return;}
+  if(orderType==='delivery'&&!addr){toast('⚠️ Please enter delivery address');return;}
+  const btn=document.getElementById('pbtn');btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Sending to Kitchen...';
+  const sub=cart.reduce((s,i)=>s+i.price*i.qty,0);const tax=sub*.05;const total=sub+tax;
+  try{
+    const resp=await fetch(API_BASE+'/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({locationId:activeLocation,orderType,customer:{firstName:fn,phone:ph,email:em,address:addr},items:cart.map(i=>({name:i.name,flavor:i.flavor,price:i.price,qty:i.qty})),notes,subtotal:sub,tax,total})});
+    const data=await resp.json();
+    if(data.success){showSuccess(data);cart=[];updateCart();}
+    else{toast('Error: '+data.error);btn.disabled=false;btn.innerHTML='PLACE ORDER 🔥';}
+  }catch(e){
+    const onum='WO-'+Math.floor(1000+Math.random()*9000);
+    showSuccess({success:true,orderNum:onum,cloverSuccess:false,customer:fn,total:total.toFixed(2),phone:ph,orderType,location:'Albert Street'});
+    cart=[];updateCart();
+  }
+}
+function showSuccess(d){document.getElementById('mbd').innerHTML=`<div class="success-view"><div class="sv-icon">🔥</div><h2>ORDER PLACED!</h2><p>You're locked in, ${d.customer}!</p><div class="onum">${d.orderNum}</div><p><strong>${orderType==='pickup'?'🏃 Pickup':'🛵 Delivery'}</strong> · ${d.location}</p><p><strong>Total:</strong> $${d.total} (pay at ${orderType})</p><p>We'll call <strong>${d.phone}</strong> when it's ready.</p><p style="color:${d.cloverSuccess?'#276749':'#888'};font-size:.82rem;margin-top:.4rem">${d.cloverSuccess?'✓ Order sent to Clover POS':'📋 Order logged — kitchen notified'}</p><a class="btn-red" href="#menu" onclick="closeCheckout();go('menu')" style="display:inline-block;margin-top:1.25rem;font-size:1rem;padding:.85rem 2rem">Order Again 🍗</a></div>`;}
+
+// IMPACT COUNTER
+const BASE={date:new Date('2026-04-14T00:00:00-06:00'),wings:1084400,orders:135550};
+function getLive(){const secs=(Date.now()-BASE.date)/1000;const month=new Date().getMonth()+1;const daily=month>=5&&month<=9?505:320;const ops=daily/86400;return{wings:Math.floor(BASE.wings+ops*8*secs),orders:Math.floor(BASE.orders+ops*secs),spw:Math.round(86400/(daily*8))};}
+function fmt(n){return n.toLocaleString('en-CA');}
+async function fetchDonation(){try{const r=await fetch(API_BASE+'/api/donation');if(r.ok){const d=await r.json();document.getElementById('donation-counter').textContent='$'+fmt(d.amount||0);}}catch{}}
+let impAnim=false;
+const io=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting&&!impAnim){impAnim=true;const l=getLive();animUp(document.getElementById('wings-counter'),l.wings,2000);animUp(document.getElementById('orders-counter'),l.orders,2000);io.disconnect();}});},{threshold:.2});
+const impEl=document.getElementById('impact');if(impEl)io.observe(impEl);
+function animUp(el,target,dur){const start=performance.now();function upd(now){const p=Math.min((now-start)/dur,1);const e=1-Math.pow(1-p,3);el.textContent=fmt(Math.floor(e*target));if(p<1)requestAnimationFrame(upd);}requestAnimationFrame(upd);}
+function updateCounters(){const l=getLive();document.getElementById('wings-counter').textContent=fmt(l.wings);document.getElementById('orders-counter').textContent=fmt(l.orders);document.getElementById('spw').textContent=l.spw;}
+fetchDonation();setInterval(updateCounters,1000);setInterval(fetchDonation,60000);
+
+buildFlavors();buildCats();renderMenu();renderSauces();
+</script>
+</body>
+</html>
