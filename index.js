@@ -1,3 +1,4 @@
+require('dotenv').config(); 
 const express = require('express');
 const cors = require('cors');
 const fetch = require('node-fetch');
@@ -185,6 +186,57 @@ app.get('/api/locations', (req, res) => {
     email: loc.email
   }));
   res.json(safe);
+});
+
+app.post('/api/charge', async (req, res) => {
+  const { locationId, cardToken, amount, orderId, customer } = req.body;
+
+  if (!locationId || !cardToken || !amount) {
+    return res.json({ success: false, error: 'Missing required fields' });
+  }
+
+  const loc = LOCATIONS[locationId];
+  if (!loc || !loc.onlinePayments || !loc.cloverPrivateKey) {
+    return res.json({ success: false, error: 'Location not configured for online payments' });
+  }
+
+  try {
+    const amountInCents = Math.round(amount * 100);
+
+    const chargeResponse = await fetch('https://scl.clover.com/v1/charges', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${loc.cloverPrivateKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        amount: amountInCents,
+        currency: 'cad',
+        source: cardToken,
+        description: `Wing-O Order ${orderId} — ${customer?.firstName || 'Customer'}`,
+        capture: true,
+      }),
+    });
+
+    const chargeData = await chargeResponse.json();
+
+    if (chargeData.id && chargeData.status === 'succeeded') {
+      console.log(`✅ Payment success — ${orderId} — $${amount} — Charge: ${chargeData.id}`);
+      return res.json({
+        success: true,
+        chargeId: chargeData.id,
+        amount: chargeData.amount,
+        last4: chargeData.source?.last4 || '****',
+      });
+    } else {
+      const errMsg = chargeData.error?.message || chargeData.message || 'Payment failed';
+      console.error(`❌ Payment failed — ${orderId} —`, errMsg);
+      return res.json({ success: false, error: errMsg });
+    }
+  } catch (err) {
+    console.error('Clover charge error:', err);
+    return res.json({ success: false, error: 'Server error processing payment' });
+  }
 });
 
 // ── START ─────────────────────────────────────────────────────
