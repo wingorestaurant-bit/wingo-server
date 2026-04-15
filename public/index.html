@@ -384,9 +384,9 @@ let activeLocation='albert-st';
     <h2 class="sec-title">OUR LOCATIONS</h2>
     <div class="lgrid">
       <div class="lcard live"><span class="lbadge lb-live">✓ Online Ordering Live</span><div class="lname">Albert Street</div><div class="laddr">#3 – 155 Albert St N<br>Regina, SK</div><div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div><div class="lphone">📞 306-522-2111</div></div>
-      <div class="lcard"><span class="lbadge lb-soon">Online Coming Soon</span><div class="lname">Rochdale</div><div class="laddr">Regina, SK</div><div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div></div>
+      <div class="lcard live"><span class="lbadge lb-live">✓ Online Ordering Live</span><div class="lname">Rochdale</div><div class="laddr">3881 Rochdale Blvd<br>Regina, SK</div><div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div><div class="lphone">📞 306-522-2112</div></div>
       <div class="lcard"><span class="lbadge lb-soon">Online Coming Soon</span><div class="lname">East Regina</div><div class="laddr">Regina, SK</div><div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div></div>
-      <div class="lcard"><span class="lbadge lb-soon">Online Coming Soon</span><div class="lname">Moose Jaw</div><div class="laddr">Moose Jaw, SK</div><div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div></div>
+      <div class="lcard live"><span class="lbadge lb-live">✓ Online Ordering Live</span><div class="lname">Moose Jaw</div><div class="laddr">622 Main St N<br>Moose Jaw, SK</div><div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div><div class="lphone">📞 306-692-2113</div></div>
       <div class="lcard"><span class="lbadge lb-soon">Seasonal</span><div class="lname">Regina Beach</div><div class="laddr">Regina Beach, SK</div><div class="lhours">Summer Only</div></div>
       <div class="lcard" style="border-color:rgba(245,168,0,.3);opacity:.7"><span class="lbadge lb-soon">🚀 Coming Soon</span><div class="lname">Winnipeg</div><div class="laddr">Manitoba's first Wing-O!</div><div class="lhours">Stay Tuned</div></div>
     </div>
@@ -438,7 +438,7 @@ let activeLocation='albert-st';
 <div class="cart-ov" id="cart-ov">
   <div class="cart-back" onclick="closeCart()"></div>
   <div class="cart-panel">
-    <div class="cart-hd"><div><div class="cart-hd-title">YOUR ORDER</div><div class="cart-hd-sub">Albert Street · Pickup or Delivery</div></div><button class="xcb" onclick="closeCart()">✕</button></div>
+    <div class="cart-hd"><div><div class="cart-hd-title">YOUR ORDER</div><div class="cart-hd-sub" id="cart-loc-label">Albert Street · Pickup or Delivery</div></div><button class="xcb" onclick="closeCart()">✕</button></div>
     <div class="cart-bd" id="cart-bd"><div class="cart-empty"><div style="font-size:3rem;margin-bottom:.75rem;opacity:.45;">🍗</div><div style="font-family:var(--font-head);font-size:.9rem;letter-spacing:1px;text-transform:uppercase;color:#888;">Cart is empty</div></div></div>
     <div class="cart-ft" id="cart-ft" style="display:none">
       <div class="cl"><span>Subtotal</span><span id="csub">$0.00</span></div>
@@ -487,6 +487,11 @@ const IMGS={
   salad:'images/salad.jpg',
 };
 
+const LOCATIONS={
+  'albert-st':{name:'Albert Street',cloverLocationId:'',phone:'306-522-2111',address:'#3 155 Albert St N, Regina'},
+  'rochdale':{name:'Rochdale',cloverLocationId:'318003460042',phone:'306-522-2112',address:'3881 Rochdale Blvd, Regina'},
+  'moose-jaw':{name:'Moose Jaw',cloverLocationId:'318003488638',phone:'306-692-2113',address:'622 Main St N, Moose Jaw'}
+};
 const FLAVORS={
   "Flirty Ones":["Devil's Kiss","Honey Garlic","Lemon Pepper","Buffalo","Buffalo Ranch","BBQ Ranch","Honey Dill","Greek Dry","Greek Wet","Teriyaki","Creamy Dill Pickle","Medium"],
   "Hot As Hell":["Dead Angel (Carolina Reaper)","Spicy Mammilla","Sizzle Caesar","Caribbean Connection","Tropical Temptation","BBQ Seduction","Sentimental Sauce","Cobalt Kiss","Dragon Dip","Mild","Hot","Honey Buffalo","Honey Is Hot","Honeys Too Hot","Not So Hot","African Pepper","Island On Fire"],
@@ -664,16 +669,17 @@ function openCheckout(){closeCart();renderForm();document.getElementById('modal-
 function closeCheckout(){document.getElementById('modal-ov').classList.remove('open');}
 function renderForm(){
   const sub=cart.reduce((s,i)=>s+i.price*i.qty,0);const tax=sub*.05;const total=sub+tax;
-  document.getElementById('mbd').innerHTML=`<div class="otype-row"><div class="oc on" id="ot-p" onclick="setOT('pickup')"><div class="oc-icon">🏃</div><div class="oc-lbl">Pickup</div></div><div class="oc" id="ot-d" onclick="setOT('delivery')"><div class="oc-icon">🛵</div><div class="oc-lbl">Delivery</div></div></div><div class="fg"><label>Location</label><select id="o-loc"><option value="albert-st">Albert Street — #3 155 Albert St N, Regina</option></select></div><div id="del-addr" class="fg hidden"><label>Delivery Address</label><input type="text" id="o-addr" placeholder="123 Main St, Regina, SK"></div><div class="msec">YOUR INFO</div><div class="frow"><div class="fg"><label>First Name</label><input type="text" id="o-fn" placeholder="First name"></div><div class="fg"><label>Last Name</label><input type="text" id="o-ln" placeholder="Last name"></div></div><div class="fg"><label>Phone</label><input type="tel" id="o-ph" placeholder="(306) 555-0123"></div><div class="fg"><label>Email</label><input type="email" id="o-em" placeholder="you@email.com"></div><div class="fg"><label>Special Instructions</label><textarea id="o-notes" placeholder="Extra sauce, make it extra spicy..."></textarea></div><div class="msec">ORDER SUMMARY</div><div class="os-box">${cart.map(it=>`<div class="os-row"><span>${it.name}${it.flavor?' ('+it.flavor+')':''} ×${it.qty}</span><span>$${(it.price*it.qty).toFixed(2)}</span></div>`).join('')}<div class="os-row" style="color:#888"><span>GST 5%</span><span>$${tax.toFixed(2)}</span></div><div class="os-total"><span>Total</span><span>$${total.toFixed(2)}</span></div></div><div class="clover-badge">🍀 Orders sent to Clover POS · Albert Street Kitchen</div><p class="pay-note"><strong>Payment at pickup / on delivery.</strong></p><button class="btn-place" id="pbtn" onclick="submitOrder()">PLACE ORDER 🔥</button>`;
+  document.getElementById('mbd').innerHTML=`<div class="otype-row"><div class="oc on" id="ot-p" onclick="setOT('pickup')"><div class="oc-icon">🏃</div><div class="oc-lbl">Pickup</div></div><div class="oc" id="ot-d" onclick="setOT('delivery')"><div class="oc-icon">🛵</div><div class="oc-lbl">Delivery</div></div></div><div class="fg"><label>Location</label><select id="o-loc" onchange="setLocation(this.value)"><option value="albert-st">Albert Street — #3 155 Albert St N, Regina</option><option value="rochdale">Rochdale — 3881 Rochdale Blvd, Regina</option><option value="moose-jaw">Moose Jaw — 622 Main St N, Moose Jaw</option></select></div><div id="del-addr" class="fg hidden"><label>Delivery Address</label><input type="text" id="o-addr" placeholder="123 Main St, Regina, SK"></div><div class="msec">YOUR INFO</div><div class="frow"><div class="fg"><label>First Name</label><input type="text" id="o-fn" placeholder="First name"></div><div class="fg"><label>Last Name</label><input type="text" id="o-ln" placeholder="Last name"></div></div><div class="fg"><label>Phone</label><input type="tel" id="o-ph" placeholder="(306) 555-0123"></div><div class="fg"><label>Email</label><input type="email" id="o-em" placeholder="you@email.com"></div><div class="fg"><label>Special Instructions</label><textarea id="o-notes" placeholder="Extra sauce, make it extra spicy..."></textarea></div><div class="msec">ORDER SUMMARY</div><div class="os-box">${cart.map(it=>`<div class="os-row"><span>${it.name}${it.flavor?' ('+it.flavor+')':''} ×${it.qty}</span><span>$${(it.price*it.qty).toFixed(2)}</span></div>`).join('')}<div class="os-row" style="color:#888"><span>GST 5%</span><span>$${tax.toFixed(2)}</span></div><div class="os-total"><span>Total</span><span>$${total.toFixed(2)}</span></div></div><div class="clover-badge">🍀 Orders sent to Clover POS</div><p class="pay-note"><strong>Payment at pickup / on delivery.</strong></p><button class="btn-place" id="pbtn" onclick="submitOrder()">PLACE ORDER 🔥</button>`;
 }
 function setOT(t){orderType=t;document.getElementById('ot-p').classList.toggle('on',t==='pickup');document.getElementById('ot-d').classList.toggle('on',t==='delivery');document.getElementById('del-addr').classList.toggle('hidden',t==='pickup');}
+function setLocation(v){activeLocation=v;const loc=LOCATIONS[v];const lbl=document.getElementById('cart-loc-label');if(lbl)lbl.textContent=(loc?loc.name:'Albert Street')+' · Pickup or Delivery';}
 async function submitOrder(){
   const fn=document.getElementById('o-fn').value.trim();const ph=document.getElementById('o-ph').value.trim();const em=document.getElementById('o-em').value.trim();const notes=document.getElementById('o-notes').value.trim();const addr=orderType==='delivery'?document.getElementById('o-addr')?.value.trim():'';
   if(!fn||!ph){toast('⚠️ Name & phone required');return;}if(orderType==='delivery'&&!addr){toast('⚠️ Please enter delivery address');return;}
   const btn=document.getElementById('pbtn');btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Sending to Kitchen...';
   const sub=cart.reduce((s,i)=>s+i.price*i.qty,0);const tax=sub*.05;const total=sub+tax;
   try{
-    const resp=await fetch(API_BASE+'/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({locationId:activeLocation,orderType,customer:{firstName:fn,phone:ph,email:em,address:addr},items:cart.map(i=>({name:i.name,flavor:i.flavor,price:i.price,qty:i.qty})),notes,subtotal:sub,tax,total})});
+    const resp=await fetch(API_BASE+'/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({locationId:document.getElementById('o-loc')?.value||activeLocation,cloverLocationId:LOCATIONS[document.getElementById('o-loc')?.value||activeLocation]?.cloverLocationId||'',orderType,customer:{firstName:fn,phone:ph,email:em,address:addr},items:cart.map(i=>({name:i.name,flavor:i.flavor,price:i.price,qty:i.qty})),notes,subtotal:sub,tax,total})});
     const data=await resp.json();
     if(data.success){showSuccess(data);cart=[];updateCart();}else{toast('Error: '+data.error);btn.disabled=false;btn.innerHTML='PLACE ORDER 🔥';}
   }catch(e){
