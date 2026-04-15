@@ -336,6 +336,14 @@ let activeLocation='albert-st';
   </div>
 </section>
 
+
+<!-- LOCATION PROMPT BANNER -->
+<div id="loc-banner" style="background:#1A1A1A;border-bottom:2px solid #F5A800;padding:.75rem 1.5rem;text-align:center;position:relative;z-index:1;display:none;">
+  <span style="font-family:'Oswald',sans-serif;font-size:.85rem;letter-spacing:2px;text-transform:uppercase;color:#888;">📍 Detecting your nearest Wing-O location...</span>
+</div>
+<div id="loc-banner-result" style="background:#1A1A1A;border-bottom:2px solid #F5A800;padding:.75rem 1.5rem;text-align:center;position:relative;z-index:1;display:none;">
+  <span style="font-family:'Oswald',sans-serif;font-size:.85rem;letter-spacing:2px;text-transform:uppercase;color:#CCC;">📍 Nearest location: <strong id="loc-nearest-name" style="color:#F5A800;"></strong> &nbsp;·&nbsp; <button onclick="openCart()" style="background:var(--red);color:white;border:none;font-family:'Oswald',sans-serif;font-size:.8rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;padding:4px 14px;border-radius:3px;cursor:pointer;">Order from here</button></span>
+</div>
 <!-- MENU -->
 <section id="menu" style="background:rgba(245,240,232,.97);">
 <div class="wrap">
@@ -541,11 +549,36 @@ function applyGeoSort(userLat,userLng){
   setLocation(sorted[0]);
 }
 
-function detectAndSortLocations(){
+function detectAndSortLocations(fromCheckout){
   if(!navigator.geolocation)return;
+  if(!fromCheckout){
+    // Show detecting banner on page load
+    const b=document.getElementById('loc-banner');
+    if(b)b.style.display='block';
+  }
   navigator.geolocation.getCurrentPosition(
-    pos=>applyGeoSort(pos.coords.latitude,pos.coords.longitude),
-    ()=>{} // silently fail — keep default order
+    pos=>{
+      applyGeoSort(pos.coords.latitude,pos.coords.longitude);
+      if(!fromCheckout){
+        // Hide detecting, show result banner
+        const b=document.getElementById('loc-banner');
+        const br=document.getElementById('loc-banner-result');
+        const nn=document.getElementById('loc-nearest-name');
+        if(b)b.style.display='none';
+        if(br)br.style.display='block';
+        // Find nearest location
+        const sorted=sortLocationsByDistance(pos.coords.latitude,pos.coords.longitude);
+        const nearest=LOCATIONS[sorted[0]];
+        if(nn)nn.textContent=nearest.name+' · '+nearest.address;
+        // Set active location globally
+        activeLocation=sorted[0];
+      }
+    },
+    ()=>{
+      // Permission denied — hide banner silently
+      const b=document.getElementById('loc-banner');
+      if(b)b.style.display='none';
+    }
   );
 }
 // ─────────────────────────────────────────────────────────────
@@ -727,7 +760,7 @@ function closeCheckout(){document.getElementById('modal-ov').classList.remove('o
 function renderForm(){
   const sub=cart.reduce((s,i)=>s+i.price*i.qty,0);const tax=sub*.05;const total=sub+tax;
   document.getElementById('mbd').innerHTML=`<div class="otype-row"><div class="oc on" id="ot-p" onclick="setOT('pickup')"><div class="oc-icon">🏃</div><div class="oc-lbl">Pickup</div></div><div class="oc" id="ot-d" onclick="setOT('delivery')"><div class="oc-icon">🛵</div><div class="oc-lbl">Delivery</div></div></div><div class="fg"><label>Location</label><select id="o-loc" onchange="setLocation(this.value)"><option value="albert-st">Albert Street — #3 155 Albert St N, Regina</option><option value="rochdale">Rochdale — 3881 Rochdale Blvd, Regina</option><option value="moose-jaw">Moose Jaw — 622 Main St N, Moose Jaw</option></select></div><div id="del-addr" class="fg hidden"><label>Delivery Address</label><input type="text" id="o-addr" placeholder="123 Main St, Regina, SK"></div><div class="msec">YOUR INFO</div><div class="frow"><div class="fg"><label>First Name</label><input type="text" id="o-fn" placeholder="First name"></div><div class="fg"><label>Last Name</label><input type="text" id="o-ln" placeholder="Last name"></div></div><div class="fg"><label>Phone</label><input type="tel" id="o-ph" placeholder="(306) 555-0123"></div><div class="fg"><label>Email</label><input type="email" id="o-em" placeholder="you@email.com"></div><div class="fg"><label>Special Instructions</label><textarea id="o-notes" placeholder="Extra sauce, make it extra spicy..."></textarea></div><div class="msec">ORDER SUMMARY</div><div class="os-box">${cart.map(it=>`<div class="os-row"><span>${it.name}${it.flavor?' ('+it.flavor+')':''} ×${it.qty}</span><span>$${(it.price*it.qty).toFixed(2)}</span></div>`).join('')}<div class="os-row" style="color:#888"><span>GST 5%</span><span>$${tax.toFixed(2)}</span></div><div class="os-total"><span>Total</span><span>$${total.toFixed(2)}</span></div></div><div class="clover-badge">🍀 Orders sent to Clover POS</div><p class="pay-note"><strong>Payment at pickup / on delivery.</strong></p><button class="btn-place" id="pbtn" onclick="submitOrder()">PLACE ORDER 🔥</button>`;
-  detectAndSortLocations();
+  detectAndSortLocations(true);
 }
 function setOT(t){orderType=t;document.getElementById('ot-p').classList.toggle('on',t==='pickup');document.getElementById('ot-d').classList.toggle('on',t==='delivery');document.getElementById('del-addr').classList.toggle('hidden',t==='pickup');}
 function setLocation(v){activeLocation=v;const loc=LOCATIONS[v];const lbl=document.getElementById('cart-loc-label');if(lbl)lbl.textContent=(loc?loc.name:'Albert Street')+' · Pickup or Delivery';}
@@ -759,6 +792,7 @@ function animUp(el,target,dur){const start=performance.now();function upd(now){c
 function updateCounters(){const l=getLive();document.getElementById('wings-counter').textContent=fmt(l.wings);document.getElementById('orders-counter').textContent=fmt(l.orders);document.getElementById('spw').textContent=l.spw;}
 fetchDonation();setInterval(updateCounters,1000);setInterval(fetchDonation,60000);
 buildFlavors();buildCats();renderMenu();renderSauces();
+detectAndSortLocations(false);
 </script>
 </body>
 </html>
