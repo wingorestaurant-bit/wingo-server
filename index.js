@@ -14,13 +14,35 @@ const LOCATIONS = {
     name: "Albert Street (Regina)",
     merchantId: "318003593879",
     apiToken: "4c89fafe-a989-0b53-7c24-2ad11e672879",
-    address: "#3 – 155 Albert St N, Regina, SK",
+    address: "#3 - 155 Albert St N, Regina, SK",
     phone: "306-522-2111",
     email: "Wingorestaurant@gmail.com",
-    hours: "Mon–Wed 11am–1am · Thu–Sun 11am–3am"
+    hours: "Mon-Wed 11am-1am · Thu-Sun 11am-3am",
+    onlinePayments: false,
+    cloverPrivateKey: null
+  },
+  "rochdale": {
+    name: "Rochdale (Regina)",
+    merchantId: "318003460042",
+    apiToken: "",
+    address: "3881 Rochdale Blvd, Regina, SK",
+    phone: "306-522-2112",
+    email: "Wingorestaurant@gmail.com",
+    hours: "Mon-Wed 11am-1am · Thu-Sun 11am-3am",
+    onlinePayments: true,
+    cloverPrivateKey: process.env.CLOVER_PRIVATE_KEY_ROCHDALE
+  },
+  "moose-jaw": {
+    name: "Moose Jaw",
+    merchantId: "318003488638",
+    apiToken: "",
+    address: "622 Main St N, Moose Jaw, SK",
+    phone: "306-692-2113",
+    email: "Wingorestaurant@gmail.com",
+    hours: "Mon-Wed 11am-1am · Thu-Sun 11am-3am",
+    onlinePayments: false,
+    cloverPrivateKey: null
   }
-  // Add more locations here when ready:
-  // "moose-jaw": { merchantId: "XXX", apiToken: "XXX", ... }
 };
 
 // ── HEALTH CHECK ───────────────────────────────────────────────
