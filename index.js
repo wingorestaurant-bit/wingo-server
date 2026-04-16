@@ -35,7 +35,7 @@ const LOCATIONS = {
   "moose-jaw": {
     name: "Moose Jaw",
     merchantId: "318003488638",
-    apiToken: "",
+    apiToken: process.env.CLOVER_API_TOKEN_MOOSEJAW,
     address: "622 Main St N, Moose Jaw, SK",
     phone: "306-692-2113",
     email: "Wingorestaurant@gmail.com",
@@ -54,7 +54,6 @@ app.get('/api/health', (req, res) => {
 app.post('/api/orders', async (req, res) => {
   const { locationId, orderType, customer, items, notes, subtotal, tax, total } = req.body;
 
-  // Validate
   if (!locationId || !LOCATIONS[locationId]) {
     return res.status(400).json({ error: 'Invalid location' });
   }
@@ -69,7 +68,6 @@ app.post('/api/orders', async (req, res) => {
   const orderNum = 'WO-' + String(Math.floor(1000 + Math.random() * 9000));
   const timestamp = new Date().toLocaleString('en-CA', { timeZone: 'America/Regina' });
 
-  // Build Clover order note
   const orderNote = `
 =================================
 WING-O ONLINE ORDER
@@ -88,9 +86,10 @@ ${orderType === 'delivery' ? `  Deliver to: ${customer.address}` : '  PICKUP at 
 ITEMS
 ${items.map(i => `  ${i.name}${i.flavor ? ' [' + i.flavor + ']' : ''} x${i.qty}  $${(i.price * i.qty).toFixed(2)}`).join('\n')}
 ---------------------------------
-  Subtotal: $${Number(subtotal).toFixed(2)}
-  GST (5%): $${Number(tax).toFixed(2)}
-  TOTAL:    $${Number(total).toFixed(2)}
+  Subtotal:     $${Number(subtotal).toFixed(2)}
+  GST (5%):     $${(Number(subtotal) * 0.05).toFixed(2)}
+  PST (6%):     $${(Number(subtotal) * 0.06).toFixed(2)}
+  TOTAL:        $${Number(total).toFixed(2)}
   Payment:  At ${orderType}
 ---------------------------------
 ${notes ? 'NOTES: ' + notes : ''}
@@ -100,12 +99,10 @@ ${notes ? 'NOTES: ' + notes : ''}
   console.log(`\n[${timestamp}] New order ${orderNum} for ${customer.firstName} at ${loc.name}`);
   console.log(`Items: ${items.map(i => `${i.name} x${i.qty}`).join(', ')}`);
 
-  // ── POST TO CLOVER ─────────────────────────────────────────
   let cloverId = null;
   let cloverSuccess = false;
 
   try {
-    // Step 1: Create the order
     const createResp = await fetch(
       `https://api.clover.com/v3/merchants/${loc.merchantId}/orders`,
       {
@@ -129,7 +126,6 @@ ${notes ? 'NOTES: ' + notes : ''}
       cloverSuccess = true;
       console.log(`✓ Clover order created: ${cloverId}`);
 
-      // Step 2: Add line items to the order
       for (const item of items) {
         try {
           await fetch(
@@ -142,7 +138,7 @@ ${notes ? 'NOTES: ' + notes : ''}
               },
               body: JSON.stringify({
                 name: item.flavor ? `${item.name} [${item.flavor}]` : item.name,
-                price: Math.round(item.price * 100), // Clover uses cents
+                unitPrice: Math.round(item.price * 100),
                 unitQty: item.qty,
                 note: item.flavor || ''
               })
@@ -152,7 +148,48 @@ ${notes ? 'NOTES: ' + notes : ''}
           console.warn('Line item error:', lineErr.message);
         }
       }
-      console.log(`✓ Line items added to Clover order ${cloverId}`);
+
+      // Add tax line items
+      const subtotalNum = Number(subtotal);
+      const gst = Math.round(subtotalNum * 0.05 * 100);
+      const pst = Math.round(subtotalNum * 0.06 * 100);
+
+      try {
+        await fetch(
+          `https://api.clover.com/v3/merchants/${loc.merchantId}/orders/${cloverId}/line_items`,
+          {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${loc.apiToken}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              name: 'GST (5%)',
+              unitPrice: gst,
+              unitQty: 1
+            })
+          }
+        );
+        await fetch(
+          `https://api.clover.com/v3/merchants/${loc.merchantId}/orders/${cloverId}/line_items`,
+          {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${loc.apiToken}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              name: 'PST (6%)',
+              unitPrice: pst,
+              unitQty: 1
+            })
+          }
+        );
+      } catch (taxErr) {
+        console.warn('Tax line item error:', taxErr.message);
+      }
+
+      console.log(`✓ Line items + taxes added to Clover order ${cloverId}`);
     } else {
       console.error('Clover create failed:', createResp.status, JSON.stringify(createData));
     }
@@ -160,7 +197,6 @@ ${notes ? 'NOTES: ' + notes : ''}
     console.error('Clover API error:', err.message);
   }
 
-  // Always return success to customer — order is logged even if Clover has issues
   res.json({
     success: true,
     orderNum,
@@ -178,13 +214,12 @@ ${notes ? 'NOTES: ' + notes : ''}
 });
 
 // ── DONATION TRACKER ──────────────────────────────────────────
-let donationAmount = 0; // Sauce Boss updates this weekly
+let donationAmount = 0;
 
 app.get('/api/donation', (req, res) => {
   res.json({ amount: donationAmount, updatedAt: new Date().toISOString() });
 });
 
-// Password-protected donation update (simple admin)
 app.post('/api/donation', (req, res) => {
   const { amount, password } = req.body;
   const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'sauceboss2025';
@@ -196,7 +231,7 @@ app.post('/api/donation', (req, res) => {
   res.json({ success: true, amount: donationAmount });
 });
 
-// ── GET LOCATIONS (for frontend) ────────────────────────────────
+// ── GET LOCATIONS ────────────────────────────────────────────
 app.get('/api/locations', (req, res) => {
   const safe = Object.entries(LOCATIONS).map(([id, loc]) => ({
     id,
@@ -209,6 +244,7 @@ app.get('/api/locations', (req, res) => {
   res.json(safe);
 });
 
+// ── CLOVER CHARGE (online payments) ─────────────────────────
 app.post('/api/charge', async (req, res) => {
   const { locationId, cardToken, amount, orderId, customer } = req.body;
 
@@ -223,7 +259,6 @@ app.post('/api/charge', async (req, res) => {
 
   try {
     const amountInCents = Math.round(amount * 100);
-
     const chargeResponse = await fetch('https://scl.clover.com/v1/charges', {
       method: 'POST',
       headers: {
