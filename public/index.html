@@ -362,7 +362,7 @@ let activeLocation='albert-st';
     </ul>
     <div class="nav-right">
       <a href="https://www.instagram.com/sauce_____boss?igsh=MWJvdnhmdnd1aWh0cg%3D%3D&utm_source=qr" target="_blank" style="color:#888;font-family:var(--font-head);font-size:.75rem;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:.4rem .7rem;border:1px solid rgba(255,255,255,.15);border-radius:3px;transition:all .15s;" onmouseover="this.style.borderColor='var(--yellow)';this.style.color='var(--yellow)'" onmouseout="this.style.borderColor='rgba(255,255,255,.15)';this.style.color='#888'">🔥 Sauce Boss</a>
-      <button id="franchise-nav-btn" style="background:transparent;color:#888;border:1px solid rgba(255,255,255,.15);padding:.4rem .8rem;font-family:var(--font-head);font-size:.75rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:3px;">🚀 Franchise</button>
+      <button id="franchise-nav-btn" onclick="openFranchise()" style="background:transparent;color:#888;border:1px solid rgba(255,255,255,.15);padding:.4rem .8rem;font-family:var(--font-head);font-size:.75rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:3px;">🚀 Franchise</button>
       <button class="btn-cart" onclick="openCart()">🛒 Order <span class="cart-badge" id="cart-count">0</span></button>
     </div>
   </div>
@@ -1543,7 +1543,7 @@ function updateHoursBanner() {
   if (!banner) return;
   if (!isOpen()) {
     banner.classList.add('show');
-    banner.querySelector('p').innerHTML = '<span class="preorder-badge">Pre-Order</span> We're closed right now — but you can <strong>pre-order for when we open!</strong> Opens ' + getNextOpenTime() + '.';
+    banner.querySelector('p').innerHTML = '<span class="preorder-badge">Pre-Order</span> We are closed right now — but you can <strong>pre-order for when we open!</strong> Opens ' + getNextOpenTime() + '.';
   } else {
     banner.classList.remove('show');
   }
