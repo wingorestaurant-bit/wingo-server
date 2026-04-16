@@ -325,6 +325,12 @@ textarea{resize:vertical;min-height:60px;}
   .cat-grid{grid-template-columns:repeat(2,1fr);}
 }
 .hidden{display:none!important;}
+.preorder-banner{background:var(--black);border-bottom:3px solid var(--yellow);padding:.75rem 1.5rem;text-align:center;display:none;}
+.preorder-banner.show{display:block;}
+.preorder-banner p{font-family:var(--font-head);font-size:.85rem;letter-spacing:1.5px;text-transform:uppercase;color:#CCC;margin:0;}
+.preorder-banner strong{color:var(--yellow);}
+.preorder-badge{display:inline-block;background:var(--yellow);color:var(--black);font-family:var(--font-head);font-size:.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:3px 10px;border-radius:2px;margin-right:8px;}
+.preorder-note{background:#FFF8EE;border:1px solid #F5D98A;border-radius:6px;padding:.75rem 1rem;margin-bottom:.85rem;font-family:var(--font-head);font-size:.78rem;color:#7B3F00;letter-spacing:.5px;text-align:center;}
 </style>
 </head>
 <body>
@@ -333,6 +339,9 @@ const API_BASE=window.location.hostname==='localhost'||window.location.hostname=
 let activeLocation='albert-st';
 </script>
 
+<div id="preorder-banner" class="preorder-banner">
+  <p><span class="preorder-badge">Pre-Order</span> We're closed right now — but you can <strong>pre-order for when we open!</strong> Your order will be ready at our next opening time.</p>
+</div>
 <div class="announce">🔥 Tuesday — All You Can Eat Wings <span>$28.99</span> &nbsp;·&nbsp; Thursday — 50% Off 2nd Order &nbsp;·&nbsp; Saturday — 2 for $20 Burgers</div>
 
 <nav>
@@ -1148,7 +1157,10 @@ function renderCheckoutForm(){
   const total=sub+gst+pst+del;
 
   document.getElementById('mbd').innerHTML=`
-    <div class="otype-row">
+    <div id="co-preorder-note" class="preorder-note" style="display:none;">
+  <strong>⏰ Pre-Order</strong> — We're currently closed. Your order will be prepared when we open <span id="co-open-time"></span>. We'll call you to confirm!
+</div>
+<div class="otype-row">
       <div class="oc on" id="ot-p" onclick="setOT('pickup')"><div class="oc-icon">🏃</div><div class="oc-lbl">Pickup</div><div class="oc-sub">Ready in ~20 min</div></div>
       <div class="oc" id="ot-d" onclick="setOT('delivery')"><div class="oc-icon">🛵</div><div class="oc-lbl">Delivery</div><div class="oc-sub">+$5.50 · Regina</div></div>
     </div>
@@ -1184,6 +1196,13 @@ function renderCheckoutForm(){
 
   detectAndSortLocations(true);
   setTimeout(renderPaymentSection,200);
+  // Show pre-order note if closed
+  const poNote = document.getElementById('co-preorder-note');
+  const poTime = document.getElementById('co-open-time');
+  if(poNote && !isOpen()){
+    poNote.style.display='block';
+    if(poTime) poTime.textContent = getNextOpenTime();
+  }
 }
 
 function setOT(t){
@@ -1229,7 +1248,7 @@ function renderPaymentSection(){
   } else {
     sec.innerHTML='<div class="clover-badge">'+String.fromCodePoint(0x1F340)+' Orders sent to Clover POS</div>'
       +'<p class="pay-note"><strong>Payment at pickup / on delivery.</strong></p>'
-      +'<button class="btn-place" id="pbtn" onclick="submitOrder()">PLACE ORDER '+String.fromCodePoint(0x1F525)+'</button>';
+      +(isPreOrder()?'<button class="btn-place" id="pbtn" onclick="submitOrder()" style="background:#F5A800;color:#0D0D0D;">PRE-ORDER FOR '+getNextOpenTime().toUpperCase()+' ⏰</button>':'<button class="btn-place" id="pbtn" onclick="submitOrder()">PLACE ORDER '+String.fromCodePoint(0x1F525)+'</button>');
   }
 }
 
@@ -1323,7 +1342,7 @@ async function submitOrder(){
   });
 
   try{
-    const resp=await fetch(API_BASE+'/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({locationId:locId,orderType,customer:{firstName:fn,lastName:ln,phone:ph,email:em,address:addr},items:serverItems,notes,subtotal:sub,tax:gst+pst,total})});
+    const resp=await fetch(API_BASE+'/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({locationId:locId,orderType,customer:{firstName:fn,lastName:ln,phone:ph,email:em,address:addr},items:serverItems,notes:(isPreOrder()?'[PRE-ORDER — opens '+getNextOpenTime()+'] ':'')+(notes||''),subtotal:sub,tax:gst+pst,total,preOrder:isPreOrder(),openTime:getNextOpenTime()})});
     const data=await resp.json();
     if(data.success){showSuccess({...data,orderType,paid:false});cart=[];updateCart();}
     else{toast('Error: '+(data.error||'Unknown'));btn.disabled=false;btn.innerHTML='PLACE ORDER 🔥';}
@@ -1466,12 +1485,79 @@ function _showCat(cat){
   renderGrid(cat);
 }
 
+// ── HOURS CHECK ──────────────────────────────────────────────
+const HOURS = {
+  // 0=Sun,1=Mon,2=Tue,3=Wed,4=Thu,5=Fri,6=Sat
+  // [openHour, closeHour] in Regina local time (24h)
+  // Mon-Wed: 11am-1am(next day), Thu-Sun: 11am-3am(next day)
+  0: [11, 27], // Sun: 11am - 3am (27=3am next day)
+  1: [11, 25], // Mon: 11am - 1am (25=1am next day)
+  2: [11, 25], // Tue
+  3: [11, 25], // Wed
+  4: [11, 27], // Thu
+  5: [11, 27], // Fri
+  6: [11, 27], // Sat
+};
+
+function isOpen() {
+  const now = new Date();
+  const regina = new Date(now.toLocaleString('en-US', { timeZone: 'America/Regina' }));
+  const day = regina.getDay();
+  const hour = regina.getHours() + regina.getMinutes() / 60;
+
+  // Check today's hours
+  const todayHours = HOURS[day];
+  if (hour >= todayHours[0]) {
+    if (todayHours[1] <= 24 && hour < todayHours[1]) return true;
+    if (todayHours[1] > 24 && hour >= todayHours[0]) return true;
+  }
+
+  // Check if we're in yesterday's late-night window
+  const yesterday = (day + 6) % 7;
+  const yHours = HOURS[yesterday];
+  if (yHours[1] > 24 && hour < (yHours[1] - 24)) return true;
+
+  return false;
+}
+
+function getNextOpenTime() {
+  const now = new Date();
+  const regina = new Date(now.toLocaleString('en-US', { timeZone: 'America/Regina' }));
+  const day = regina.getDay();
+  const hour = regina.getHours();
+
+  // If before 11am today, opens today at 11am
+  if (hour < 11) return 'today at 11:00 AM';
+
+  // Otherwise opens tomorrow at 11am
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const tomorrow = (day + 1) % 7;
+  return days[tomorrow] + ' at 11:00 AM';
+}
+
+function updateHoursBanner() {
+  const banner = document.getElementById('preorder-banner');
+  if (!banner) return;
+  if (!isOpen()) {
+    banner.classList.add('show');
+    banner.querySelector('p').innerHTML = '<span class="preorder-badge">Pre-Order</span> We're closed right now — but you can <strong>pre-order for when we open!</strong> Opens ' + getNextOpenTime() + '.';
+  } else {
+    banner.classList.remove('show');
+  }
+}
+
+function isPreOrder() {
+  return !isOpen();
+}
+
 checkAPI();
 renderSauces();
 updateCart();
 detectAndSortLocations(false);
 _showHome();
 history.replaceState({page:'home'},'');
+updateHoursBanner();
+setInterval(updateHoursBanner,60000);
 
 function openFranchise(){
   var ov=document.getElementById('franchise-ov');
