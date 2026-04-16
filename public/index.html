@@ -1441,11 +1441,14 @@ function fmt(n){return n.toLocaleString('en-CA');}
 async function fetchDonation(){try{const r=await fetch(API_BASE+'/api/donation');if(r.ok){const d=await r.json();document.getElementById('donation-counter').textContent=fmt(d.amount||0)+'+';}}catch{}}
 function animUp(el,target,dur){if(!el)return;const start=performance.now();function upd(now){const p=Math.min((now-start)/dur,1);const e=1-Math.pow(1-p,3);el.textContent=fmt(Math.floor(e*target));if(p<1)requestAnimationFrame(upd);}requestAnimationFrame(upd);}
 function updateCounters(){const l=getLive();const wc=document.getElementById('wings-counter');const oc=document.getElementById('orders-counter');const sw=document.getElementById('spw');if(wc)wc.textContent=fmt(l.wings);if(oc)oc.textContent=fmt(l.orders);if(sw)sw.textContent=l.spw;}
-let impAnim=false;
-const io=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting&&!impAnim){impAnim=true;const l=getLive();animUp(document.getElementById('wings-counter'),l.wings,2000);animUp(document.getElementById('orders-counter'),l.orders,2000);io.disconnect();}});},{threshold:0,rootMargin:'0px 0px 200px 0px'});
-const impEl=document.getElementById('impact');if(impEl)io.observe(impEl);
-// Fallback - always run after 1.5s
-setTimeout(function(){if(!impAnim){impAnim=true;const l=getLive();animUp(document.getElementById('wings-counter'),l.wings,2000);animUp(document.getElementById('orders-counter'),l.orders,2000);}},1500);
+// Run counters immediately on load - no observer needed
+function runCounters(){
+  const l=getLive();
+  animUp(document.getElementById('wings-counter'),l.wings,2500);
+  animUp(document.getElementById('orders-counter'),l.orders,2500);
+}
+// Run after DOM is ready
+setTimeout(runCounters, 800);
 fetchDonation();setInterval(updateCounters,1000);setInterval(fetchDonation,60000);
 
 // ── INIT ──────────────────────────────────────────────────────
