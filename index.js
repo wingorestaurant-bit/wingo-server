@@ -78,7 +78,7 @@ app.get('/api/health', (req, res) => {
 
 // ── PLACE ORDER → CLOVER ───────────────────────────────────────
 app.post('/api/orders', async (req, res) => {
-  const { locationId, orderType, customer, items, notes, subtotal, tax, total } = req.body;
+  const { locationId, orderType, customer, items, notes, subtotal, tax, total, preOrder, openTime } = req.body;
 
   if (!locationId || !LOCATIONS[locationId]) {
     return res.status(400).json({ error: 'Invalid location' });
@@ -100,7 +100,7 @@ WING-O ONLINE ORDER
 =================================
 ORDER #: ${orderNum}
 TIME: ${timestamp} (Regina SK)
-TYPE: ${orderType.toUpperCase()}
+TYPE: ${orderType.toUpperCase()}${preOrder ? ' *** PRE-ORDER — opens ' + openTime + ' ***' : ''}
 LOCATION: ${loc.name}
 ---------------------------------
 CUSTOMER
@@ -193,7 +193,7 @@ ${notes ? 'NOTES: ' + notes : ''}
   // Send order notification email
   sendEmail({
     to: 'besaucy@wingorestaurants.com',
-    subject: `🍗 New Order ${orderNum} — ${loc.name} — $${Number(total).toFixed(2)}`,
+    subject: `${req.body.preOrder ? '⏰ PRE-ORDER' : '🍗 New Order'} ${orderNum} — ${loc.name} — $${Number(total).toFixed(2)}`,
     html: `
       <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">
         <div style="background:#0D0D0D;padding:20px;text-align:center;">
@@ -204,8 +204,8 @@ ${notes ? 'NOTES: ' + notes : ''}
           <table style="width:100%;border-collapse:collapse;">
             <tr><td style="padding:6px 0;color:#888;font-size:13px;">Order #</td><td style="padding:6px 0;font-weight:bold;font-size:16px;color:#E8190A;">${orderNum}</td></tr>
             <tr><td style="padding:6px 0;color:#888;font-size:13px;">Location</td><td style="padding:6px 0;font-weight:bold;">${loc.name}</td></tr>
-            <tr><td style="padding:6px 0;color:#888;font-size:13px;">Type</td><td style="padding:6px 0;font-weight:bold;">${orderType === 'delivery' ? '🛵 Delivery' : '🏃 Pickup'}</td></tr>
-            <tr><td style="padding:6px 0;color:#888;font-size:13px;">Time</td><td style="padding:6px 0;">${timestamp}</td></tr>
+            <tr><td style="padding:6px 0;color:#888;font-size:13px;">Type</td><td style="padding:6px 0;font-weight:bold;">${orderType === 'delivery' ? '🛵 Delivery' : '🏃 Pickup'}${preOrder ? ' &nbsp;<span style="background:#F5A800;color:#0D0D0D;font-size:11px;padding:2px 8px;border-radius:3px;font-weight:bold;">⏰ PRE-ORDER</span>' : ''}</td></tr>
+            <tr><td style="padding:6px 0;color:#888;font-size:13px;">Time</td><td style="padding:6px 0;">${timestamp}</td></tr>${preOrder ? `<tr><td style="padding:6px 0;color:#888;font-size:13px;">Opens At</td><td style="padding:6px 0;font-weight:bold;color:#F5A800;">${openTime}</td></tr>` : ''}
           </table>
           <hr style="border:1px solid #E8E0D0;margin:16px 0;">
           <h3 style="margin:0 0 12px;font-size:14px;text-transform:uppercase;letter-spacing:1px;color:#555;">Customer</h3>
