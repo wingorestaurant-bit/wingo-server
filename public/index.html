@@ -342,8 +342,10 @@ let activeLocation='albert-st';
     </a>
     <ul class="nav-links" id="nav-links">
       <li><a href="#" onclick="showHome();return false;" id="nav-home">Home</a></li>
-      <li><a href="#" onclick="showCat('wings');return false;">Wings & Ribs</a></li>
+      <li><a href="#" onclick="showCat('wings');return false;">🍗 Wings</a></li>
+      <li><a href="#" onclick="showCat('ribs');return false;">🔥 Ribs</a></li>
       <li><a href="#" onclick="showCat('boneless');return false;">Boneless</a></li>
+      <li><a href="#" onclick="showCat('chickenfingers');return false;">Chicken Fingers</a></li>
       <li><a href="#" onclick="showCat('burgers');return false;">Burgers</a></li>
       <li><a href="#" onclick="showCat('combos');return false;">Combos</a></li>
       <li><a href="#" onclick="showCat('sides');return false;">Sides</a></li>
@@ -425,12 +427,20 @@ let activeLocation='albert-st';
     <h2 class="sec-title">WHAT ARE YOU FEELING?</h2>
     <div class="cat-grid">
       <div class="cat-card" onclick="showCat('wings')">
-        <div class="cat-card-img"><img src="images/wings-hero.jpg" alt="Wings & Ribs"></div>
-        <div class="cat-card-body"><div class="cat-card-name">Wings & Ribs</div><div class="cat-card-sub">125+ Flavors · From $7.99</div></div>
+        <div class="cat-card-img"><img src="images/wings-hero.jpg" alt="Wings"></div>
+        <div class="cat-card-body"><div class="cat-card-name">🍗 Wings</div><div class="cat-card-sub">Bone-In · 125+ Flavors · From $7.99</div></div>
+      </div>
+      <div class="cat-card" onclick="showCat('ribs')">
+        <div class="cat-card-img"><img src="images/ribs.jpg" alt="Ribs"></div>
+        <div class="cat-card-body"><div class="cat-card-name">🔥 Ribs</div><div class="cat-card-sub">Saucy Ribs · 125+ Flavors · From $7.99</div></div>
       </div>
       <div class="cat-card" onclick="showCat('boneless')">
-        <div class="cat-card-img"><img src="images/boneless-wings.jpg" alt="Boneless"></div>
-        <div class="cat-card-body"><div class="cat-card-name">Boneless & Fingers</div><div class="cat-card-sub">Crispy · From $7.99</div></div>
+        <div class="cat-card-img"><img src="images/boneless-wings.jpg" alt="Boneless Wings"></div>
+        <div class="cat-card-body"><div class="cat-card-name">Boneless Wings</div><div class="cat-card-sub">Crispy · 125+ Flavors · From $7.99</div></div>
+      </div>
+      <div class="cat-card" onclick="showCat('chickenfingers')">
+        <div class="cat-card-img"><img src="images/boneless-sauce.jpg" alt="Chicken Fingers"></div>
+        <div class="cat-card-body"><div class="cat-card-name">Chicken Fingers</div><div class="cat-card-sub">Crispy · Choose Your Sauce · From $7.99</div></div>
       </div>
       <div class="cat-card" onclick="showCat('burgers')">
         <div class="cat-card-img"><img src="images/burger-tough-guy.jpg" alt="Burgers"></div>
@@ -529,7 +539,7 @@ let activeLocation='albert-st';
 <!-- WINGS & RIBS -->
 <div class="menu-page" id="page-wings">
   <div class="menu-page-inner">
-    <button class="back-btn" onclick="showHome()">← Back to Menu</button>
+    <button class="back-btn" onclick="goBack()">← Back to Menu</button>
     <div class="eyebrow">125+ Flavors</div>
     <h2 class="sec-title" style="margin-bottom:1.5rem">WINGS & RIBS</h2>
     <p style="font-size:.88rem;color:#888;margin-bottom:1.5rem;">Choose your flavor for each order below. Mix & match — pick a different flavor per order!</p>
@@ -537,20 +547,41 @@ let activeLocation='albert-st';
   </div>
 </div>
 
-<!-- BONELESS & CHICKEN FINGERS -->
+<!-- RIBS -->
+<div class="menu-page" id="page-ribs">
+  <div class="menu-page-inner">
+    <button class="back-btn" onclick="goBack()">← Back to Menu</button>
+    <div class="eyebrow">125+ Flavors</div>
+    <h2 class="sec-title" style="margin-bottom:1.5rem">🔥 RIBS</h2>
+    <p style="font-size:.88rem;color:#888;margin-bottom:1.5rem;">Choose your flavor for each order. Mix & match — pick a different flavor per order!</p>
+    <div class="mgrid" id="grid-ribs"></div>
+  </div>
+</div>
+
+<!-- BONELESS WINGS -->
 <div class="menu-page" id="page-boneless">
   <div class="menu-page-inner">
-    <button class="back-btn" onclick="showHome()">← Back to Menu</button>
+    <button class="back-btn" onclick="goBack()">← Back to Menu</button>
     <div class="eyebrow">Crispy & Sauced</div>
-    <h2 class="sec-title" style="margin-bottom:1.5rem">BONELESS & CHICKEN FINGERS</h2>
+    <h2 class="sec-title" style="margin-bottom:1.5rem">BONELESS WINGS</h2>
     <div class="mgrid" id="grid-boneless"></div>
+  </div>
+</div>
+
+<!-- CHICKEN FINGERS -->
+<div class="menu-page" id="page-chickenfingers">
+  <div class="menu-page-inner">
+    <button class="back-btn" onclick="goBack()">← Back to Menu</button>
+    <div class="eyebrow">Crispy & Dippable</div>
+    <h2 class="sec-title" style="margin-bottom:1.5rem">CHICKEN FINGERS</h2>
+    <div class="mgrid" id="grid-chickenfingers"></div>
   </div>
 </div>
 
 <!-- BURGERS -->
 <div class="menu-page" id="page-burgers">
   <div class="menu-page-inner">
-    <button class="back-btn" onclick="showHome()">← Back to Menu</button>
+    <button class="back-btn" onclick="goBack()">← Back to Menu</button>
     <div class="eyebrow">Sloppy Seduction</div>
     <h2 class="sec-title" style="margin-bottom:.5rem">BURGERS</h2>
     <p style="font-size:.82rem;color:#888;margin-bottom:1.5rem;">All burgers served with fries and a drink. Upgrade available.</p>
@@ -561,7 +592,7 @@ let activeLocation='albert-st';
 <!-- COMBOS -->
 <div class="menu-page" id="page-combos">
   <div class="menu-page-inner">
-    <button class="back-btn" onclick="showHome()">← Back to Menu</button>
+    <button class="back-btn" onclick="goBack()">← Back to Menu</button>
     <div class="eyebrow">Best Value</div>
     <h2 class="sec-title" style="margin-bottom:.5rem">COMBOS</h2>
     <p style="font-size:.82rem;color:#888;margin-bottom:1.5rem;">Choose wings, ribs, or chicken fingers. Upgrade fries available.</p>
@@ -572,7 +603,7 @@ let activeLocation='albert-st';
 <!-- SIDES -->
 <div class="menu-page" id="page-sides">
   <div class="menu-page-inner">
-    <button class="back-btn" onclick="showHome()">← Back to Menu</button>
+    <button class="back-btn" onclick="goBack()">← Back to Menu</button>
     <div class="eyebrow">Kissable Kick-Offs & Loaded Affairs</div>
     <h2 class="sec-title" style="margin-bottom:1.5rem">SIDES</h2>
     <div class="mgrid" id="grid-sides"></div>
@@ -582,7 +613,7 @@ let activeLocation='albert-st';
 <!-- SALADS -->
 <div class="menu-page" id="page-salads">
   <div class="menu-page-inner">
-    <button class="back-btn" onclick="showHome()">← Back to Menu</button>
+    <button class="back-btn" onclick="goBack()">← Back to Menu</button>
     <div class="eyebrow">Fresh & Flirty</div>
     <h2 class="sec-title" style="margin-bottom:1.5rem">SALADS</h2>
     <div class="mgrid" id="grid-salads"></div>
@@ -592,7 +623,7 @@ let activeLocation='albert-st';
 <!-- PLATTERS -->
 <div class="menu-page" id="page-platters">
   <div class="menu-page-inner">
-    <button class="back-btn" onclick="showHome()">← Back to Menu</button>
+    <button class="back-btn" onclick="goBack()">← Back to Menu</button>
     <div class="eyebrow">Too Good to Share</div>
     <h2 class="sec-title" style="margin-bottom:.5rem">PLATTERS</h2>
     <p style="font-size:.82rem;color:#888;margin-bottom:1.5rem;">Choose your sauce/flavor for the wing/rib portions.</p>
@@ -603,7 +634,7 @@ let activeLocation='albert-st';
 <!-- MIDNIGHT ECSTASY -->
 <div class="menu-page" id="page-midnight">
   <div class="menu-page-inner">
-    <button class="back-btn" onclick="showHome()">← Back to Menu</button>
+    <button class="back-btn" onclick="goBack()">← Back to Menu</button>
     <div class="eyebrow">Sweet Endings</div>
     <h2 class="sec-title" style="margin-bottom:1.5rem">MIDNIGHT ECSTASY 🌙</h2>
     <div class="mgrid" id="grid-midnight"></div>
@@ -692,19 +723,29 @@ const ALL_FLAVORS = Object.values(FLAVORS).flat();
 // Menu data — exact from Sloppy Seduction menu
 const MENU = {
   wings:[
-    {id:'w1',name:'Half Order — Wings or Ribs',desc:'Half order of crispy bone-in wings or ribs. Choose your sauce or rub from 125+ flavors.',price:7.99,img:'images/wings-half.jpg',flavorCount:1,pop:false},
-    {id:'w2',name:'One Order — Wings or Ribs',desc:'Full order of bone-in wings or ribs. Choose your sauce or rub from 125+ flavors.',price:13.99,img:'images/wings-hero.jpg',flavorCount:1,pop:true},
-    {id:'w3',name:'Two Orders — Wings or Ribs',desc:'Two orders. Mix & match — choose a different flavor for each order!',price:25.99,img:'images/wings-hero.jpg',flavorCount:2,pop:false},
-    {id:'w4',name:'Three Orders — Wings or Ribs',desc:'Three orders. Mix & match — choose a different flavor for each order!',price:37.99,img:'images/wings-hero.jpg',flavorCount:3,pop:false},
-    {id:'w5',name:'Four Orders — Wings or Ribs',desc:'Four orders. Mix & match — choose a different flavor for each order!',price:49.99,img:'images/wings-hero.jpg',flavorCount:4,pop:false},
-    {id:'w6',name:'Five Orders — Wings or Ribs',desc:'Five orders — the ultimate party pack! Choose a flavor for each order.',price:58.99,img:'images/wings-hero.jpg',flavorCount:5,pop:false},
+    {id:'w1',name:'Half Order — Wings',desc:'Half order of crispy bone-in wings. Choose your sauce or rub from 125+ flavors.',price:7.99,img:'images/wings-half.jpg',flavorCount:1,pop:false},
+    {id:'w2',name:'One Order — Wings',desc:'Full order of crispy bone-in wings. Choose your sauce or rub from 125+ flavors.',price:13.99,img:'images/wings-hero.jpg',flavorCount:1,pop:true},
+    {id:'w3',name:'Two Orders — Wings',desc:'Two orders. Mix & match — choose a different flavor for each order!',price:25.99,img:'images/wings-hero.jpg',flavorCount:2,pop:false},
+    {id:'w4',name:'Three Orders — Wings',desc:'Three orders. Mix & match — choose a different flavor for each order!',price:37.99,img:'images/wings-hero.jpg',flavorCount:3,pop:false},
+    {id:'w5',name:'Four Orders — Wings',desc:'Four orders. Mix & match — choose a different flavor for each order!',price:49.99,img:'images/wings-hero.jpg',flavorCount:4,pop:false},
+    {id:'w6',name:'Five Orders — Wings',desc:'Five orders — the ultimate party pack!',price:58.99,img:'images/wings-hero.jpg',flavorCount:5,pop:false},
   ],
-  boneless:[
+  ribs:[
+    {id:'r1',name:'Half Order — Ribs',desc:'Half order of saucy bone-in ribs. Choose your sauce or rub from 125+ flavors.',price:7.99,img:'images/ribs.jpg',flavorCount:1,pop:false},
+    {id:'r2',name:'One Order — Ribs',desc:'Full order of saucy bone-in ribs. Choose your sauce or rub from 125+ flavors.',price:13.99,img:'images/ribs.jpg',flavorCount:1,pop:true},
+    {id:'r3',name:'Two Orders — Ribs',desc:'Two orders of ribs. Mix & match flavors!',price:25.99,img:'images/ribs.jpg',flavorCount:2,pop:false},
+    {id:'r4',name:'Three Orders — Ribs',desc:'Three orders of ribs. Mix & match flavors!',price:37.99,img:'images/ribs.jpg',flavorCount:3,pop:false},
+    {id:'r5',name:'Four Orders — Ribs',desc:'Four orders of ribs. Mix & match flavors!',price:49.99,img:'images/ribs.jpg',flavorCount:4,pop:false},
+    {id:'r6',name:'Five Orders — Ribs',desc:'Five orders — the ultimate party pack!',price:58.99,img:'images/ribs.jpg',flavorCount:5,pop:false},
+  ],
+    boneless:[
     {id:'b1',name:'Half Order — Boneless Wings',desc:'Half order of crispy boneless wings tossed in your choice of sauce.',price:7.99,img:'images/boneless-wings.jpg',flavorCount:1,pop:false},
     {id:'b2',name:'Full Order — Boneless Wings',desc:'Full order of crispy boneless wings tossed in your choice of sauce.',price:13.99,img:'images/boneless-wings.jpg',flavorCount:1,pop:true},
-    {id:'b3',name:'Half Order — Chicken Fingers',desc:'Half order of crispy chicken fingers served with your choice of dipping sauce.',price:7.99,img:'images/boneless-sauce.jpg',flavorCount:1,pop:false},
-    {id:'b4',name:'Full Order — Chicken Fingers',desc:'Full order of crispy chicken fingers served with your choice of dipping sauce.',price:13.99,img:'images/boneless-sauce.jpg',flavorCount:1,pop:true},
     {id:'b5',name:'Cauliflower Wings',desc:'Crispy cauliflower wings tossed with sauce of your choice.',price:12.99,img:null,flavorCount:1,pop:false},
+  ],
+  chickenfingers:[
+    {id:'cf1',name:'Half Order — Chicken Fingers',desc:'Half order of crispy chicken fingers served with your choice of dipping sauce.',price:7.99,img:'images/boneless-sauce.jpg',flavorCount:1,pop:false},
+    {id:'cf2',name:'Full Order — Chicken Fingers',desc:'Full order of crispy chicken fingers served with your choice of dipping sauce.',price:13.99,img:'images/boneless-sauce.jpg',flavorCount:1,pop:true},
   ],
   burgers:[
     {id:'bu1',name:'The Tough Guy',desc:'Crispy 6oz chicken breast, double-crunched and coated in our blazing Carolina Reaper sauce. Layered with pickles, tomatoes, red onions, romaine, and melted Swiss for the perfect hit of heat and crunch. 🌶️',price:21.99,img:'images/burger-tough-guy.jpg',upgrades:true,pop:true},
@@ -785,20 +826,12 @@ function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t
 
 // ── PAGE NAV ─────────────────────────────────────────────────
 function showHome(){
-  document.getElementById('home-page').style.display='block';
-  document.getElementById('menu-pages').style.display='none';
-  document.querySelectorAll('.menu-page').forEach(p=>p.classList.remove('active'));
-  currentPage='home';
-  window.scrollTo({top:0,behavior:'smooth'});
+  _showHome();
+  history.pushState({page:'home'},'');
 }
 function showCat(cat){
-  document.getElementById('home-page').style.display='none';
-  document.getElementById('menu-pages').style.display='block';
-  document.querySelectorAll('.menu-page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+cat)?.classList.add('active');
-  currentPage=cat;
-  window.scrollTo({top:0,behavior:'smooth'});
-  renderGrid(cat);
+  _showCat(cat);
+  history.pushState({page:cat},'');
 }
 
 // ── RENDER GRID ───────────────────────────────────────────────
@@ -1376,11 +1409,48 @@ const impEl=document.getElementById('impact');if(impEl)io.observe(impEl);
 fetchDonation();setInterval(updateCounters,1000);setInterval(fetchDonation,60000);
 
 // ── INIT ──────────────────────────────────────────────────────
+// Handle browser back button
+window.addEventListener('popstate', function(e){
+  if(e.state&&e.state.page){
+    if(e.state.page==='home') _showHome();
+    else _showCat(e.state.page);
+  } else {
+    _showHome();
+  }
+});
+
+function goBack(){
+  if(window.history.length>1){
+    window.history.back();
+  } else {
+    showHome();
+  }
+}
+
+// Internal show functions (no history push)
+function _showHome(){
+  document.getElementById('home-page').style.display='block';
+  document.getElementById('menu-pages').style.display='none';
+  document.querySelectorAll('.menu-page').forEach(p=>p.classList.remove('active'));
+  currentPage='home';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function _showCat(cat){
+  document.getElementById('home-page').style.display='none';
+  document.getElementById('menu-pages').style.display='block';
+  document.querySelectorAll('.menu-page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+cat)?.classList.add('active');
+  currentPage=cat;
+  window.scrollTo({top:0,behavior:'smooth'});
+  renderGrid(cat);
+}
+
 checkAPI();
 renderSauces();
 updateCart();
 detectAndSortLocations(false);
-showHome();
+_showHome();
+history.replaceState({page:'home'},'');
 </script>
 <script src="https://checkout.clover.com/sdk.js"></script>
 </body>
