@@ -340,7 +340,7 @@ let activeLocation='albert-st';
 </script>
 
 <div id="preorder-banner" class="preorder-banner">
-  <p><span class="preorder-badge">Pre-Order</span> We're closed right now — but you can <strong>pre-order for when we open!</strong> Your order will be ready at our next opening time.</p>
+  <p><span class="preorder-badge">Pre-Order</span> We are closed right now — but you can <strong>pre-order for when we open!</strong> Your order will be ready at our next opening time.</p>
 </div>
 <div class="announce">🔥 Tuesday — All You Can Eat Wings <span>$28.99</span> &nbsp;·&nbsp; Thursday — 50% Off 2nd Order &nbsp;·&nbsp; Saturday — 2 for $20 Burgers</div>
 
@@ -1562,8 +1562,6 @@ history.replaceState({page:'home'},'');
 updateHoursBanner();
 setInterval(updateHoursBanner,60000);
 // Attach franchise button listener after DOM ready
-var fBtn=document.getElementById('franchise-nav-btn');
-if(fBtn) fBtn.addEventListener('click',function(){openFranchise();});
 
 function openFranchise(){
   var ov=document.getElementById('franchise-ov');
@@ -1595,7 +1593,10 @@ async function submitFranchise(){
   btn.style.display='none';
 }
 // Close franchise modal on overlay click
-document.getElementById('franchise-ov').addEventListener('click',function(e){if(e.target===this)closeFranchise();});
+window.addEventListener('load',function(){
+  var fov=document.getElementById('franchise-ov');
+  if(fov) fov.addEventListener('click',function(e){if(e.target===this)closeFranchise();});
+});
 
 </script>
 <script src="https://checkout.clover.com/sdk.js"></script>
