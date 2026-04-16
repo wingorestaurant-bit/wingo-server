@@ -45,6 +45,32 @@ const LOCATIONS = {
   }
 };
 
+// ── EMAIL HELPER (Resend) ──────────────────────────────────────
+async function sendEmail({ to, subject, html }) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) { console.warn('⚠️ RESEND_API_KEY not set — email skipped'); return; }
+  try {
+    const r = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        from: 'Wing-O <besaucy@wingorestaurants.com>',
+        to,
+        subject,
+        html
+      })
+    });
+    const d = await r.json();
+    if (d.id) console.log(`✉️ Email sent: ${subject}`);
+    else console.warn('Email error:', JSON.stringify(d));
+  } catch (e) {
+    console.warn('Email failed:', e.message);
+  }
+}
+
 // ── HEALTH CHECK ───────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', locations: Object.keys(LOCATIONS), time: new Date().toISOString() });
@@ -107,10 +133,7 @@ ${notes ? 'NOTES: ' + notes : ''}
       `https://api.clover.com/v3/merchants/${loc.merchantId}/orders`,
       {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${loc.apiToken}`,
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Authorization': `Bearer ${loc.apiToken}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title: `Online ${orderType} — ${customer.firstName} ${customer.lastName || ''}`,
           note: orderNote,
@@ -118,7 +141,6 @@ ${notes ? 'NOTES: ' + notes : ''}
         })
       }
     );
-
     const createData = await createResp.json();
 
     if (createResp.ok && createData.id) {
@@ -132,10 +154,7 @@ ${notes ? 'NOTES: ' + notes : ''}
             `https://api.clover.com/v3/merchants/${loc.merchantId}/orders/${cloverId}/line_items`,
             {
               method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${loc.apiToken}`,
-                'Content-Type': 'application/json'
-              },
+              headers: { 'Authorization': `Bearer ${loc.apiToken}`, 'Content-Type': 'application/json' },
               body: JSON.stringify({
                 name: item.flavor ? `${item.name} [${item.flavor}]` : item.name,
                 unitPrice: Math.round(item.price * 100),
@@ -144,41 +163,24 @@ ${notes ? 'NOTES: ' + notes : ''}
               })
             }
           );
-        } catch (lineErr) {
-          console.warn('Line item error:', lineErr.message);
-        }
+        } catch (lineErr) { console.warn('Line item error:', lineErr.message); }
       }
 
       const subtotalNum = Number(subtotal);
       const gst = Math.round(subtotalNum * 0.05 * 100);
       const pst = Math.round(subtotalNum * 0.06 * 100);
-
       try {
-        await fetch(
-          `https://api.clover.com/v3/merchants/${loc.merchantId}/orders/${cloverId}/line_items`,
-          {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${loc.apiToken}`,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ name: 'GST (5%)', unitPrice: gst, unitQty: 1 })
-          }
-        );
-        await fetch(
-          `https://api.clover.com/v3/merchants/${loc.merchantId}/orders/${cloverId}/line_items`,
-          {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${loc.apiToken}`,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ name: 'PST (6%)', unitPrice: pst, unitQty: 1 })
-          }
-        );
-      } catch (taxErr) {
-        console.warn('Tax line item error:', taxErr.message);
-      }
+        await fetch(`https://api.clover.com/v3/merchants/${loc.merchantId}/orders/${cloverId}/line_items`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${loc.apiToken}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: 'GST (5%)', unitPrice: gst, unitQty: 1 })
+        });
+        await fetch(`https://api.clover.com/v3/merchants/${loc.merchantId}/orders/${cloverId}/line_items`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${loc.apiToken}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: 'PST (6%)', unitPrice: pst, unitQty: 1 })
+        });
+      } catch (taxErr) { console.warn('Tax line item error:', taxErr.message); }
 
       console.log(`✓ Line items + taxes added to Clover order ${cloverId}`);
     } else {
@@ -188,14 +190,63 @@ ${notes ? 'NOTES: ' + notes : ''}
     console.error('Clover API error:', err.message);
   }
 
+  // Send order notification email
+  sendEmail({
+    to: 'besaucy@wingorestaurants.com',
+    subject: `🍗 New Order ${orderNum} — ${loc.name} — $${Number(total).toFixed(2)}`,
+    html: `
+      <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">
+        <div style="background:#0D0D0D;padding:20px;text-align:center;">
+          <h1 style="color:#E8190A;font-size:28px;margin:0;letter-spacing:2px;">WING-O</h1>
+          <p style="color:#888;margin:4px 0 0;font-size:12px;letter-spacing:2px;text-transform:uppercase;">New Online Order</p>
+        </div>
+        <div style="background:#F5F0E8;padding:24px;">
+          <table style="width:100%;border-collapse:collapse;">
+            <tr><td style="padding:6px 0;color:#888;font-size:13px;">Order #</td><td style="padding:6px 0;font-weight:bold;font-size:16px;color:#E8190A;">${orderNum}</td></tr>
+            <tr><td style="padding:6px 0;color:#888;font-size:13px;">Location</td><td style="padding:6px 0;font-weight:bold;">${loc.name}</td></tr>
+            <tr><td style="padding:6px 0;color:#888;font-size:13px;">Type</td><td style="padding:6px 0;font-weight:bold;">${orderType === 'delivery' ? '🛵 Delivery' : '🏃 Pickup'}</td></tr>
+            <tr><td style="padding:6px 0;color:#888;font-size:13px;">Time</td><td style="padding:6px 0;">${timestamp}</td></tr>
+          </table>
+          <hr style="border:1px solid #E8E0D0;margin:16px 0;">
+          <h3 style="margin:0 0 12px;font-size:14px;text-transform:uppercase;letter-spacing:1px;color:#555;">Customer</h3>
+          <table style="width:100%;border-collapse:collapse;">
+            <tr><td style="padding:4px 0;color:#888;font-size:13px;">Name</td><td style="padding:4px 0;">${customer.firstName} ${customer.lastName || ''}</td></tr>
+            <tr><td style="padding:4px 0;color:#888;font-size:13px;">Phone</td><td style="padding:4px 0;"><a href="tel:${customer.phone}" style="color:#E8190A;">${customer.phone}</a></td></tr>
+            <tr><td style="padding:4px 0;color:#888;font-size:13px;">Email</td><td style="padding:4px 0;">${customer.email || 'N/A'}</td></tr>
+            ${orderType === 'delivery' ? `<tr><td style="padding:4px 0;color:#888;font-size:13px;">Deliver to</td><td style="padding:4px 0;">${customer.address}</td></tr>` : ''}
+          </table>
+          <hr style="border:1px solid #E8E0D0;margin:16px 0;">
+          <h3 style="margin:0 0 12px;font-size:14px;text-transform:uppercase;letter-spacing:1px;color:#555;">Items</h3>
+          ${items.map(i => `
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #E8E0D0;">
+              <div>
+                <div style="font-weight:bold;font-size:14px;">${i.name} ×${i.qty}</div>
+                ${i.flavor ? `<div style="color:#E8190A;font-size:12px;font-style:italic;">${i.flavor}</div>` : ''}
+              </div>
+              <div style="font-weight:bold;">$${(i.price * i.qty).toFixed(2)}</div>
+            </div>
+          `).join('')}
+          <div style="margin-top:12px;">
+            <div style="display:flex;justify-content:space-between;padding:4px 0;color:#888;font-size:13px;"><span>Subtotal</span><span>$${Number(subtotal).toFixed(2)}</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;color:#888;font-size:13px;"><span>GST (5%)</span><span>$${(Number(subtotal)*0.05).toFixed(2)}</span></div>
+            <div style="display:flex;justify-content:space-between;padding:4px 0;color:#888;font-size:13px;"><span>PST (6%)</span><span>$${(Number(subtotal)*0.06).toFixed(2)}</span></div>
+            <div style="display:flex;justify-content:space-between;padding:8px 0;font-weight:bold;font-size:18px;border-top:2px solid #0D0D0D;margin-top:8px;"><span>TOTAL</span><span style="color:#E8190A;">$${Number(total).toFixed(2)}</span></div>
+          </div>
+          ${notes ? `<div style="background:#FFF8EE;border:1px solid #F5D98A;border-radius:6px;padding:10px;margin-top:12px;"><strong>Notes:</strong> ${notes}</div>` : ''}
+        </div>
+        <div style="background:#0D0D0D;padding:14px;text-align:center;">
+          <p style="color:#555;font-size:11px;margin:0;">Wing-O Restaurants Ltd · Regina, SK 🌾</p>
+        </div>
+      </div>
+    `
+  });
+
   res.json({
     success: true,
     orderNum,
     cloverId,
     cloverSuccess,
-    message: cloverSuccess
-      ? `Order sent to ${loc.name} kitchen via Clover!`
-      : `Order recorded! Kitchen will be notified.`,
+    message: cloverSuccess ? `Order sent to ${loc.name} kitchen via Clover!` : `Order recorded! Kitchen will be notified.`,
     customer: customer.firstName,
     total: Number(total).toFixed(2),
     phone: customer.phone,
@@ -218,19 +269,14 @@ app.post('/api/donation', (req, res) => {
     return res.status(401).json({ error: 'Wrong password' });
   }
   donationAmount = Number(amount);
-  console.log(`✓ Donation updated to ${donationAmount}`);
+  console.log(`✓ Wings donated updated to ${donationAmount}`);
   res.json({ success: true, amount: donationAmount });
 });
 
 // ── GET LOCATIONS ─────────────────────────────────────────────
 app.get('/api/locations', (req, res) => {
   const safe = Object.entries(LOCATIONS).map(([id, loc]) => ({
-    id,
-    name: loc.name,
-    address: loc.address,
-    phone: loc.phone,
-    hours: loc.hours,
-    email: loc.email
+    id, name: loc.name, address: loc.address, phone: loc.phone, hours: loc.hours, email: loc.email
   }));
   res.json(safe);
 });
@@ -238,43 +284,24 @@ app.get('/api/locations', (req, res) => {
 // ── CLOVER CHARGE (online payments) ──────────────────────────
 app.post('/api/charge', async (req, res) => {
   const { locationId, cardToken, amount, orderId, customer } = req.body;
-
   if (!locationId || !cardToken || !amount) {
     return res.json({ success: false, error: 'Missing required fields' });
   }
-
   const loc = LOCATIONS[locationId];
   if (!loc || !loc.onlinePayments || !loc.cloverPrivateKey) {
     return res.json({ success: false, error: 'Location not configured for online payments' });
   }
-
   try {
     const amountInCents = Math.round(amount * 100);
     const chargeResponse = await fetch('https://scl.clover.com/v1/charges', {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${loc.cloverPrivateKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        amount: amountInCents,
-        currency: 'cad',
-        source: cardToken,
-        description: `Wing-O Order ${orderId} — ${customer?.firstName || 'Customer'}`,
-        capture: true,
-      }),
+      headers: { 'Authorization': `Bearer ${loc.cloverPrivateKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount: amountInCents, currency: 'cad', source: cardToken, description: `Wing-O Order ${orderId} — ${customer?.firstName || 'Customer'}`, capture: true })
     });
-
     const chargeData = await chargeResponse.json();
-
     if (chargeData.id && chargeData.status === 'succeeded') {
       console.log(`✅ Payment success — ${orderId} — $${amount} — Charge: ${chargeData.id}`);
-      return res.json({
-        success: true,
-        chargeId: chargeData.id,
-        amount: chargeData.amount,
-        last4: chargeData.source?.last4 || '****',
-      });
+      return res.json({ success: true, chargeId: chargeData.id, amount: chargeData.amount, last4: chargeData.source?.last4 || '****' });
     } else {
       const errMsg = chargeData.error?.message || chargeData.message || 'Payment failed';
       console.error(`❌ Payment failed — ${orderId} —`, errMsg);
@@ -304,6 +331,38 @@ Budget:  ${budget}
 Message: ${message || 'N/A'}
 =================================
   `);
+
+  // Send email to Sauce Boss
+  sendEmail({
+    to: 'besaucy@wingorestaurants.com',
+    subject: `🚀 New Franchise Inquiry — ${firstName} ${lastName} (${city})`,
+    html: `
+      <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">
+        <div style="background:#0D0D0D;padding:20px;text-align:center;">
+          <h1 style="color:#E8190A;font-size:28px;margin:0;letter-spacing:2px;">WING-O</h1>
+          <p style="color:#888;margin:4px 0 0;font-size:12px;letter-spacing:2px;text-transform:uppercase;">🚀 New Franchise Inquiry</p>
+        </div>
+        <div style="background:#F5F0E8;padding:24px;">
+          <table style="width:100%;border-collapse:collapse;">
+            <tr><td style="padding:8px 0;color:#888;font-size:13px;width:120px;">Name</td><td style="padding:8px 0;font-weight:bold;">${firstName} ${lastName}</td></tr>
+            <tr><td style="padding:8px 0;color:#888;font-size:13px;">Email</td><td style="padding:8px 0;"><a href="mailto:${email}" style="color:#E8190A;">${email}</a></td></tr>
+            <tr><td style="padding:8px 0;color:#888;font-size:13px;">Phone</td><td style="padding:8px 0;"><a href="tel:${phone}" style="color:#E8190A;">${phone}</a></td></tr>
+            <tr><td style="padding:8px 0;color:#888;font-size:13px;">City</td><td style="padding:8px 0;font-weight:bold;">${city}</td></tr>
+            <tr><td style="padding:8px 0;color:#888;font-size:13px;">Budget</td><td style="padding:8px 0;">${budget || 'Not specified'}</td></tr>
+            <tr><td style="padding:8px 0;color:#888;font-size:13px;">Time</td><td style="padding:8px 0;">${timestamp}</td></tr>
+          </table>
+          ${message ? `
+          <hr style="border:1px solid #E8E0D0;margin:16px 0;">
+          <h3 style="margin:0 0 8px;font-size:14px;text-transform:uppercase;letter-spacing:1px;color:#555;">Message</h3>
+          <p style="background:white;border:1px solid #E8E0D0;border-radius:6px;padding:12px;margin:0;font-size:14px;line-height:1.6;">${message}</p>
+          ` : ''}
+        </div>
+        <div style="background:#0D0D0D;padding:14px;text-align:center;">
+          <p style="color:#555;font-size:11px;margin:0;">Wing-O Restaurants Ltd · Regina, SK 🌾</p>
+        </div>
+      </div>
+    `
+  });
 
   res.json({ success: true });
 });
