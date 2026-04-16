@@ -149,7 +149,6 @@ ${notes ? 'NOTES: ' + notes : ''}
         }
       }
 
-      // Add tax line items
       const subtotalNum = Number(subtotal);
       const gst = Math.round(subtotalNum * 0.05 * 100);
       const pst = Math.round(subtotalNum * 0.06 * 100);
@@ -163,11 +162,7 @@ ${notes ? 'NOTES: ' + notes : ''}
               'Authorization': `Bearer ${loc.apiToken}`,
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-              name: 'GST (5%)',
-              unitPrice: gst,
-              unitQty: 1
-            })
+            body: JSON.stringify({ name: 'GST (5%)', unitPrice: gst, unitQty: 1 })
           }
         );
         await fetch(
@@ -178,11 +173,7 @@ ${notes ? 'NOTES: ' + notes : ''}
               'Authorization': `Bearer ${loc.apiToken}`,
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-              name: 'PST (6%)',
-              unitPrice: pst,
-              unitQty: 1
-            })
+            body: JSON.stringify({ name: 'PST (6%)', unitPrice: pst, unitQty: 1 })
           }
         );
       } catch (taxErr) {
@@ -227,11 +218,11 @@ app.post('/api/donation', (req, res) => {
     return res.status(401).json({ error: 'Wrong password' });
   }
   donationAmount = Number(amount);
-  console.log(`✓ Donation updated to $${donationAmount}`);
+  console.log(`✓ Donation updated to ${donationAmount}`);
   res.json({ success: true, amount: donationAmount });
 });
 
-// ── GET LOCATIONS ────────────────────────────────────────────
+// ── GET LOCATIONS ─────────────────────────────────────────────
 app.get('/api/locations', (req, res) => {
   const safe = Object.entries(LOCATIONS).map(([id, loc]) => ({
     id,
@@ -244,7 +235,7 @@ app.get('/api/locations', (req, res) => {
   res.json(safe);
 });
 
-// ── CLOVER CHARGE (online payments) ─────────────────────────
+// ── CLOVER CHARGE (online payments) ──────────────────────────
 app.post('/api/charge', async (req, res) => {
   const { locationId, cardToken, amount, orderId, customer } = req.body;
 
@@ -293,6 +284,28 @@ app.post('/api/charge', async (req, res) => {
     console.error('Clover charge error:', err);
     return res.json({ success: false, error: 'Server error processing payment' });
   }
+});
+
+// ── FRANCHISE INQUIRY ─────────────────────────────────────────
+app.post('/api/franchise', async (req, res) => {
+  const { firstName, lastName, email, phone, city, budget, message } = req.body;
+  const timestamp = new Date().toLocaleString('en-CA', { timeZone: 'America/Regina' });
+
+  console.log(`
+=================================
+🚀 FRANCHISE INQUIRY
+=================================
+Time:    ${timestamp}
+Name:    ${firstName} ${lastName}
+Email:   ${email}
+Phone:   ${phone}
+City:    ${city}
+Budget:  ${budget}
+Message: ${message || 'N/A'}
+=================================
+  `);
+
+  res.json({ success: true });
 });
 
 // ── START ─────────────────────────────────────────────────────
