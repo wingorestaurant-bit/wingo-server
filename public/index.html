@@ -20,38 +20,30 @@ body{font-family:var(--font-body);color:var(--black);overflow-x:hidden;backgroun
 body::before{content:'';position:fixed;inset:0;background:rgba(245,240,232,0.93);pointer-events:none;z-index:0;}
 *{position:relative;z-index:1;}
 nav,footer,.cart-ov,.modal-ov,.toast,.loc-banner{z-index:10;}
-
 ::-webkit-scrollbar{width:5px;}
 ::-webkit-scrollbar-track{background:var(--black);}
 ::-webkit-scrollbar-thumb{background:var(--red);}
 
-/* NAV */
 .announce{background:var(--red);color:white;text-align:center;padding:7px 1rem;font-family:var(--font-head);font-size:.78rem;letter-spacing:2px;text-transform:uppercase;position:relative;z-index:100;}
 .announce span{color:var(--yellow);}
 nav{position:sticky;top:0;z-index:999;background:var(--black);border-bottom:3px solid var(--red);}
 .nav-inner{max-width:1300px;margin:0 auto;padding:0 1.5rem;height:66px;display:flex;align-items:center;justify-content:space-between;gap:1rem;}
-.nav-logo img{height:48px;width:auto;mix-blend-mode:screen;filter:brightness(1.1);}
 .nav-links{display:flex;list-style:none;gap:.25rem;}
 .nav-links a{color:#AAA;text-decoration:none;font-family:var(--font-head);font-weight:500;font-size:.82rem;letter-spacing:1.5px;text-transform:uppercase;padding:.4rem .85rem;transition:color .15s;border-radius:3px;}
-.nav-links a:hover,.nav-links a.active{color:var(--yellow);}
+.nav-links a:hover{color:var(--yellow);}
 .nav-right{display:flex;align-items:center;gap:.75rem;}
-.nav-phone{color:#555;font-family:var(--font-head);font-size:.78rem;letter-spacing:1px;}
 .btn-cart{background:var(--red);color:white;border:none;padding:.5rem 1.1rem;font-family:var(--font-head);font-weight:600;font-size:.82rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:3px;display:flex;align-items:center;gap:8px;transition:background .15s;}
 .btn-cart:hover{background:var(--red-dark);}
 .cart-badge{background:var(--yellow);color:var(--black);border-radius:50%;width:20px;height:20px;font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;min-width:20px;}
-
-/* LOC BANNER */
 .loc-banner{background:#111;border-bottom:2px solid var(--yellow);padding:.6rem 1.5rem;text-align:center;display:none;position:relative;z-index:100;}
 .loc-banner span{font-family:var(--font-head);font-size:.82rem;letter-spacing:2px;text-transform:uppercase;color:#CCC;}
 .loc-banner strong{color:var(--yellow);}
 .loc-banner button{background:var(--red);color:white;border:none;font-family:var(--font-head);font-size:.75rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;padding:3px 12px;border-radius:3px;cursor:pointer;margin-left:12px;}
 
-/* HERO */
 .hero{background:var(--black);min-height:88vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:4rem 2rem;}
 .hero-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(13,13,13,.97),rgba(13,13,13,.80));}
 .hero-content{position:relative;z-index:2;text-align:center;max-width:950px;}
 .hero-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(245,168,0,.1);border:1px solid rgba(245,168,0,.25);color:var(--yellow);font-family:var(--font-head);font-size:.75rem;font-weight:500;letter-spacing:3px;text-transform:uppercase;padding:5px 14px;border-radius:2px;margin-bottom:1.5rem;}
-.hero-sub{font-family:var(--font-head);font-size:1.1rem;color:#777;letter-spacing:4px;text-transform:uppercase;margin-bottom:2.5rem;}
 .hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:3rem;}
 .btn-red{background:var(--red);color:white;border:none;padding:.9rem 2.2rem;font-family:var(--font-display);font-size:1rem;letter-spacing:2px;cursor:pointer;border-radius:3px;transition:all .2s;text-decoration:none;display:inline-block;}
 .btn-red:hover{background:var(--red-dark);transform:translateY(-2px);}
@@ -61,21 +53,18 @@ nav{position:sticky;top:0;z-index:999;background:var(--black);border-bottom:3px 
 .stat .n{font-family:var(--font-display);font-size:2.3rem;color:var(--red);}
 .stat .l{font-family:var(--font-head);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:#555;}
 
-/* PROMO BAR */
 .promo-bar{background:var(--dark);padding:1rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.05);}
 .promo-bar-inner{max-width:1300px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.6rem;}
 .pc{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:5px;padding:.8rem;text-align:center;}
 .pc .day{font-family:var(--font-display);font-size:1.2rem;color:var(--yellow);letter-spacing:1px;}
 .pc .deal{font-family:var(--font-head);font-size:.73rem;color:#777;letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
 
-/* MARQUEE */
 .marquee{background:var(--red);overflow:hidden;padding:.55rem 0;white-space:nowrap;}
 .mtrack{display:inline-flex;animation:mscroll 45s linear infinite;}
 .mi{font-family:var(--font-head);font-size:.78rem;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:white;padding:0 1.2rem;}
 .md{color:var(--yellow);font-size:.4rem;vertical-align:middle;}
 @keyframes mscroll{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
 
-/* LUNCH DEAL */
 .lunch-sec{background:var(--black);}
 .lunch-inner{max-width:1300px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;align-items:stretch;}
 .lunch-img{overflow:hidden;min-height:360px;}
@@ -90,7 +79,6 @@ nav{position:sticky;top:0;z-index:999;background:var(--black);border-bottom:3px 
 .lunch-items{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem;}
 .lunch-item{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:4px;padding:.35rem .85rem;font-family:var(--font-head);font-size:.76rem;color:#CCC;letter-spacing:1px;text-transform:uppercase;}
 
-/* CATEGORY GRID (home) */
 .cat-section{padding:4rem 1.5rem;background:rgba(245,240,232,.97);}
 .cat-inner{max-width:1300px;margin:0 auto;}
 .eyebrow{font-family:var(--font-head);font-size:.75rem;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:.4rem;}
@@ -105,27 +93,15 @@ nav{position:sticky;top:0;z-index:999;background:var(--black);border-bottom:3px 
 .cat-card-name{font-family:var(--font-display);font-size:1.1rem;letter-spacing:1px;color:var(--black);margin-bottom:.2rem;}
 .cat-card-sub{font-family:var(--font-head);font-size:.7rem;color:#888;letter-spacing:1px;text-transform:uppercase;}
 
-/* MENU PAGE */
 .menu-page{display:none;padding:3rem 1.5rem;background:rgba(245,240,232,.97);min-height:60vh;}
 .menu-page.active{display:block;}
 .menu-page-inner{max-width:1300px;margin:0 auto;}
 .back-btn{display:inline-flex;align-items:center;gap:6px;background:none;border:none;color:#888;font-family:var(--font-head);font-size:.8rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;margin-bottom:1.5rem;padding:0;transition:color .15s;}
 .back-btn:hover{color:var(--red);}
 
-/* FLAVOR PICKER */
-.flavor-picker{background:white;border:1px solid #E8E0D0;border-radius:8px;padding:1.25rem;margin-bottom:1.5rem;box-shadow:0 2px 12px rgba(0,0,0,.07);}
-.fp-title{font-family:var(--font-head);font-weight:600;font-size:.85rem;letter-spacing:2px;text-transform:uppercase;color:#555;margin-bottom:.75rem;}
-.fp-cats{display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:.6rem;}
-.fp-cat{background:#F0EDE6;border:1.5px solid transparent;color:#555;padding:.28rem .75rem;font-family:var(--font-head);font-size:.72rem;font-weight:500;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:3px;transition:all .12s;}
-.fp-cat:hover,.fp-cat.on{background:var(--charcoal,#1A1A1A);color:white;}
-.fp-list{display:flex;flex-wrap:wrap;gap:.3rem;max-height:100px;overflow-y:auto;}
-.fp-chip{background:#F0EDE6;border:1.5px solid transparent;color:#333;padding:.25rem .65rem;font-family:var(--font-body);font-size:.76rem;cursor:pointer;border-radius:20px;transition:all .12s;white-space:nowrap;}
-.fp-chip:hover{border-color:var(--red);color:var(--red);}
-.fp-chip.on{background:var(--red);color:white;border-color:var(--red);}
-
-/* MENU GRID */
 .mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:1rem;}
-.mc{background:white;border:1px solid #E8E0D0;border-radius:8px;overflow:hidden;transition:all .2s;}
+.mc{background:white;border:1px solid #E8E0D0;border-radius:8px;overflow:hidden;transition:all .2s;cursor:pointer;}
+.mc:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(0,0,0,.1);}
 .mc-img{height:175px;background:#F5F0E8;overflow:hidden;display:flex;align-items:center;justify-content:center;}
 .mc-img img{width:100%;height:100%;object-fit:cover;}
 .mc-body{padding:1rem;}
@@ -137,43 +113,6 @@ nav{position:sticky;top:0;z-index:999;background:var(--black);border-bottom:3px 
 .btn-add:hover{background:var(--red);}
 .pop-flag{display:inline-block;background:var(--yellow);color:var(--black);font-family:var(--font-head);font-size:.65rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:2px;margin-bottom:.35rem;}
 
-/* UPGRADES */
-.upgrades{background:#FFF8EE;border:1px solid #F5D98A;border-radius:6px;padding:.75rem;margin-bottom:.75rem;}
-.upgrades-title{font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#7B3F00;margin-bottom:.5rem;}
-.upgrade-row{display:flex;align-items:center;justify-content:space-between;padding:.3rem 0;border-bottom:1px solid #F0E0C0;}
-.upgrade-row:last-child{border-bottom:none;}
-.upgrade-name{font-family:var(--font-head);font-size:.8rem;color:#555;letter-spacing:.5px;}
-.upgrade-price{font-family:var(--font-display);font-size:.85rem;color:var(--red);}
-.upgrade-btn{background:#F0EDE6;border:none;width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:background .12s;}
-.upgrade-btn:hover,.upgrade-btn.on{background:var(--red);color:white;}
-
-/* SPECIAL INSTRUCTIONS */
-.spec-inst{margin-bottom:.75rem;}
-.spec-inst label{font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;}
-.spec-inst textarea{width:100%;border:1.5px solid #E8E0D0;border-radius:4px;padding:.5rem .75rem;font-family:var(--font-body);font-size:.82rem;color:var(--black);resize:vertical;min-height:55px;outline:none;transition:border-color .15s;}
-.spec-inst textarea:focus{border-color:var(--red);}
-
-/* FLAVOR ORDER SELECTORS */
-.flavor-orders{background:#FFF;border:1px solid #E8E0D0;border-radius:6px;padding:.75rem;margin-bottom:.75rem;}
-.fo-title{font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:.5rem;}
-.fo-row{display:flex;align-items:center;gap:.75rem;margin-bottom:.4rem;}
-.fo-label{font-family:var(--font-head);font-size:.78rem;color:#555;min-width:70px;}
-.fo-select{flex:1;border:1.5px solid #E8E0D0;border-radius:4px;padding:.35rem .65rem;font-family:var(--font-body);font-size:.8rem;color:var(--black);outline:none;background:white;cursor:pointer;}
-.fo-select:focus{border-color:var(--red);}
-
-/* ITEM MODAL */
-.item-modal-ov{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.7);align-items:center;justify-content:center;padding:1rem;overflow-y:auto;}
-.item-modal-ov.open{display:flex;}
-.item-modal{background:white;border-radius:10px;width:min(560px,100%);margin:auto;max-height:90vh;overflow-y:auto;}
-.im-img{height:200px;overflow:hidden;}
-.im-img img{width:100%;height:100%;object-fit:cover;}
-.im-body{padding:1.25rem;}
-.im-name{font-family:var(--font-display);font-size:1.5rem;letter-spacing:1px;margin-bottom:.35rem;}
-.im-desc{font-size:.85rem;color:#888;line-height:1.55;margin-bottom:1rem;}
-.im-price{font-family:var(--font-display);font-size:1.8rem;color:var(--black);margin-bottom:1rem;}
-.im-close{position:absolute;top:12px;right:12px;background:rgba(0,0,0,.75);color:white;border:none;width:38px;height:38px;border-radius:50%;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,.4);}
-
-/* IMPACT */
 .impact-sec{background:var(--red);padding:4.5rem 1.5rem;position:relative;overflow:hidden;}
 .impact-sec::before{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(45deg,transparent,transparent 40px,rgba(0,0,0,.04) 40px,rgba(0,0,0,.04) 41px);}
 .impact-inner{max-width:1300px;margin:0 auto;position:relative;z-index:2;}
@@ -187,9 +126,8 @@ nav{position:sticky;top:0;z-index:999;background:var(--black);border-bottom:3px 
 .live-dot{width:8px;height:8px;border-radius:50%;background:#4ADE80;animation:pulse 2s infinite;flex-shrink:0;}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(1.3);}}
 
-/* SAUCE VAULT */
-.sauce-sec{background:var(--black);padding:4rem 1.5rem;position:relative;}
-.sauce-inner{max-width:1300px;margin:0 auto;position:relative;}
+.sauce-sec{background:var(--black);padding:4rem 1.5rem;}
+.sauce-inner{max-width:1300px;margin:0 auto;}
 .sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.85rem;margin-top:1.5rem;}
 .sgroup{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:.85rem;}
 .sg-title{font-family:var(--font-display);font-size:.95rem;color:var(--red);letter-spacing:1px;margin-bottom:.55rem;padding-bottom:.35rem;border-bottom:1px solid rgba(255,255,255,.07);}
@@ -197,7 +135,6 @@ nav{position:sticky;top:0;z-index:999;background:var(--black);border-bottom:3px 
 .sgroup ul li{font-size:.73rem;color:#888;padding:2px 0;line-height:1.3;}
 .sgroup ul li::before{content:"·";color:var(--red);margin-right:5px;}
 
-/* LOCATIONS */
 .loc-sec{padding:4rem 1.5rem;background:rgba(245,240,232,.97);}
 .loc-inner{max-width:1300px;margin:0 auto;}
 .lgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:1.75rem;}
@@ -212,7 +149,6 @@ nav{position:sticky;top:0;z-index:999;background:var(--black);border-bottom:3px 
 .lb-live{background:rgba(245,168,0,.15);color:#7B3F00;}
 .lb-soon{background:#F0EDE6;color:#888;}
 
-/* ABOUT */
 .about-sec{background:var(--black);padding:5rem 1.5rem;position:relative;overflow:hidden;}
 .about-inner{max-width:1300px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;}
 .about-text h2{font-family:var(--font-display);font-size:2.6rem;color:white;line-height:1;margin:.4rem 0 1.1rem;letter-spacing:1px;}
@@ -221,7 +157,6 @@ nav{position:sticky;top:0;z-index:999;background:var(--black);border-bottom:3px 
 .about-quote{border-left:3px solid var(--red);padding-left:1rem;font-style:italic;font-size:.95rem;color:#CCC;line-height:1.7;margin-bottom:1.2rem;}
 .about-vis{display:flex;flex-direction:column;align-items:center;gap:1.5rem;}
 
-/* FOOTER */
 footer{background:var(--black);border-top:3px solid var(--red);padding:3rem 1.5rem 2rem;}
 .footer-inner{max-width:1300px;margin:0 auto;}
 .fgrid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2rem;margin-bottom:2rem;}
@@ -233,7 +168,6 @@ footer{background:var(--black);border-top:3px solid var(--red);padding:3rem 1.5r
 .fbot{border-top:1px solid rgba(255,255,255,.06);padding-top:1.25rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;}
 .fbot p{font-size:.74rem;color:#555;}
 
-/* CART */
 .cart-ov{display:none;position:fixed;inset:0;z-index:9000;}
 .cart-ov.open{display:block;}
 .cart-back{position:absolute;inset:0;background:rgba(0,0,0,.65);}
@@ -261,7 +195,6 @@ footer{background:var(--black);border-top:3px solid var(--red);padding:3rem 1.5r
 .btn-co{width:100%;background:var(--red);color:white;border:none;padding:.9rem;font-family:var(--font-display);font-size:1.1rem;letter-spacing:2px;cursor:pointer;border-radius:4px;transition:background .15s;margin-top:.85rem;text-transform:uppercase;}
 .btn-co:hover{background:var(--red-dark);}
 
-/* CHECKOUT MODAL */
 .modal-ov{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.72);align-items:flex-start;justify-content:center;padding:1rem;overflow-y:auto;}
 .modal-ov.open{display:flex;}
 .modal{background:white;border-radius:10px;width:min(580px,100%);margin:auto;}
@@ -298,9 +231,7 @@ textarea{resize:vertical;min-height:60px;}
 .success-view h2{font-family:var(--font-display);font-size:2rem;letter-spacing:2px;margin-bottom:.4rem;}
 .onum{background:rgba(232,25,10,.08);border:1.5px solid rgba(232,25,10,.25);border-radius:5px;padding:.7rem 1.5rem;font-family:var(--font-display);font-size:1.7rem;color:var(--red);letter-spacing:3px;display:inline-block;margin:.7rem 0;}
 .success-view p{font-size:.88rem;color:#888;line-height:1.65;margin-bottom:.3rem;}
-
 .del-note{background:#FFF8EE;border:1px solid #F5D98A;border-radius:5px;padding:.65rem .9rem;font-family:var(--font-head);font-size:.78rem;color:#7B3F00;letter-spacing:.5px;margin-bottom:.75rem;}
-
 .toast{position:fixed;bottom:1.75rem;left:50%;transform:translateX(-50%) translateY(80px);background:#1A1A1A;color:white;font-family:var(--font-head);font-size:.83rem;font-weight:500;letter-spacing:1px;padding:.6rem 1.3rem;border-radius:4px;border-left:3px solid var(--red);z-index:99999;transition:transform .3s;white-space:nowrap;max-width:90vw;}
 .toast.show{transform:translateX(-50%) translateY(0);}
 .api-status{position:fixed;bottom:1.5rem;right:1.5rem;background:#1A1A1A;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:4px 11px;font-family:var(--font-head);font-size:.68rem;letter-spacing:1px;text-transform:uppercase;color:#888;z-index:9998;display:flex;align-items:center;gap:5px;}
@@ -308,8 +239,22 @@ textarea{resize:vertical;min-height:60px;}
 .api-dot.ok{background:#48BB78;}
 .api-dot.err{background:var(--red);}
 .cd-select{width:100%;border:1.5px solid #E8E0D0;border-radius:4px;padding:.42rem .72rem;font-family:var(--font-head);font-size:.78rem;color:var(--black);background:white;cursor:pointer;margin-bottom:.7rem;outline:none;}
-.cd-select:focus{border-color:var(--red);}
-#payment-section{}
+
+.preorder-banner{background:var(--black);border-bottom:3px solid var(--yellow);padding:.75rem 1.5rem;text-align:center;display:none;}
+.preorder-banner.show{display:block;}
+.preorder-banner p{font-family:var(--font-head);font-size:.85rem;letter-spacing:1.5px;text-transform:uppercase;color:#CCC;margin:0;}
+.preorder-banner strong{color:var(--yellow);}
+.preorder-badge{display:inline-block;background:var(--yellow);color:var(--black);font-family:var(--font-head);font-size:.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:3px 10px;border-radius:2px;margin-right:8px;}
+.preorder-note{background:#FFF8EE;border:1px solid #F5D98A;border-radius:6px;padding:.75rem 1rem;margin-bottom:.85rem;font-family:var(--font-head);font-size:.78rem;color:#7B3F00;letter-spacing:.5px;text-align:center;}
+.item-modal-ov{display:none;position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,.75);align-items:center;justify-content:center;padding:1rem;overflow-y:auto;}
+.item-modal-ov.open{display:flex;}
+.item-modal{background:white;border-radius:10px;width:min(560px,100%);margin:auto;max-height:90vh;overflow-y:auto;position:relative;}
+.im-img{height:200px;overflow:hidden;}
+.im-img img{width:100%;height:100%;object-fit:cover;}
+.im-body{padding:1.25rem;}
+.im-name{font-family:var(--font-display);font-size:1.5rem;letter-spacing:1px;margin-bottom:.35rem;}
+.im-desc{font-size:.85rem;color:#888;line-height:1.55;margin-bottom:1rem;}
+.im-close{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.8);color:white;border:none;width:36px;height:36px;border-radius:50%;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;}
 
 @media(max-width:900px){
   .nav-links{display:none;}
@@ -325,35 +270,32 @@ textarea{resize:vertical;min-height:60px;}
   .cat-grid{grid-template-columns:repeat(2,1fr);}
 }
 .hidden{display:none!important;}
-.preorder-banner{background:var(--black);border-bottom:3px solid var(--yellow);padding:.75rem 1.5rem;text-align:center;display:none;}
-.preorder-banner.show{display:block;}
-.preorder-banner p{font-family:var(--font-head);font-size:.85rem;letter-spacing:1.5px;text-transform:uppercase;color:#CCC;margin:0;}
-.preorder-banner strong{color:var(--yellow);}
-.preorder-badge{display:inline-block;background:var(--yellow);color:var(--black);font-family:var(--font-head);font-size:.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:3px 10px;border-radius:2px;margin-right:8px;}
-.preorder-note{background:#FFF8EE;border:1px solid #F5D98A;border-radius:6px;padding:.75rem 1rem;margin-bottom:.85rem;font-family:var(--font-head);font-size:.78rem;color:#7B3F00;letter-spacing:.5px;text-align:center;}
 </style>
 </head>
 <body>
+
+<!-- API BASE - RELATIVE URL SO WORKS ON ANY DOMAIN -->
 <script>
-const API_BASE=window.location.hostname==='localhost'||window.location.hostname==='127.0.0.1'?'http://localhost:8080':'https://wingo-server-production.up.railway.app';
-let activeLocation='albert-st';
+var API_BASE = '';
+var activeLocation = 'albert-st';
 </script>
 
 <div id="preorder-banner" class="preorder-banner">
   <p><span class="preorder-badge">Pre-Order</span> We are closed right now — but you can <strong>pre-order for when we open!</strong> Your order will be ready at our next opening time.</p>
 </div>
+
 <div class="announce">🔥 Tuesday — All You Can Eat Wings <span>$28.99</span> &nbsp;·&nbsp; Thursday — 50% Off 2nd Order &nbsp;·&nbsp; Saturday — 2 for $20 Burgers</div>
 
 <nav>
   <div class="nav-inner">
-    <a href="#" onclick="showHome();return false;" title="Home" style="display:flex;align-items:center;text-decoration:none;">
-      <img src="images/neon-logo.jpg" alt="Wing-O — Home" style="height:48px;width:auto;">
+    <a href="#" onclick="showHome();return false;" style="display:flex;align-items:center;text-decoration:none;">
+      <img src="images/neon-logo.jpg" alt="Wing-O" style="height:48px;width:auto;">
     </a>
-    <ul class="nav-links" id="nav-links">
+    <ul class="nav-links">
       <li><a href="#" onclick="showCat('wings');return false;">🍗 Wings</a></li>
       <li><a href="#" onclick="showCat('ribs');return false;">🔥 Ribs</a></li>
       <li><a href="#" onclick="showCat('boneless');return false;">Boneless</a></li>
-      <li><a href="#" onclick="showCat('chickenfingers');return false;">Chicken Fingers</a></li>
+      <li><a href="#" onclick="showCat('chickenfingers');return false;">Fingers</a></li>
       <li><a href="#" onclick="showCat('burgers');return false;">Burgers</a></li>
       <li><a href="#" onclick="showCat('combos');return false;">Combos</a></li>
       <li><a href="#" onclick="showCat('sides');return false;">Sides</a></li>
@@ -361,22 +303,22 @@ let activeLocation='albert-st';
       <li><a href="#" onclick="showCat('midnight');return false;">Midnight 🌙</a></li>
     </ul>
     <div class="nav-right">
-      <a href="https://www.instagram.com/sauce_____boss?igsh=MWJvdnhmdnd1aWh0cg%3D%3D&utm_source=qr" target="_blank" style="color:#888;font-family:var(--font-head);font-size:.75rem;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:.4rem .7rem;border:1px solid rgba(255,255,255,.15);border-radius:3px;transition:all .15s;" onmouseover="this.style.borderColor='var(--yellow)';this.style.color='var(--yellow)'" onmouseout="this.style.borderColor='rgba(255,255,255,.15)';this.style.color='#888'">🔥 Sauce Boss</a>
-      <button id="franchise-nav-btn" onclick="openFranchise()" style="background:transparent;color:#888;border:1px solid rgba(255,255,255,.15);padding:.4rem .8rem;font-family:var(--font-head);font-size:.75rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:3px;">🚀 Franchise</button>
+      <a href="https://www.instagram.com/sauce_____boss?igsh=MWJvdnhmdnd1aWh0cg%3D%3D&utm_source=qr" target="_blank" style="color:#888;font-family:var(--font-head);font-size:.75rem;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:.4rem .7rem;border:1px solid rgba(255,255,255,.15);border-radius:3px;">🔥 Sauce Boss</a>
+      <button onclick="openFranchise()" style="background:transparent;color:#888;border:1px solid rgba(255,255,255,.15);padding:.4rem .8rem;font-family:var(--font-head);font-size:.75rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:3px;">🚀 Franchise</button>
       <button class="btn-cart" onclick="openCart()">🛒 Order <span class="cart-badge" id="cart-count">0</span></button>
     </div>
   </div>
 </nav>
 
 <div class="loc-banner" id="loc-banner">
-  <span>📍 Nearest location: <strong id="loc-nearest-name"></strong></span>
-  <button onclick="openCart()">Order from here</button>
+  <span>📍 Nearest: <strong id="loc-nearest-name"></strong></span>
+  <button onclick="openCart()">Order here</button>
 </div>
 
 <!-- HOME PAGE -->
 <div id="home-page">
 
-<section class="hero" style="background:var(--black);">
+<section class="hero">
   <div class="hero-overlay"></div>
   <div class="hero-content">
     <div class="hero-tag">🌾 Proudly Prairie · Regina's Original · More Than Wings</div>
@@ -408,8 +350,7 @@ let activeLocation='albert-st';
   <span class="mi">Devil's Kiss</span><span class="md">●</span><span class="mi">Honey Garlic</span><span class="md">●</span><span class="mi">Dead Angel</span><span class="md">●</span><span class="mi">Prairie Heat</span><span class="md">●</span><span class="mi">Maple BBQ</span><span class="md">●</span><span class="mi">Tangy Thai</span><span class="md">●</span><span class="mi">Island On Fire</span><span class="md">●</span><span class="mi">Sizzle Caesar</span><span class="md">●</span><span class="mi">Mango Habanero</span><span class="md">●</span><span class="mi">Citrus Twist</span><span class="md">●</span><span class="mi">Cajun Cream</span><span class="md">●</span><span class="mi">Korean BBQ</span><span class="md">●</span><span class="mi">Buffalo Ranch</span><span class="md">●</span><span class="mi">Sweet Grenade</span><span class="md">●</span><span class="mi">Devil's Kiss</span><span class="md">●</span><span class="mi">Honey Garlic</span><span class="md">●</span><span class="mi">Dead Angel</span><span class="md">●</span><span class="mi">Prairie Heat</span><span class="md">●</span><span class="mi">Maple BBQ</span><span class="md">●</span><span class="mi">Tangy Thai</span><span class="md">●</span><span class="mi">Island On Fire</span><span class="md">●</span><span class="mi">Sizzle Caesar</span><span class="md">●</span><span class="mi">Mango Habanero</span><span class="md">●</span><span class="mi">Citrus Twist</span><span class="md">●</span><span class="mi">Cajun Cream</span><span class="md">●</span><span class="mi">Korean BBQ</span><span class="md">●</span><span class="mi">Buffalo Ranch</span><span class="md">●</span><span class="mi">Sweet Grenade</span><span class="md">●</span>
 </div></div>
 
-<!-- LUNCH DEAL -->
-<section class="lunch-sec" id="lunch">
+<section class="lunch-sec">
   <div class="lunch-inner">
     <div class="lunch-img"><img src="images/lunch-deal.jpg" alt="Lunch Deal"></div>
     <div class="lunch-text">
@@ -429,105 +370,70 @@ let activeLocation='albert-st';
   </div>
 </section>
 
-<!-- CATEGORY GRID -->
 <section class="cat-section" id="cat-section">
   <div class="cat-inner">
     <div class="eyebrow">Fresh Made to Order</div>
     <h2 class="sec-title">WHAT ARE YOU FEELING?</h2>
     <div class="cat-grid">
-      <div class="cat-card" onclick="showCat('wings')">
-        <div class="cat-card-img"><img src="images/wings-hero.jpg" alt="Wings"></div>
-        <div class="cat-card-body"><div class="cat-card-name">🍗 Wings</div><div class="cat-card-sub">Bone-In · 125+ Flavors · From $7.99</div></div>
-      </div>
-      <div class="cat-card" onclick="showCat('ribs')">
-        <div class="cat-card-img"><img src="images/ribs.jpg" alt="Ribs"></div>
-        <div class="cat-card-body"><div class="cat-card-name">🔥 Ribs</div><div class="cat-card-sub">Saucy Ribs · 125+ Flavors · From $7.99</div></div>
-      </div>
-      <div class="cat-card" onclick="showCat('boneless')">
-        <div class="cat-card-img"><img src="images/boneless-wings.jpg" alt="Boneless Wings"></div>
-        <div class="cat-card-body"><div class="cat-card-name">Boneless Wings</div><div class="cat-card-sub">Crispy · 125+ Flavors · From $7.99</div></div>
-      </div>
-      <div class="cat-card" onclick="showCat('chickenfingers')">
-        <div class="cat-card-img"><img src="images/boneless-sauce.jpg" alt="Chicken Fingers"></div>
-        <div class="cat-card-body"><div class="cat-card-name">Chicken Fingers</div><div class="cat-card-sub">Crispy · Choose Your Sauce · From $7.99</div></div>
-      </div>
-      <div class="cat-card" onclick="showCat('burgers')">
-        <div class="cat-card-img"><img src="images/burger-tough-guy.jpg" alt="Burgers"></div>
-        <div class="cat-card-body"><div class="cat-card-name">Burgers</div><div class="cat-card-sub">Loaded · From $17.99</div></div>
-      </div>
-      <div class="cat-card" onclick="showCat('combos')">
-        <div class="cat-card-img"><img src="images/combo1.jpg" alt="Combos"></div>
-        <div class="cat-card-body"><div class="cat-card-name">Combos</div><div class="cat-card-sub">Best Value · From $17.45</div></div>
-      </div>
-      <div class="cat-card" onclick="showCat('sides')">
-        <div class="cat-card-img"><img src="images/poutine.jpg" alt="Sides"></div>
-        <div class="cat-card-body"><div class="cat-card-name">Sides</div><div class="cat-card-sub">Poutine, Fries & More</div></div>
-      </div>
-      <div class="cat-card" onclick="showCat('salads')">
-        <div class="cat-card-img"><img src="images/salad.jpg" alt="Salads"></div>
-        <div class="cat-card-body"><div class="cat-card-name">Salads</div><div class="cat-card-sub">Fresh · From $6.99</div></div>
-      </div>
-      <div class="cat-card" onclick="showCat('platters')">
-        <div class="cat-card-img"><img src="images/platter-bit-of.jpg" alt="Platters"></div>
-        <div class="cat-card-body"><div class="cat-card-name">Platters</div><div class="cat-card-sub">Share the Love · From $29.99</div></div>
-      </div>
-      <div class="cat-card" onclick="showCat('midnight')">
-        <div class="cat-card-img"><img src="images/oreo.jpg" alt="Midnight Ecstasy"></div>
-        <div class="cat-card-body"><div class="cat-card-name">Midnight Ecstasy 🌙</div><div class="cat-card-sub">Desserts · From $0.99</div></div>
-      </div>
+      <div class="cat-card" onclick="showCat('wings')"><div class="cat-card-img"><img src="images/wings-hero.jpg" alt="Wings"></div><div class="cat-card-body"><div class="cat-card-name">🍗 Wings</div><div class="cat-card-sub">Bone-In · 125+ Flavors · From $7.99</div></div></div>
+      <div class="cat-card" onclick="showCat('ribs')"><div class="cat-card-img"><img src="images/ribs.jpg" alt="Ribs"></div><div class="cat-card-body"><div class="cat-card-name">🔥 Ribs</div><div class="cat-card-sub">Saucy · 125+ Flavors · From $7.99</div></div></div>
+      <div class="cat-card" onclick="showCat('boneless')"><div class="cat-card-img"><img src="images/boneless-wings.jpg" alt="Boneless"></div><div class="cat-card-body"><div class="cat-card-name">Boneless Wings</div><div class="cat-card-sub">Crispy · 125+ Flavors · From $7.99</div></div></div>
+      <div class="cat-card" onclick="showCat('chickenfingers')"><div class="cat-card-img"><img src="images/boneless-sauce.jpg" alt="Chicken Fingers"></div><div class="cat-card-body"><div class="cat-card-name">Chicken Fingers</div><div class="cat-card-sub">Crispy · Choose Sauce · From $7.99</div></div></div>
+      <div class="cat-card" onclick="showCat('burgers')"><div class="cat-card-img"><img src="images/burger-tough-guy.jpg" alt="Burgers"></div><div class="cat-card-body"><div class="cat-card-name">Burgers</div><div class="cat-card-sub">Loaded · From $17.99</div></div></div>
+      <div class="cat-card" onclick="showCat('combos')"><div class="cat-card-img"><img src="images/combo1.jpg" alt="Combos"></div><div class="cat-card-body"><div class="cat-card-name">Combos</div><div class="cat-card-sub">Best Value · From $17.45</div></div></div>
+      <div class="cat-card" onclick="showCat('sides')"><div class="cat-card-img"><img src="images/poutine.jpg" alt="Sides"></div><div class="cat-card-body"><div class="cat-card-name">Sides</div><div class="cat-card-sub">Poutine, Fries & More</div></div></div>
+      <div class="cat-card" onclick="showCat('salads')"><div class="cat-card-img"><img src="images/salad.jpg" alt="Salads"></div><div class="cat-card-body"><div class="cat-card-name">Salads</div><div class="cat-card-sub">Fresh · From $6.99</div></div></div>
+      <div class="cat-card" onclick="showCat('platters')"><div class="cat-card-img"><img src="images/platter-bit-of.jpg" alt="Platters"></div><div class="cat-card-body"><div class="cat-card-name">Platters</div><div class="cat-card-sub">Share the Love · From $29.99</div></div></div>
+      <div class="cat-card" onclick="showCat('midnight')"><div class="cat-card-img"><img src="images/oreo.jpg" alt="Midnight"></div><div class="cat-card-body"><div class="cat-card-name">Midnight Ecstasy 🌙</div><div class="cat-card-sub">Desserts · From $0.99</div></div></div>
     </div>
   </div>
 </section>
 
-<!-- IMPACT -->
 <section class="impact-sec" id="impact">
   <div class="impact-inner">
     <div class="eyebrow" style="color:rgba(255,255,255,.6)">Real Numbers · Updated Live</div>
     <h2 style="font-family:var(--font-display);font-size:clamp(1.8rem,4vw,2.8rem);color:white;letter-spacing:1px;">THE WING-O IMPACT</h2>
     <div class="impact-grid">
-      <div class="ic"><div class="ic-icon">🍗</div><div class="ic-num" id="wings-counter">0</div><div class="ic-lbl">Wings Sold</div></div>
-      <div class="ic"><div class="ic-icon">📦</div><div class="ic-num" id="orders-counter">0</div><div class="ic-lbl">Orders Fulfilled</div></div>
-      <div class="ic"><div class="ic-icon">🍗</div><div class="ic-num y" id="donation-counter">0+</div><div class="ic-lbl">Wings Donated 🍗</div></div>
+      <div class="ic"><div class="ic-icon">🍗</div><div class="ic-num" id="wings-counter">1,084,400</div><div class="ic-lbl">Wings Sold</div></div>
+      <div class="ic"><div class="ic-icon">📦</div><div class="ic-num" id="orders-counter">135,550</div><div class="ic-lbl">Orders Fulfilled</div></div>
+      <div class="ic"><div class="ic-icon">🍗</div><div class="ic-num y" id="donation-counter">27,000+</div><div class="ic-lbl">Wings Donated</div></div>
       <div class="ic"><div class="ic-icon">🔥</div><div class="ic-num">125+</div><div class="ic-lbl">Handcrafted Flavors</div></div>
     </div>
     <div class="live-bar"><div class="live-dot"></div><span style="font-family:var(--font-head);font-size:.82rem;color:rgba(255,255,255,.8);letter-spacing:1px;text-transform:uppercase;">Live · A wing is sold every <span id="spw" style="color:var(--yellow);font-weight:700;">27</span> seconds</span></div>
   </div>
 </section>
 
-<!-- SAUCE VAULT -->
-<section id="sauces" class="sauce-sec">
+<section class="sauce-sec">
   <div class="sauce-inner">
     <div class="eyebrow" style="color:var(--yellow)">125+ Handcrafted Flavors</div>
     <h2 class="sec-title" style="color:white;margin-bottom:.4rem">THE FLAVOR VAULT</h2>
-    <p style="color:#666;font-size:.85rem;margin-bottom:.25rem">Regina's first & only local eatery with 125+ flavors. Ask server for weekly specials.</p>
+    <p style="color:#666;font-size:.85rem;margin-bottom:.25rem">Regina's first local wings eatery with 125+ flavors. Ask server for weekly specials.</p>
     <div class="sgrid" id="sgrid"></div>
   </div>
 </section>
 
-<!-- LOCATIONS -->
-<section id="locations" class="loc-sec">
+<section class="loc-sec">
   <div class="loc-inner">
     <div class="eyebrow">Find Us</div>
     <h2 class="sec-title">OUR LOCATIONS</h2>
     <div class="lgrid">
-      <div class="lcard live"><span class="lbadge lb-live">✓ Online Ordering Live</span><div class="lname">Albert Street</div><div class="laddr">#3 – 155 Albert St N<br>Regina, SK</div><div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div><div class="lphone">📞 306-522-2111</div></div>
-      <div class="lcard live"><span class="lbadge lb-live">✓ Online Ordering Live</span><div class="lname">Rochdale</div><div class="laddr">3881 Rochdale Blvd<br>Regina, SK</div><div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div><div class="lphone">📞 306-522-2112</div></div>
-      <div class="lcard"><span class="lbadge lb-soon">Online Coming Soon</span><div class="lname">East Regina</div><div class="laddr">Regina, SK</div><div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div></div>
-      <div class="lcard live"><span class="lbadge lb-live">✓ Online Ordering Live</span><div class="lname">Moose Jaw</div><div class="laddr">622 Main St N<br>Moose Jaw, SK</div><div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div><div class="lphone">📞 306-692-2113</div></div>
+      <div class="lcard live"><span class="lbadge lb-live">✓ Online Ordering Live</span><div class="lname">Albert Street</div><div class="laddr">#3 – 155 Albert St N, Regina, SK</div><div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div><div class="lphone">📞 306-522-2111</div></div>
+      <div class="lcard live"><span class="lbadge lb-live">✓ Online Ordering Live</span><div class="lname">Rochdale</div><div class="laddr">3881 Rochdale Blvd, Regina, SK</div><div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div><div class="lphone">📞 306-522-2112</div></div>
+      <div class="lcard"><span class="lbadge lb-soon">Coming Soon</span><div class="lname">East Regina</div><div class="laddr">Regina, SK</div><div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div></div>
+      <div class="lcard live"><span class="lbadge lb-live">✓ Online Ordering Live</span><div class="lname">Moose Jaw</div><div class="laddr">622 Main St N, Moose Jaw, SK</div><div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div><div class="lphone">📞 306-692-2113</div></div>
       <div class="lcard"><span class="lbadge lb-soon">Seasonal</span><div class="lname">Regina Beach</div><div class="laddr">Regina Beach, SK</div><div class="lhours">Summer Only</div></div>
       <div class="lcard" style="border-color:rgba(245,168,0,.3);opacity:.7"><span class="lbadge lb-soon">🚀 Coming Soon</span><div class="lname">Winnipeg</div><div class="laddr">Manitoba's first Wing-O!</div><div class="lhours">Stay Tuned</div></div>
     </div>
   </div>
 </section>
 
-<!-- ABOUT -->
-<section id="about" class="about-sec">
+<section class="about-sec">
   <div class="about-inner">
     <div class="about-text">
       <div class="eyebrow" style="color:var(--yellow)">The Story Behind the Sauce</div>
       <h2>THE <span>SAUCE</span> BOSS</h2>
       <blockquote class="about-quote">"I didn't come here with connections, money, or a plan B. I came with hunger — and that never left."</blockquote>
-      <p>In 2019, Gagandeep Ghuman arrived in Regina at 19 years old with $800, two bags, and a dream. He spent the next year and a half obsessing over wings — flavor chemistry, texture, heat levels, sauce combinations nobody had tried. He wasn't building a restaurant. He was building a world.</p>
+      <p>In 2019, Gagandeep Ghuman arrived in Regina at 19 years old with $800, two bags, and a dream. He spent the next year and a half obsessing over wings — flavor chemistry, texture, heat levels, sauce combinations nobody had tried.</p>
       <p>When Wing-O opened on Albert Street, it was Regina's first local wings eatery — with 125+ handcrafted flavors. What started as one location grew to five across Saskatchewan. Next stop: Winnipeg.</p>
       <p style="color:var(--yellow);font-family:var(--font-head);font-size:.95rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;">The movement keeps growing. 🌾</p>
       <a class="btn-red" href="#" onclick="document.getElementById('cat-section').scrollIntoView({behavior:'smooth'});return false;" style="margin-top:.5rem">Order Now 🔥</a>
@@ -542,117 +448,20 @@ let activeLocation='albert-st';
 
 </div><!-- end home-page -->
 
-<!-- MENU PAGES (one per category) -->
-<div id="menu-pages">
-
-<!-- WINGS & RIBS -->
-<div class="menu-page" id="page-wings">
-  <div class="menu-page-inner">
-    <button class="back-btn" onclick="goBack()">← Back to Menu</button>
-    <div class="eyebrow">125+ Flavors</div>
-    <h2 class="sec-title" style="margin-bottom:1.5rem">WINGS & RIBS</h2>
-    <p style="font-size:.88rem;color:#888;margin-bottom:1.5rem;">Choose your flavor for each order below. Mix & match — pick a different flavor per order!</p>
-    <div class="mgrid" id="grid-wings"></div>
-  </div>
+<!-- MENU PAGES -->
+<div id="menu-pages" style="display:none;">
+<div class="menu-page" id="page-wings"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">125+ Flavors</div><h2 class="sec-title" style="margin-bottom:1.5rem">🍗 WINGS</h2><p style="font-size:.88rem;color:#888;margin-bottom:1.5rem;">Choose 1 flavor per order. Mix and match across orders!</p><div class="mgrid" id="grid-wings"></div></div></div>
+<div class="menu-page" id="page-ribs"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">125+ Flavors</div><h2 class="sec-title" style="margin-bottom:1.5rem">🔥 RIBS</h2><div class="mgrid" id="grid-ribs"></div></div></div>
+<div class="menu-page" id="page-boneless"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Crispy & Sauced</div><h2 class="sec-title" style="margin-bottom:1.5rem">BONELESS WINGS</h2><div class="mgrid" id="grid-boneless"></div></div></div>
+<div class="menu-page" id="page-chickenfingers"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Crispy & Dippable</div><h2 class="sec-title" style="margin-bottom:1.5rem">CHICKEN FINGERS</h2><div class="mgrid" id="grid-chickenfingers"></div></div></div>
+<div class="menu-page" id="page-burgers"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Sloppy Seduction</div><h2 class="sec-title" style="margin-bottom:.5rem">BURGERS</h2><p style="font-size:.82rem;color:#888;margin-bottom:1.5rem;">All burgers served with fries and a drink. Upgrade available.</p><div class="mgrid" id="grid-burgers"></div></div></div>
+<div class="menu-page" id="page-combos"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Best Value</div><h2 class="sec-title" style="margin-bottom:.5rem">COMBOS</h2><p style="font-size:.82rem;color:#888;margin-bottom:1.5rem;">Choose wings, ribs, or chicken fingers. Upgrade fries available.</p><div class="mgrid" id="grid-combos"></div></div></div>
+<div class="menu-page" id="page-sides"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Kissable Kick-Offs & Loaded Affairs</div><h2 class="sec-title" style="margin-bottom:1.5rem">SIDES</h2><div class="mgrid" id="grid-sides"></div></div></div>
+<div class="menu-page" id="page-salads"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Fresh & Flirty</div><h2 class="sec-title" style="margin-bottom:1.5rem">SALADS</h2><div class="mgrid" id="grid-salads"></div></div></div>
+<div class="menu-page" id="page-platters"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Too Good to Share</div><h2 class="sec-title" style="margin-bottom:.5rem">PLATTERS</h2><div class="mgrid" id="grid-platters"></div></div></div>
+<div class="menu-page" id="page-midnight"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Sweet Endings</div><h2 class="sec-title" style="margin-bottom:1.5rem">MIDNIGHT ECSTASY 🌙</h2><div class="mgrid" id="grid-midnight"></div></div></div>
 </div>
 
-<!-- RIBS -->
-<div class="menu-page" id="page-ribs">
-  <div class="menu-page-inner">
-    <button class="back-btn" onclick="goBack()">← Back to Menu</button>
-    <div class="eyebrow">125+ Flavors</div>
-    <h2 class="sec-title" style="margin-bottom:1.5rem">🔥 RIBS</h2>
-    <p style="font-size:.88rem;color:#888;margin-bottom:1.5rem;">Choose your flavor for each order. Mix & match — pick a different flavor per order!</p>
-    <div class="mgrid" id="grid-ribs"></div>
-  </div>
-</div>
-
-<!-- BONELESS WINGS -->
-<div class="menu-page" id="page-boneless">
-  <div class="menu-page-inner">
-    <button class="back-btn" onclick="goBack()">← Back to Menu</button>
-    <div class="eyebrow">Crispy & Sauced</div>
-    <h2 class="sec-title" style="margin-bottom:1.5rem">BONELESS WINGS</h2>
-    <div class="mgrid" id="grid-boneless"></div>
-  </div>
-</div>
-
-<!-- CHICKEN FINGERS -->
-<div class="menu-page" id="page-chickenfingers">
-  <div class="menu-page-inner">
-    <button class="back-btn" onclick="goBack()">← Back to Menu</button>
-    <div class="eyebrow">Crispy & Dippable</div>
-    <h2 class="sec-title" style="margin-bottom:1.5rem">CHICKEN FINGERS</h2>
-    <div class="mgrid" id="grid-chickenfingers"></div>
-  </div>
-</div>
-
-<!-- BURGERS -->
-<div class="menu-page" id="page-burgers">
-  <div class="menu-page-inner">
-    <button class="back-btn" onclick="goBack()">← Back to Menu</button>
-    <div class="eyebrow">Sloppy Seduction</div>
-    <h2 class="sec-title" style="margin-bottom:.5rem">BURGERS</h2>
-    <p style="font-size:.82rem;color:#888;margin-bottom:1.5rem;">All burgers served with fries and a drink. Upgrade available.</p>
-    <div class="mgrid" id="grid-burgers"></div>
-  </div>
-</div>
-
-<!-- COMBOS -->
-<div class="menu-page" id="page-combos">
-  <div class="menu-page-inner">
-    <button class="back-btn" onclick="goBack()">← Back to Menu</button>
-    <div class="eyebrow">Best Value</div>
-    <h2 class="sec-title" style="margin-bottom:.5rem">COMBOS</h2>
-    <p style="font-size:.82rem;color:#888;margin-bottom:1.5rem;">Choose wings, ribs, or chicken fingers. Upgrade fries available.</p>
-    <div class="mgrid" id="grid-combos"></div>
-  </div>
-</div>
-
-<!-- SIDES -->
-<div class="menu-page" id="page-sides">
-  <div class="menu-page-inner">
-    <button class="back-btn" onclick="goBack()">← Back to Menu</button>
-    <div class="eyebrow">Kissable Kick-Offs & Loaded Affairs</div>
-    <h2 class="sec-title" style="margin-bottom:1.5rem">SIDES</h2>
-    <div class="mgrid" id="grid-sides"></div>
-  </div>
-</div>
-
-<!-- SALADS -->
-<div class="menu-page" id="page-salads">
-  <div class="menu-page-inner">
-    <button class="back-btn" onclick="goBack()">← Back to Menu</button>
-    <div class="eyebrow">Fresh & Flirty</div>
-    <h2 class="sec-title" style="margin-bottom:1.5rem">SALADS</h2>
-    <div class="mgrid" id="grid-salads"></div>
-  </div>
-</div>
-
-<!-- PLATTERS -->
-<div class="menu-page" id="page-platters">
-  <div class="menu-page-inner">
-    <button class="back-btn" onclick="goBack()">← Back to Menu</button>
-    <div class="eyebrow">Too Good to Share</div>
-    <h2 class="sec-title" style="margin-bottom:.5rem">PLATTERS</h2>
-    <p style="font-size:.82rem;color:#888;margin-bottom:1.5rem;">Choose your sauce/flavor for the wing/rib portions.</p>
-    <div class="mgrid" id="grid-platters"></div>
-  </div>
-</div>
-
-<!-- MIDNIGHT ECSTASY -->
-<div class="menu-page" id="page-midnight">
-  <div class="menu-page-inner">
-    <button class="back-btn" onclick="goBack()">← Back to Menu</button>
-    <div class="eyebrow">Sweet Endings</div>
-    <h2 class="sec-title" style="margin-bottom:1.5rem">MIDNIGHT ECSTASY 🌙</h2>
-    <div class="mgrid" id="grid-midnight"></div>
-  </div>
-</div>
-
-</div><!-- end menu-pages -->
-
-<!-- FOOTER -->
 <footer>
   <div class="footer-inner">
     <div class="fgrid">
@@ -671,12 +480,15 @@ let activeLocation='albert-st';
         <li onclick="showCat('sides')" style="cursor:pointer;">Sides</li>
         <li onclick="showCat('midnight')" style="cursor:pointer;">Midnight Ecstasy</li>
       </ul></div>
-      <div class="fc"><h4>Locations</h4><ul><li>Albert St — Regina</li><li>Rochdale — Regina</li><li>East Regina</li><li>Moose Jaw</li><li>Regina Beach</li></ul></div>
+      <div class="fc"><h4>Locations</h4><ul>
+        <li>Albert St — Regina</li><li>Rochdale — Regina</li>
+        <li>East Regina</li><li>Moose Jaw</li><li>Regina Beach</li>
+      </ul></div>
       <div class="fc"><h4>Connect</h4><ul>
-        <li><a href="https://www.instagram.com/wingorestaurants?igsh=dndtenNwZXh6emZk&utm_source=qr" target="_blank" style="color:#555;text-decoration:none;">📸 Instagram — @wingo.restaurants</a></li>
-        <li><a href="https://www.facebook.com/share/1AuXgHuEv9/?mibextid=wwXIfr" target="_blank" style="color:#555;text-decoration:none;">👍 Facebook — Wing-O</a></li>
+        <li><a href="https://www.instagram.com/wingorestaurants?igsh=dndtenNwZXh6emZk&utm_source=qr" target="_blank" style="color:#555;text-decoration:none;">📸 Instagram</a></li>
+        <li><a href="https://www.facebook.com/share/1AuXgHuEv9/?mibextid=wwXIfr" target="_blank" style="color:#555;text-decoration:none;">👍 Facebook</a></li>
         <li><a href="https://www.instagram.com/sauce_____boss?igsh=MWJvdnhmdnd1aWh0cg%3D%3D&utm_source=qr" target="_blank" style="color:#555;text-decoration:none;">🔥 Follow Sauce Boss</a></li>
-        <li onclick="openFranchise()" style="cursor:pointer;">🚀 Franchise Info</li>
+        <li onclick="openFranchise()" style="cursor:pointer;color:#555;">🚀 Franchise Info</li>
         <li><a href="mailto:besaucy@wingorestaurants.com" style="color:#555;text-decoration:none;">besaucy@wingorestaurants.com</a></li>
         <li><a href="tel:3065222111" style="color:#555;text-decoration:none;">306-522-2111</a></li>
       </ul></div>
@@ -714,10 +526,45 @@ let activeLocation='albert-st';
 </div>
 
 <!-- ITEM MODAL -->
-<div class="item-modal-ov" id="item-modal-ov" onclick="handleModalOverlayClick(event)">
+<div class="item-modal-ov" id="item-modal-ov" onclick="if(event.target===this)closeItemModal()">
   <div class="item-modal" id="item-modal">
     <button class="im-close" onclick="closeItemModal()">✕</button>
     <div id="im-content"></div>
+  </div>
+</div>
+
+<!-- FRANCHISE MODAL -->
+<div id="franchise-ov" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.85);padding:1rem;overflow-y:auto;">
+  <div style="background:white;border-radius:12px;width:min(620px,100%);margin:2rem auto;overflow:hidden;">
+    <div style="background:var(--black);padding:1.5rem 1.75rem;display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div style="font-family:var(--font-display);font-size:1.6rem;color:white;letter-spacing:2px;">🚀 FRANCHISE WITH WING-O</div>
+        <div style="font-family:var(--font-head);font-size:.75rem;color:#666;letter-spacing:2px;text-transform:uppercase;margin-top:3px;">Join Regina's fastest growing brand</div>
+      </div>
+      <button onclick="closeFranchise()" style="background:none;border:none;color:#aaa;font-size:1.4rem;cursor:pointer;padding:4px;">✕</button>
+    </div>
+    <div style="padding:1.75rem;">
+      <div style="background:rgba(232,25,10,.05);border:1px solid rgba(232,25,10,.15);border-radius:8px;padding:1rem 1.25rem;margin-bottom:1.5rem;">
+        <div style="font-family:var(--font-display);font-size:1.1rem;color:var(--red);letter-spacing:1px;margin-bottom:.35rem;">Why Wing-O?</div>
+        <div style="font-size:.83rem;color:#666;line-height:1.7;">125+ handcrafted flavors · Proven brand · 5 SK locations · Strong community following · Low startup costs · Full training & support from the Sauce Boss himself.</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.85rem;margin-bottom:.85rem;">
+        <div><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">First Name *</label><input type="text" id="fr-fn" placeholder="First name"></div>
+        <div><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">Last Name</label><input type="text" id="fr-ln" placeholder="Last name"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.85rem;margin-bottom:.85rem;">
+        <div><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">Email *</label><input type="email" id="fr-em" placeholder="your@email.com"></div>
+        <div><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">Phone *</label><input type="tel" id="fr-ph" placeholder="(306) 555-0123"></div>
+      </div>
+      <div style="margin-bottom:.85rem;"><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">City / Province to open in *</label><input type="text" id="fr-city" placeholder="e.g. Winnipeg, MB"></div>
+      <div style="margin-bottom:.85rem;"><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">Investment Budget</label>
+        <select id="fr-budget"><option value="">Select budget range</option><option>Under $100,000</option><option>$100,000 — $200,000</option><option>$200,000 — $350,000</option><option>$350,000+</option></select>
+      </div>
+      <div style="margin-bottom:1.25rem;"><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">Tell us about yourself</label><textarea id="fr-msg" placeholder="Previous business experience, why Wing-O, timeline..." style="min-height:80px;"></textarea></div>
+      <div id="fr-msg-box"></div>
+      <button id="fr-btn" onclick="submitFranchise()" style="width:100%;background:var(--red);color:white;border:none;padding:.95rem;font-family:var(--font-display);font-size:1.15rem;letter-spacing:2px;cursor:pointer;border-radius:4px;text-transform:uppercase;">SEND MY APPLICATION 🚀</button>
+      <p style="text-align:center;font-size:.75rem;color:#aaa;margin-top:.75rem;">We'll get back to you within 48 hours · besaucy@wingorestaurants.com</p>
+    </div>
   </div>
 </div>
 
@@ -725,14 +572,18 @@ let activeLocation='albert-st';
 <div class="api-status" id="api-status"><div class="api-dot" id="api-dot"></div><span id="api-txt">checking...</span></div>
 
 <script>
-// ── DATA ─────────────────────────────────────────────────────
-const LOCATIONS_GEO={
-  'albert-st':{lat:50.4501,lng:-104.6178,name:'Albert Street',address:'#3 155 Albert St N, Regina'},
-  'rochdale':{lat:50.4777,lng:-104.6494,name:'Rochdale',address:'3881 Rochdale Blvd, Regina'},
-  'moose-jaw':{lat:50.3934,lng:-105.5348,name:'Moose Jaw',address:'622 Main St N, Moose Jaw'}
-};
+// ── ALL FUNCTIONS ─────────────────────────────────────────────
 
-const FLAVORS={
+var cart = [];
+var orderType = 'pickup';
+var currentPage = 'home';
+var currentItem = null;
+var currentCat = null;
+var selectedSizeIndex = 0;
+var selectedSizePrice = 0;
+
+// FLAVORS
+var FLAVORS = {
   "Flirty Ones":["Devil's Kiss","Honey Garlic","Lemon Pepper","Buffalo","Buffalo Ranch","BBQ Ranch","Honey Dill","Greek Dry","Greek Wet","Teriyaki","Creamy Dill Pickle","Medium"],
   "Hot As Hell":["Dead Angel (Carolina Reaper)","Spicy Mammilla","Sizzle Caesar","Caribbean Connection","Tropical Temptation","BBQ Seduction","Sentimental Sauce","Cobalt Kiss","Dragon Dip","Mild","Hot","Honey Buffalo","Honey Is Hot","Honey's Too Hot","Not So Hot","African Pepper","Island On Fire"],
   "Rub It":["All Dressed","Dry BBQ","Dry Buffalo","Dry Cajun","Creole","Dill Pickle","Greek","Hickory","Italian","Lemon Pepper","Ketchup","Mango Habanero","Maple Bacon","Montreal Style","Parmesan","Salt & Pepper","Salt & Vinegar","Sour Cream & Chives","White Cheddar","Sriracha","Hot & Honey Dry","Applewood BBQ","Brown Bourbon","Citrus Pepper"],
@@ -743,922 +594,597 @@ const FLAVORS={
   "Illegal Sauces":["Hot Fantasy","Grefflo","Citrus Twist","Illegal Pizza","Honeyaki Harmony","Chinese Bull","Mystic Garlic","Blue Buzz","Creamy Lemon","Pepper Pleasure","Tour Of Italy","Honey Ranch Bliss","Cajun Cream","Canadian Greek","Parmesan Prestige","Creamy Bliss","Influencer","Mid-Majestic","Zesty Twist","Sweet Heat","Wrench It Up","Thai Coconut Crush","Scotch's Up","Dill Rancher","Citrus Sting","Japanese Twist","Dillnferno","Cream Of The Zing","Prairie Gold"]
 };
 
-const ALL_FLAVORS = Object.values(FLAVORS).flat();
+var BURGER_UPGRADES = [{name:'Upgrade to Curly Fries',price:1.00},{name:'Upgrade to Poutine',price:2.00},{name:'Upgrade to Onion Rings',price:1.49}];
+var COMBO_UPGRADES = [{name:'Upgrade Fries to Curly Fries',price:1.00},{name:'Upgrade Fries to Poutine',price:2.00},{name:'Upgrade Fries to Onion Rings',price:1.49}];
 
-// Menu data — exact from Sloppy Seduction menu
-const MENU = {
+var MENU = {
   wings:[
     {id:'w1',name:'Half Order — Wings',desc:'Half order of crispy bone-in wings. Choose your sauce or rub from 125+ flavors.',price:7.99,img:'images/wings-half.jpg',flavorCount:1,pop:false},
     {id:'w2',name:'One Order — Wings',desc:'Full order of crispy bone-in wings. Choose your sauce or rub from 125+ flavors.',price:13.99,img:'images/wings-hero.jpg',flavorCount:1,pop:true},
-    {id:'w3',name:'Two Orders — Wings',desc:'Two orders. Mix & match — choose a different flavor for each order!',price:25.99,img:'images/wings-hero.jpg',flavorCount:2,pop:false},
-    {id:'w4',name:'Three Orders — Wings',desc:'Three orders. Mix & match — choose a different flavor for each order!',price:37.99,img:'images/wings-hero.jpg',flavorCount:3,pop:false},
-    {id:'w5',name:'Four Orders — Wings',desc:'Four orders. Mix & match — choose a different flavor for each order!',price:49.99,img:'images/wings-hero.jpg',flavorCount:4,pop:false},
-    {id:'w6',name:'Five Orders — Wings',desc:'Five orders — the ultimate party pack!',price:58.99,img:'images/wings-hero.jpg',flavorCount:5,pop:false},
+    {id:'w3',name:'Two Orders — Wings',desc:'Two orders. Mix and match — choose a different flavor for each!',price:25.99,img:'images/wings-hero.jpg',flavorCount:2,pop:false},
+    {id:'w4',name:'Three Orders — Wings',desc:'Three orders. Mix and match — choose a different flavor for each!',price:37.99,img:'images/wings-hero.jpg',flavorCount:3,pop:false},
+    {id:'w5',name:'Four Orders — Wings',desc:'Four orders. Mix and match — choose a different flavor for each!',price:49.99,img:'images/wings-hero.jpg',flavorCount:4,pop:false},
+    {id:'w6',name:'Five Orders — Wings',desc:'Five orders — the ultimate party pack! Choose a flavor for each.',price:58.99,img:'images/wings-hero.jpg',flavorCount:5,pop:false}
   ],
   ribs:[
-    {id:'r1',name:'Half Order — Ribs',desc:'Half order of saucy bone-in ribs. Choose your sauce or rub from 125+ flavors.',price:7.99,img:'images/ribs.jpg',flavorCount:1,pop:false},
-    {id:'r2',name:'One Order — Ribs',desc:'Full order of saucy bone-in ribs. Choose your sauce or rub from 125+ flavors.',price:13.99,img:'images/ribs.jpg',flavorCount:1,pop:true},
-    {id:'r3',name:'Two Orders — Ribs',desc:'Two orders of ribs. Mix & match flavors!',price:25.99,img:'images/ribs.jpg',flavorCount:2,pop:false},
-    {id:'r4',name:'Three Orders — Ribs',desc:'Three orders of ribs. Mix & match flavors!',price:37.99,img:'images/ribs.jpg',flavorCount:3,pop:false},
-    {id:'r5',name:'Four Orders — Ribs',desc:'Four orders of ribs. Mix & match flavors!',price:49.99,img:'images/ribs.jpg',flavorCount:4,pop:false},
-    {id:'r6',name:'Five Orders — Ribs',desc:'Five orders — the ultimate party pack!',price:58.99,img:'images/ribs.jpg',flavorCount:5,pop:false},
+    {id:'r1',name:'Half Order — Ribs',desc:'Half order of saucy bone-in ribs. Choose your sauce from 125+ flavors.',price:7.99,img:'images/ribs.jpg',flavorCount:1,pop:false},
+    {id:'r2',name:'One Order — Ribs',desc:'Full order of saucy bone-in ribs. Choose your sauce from 125+ flavors.',price:13.99,img:'images/ribs.jpg',flavorCount:1,pop:true},
+    {id:'r3',name:'Two Orders — Ribs',desc:'Two orders of ribs. Mix and match flavors!',price:25.99,img:'images/ribs.jpg',flavorCount:2,pop:false},
+    {id:'r4',name:'Three Orders — Ribs',desc:'Three orders of ribs. Mix and match flavors!',price:37.99,img:'images/ribs.jpg',flavorCount:3,pop:false},
+    {id:'r5',name:'Four Orders — Ribs',desc:'Four orders of ribs. Mix and match flavors!',price:49.99,img:'images/ribs.jpg',flavorCount:4,pop:false},
+    {id:'r6',name:'Five Orders — Ribs',desc:'Five orders — the ultimate party pack!',price:58.99,img:'images/ribs.jpg',flavorCount:5,pop:false}
   ],
-    boneless:[
+  boneless:[
     {id:'b1',name:'Half Order — Boneless Wings',desc:'Half order of crispy boneless wings tossed in your choice of sauce.',price:7.99,img:'images/boneless-wings.jpg',flavorCount:1,pop:false},
     {id:'b2',name:'Full Order — Boneless Wings',desc:'Full order of crispy boneless wings tossed in your choice of sauce.',price:13.99,img:'images/boneless-wings.jpg',flavorCount:1,pop:true},
-    {id:'b5',name:'Cauliflower Wings',desc:'Crispy cauliflower wings tossed with sauce of your choice.',price:12.99,img:null,flavorCount:1,pop:false},
+    {id:'b3',name:'Cauliflower Wings',desc:'Crispy cauliflower wings tossed with sauce of your choice.',price:12.99,img:null,flavorCount:1,pop:false}
   ],
   chickenfingers:[
-    {id:'cf1',name:'Half Order — Chicken Fingers',desc:'Half order of crispy chicken fingers served with your choice of dipping sauce.',price:7.99,img:'images/boneless-sauce.jpg',flavorCount:1,pop:false},
-    {id:'cf2',name:'Full Order — Chicken Fingers',desc:'Full order of crispy chicken fingers served with your choice of dipping sauce.',price:13.99,img:'images/boneless-sauce.jpg',flavorCount:1,pop:true},
+    {id:'cf1',name:'Half Order — Chicken Fingers',desc:'Half order of crispy chicken fingers with your choice of dipping sauce.',price:7.99,img:'images/boneless-sauce.jpg',flavorCount:1,pop:false},
+    {id:'cf2',name:'Full Order — Chicken Fingers',desc:'Full order of crispy chicken fingers with your choice of dipping sauce.',price:13.99,img:'images/boneless-sauce.jpg',flavorCount:1,pop:true}
   ],
   burgers:[
-    {id:'bu1',name:'The Tough Guy',desc:'Crispy 6oz chicken breast, double-crunched and coated in our blazing Carolina Reaper sauce. Layered with pickles, tomatoes, red onions, romaine, and melted Swiss for the perfect hit of heat and crunch. 🌶️',price:21.99,img:'images/burger-tough-guy.jpg',upgrades:true,pop:true},
-    {id:'bu2',name:'The Dillinator',desc:'Crispy 6oz double-crunched chicken, layered with honey dill sauce, crunchy pickle chips, fresh romaine, and melted Swiss finished with bold dill flavor in every bite.',price:21.99,img:'images/burger-dillinator.jpg',upgrades:true,pop:false},
-    {id:'bu3',name:'The Buffalo Stampede',desc:'Crispy 6oz chicken patty tossed in our house-made buffalo sauce, stacked with creamy coleslaw, pickles, and melted mozzarella for the perfect balance of heat and crunch.',price:21.99,img:'images/burger.jpg',upgrades:true,pop:false},
-    {id:'bu4',name:'Korean Fried Chicken (KFC)',desc:'A 6oz hand-breaded chicken breast coated in our scratch-made Korean BBQ sauce, topped with crunchy coleslaw and tangy pickles, all served on a soft toasted bun.',price:20.99,img:'images/burger.jpg',upgrades:true,pop:false},
-    {id:'bu5',name:'The Sunset Crunch',desc:'Crispy chicken paired with a sweet heat habanero mango kick, creamy California ranch, and a soft toasted bun — balanced, bold, and full of flavor.',price:17.99,img:'images/burger.jpg',upgrades:true,pop:false},
+    {id:'bu1',name:'The Tough Guy',desc:'Crispy 6oz chicken breast, double-crunched and coated in our blazing Carolina Reaper sauce. Layered with pickles, tomatoes, red onions, romaine, and melted Swiss. Served with fries and a drink.',price:21.99,img:'images/burger-tough-guy.jpg',upgrades:true,pop:true},
+    {id:'bu2',name:'The Dillinator',desc:'Crispy 6oz double-crunched chicken, layered with honey dill sauce, crunchy pickle chips, fresh romaine, and melted Swiss. Served with fries and a drink.',price:21.99,img:'images/burger-dillinator.jpg',upgrades:true,pop:false},
+    {id:'bu3',name:'The Buffalo Stampede',desc:'Crispy 6oz chicken patty tossed in house-made buffalo sauce, stacked with creamy coleslaw, pickles, and melted mozzarella. Served with fries and a drink.',price:21.99,img:'images/burger.jpg',upgrades:true,pop:false},
+    {id:'bu4',name:'Korean Fried Chicken (KFC)',desc:'A 6oz hand-breaded chicken breast coated in scratch-made Korean BBQ sauce, topped with crunchy coleslaw and tangy pickles. Served with fries and a drink.',price:20.99,img:'images/burger.jpg',upgrades:true,pop:false},
+    {id:'bu5',name:'The Sunset Crunch',desc:'Crispy chicken with sweet heat habanero mango kick, creamy California ranch, and a soft toasted bun. Served with fries and a drink.',price:17.99,img:'images/burger.jpg',upgrades:true,pop:false}
   ],
   combos:[
-    {id:'c1',name:'Combo for 1',desc:'Wings, ribs, or chicken fingers served with fries and a can of pop. Choose your flavor!',price:17.45,img:'images/combo1.jpg',flavorCount:1,upgrades:true,pop:true},
-    {id:'c2',name:'Combo for 2',desc:'Wings, ribs, or chicken fingers with large fries, deep-fried pickles, and two cans of pop. Choose your flavors!',price:39.99,img:null,flavorCount:2,upgrades:true,pop:false},
-    {id:'c3',name:'Combo for 3',desc:'Wings, ribs, or chicken fingers alongside large fries, a Caesar salad, and a 2L pop. Choose your flavors!',price:57.49,img:null,flavorCount:3,upgrades:true,pop:false},
-    {id:'c4',name:'Combo for 4',desc:'Wings, ribs, or chicken fingers served with large fries, gravy, a Caesar salad, and a 2L pop. Choose your flavors!',price:67.99,img:null,flavorCount:4,upgrades:true,pop:false},
-    {id:'c5',name:'Corn Dog Combo',desc:'Corn dog served with fries and a can of pop, with dipping of your choice.',price:11.99,img:null,upgrades:true,pop:false},
+    {id:'c1',name:'Combo for 1',desc:'Wings, ribs, or chicken fingers with fries and a can of pop. Choose your flavor!',price:17.45,img:'images/combo1.jpg',flavorCount:1,upgrades:true,pop:true},
+    {id:'c2',name:'Combo for 2',desc:'Wings, ribs, or chicken fingers with large fries, deep-fried pickles, and two cans of pop.',price:39.99,img:null,flavorCount:2,upgrades:true,pop:false},
+    {id:'c3',name:'Combo for 3',desc:'Wings, ribs, or chicken fingers with large fries, Caesar salad, and a 2L pop.',price:57.49,img:null,flavorCount:3,upgrades:true,pop:false},
+    {id:'c4',name:'Combo for 4',desc:'Wings, ribs, or chicken fingers with large fries, gravy, Caesar salad, and a 2L pop.',price:67.99,img:null,flavorCount:4,upgrades:true,pop:false},
+    {id:'c5',name:'Corn Dog Combo',desc:'Corn dog served with fries, a can of pop, and dipping of your choice.',price:11.99,img:null,upgrades:true,pop:false}
   ],
   sides:[
     {id:'s1',name:'Fries',desc:'Golden crispy fries.',price:4.99,price2:8.99,img:null,sizes:true},
     {id:'s2',name:'Curly Fries',desc:'Seasoned curly fries.',price:5.99,price2:9.99,img:'images/curly-fries.jpg',sizes:true},
     {id:'s3',name:'Onion Rings',desc:'Golden crispy onion rings.',price:7.99,img:null},
     {id:'s4',name:'Pickle Spears',desc:'Deep fried pickle spears.',price:8.99,img:'images/pickle-spears.jpg'},
-    {id:'s5',name:'Empanadas',desc:'Crispy empanadas with dipping sauce of your choice.',price:9.99,price2:12.99,img:'images/empanadas.jpg',sizes:true,sizeLabels:['6 pc','12 pc']},
-    {id:'s6',name:'Jalapeño Poppers',desc:'Crispy jalapeño poppers.',price:10.49,img:'images/jalapeno-poppers.jpg'},
-    {id:'s7',name:'Deep Fried Mac & Cheese Bites',desc:'Crispy deep fried mac & cheese bites.',price:10.49,img:null},
+    {id:'s5',name:'Empanadas',desc:'Crispy empanadas with dipping sauce.',price:9.99,price2:12.99,img:'images/empanadas.jpg',sizes:true,sizeLabels:['6 pc','12 pc']},
+    {id:'s6',name:'Jalapeno Poppers',desc:'Crispy jalapeno poppers.',price:10.49,img:'images/jalapeno-poppers.jpg'},
+    {id:'s7',name:'Deep Fried Mac & Cheese Bites',desc:'Crispy deep fried mac and cheese bites.',price:10.49,img:null},
     {id:'s8',name:'Mini Perogies',desc:'Golden mini perogies.',price:8.99,img:'images/mini-perogies.jpg'},
     {id:'s9',name:'Mozza Sticks',desc:'Classic mozzarella sticks with dipping sauce.',price:10.49,img:'images/mozza-sticks.jpg'},
     {id:'s10',name:'Spring Rolls',desc:'Crispy spring rolls.',price:10.49,img:null},
     {id:'s11',name:'Dumplings',desc:'Crispy fried dumplings.',price:10.49,img:'images/dumplings.jpg'},
-    {id:'s12',name:'Corn Dog',desc:'Classic corn dog. Comes with dipping of your choice.',price:6.99,img:null},
+    {id:'s12',name:'Corn Dog',desc:'Classic corn dog with dipping of your choice.',price:6.99,img:null},
     {id:'s13',name:'Cauliflower Wings',desc:'Crispy cauliflower wings tossed with sauce of your choice.',price:12.99,img:null,flavorCount:1},
-    {id:'s14',name:'Classic Poutine',desc:'Crispy golden fries topped with cheese curds and rich, savory gravy — simple, comforting, and done right.',price:8.99,price2:13.99,img:'images/poutine.jpg',sizes:true,sizeLabels:['Small','Large']},
-    {id:'s15',name:'Chicken Poutine',desc:'Crispy fries loaded with juicy chicken, rich gravy, and finished with our sweet & spicy Thai sauce for the perfect balance of comfort and heat.',price:14.99,img:null},
-    {id:'s16',name:'Rib Poutine',desc:'Golden fries topped with cheese curds, tender dry ribs, and finished with our sweet & spicy Thai sauce for a bold, savory kick.',price:15.99,img:null},
-    {id:'s17',name:'Beef Poutine',desc:'Crispy fries topped with tender grilled beef, sautéed veggies, and finished with our sweet & spicy Thai sauce for a bold, flavorful bite.',price:14.99,img:null},
-    {id:'s18',name:'Perogy Poutine',desc:'Mini perogies smothered in creamy cheese sauce, topped with sour cream, green onions, and bacon bits for a rich, comforting bite.',price:10.49,img:null},
-    {id:'s19',name:'Nacho Teaser',desc:'Crispy curly fries loaded with warm cheese sauce, fresh salsa, cool sour cream, green onions, and jalapeños for the perfect cheesy, zesty bite.',price:12.99,img:null},
-    {id:'s20',name:'Loaded Taters',desc:'Crispy tater tots stacked with seasoned shredded beef, creamy cheese sauce, and fresh toppings for the perfect mix of crunch and comfort.',price:13.99,img:null},
-    {id:'s21',name:'Gravy',desc:'Classic gravy.',price:0.99,price2:2.49,img:null,sizes:true,sizeLabels:['Small','Large']},
+    {id:'s14',name:'Classic Poutine',desc:'Crispy golden fries topped with cheese curds and rich, savory gravy.',price:8.99,price2:13.99,img:'images/poutine.jpg',sizes:true,sizeLabels:['Small','Large']},
+    {id:'s15',name:'Chicken Poutine',desc:'Crispy fries loaded with juicy chicken, rich gravy, and sweet & spicy Thai sauce.',price:14.99,img:null},
+    {id:'s16',name:'Rib Poutine',desc:'Golden fries with cheese curds, tender dry ribs, and sweet & spicy Thai sauce.',price:15.99,img:null},
+    {id:'s17',name:'Beef Poutine',desc:'Crispy fries with tender grilled beef, sauteed veggies, and sweet & spicy Thai sauce.',price:14.99,img:null},
+    {id:'s18',name:'Perogy Poutine',desc:'Mini perogies smothered in creamy cheese sauce, sour cream, green onions, and bacon bits.',price:10.49,img:null},
+    {id:'s19',name:'Nacho Teaser',desc:'Curly fries loaded with warm cheese sauce, fresh salsa, sour cream, green onions, and jalapenos.',price:12.99,img:null},
+    {id:'s20',name:'Loaded Taters',desc:'Crispy tater tots with seasoned shredded beef, creamy cheese sauce, and fresh toppings.',price:13.99,img:null},
+    {id:'s21',name:'Gravy',desc:'Classic gravy.',price:0.99,price2:2.49,img:null,sizes:true,sizeLabels:['Small','Large']}
   ],
   salads:[
     {id:'sal1',name:'Caesar Salad',desc:'Classic caesar salad.',price:6.99,price2:7.99,price3:13.99,img:'images/salad.jpg',sizes3:true},
-    {id:'sal2',name:'Chicken Caesar Salad',desc:'Caesar salad with crispy grilled chicken.',price:9.99,price2:12.99,price3:19.49,img:'images/salad.jpg',sizes3:true},
+    {id:'sal2',name:'Chicken Caesar Salad',desc:'Caesar salad with crispy grilled chicken.',price:9.99,price2:12.99,price3:19.49,img:'images/salad.jpg',sizes3:true}
   ],
   platters:[
     {id:'p1',name:'A Bit of Other Platter',desc:'1 lb Ribs, Pickle Spear, Large Curly Fries, Mini Perogies, Dumplings, Mozza Sticks. Upgrade ribs to wings +$4.00.',price:36.99,img:'images/platter-bit-of.jpg',flavorCount:1,pop:true},
-    {id:'p2',name:'Making Love Platter',desc:'Full Order Wings, Empanadas, Large Fries, Jalapeño Poppers, Mozza Sticks.',price:36.99,img:'images/platter-making-love.jpg',flavorCount:1,pop:false},
+    {id:'p2',name:'Making Love Platter',desc:'Full Order Wings, Empanadas, Large Fries, Jalapeno Poppers, Mozza Sticks.',price:36.99,img:'images/platter-making-love.jpg',flavorCount:1,pop:false},
     {id:'p3',name:'Too Much Platter',desc:'4 Orders of Wings or Ribs, 2 Curly Fries.',price:56.99,img:null,flavorCount:4,pop:false},
-    {id:'p4',name:'Tinseltown Nacho',desc:'3 lbs Curly Fries, Cheese Sauce, Chunky Salsa, Sour Cream, Jalapeño, Green Onions.',price:29.99,img:null},
-    {id:'p5',name:'Hot \'n\' Heavy',desc:'3 lbs Fries, 1 lb Cheese Curds, 1 lb Gravy. Drizzled with sauce of your choice.',price:29.99,img:null},
+    {id:'p4',name:'Tinseltown Nacho',desc:'3 lbs Curly Fries, Cheese Sauce, Chunky Salsa, Sour Cream, Jalapeno, Green Onions.',price:29.99,img:null},
+    {id:'p5',name:"Hot n Heavy",desc:'3 lbs Fries, 1 lb Cheese Curds, 1 lb Gravy. Drizzled with sauce of your choice.',price:29.99,img:null}
   ],
   midnight:[
     {id:'m1',name:'Tiramisu Cake',desc:'Homemade tiramisu cake slice.',price:8.99,img:null},
     {id:'m2',name:'Deep Fried Cookie Dough',desc:'Choose your flavor: Peanut Butter, Double Chocolate, or Monster.',price:3.50,img:'images/cookie-dough.jpg',cookieFlavors:true},
     {id:'m3',name:'Deep Fried Oreos',desc:'Crispy deep fried Oreos dusted with powdered sugar.',price:0.99,price2:5.99,price3:10.49,img:'images/oreo.jpg',sizes3:true,sizeLabels3:['1 pc','6 pc','12 pc']},
-    {id:'m4',name:'Deep Fried Mars Bars',desc:'Indulgent deep fried Mars bars dusted with powdered sugar.',price:2.99,price2:4.99,price3:12.99,img:'images/mars-1pc.jpg',sizes3:true,sizeLabels3:['1 pc','2 pc','6 pc']},
+    {id:'m4',name:'Deep Fried Mars Bars',desc:'Indulgent deep fried Mars bars dusted with powdered sugar.',price:2.99,price2:4.99,price3:12.99,img:'images/mars-1pc.jpg',sizes3:true,sizeLabels3:['1 pc','2 pc','6 pc']}
   ]
 };
 
-const BURGER_UPGRADES=[
-  {name:'Upgrade to Curly Fries',price:1.00},
-  {name:'Upgrade to Poutine',price:2.00},
-  {name:'Upgrade to Onion Rings',price:1.49},
-];
-const COMBO_UPGRADES=[
-  {name:'Upgrade Fries to Curly Fries',price:1.00},
-  {name:'Upgrade Fries to Poutine',price:2.00},
-  {name:'Upgrade Fries to Onion Rings',price:1.49},
-];
+// TOAST
+var toastT;
+function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('show');},2600);}
 
-// ── STATE ────────────────────────────────────────────────────
-let cart=[];
-let orderType='pickup';
-let currentPage='home';
-
-// ── UTILS ────────────────────────────────────────────────────
-function go(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth'});}
-let toastT;
-function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2600);}
-
-// ── PAGE NAV ─────────────────────────────────────────────────
+// NAV
 function showHome(){
-  _showHome();
+  document.getElementById('home-page').style.display='block';
+  document.getElementById('menu-pages').style.display='none';
+  document.querySelectorAll('.menu-page').forEach(function(p){p.classList.remove('active');});
+  currentPage='home';
+  window.scrollTo({top:0,behavior:'smooth'});
   history.pushState({page:'home'},'');
 }
 function showCat(cat){
-  _showCat(cat);
+  document.getElementById('home-page').style.display='none';
+  document.getElementById('menu-pages').style.display='block';
+  document.querySelectorAll('.menu-page').forEach(function(p){p.classList.remove('active');});
+  var pg = document.getElementById('page-'+cat);
+  if(pg) pg.classList.add('active');
+  currentPage=cat;
+  window.scrollTo({top:0,behavior:'smooth'});
+  renderGrid(cat);
   history.pushState({page:cat},'');
 }
-
-// ── RENDER GRID ───────────────────────────────────────────────
-function renderGrid(cat){
-  const items=MENU[cat]||[];
-  const el=document.getElementById('grid-'+cat);
-  if(!el)return;
-  el.innerHTML=items.map(item=>renderCard(item,cat)).join('');
+function goBack(){
+  if(window.history.length>1){window.history.back();}
+  else{showHome();}
 }
+window.addEventListener('popstate',function(e){
+  if(e.state&&e.state.page){
+    if(e.state.page==='home'){
+      document.getElementById('home-page').style.display='block';
+      document.getElementById('menu-pages').style.display='none';
+      document.querySelectorAll('.menu-page').forEach(function(p){p.classList.remove('active');});
+    } else {
+      document.getElementById('home-page').style.display='none';
+      document.getElementById('menu-pages').style.display='block';
+      document.querySelectorAll('.menu-page').forEach(function(p){p.classList.remove('active');});
+      var pg=document.getElementById('page-'+e.state.page);
+      if(pg){pg.classList.add('active');renderGrid(e.state.page);}
+    }
+  }
+});
 
+// RENDER GRID
+function renderGrid(cat){
+  var items=MENU[cat]||[];
+  var el=document.getElementById('grid-'+cat);
+  if(!el)return;
+  el.innerHTML=items.map(function(item){return renderCard(item,cat);}).join('');
+}
 function renderCard(item,cat){
-  const img=item.img?`<img src="${item.img}" alt="${item.name}" loading="lazy">`:'';
-  const pop=item.pop?'<div class="pop-flag">🔥 Popular</div>':'';
-
-  // Price display
-  let priceHtml=`$${item.price.toFixed(2)}`;
+  var img=item.img?'<img src="'+item.img+'" alt="'+item.name+'" loading="lazy">':'';
+  var pop=item.pop?'<div class="pop-flag">🔥 Popular</div>':'';
+  var priceHtml='$'+item.price.toFixed(2);
   if(item.sizes&&item.price2){
-    const labels=item.sizeLabels||['Small','Large'];
-    priceHtml=`<span style="font-size:.82rem;color:#888;font-family:var(--font-head);">${labels[0]}</span> $${item.price.toFixed(2)} &nbsp;·&nbsp; <span style="font-size:.82rem;color:#888;font-family:var(--font-head);">${labels[1]}</span> $${item.price2.toFixed(2)}`;
+    var labs=item.sizeLabels||['Small','Large'];
+    priceHtml='<span style="font-size:.8rem;color:#888;">'+labs[0]+'</span> $'+item.price.toFixed(2)+' &nbsp;·&nbsp; <span style="font-size:.8rem;color:#888;">'+labs[1]+'</span> $'+item.price2.toFixed(2);
   }
   if(item.sizes3){
-    const labels=item.sizeLabels3||['Sm','Med','Lg'];
-    priceHtml=`<span style="font-size:.78rem;color:#888;font-family:var(--font-head);">${labels[0]}</span> $${item.price.toFixed(2)} · <span style="font-size:.78rem;color:#888;font-family:var(--font-head);">${labels[1]}</span> $${item.price2.toFixed(2)} · <span style="font-size:.78rem;color:#888;font-family:var(--font-head);">${labels[2]}</span> $${item.price3.toFixed(2)}`;
+    var labs3=item.sizeLabels3||['Sm','Med','Lg'];
+    priceHtml='<span style="font-size:.78rem;color:#888;">'+labs3[0]+'</span> $'+item.price.toFixed(2)+' · <span style="font-size:.78rem;color:#888;">'+labs3[1]+'</span> $'+item.price2.toFixed(2)+' · <span style="font-size:.78rem;color:#888;">'+labs3[2]+'</span> $'+item.price3.toFixed(2);
   }
-
-  return `<div class="mc" onclick="openItemModal('${item.id}','${cat}')">
-    <div class="mc-img">${img}</div>
-    <div class="mc-body">
-      ${pop}
-      <div class="mc-name">${item.name}</div>
-      <div class="mc-desc">${item.desc}</div>
-      <div class="mc-foot">
-        <div class="mc-price" style="font-size:${item.sizes||item.sizes3?'.9rem':'1.2rem'}">${priceHtml}</div>
-        <button class="btn-add" onclick="event.stopPropagation();openItemModal('${item.id}','${cat}')">+</button>
-      </div>
-    </div>
-  </div>`;
+  return '<div class="mc" onclick="openItemModal(\''+item.id+'\',\''+cat+'\')"><div class="mc-img">'+img+'</div><div class="mc-body">'+pop+'<div class="mc-name">'+item.name+'</div><div class="mc-desc">'+item.desc+'</div><div class="mc-foot"><div class="mc-price" style="font-size:'+(item.sizes||item.sizes3?'.85rem':'1.2rem')+'">'+priceHtml+'</div><button class="btn-add" onclick="event.stopPropagation();openItemModal(\''+item.id+'\',\''+cat+'\')">+</button></div></div></div>';
 }
 
-// ── ITEM MODAL ────────────────────────────────────────────────
-let currentItem=null;
-let currentCat=null;
-
+// ITEM MODAL
 function openItemModal(id,cat){
-  const items=MENU[cat]||[];
-  const item=items.find(i=>i.id===id);
+  var items=MENU[cat]||[];
+  var item=null;
+  for(var i=0;i<items.length;i++){if(items[i].id===id){item=items[i];break;}}
   if(!item)return;
   currentItem=item;
   currentCat=cat;
+  selectedSizeIndex=0;
+  selectedSizePrice=0;
 
-  const img=item.img?`<div class="im-img"><img src="${item.img}" alt="${item.name}" loading="lazy"></div>`:'';
-
-  let body=`${img}<div class="im-body">
-    <div class="im-name">${item.name}</div>
-    <div class="im-desc">${item.desc}</div>`;
+  var img=item.img?'<div class="im-img"><img src="'+item.img+'" alt="'+item.name+'" loading="lazy"></div>':'';
+  var body=img+'<div class="im-body"><div class="im-name">'+item.name+'</div><div class="im-desc">'+item.desc+'</div>';
 
   // Size selection
   if(item.sizes&&item.price2){
-    const labels=item.sizeLabels||['Small','Large'];
-    body+=`<div style="margin-bottom:.85rem;">
-      <div style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:.5rem;">SIZE</div>
-      <div style="display:flex;gap:.5rem;">
-        <button class="size-btn on" id="sz-0" onclick="selectSize(0,${item.price},this)" style="flex:1;border:2px solid var(--red);background:rgba(232,25,10,.05);padding:.5rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.82rem;">${labels[0]} — $${item.price.toFixed(2)}</button>
-        <button class="size-btn" id="sz-1" onclick="selectSize(1,${item.price2},this)" style="flex:1;border:2px solid #E8E0D0;background:white;padding:.5rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.82rem;">${labels[1]} — $${item.price2.toFixed(2)}</button>
-      </div>
-    </div>`;
+    var labs=item.sizeLabels||['Small','Large'];
+    body+='<div style="margin-bottom:.85rem;"><div style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:.5rem;">SIZE</div><div style="display:flex;gap:.5rem;"><button class="size-btn" id="sz-0" onclick="selectSize(0,'+item.price+',this)" style="flex:1;border:2px solid var(--red);background:rgba(232,25,10,.05);padding:.5rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.82rem;">'+labs[0]+' — $'+item.price.toFixed(2)+'</button><button class="size-btn" id="sz-1" onclick="selectSize(1,'+item.price2+',this)" style="flex:1;border:2px solid #E8E0D0;background:white;padding:.5rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.82rem;">'+labs[1]+' — $'+item.price2.toFixed(2)+'</button></div></div>';
   }
   if(item.sizes3){
-    const labels=item.sizeLabels3||['Sm','Med','Lg'];
-    body+=`<div style="margin-bottom:.85rem;">
-      <div style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:.5rem;">SIZE</div>
-      <div style="display:flex;gap:.4rem;">
-        <button class="size-btn on" id="sz-0" onclick="selectSize(0,${item.price},this)" style="flex:1;border:2px solid var(--red);background:rgba(232,25,10,.05);padding:.45rem .3rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.75rem;">${labels[0]}<br>$${item.price.toFixed(2)}</button>
-        <button class="size-btn" id="sz-1" onclick="selectSize(1,${item.price2},this)" style="flex:1;border:2px solid #E8E0D0;background:white;padding:.45rem .3rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.75rem;">${labels[1]}<br>$${item.price2.toFixed(2)}</button>
-        <button class="size-btn" id="sz-2" onclick="selectSize(2,${item.price3},this)" style="flex:1;border:2px solid #E8E0D0;background:white;padding:.45rem .3rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.75rem;">${labels[2]}<br>$${item.price3.toFixed(2)}</button>
-      </div>
-    </div>`;
+    var labs3=item.sizeLabels3||['Sm','Med','Lg'];
+    body+='<div style="margin-bottom:.85rem;"><div style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:.5rem;">SIZE</div><div style="display:flex;gap:.4rem;"><button class="size-btn" id="sz-0" onclick="selectSize(0,'+item.price+',this)" style="flex:1;border:2px solid var(--red);background:rgba(232,25,10,.05);padding:.45rem .3rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.75rem;">'+labs3[0]+'<br>$'+item.price.toFixed(2)+'</button><button class="size-btn" id="sz-1" onclick="selectSize(1,'+item.price2+',this)" style="flex:1;border:2px solid #E8E0D0;background:white;padding:.45rem .3rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.75rem;">'+labs3[1]+'<br>$'+item.price2.toFixed(2)+'</button><button class="size-btn" id="sz-2" onclick="selectSize(2,'+item.price3+',this)" style="flex:1;border:2px solid #E8E0D0;background:white;padding:.45rem .3rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.75rem;">'+labs3[2]+'<br>$'+item.price3.toFixed(2)+'</button></div></div>';
   }
 
-  // Flavor pickers (one per order)
+  // Flavor pickers
   if(item.flavorCount){
-    body+=`<div style="background:#FFF;border:1px solid #E8E0D0;border-radius:6px;padding:.85rem;margin-bottom:.85rem;">
-      <div style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:.6rem;">🔥 ${item.flavorCount>1?'Choose a Flavor for Each Order':'Choose Your Flavor'}</div>`;
-    for(let i=0;i<item.flavorCount;i++){
-      body+=`<div style="margin-bottom:.5rem;">
-        ${item.flavorCount>1?`<div style="font-family:var(--font-head);font-size:.75rem;color:#888;margin-bottom:.3rem;">Order ${i+1}:</div>`:''}
-        <select id="flavor-${i}" style="width:100%;border:1.5px solid #E8E0D0;border-radius:4px;padding:.45rem .7rem;font-family:var(--font-body);font-size:.83rem;color:var(--black);outline:none;background:white;">
-          <option value="">— Pick a flavor —</option>
-          ${Object.entries(FLAVORS).map(([group,flavs])=>`<optgroup label="${group}">${flavs.map(f=>`<option value="${f}">${f}</option>`).join('')}</optgroup>`).join('')}
-        </select>
-      </div>`;
+    body+='<div style="background:#FFF;border:1px solid #E8E0D0;border-radius:6px;padding:.85rem;margin-bottom:.85rem;"><div style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:.6rem;">🔥 '+(item.flavorCount>1?'Choose a Flavor for Each Order':'Choose Your Flavor')+'</div>';
+    for(var fi=0;fi<item.flavorCount;fi++){
+      var opts='<option value="">— Pick a flavor —</option>';
+      Object.keys(FLAVORS).forEach(function(grp){
+        opts+='<optgroup label="'+grp+'">';
+        FLAVORS[grp].forEach(function(f){opts+='<option value="'+f+'">'+f+'</option>';});
+        opts+='</optgroup>';
+      });
+      body+='<div style="margin-bottom:.5rem;">'+(item.flavorCount>1?'<div style="font-family:var(--font-head);font-size:.75rem;color:#888;margin-bottom:.3rem;">Order '+(fi+1)+':</div>':'')+' <select id="flavor-'+fi+'" style="width:100%;border:1.5px solid #E8E0D0;border-radius:4px;padding:.45rem .7rem;font-family:var(--font-body);font-size:.83rem;color:var(--black);outline:none;background:white;">'+opts+'</select></div>';
     }
-    body+=`</div>`;
+    body+='</div>';
   }
 
-  // Cookie dough flavor
+  // Cookie dough
   if(item.cookieFlavors){
-    body+=`<div style="margin-bottom:.85rem;">
-      <label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.4rem;">Cookie Dough Flavor</label>
-      <select id="cookie-flavor" class="cd-select">
-        <option value="Peanut Butter">🥜 Peanut Butter</option>
-        <option value="Double Chocolate">🍫 Double Chocolate</option>
-        <option value="Monster">👾 Monster</option>
-      </select>
-    </div>`;
+    body+='<div style="margin-bottom:.85rem;"><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.4rem;">Cookie Dough Flavor</label><select id="cookie-flavor" style="width:100%;border:1.5px solid #E8E0D0;border-radius:4px;padding:.45rem .7rem;font-family:var(--font-body);font-size:.83rem;outline:none;background:white;margin-bottom:.7rem;"><option value="Peanut Butter">Peanut Butter</option><option value="Double Chocolate">Double Chocolate</option><option value="Monster">Monster</option></select></div>';
   }
 
-  // Upgrades for burgers
+  // Burger upgrades
   if(item.upgrades&&cat==='burgers'){
-    body+=`<div style="background:#FFF8EE;border:1px solid #F5D98A;border-radius:6px;padding:.75rem;margin-bottom:.85rem;">
-      <div style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#7B3F00;margin-bottom:.5rem;">Upgrade (Optional)</div>
-      ${BURGER_UPGRADES.map((u,i)=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:.3rem 0;border-bottom:${i<BURGER_UPGRADES.length-1?'1px solid #F0E0C0':'none'};">
-        <label style="font-family:var(--font-head);font-size:.8rem;color:#555;cursor:pointer;display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;">
-          <input type="radio" name="burger-upgrade" value="${u.price}" data-name="${u.name}" style="width:auto;border:none;padding:0;"> ${u.name}
-        </label>
-        <span style="font-family:var(--font-display);font-size:.85rem;color:var(--red);">+$${u.price.toFixed(2)}</span>
-      </div>`).join('')}
-    </div>`;
+    body+='<div style="background:#FFF8EE;border:1px solid #F5D98A;border-radius:6px;padding:.75rem;margin-bottom:.85rem;"><div style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#7B3F00;margin-bottom:.5rem;">Upgrade (Optional)</div>';
+    BURGER_UPGRADES.forEach(function(u,i){
+      body+='<div style="display:flex;align-items:center;justify-content:space-between;padding:.3rem 0;border-bottom:'+(i<BURGER_UPGRADES.length-1?'1px solid #F0E0C0':'none')+'"><label style="font-family:var(--font-head);font-size:.8rem;color:#555;cursor:pointer;display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;"><input type="radio" name="burger-upgrade" value="'+u.price+'" data-name="'+u.name+'" style="width:auto;border:none;padding:0;"> '+u.name+'</label><span style="font-family:var(--font-display);font-size:.85rem;color:var(--red);">+$'+u.price.toFixed(2)+'</span></div>';
+    });
+    body+='</div>';
   }
 
-  // Upgrades for combos
+  // Combo upgrades
   if(item.upgrades&&cat==='combos'){
-    body+=`<div style="background:#FFF8EE;border:1px solid #F5D98A;border-radius:6px;padding:.75rem;margin-bottom:.85rem;">
-      <div style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#7B3F00;margin-bottom:.5rem;">Upgrade Fries (Optional)</div>
-      ${COMBO_UPGRADES.map((u,i)=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:.3rem 0;border-bottom:${i<COMBO_UPGRADES.length-1?'1px solid #F0E0C0':'none'};">
-        <label style="font-family:var(--font-head);font-size:.8rem;color:#555;cursor:pointer;display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;">
-          <input type="radio" name="combo-upgrade" value="${u.price}" data-name="${u.name}" style="width:auto;border:none;padding:0;"> ${u.name}
-        </label>
-        <span style="font-family:var(--font-display);font-size:.85rem;color:var(--red);">+$${u.price.toFixed(2)}</span>
-      </div>`).join('')}
-    </div>`;
+    body+='<div style="background:#FFF8EE;border:1px solid #F5D98A;border-radius:6px;padding:.75rem;margin-bottom:.85rem;"><div style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#7B3F00;margin-bottom:.5rem;">Upgrade Fries (Optional)</div>';
+    COMBO_UPGRADES.forEach(function(u,i){
+      body+='<div style="display:flex;align-items:center;justify-content:space-between;padding:.3rem 0;border-bottom:'+(i<COMBO_UPGRADES.length-1?'1px solid #F0E0C0':'none')+'"><label style="font-family:var(--font-head);font-size:.8rem;color:#555;cursor:pointer;display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;"><input type="radio" name="combo-upgrade" value="'+u.price+'" data-name="'+u.name+'" style="width:auto;border:none;padding:0;"> '+u.name+'</label><span style="font-family:var(--font-display);font-size:.85rem;color:var(--red);">+$'+u.price.toFixed(2)+'</span></div>';
+    });
+    body+='</div>';
   }
 
   // Special instructions
-  body+=`<div style="margin-bottom:1rem;">
-    <label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.35rem;">Special Instructions (Optional)</label>
-    <textarea id="item-notes" placeholder="Extra sauce, no pickles, extra spicy..." style="width:100%;border:1.5px solid #E8E0D0;border-radius:4px;padding:.5rem .75rem;font-family:var(--font-body);font-size:.83rem;color:var(--black);resize:vertical;min-height:55px;outline:none;"></textarea>
-  </div>`;
+  body+='<div style="margin-bottom:1rem;"><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.35rem;">Special Instructions (Optional)</label><textarea id="item-notes" placeholder="Extra sauce, no pickles, extra spicy..." style="width:100%;border:1.5px solid #E8E0D0;border-radius:4px;padding:.5rem .75rem;font-family:var(--font-body);font-size:.83rem;color:var(--black);resize:vertical;min-height:55px;outline:none;"></textarea></div>';
 
-  // Price display
-  body+=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
-    <div class="im-price" id="modal-price">$${item.price.toFixed(2)}</div>
-  </div>`;
-
-  body+=`<button class="btn-place" onclick="addFromModal()">ADD TO ORDER 🍗</button><button onclick="closeItemModal()" style="width:100%;background:none;border:1.5px solid #E8E0D0;color:#888;padding:.7rem;font-family:var(--font-head);font-size:.82rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:4px;margin-top:.5rem;">✕ Cancel</button>`;
-  body+=`</div>`;
+  body+='<div style="font-family:var(--font-display);font-size:1.8rem;color:var(--black);margin-bottom:1rem;" id="modal-price">$'+item.price.toFixed(2)+'</div>';
+  body+='<button class="btn-place" onclick="addFromModal()">ADD TO ORDER 🍗</button>';
+  body+='<button onclick="closeItemModal()" style="width:100%;background:none;border:1.5px solid #E8E0D0;color:#888;padding:.7rem;font-family:var(--font-head);font-size:.82rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:4px;margin-top:.5rem;">✕ Cancel</button>';
+  body+='</div>';
 
   document.getElementById('im-content').innerHTML=body;
   document.getElementById('item-modal-ov').classList.add('open');
 }
-
-let selectedSizeIndex=0;
-let selectedSizePrice=0;
 function selectSize(idx,price,el){
-  selectedSizeIndex=idx;
-  selectedSizePrice=price;
-  document.querySelectorAll('.size-btn').forEach(b=>{
-    b.style.borderColor='#E8E0D0';b.style.background='white';
-  });
+  selectedSizeIndex=idx;selectedSizePrice=price;
+  document.querySelectorAll('.size-btn').forEach(function(b){b.style.borderColor='#E8E0D0';b.style.background='white';});
   el.style.borderColor='var(--red)';el.style.background='rgba(232,25,10,.05)';
   document.getElementById('modal-price').textContent='$'+price.toFixed(2);
 }
-
-function handleModalOverlayClick(e){
-  if(e.target===document.getElementById('item-modal-ov')) closeItemModal();
-}
 function closeItemModal(){
   document.getElementById('item-modal-ov').classList.remove('open');
-  selectedSizeIndex=0;selectedSizePrice=0;
-  currentItem=null;currentCat=null;
+  selectedSizeIndex=0;selectedSizePrice=0;currentItem=null;currentCat=null;
 }
-
 function addFromModal(){
-  const item=currentItem;
-  const cat=currentCat;
+  var item=currentItem,cat=currentCat;
   if(!item)return;
-
-  // Get flavors
-  let flavors=[];
+  var flavors=[];
   if(item.flavorCount){
-    for(let i=0;i<item.flavorCount;i++){
-      const sel=document.getElementById('flavor-'+i);
-      if(sel&&sel.value) flavors.push(sel.value);
-      else flavors.push('');
+    for(var fi=0;fi<item.flavorCount;fi++){
+      var sel=document.getElementById('flavor-'+fi);
+      flavors.push(sel&&sel.value?sel.value:'');
     }
-    // Warn if any flavor not selected
-    if(flavors.some(f=>!f)){
-      toast('⚠️ Please pick a flavor for each order!');
-      return;
-    }
+    if(flavors.some(function(f){return !f;})){toast('Please pick a flavor for each order!');return;}
   }
-
-  // Cookie dough flavor
-  let cookieFl='';
-  if(item.cookieFlavors){
-    const cs=document.getElementById('cookie-flavor');
-    cookieFl=cs?cs.value:'Peanut Butter';
-  }
-
-  // Upgrade
-  let upgradePrice=0;
-  let upgradeName='';
+  var cookieFl='';
+  if(item.cookieFlavors){var cs=document.getElementById('cookie-flavor');cookieFl=cs?cs.value:'Peanut Butter';}
+  var upgradePrice=0,upgradeName='';
   if(item.upgrades){
-    const uname=cat==='burgers'?'burger-upgrade':'combo-upgrade';
-    const checked=document.querySelector(`input[name="${uname}"]:checked`);
-    if(checked){
-      upgradePrice=parseFloat(checked.value);
-      upgradeName=checked.dataset.name;
-    }
+    var uname=cat==='burgers'?'burger-upgrade':'combo-upgrade';
+    var checked=document.querySelector('input[name="'+uname+'"]:checked');
+    if(checked){upgradePrice=parseFloat(checked.value);upgradeName=checked.dataset.name;}
   }
-
-  // Size
-  let finalPrice=item.price;
-  let sizeName='';
+  var finalPrice=item.price,sizeName='';
   if((item.sizes||item.sizes3)&&selectedSizePrice>0){
     finalPrice=selectedSizePrice;
-    const labels=item.sizeLabels3||item.sizeLabels||['Small','Large'];
-    sizeName=labels[selectedSizeIndex];
+    var labs=item.sizeLabels3||item.sizeLabels||['Small','Large'];
+    sizeName=labs[selectedSizeIndex];
   }
-
-  // Special instructions
-  const notes=document.getElementById('item-notes')?.value.trim()||'';
-
-  // Build cart item
-  const totalPrice=finalPrice+upgradePrice;
-  const key=item.id+'|'+flavors.join(',')+cookieFl+sizeName+upgradeName;
-  const ex=cart.find(c=>c.key===key&&c.notes===notes);
+  var notes=document.getElementById('item-notes')?document.getElementById('item-notes').value.trim():'';
+  var totalPrice=finalPrice+upgradePrice;
+  var key=item.id+'|'+flavors.join(',')+cookieFl+sizeName+upgradeName;
+  var ex=null;
+  for(var ci=0;ci<cart.length;ci++){if(cart[ci].key===key&&cart[ci].notes===notes){ex=cart[ci];break;}}
   if(ex){ex.qty++;}
   else{
-    const details=[];
-    if(flavors.length===1&&flavors[0]) details.push(flavors[0]);
-    if(flavors.length>1) flavors.forEach((f,i)=>details.push(`Order ${i+1}: ${f}`));
-    if(cookieFl) details.push(cookieFl);
-    if(sizeName) details.push(sizeName);
-    if(upgradeName) details.push(upgradeName+' +$'+upgradePrice.toFixed(2));
-    if(notes) details.push('Note: '+notes);
-    cart.push({
-      id:item.id,key,qty:1,
-      name:item.name,
-      price:totalPrice,
-      details:details.join(' · '),
-      notes,flavors,cookieFl,sizeName,upgradeName,upgradePrice
-    });
+    var details=[];
+    if(flavors.length===1&&flavors[0])details.push(flavors[0]);
+    if(flavors.length>1)flavors.forEach(function(f,i){details.push('Order '+(i+1)+': '+f);});
+    if(cookieFl)details.push(cookieFl);
+    if(sizeName)details.push(sizeName);
+    if(upgradeName)details.push(upgradeName+' +$'+upgradePrice.toFixed(2));
+    if(notes)details.push('Note: '+notes);
+    cart.push({id:item.id,key:key,qty:1,name:item.name,price:totalPrice,details:details.join(' · '),notes:notes,flavors:flavors,cookieFl:cookieFl,sizeName:sizeName,upgradeName:upgradeName,upgradePrice:upgradePrice});
   }
-
-  updateCart();
-  toast('Added: '+item.name);
-  closeItemModal();
+  updateCart();toast('Added: '+item.name);closeItemModal();
 }
 
-// ── CART ──────────────────────────────────────────────────────
+// CART
 function updateCart(){
-  const cnt=cart.reduce((s,i)=>s+i.qty,0);
+  var cnt=cart.reduce(function(s,i){return s+i.qty;},0);
   document.getElementById('cart-count').textContent=cnt;
-  const bd=document.getElementById('cart-bd'),ft=document.getElementById('cart-ft');
+  var bd=document.getElementById('cart-bd'),ft=document.getElementById('cart-ft');
   if(!cart.length){
     bd.innerHTML='<div class="cart-empty"><div style="font-size:2.8rem;opacity:.35;margin-bottom:.75rem">🍗</div><div style="font-family:var(--font-head);font-size:.85rem;letter-spacing:1px;text-transform:uppercase;color:#888">Cart is empty</div></div>';
     ft.style.display='none';return;
   }
   ft.style.display='block';
-  bd.innerHTML=cart.map(item=>`<div class="ci">
-    <div class="ci-icon">🍗</div>
-    <div class="ci-info">
-      <div class="ci-name">${item.name}</div>
-      ${item.details?`<div class="ci-details">${item.details}</div>`:''}
-      <div class="ci-pr">$${item.price.toFixed(2)} each</div>
-    </div>
-    <div class="ci-ctrl">
-      <button class="qb" onclick="chgQty('${item.key}',-1)">−</button>
-      <span class="qn">${item.qty}</span>
-      <button class="qb" onclick="chgQty('${item.key}',1)">+</button>
-    </div>
-  </div>`).join('');
-
-  const sub=cart.reduce((s,i)=>s+i.price*i.qty,0);
-  const gst=sub*0.05;const pst=sub*0.06;
-  const del=orderType==='delivery'?5.50:0;
-  const total=sub+gst+pst+del;
+  bd.innerHTML=cart.map(function(item){
+    return '<div class="ci"><div class="ci-icon">🍗</div><div class="ci-info"><div class="ci-name">'+item.name+'</div>'+(item.details?'<div class="ci-details">'+item.details+'</div>':'')+'<div class="ci-pr">$'+item.price.toFixed(2)+' each</div></div><div class="ci-ctrl"><button class="qb" onclick="chgQty(\''+item.key+'\',-1)">−</button><span class="qn">'+item.qty+'</span><button class="qb" onclick="chgQty(\''+item.key+'\',1)">+</button></div></div>';
+  }).join('');
+  var sub=cart.reduce(function(s,i){return s+i.price*i.qty;},0);
+  var gst=sub*0.05,pst=sub*0.06,del=orderType==='delivery'?5.50:0,total=sub+gst+pst+del;
   document.getElementById('csub').textContent='$'+sub.toFixed(2);
   document.getElementById('cgst').textContent='$'+gst.toFixed(2);
   document.getElementById('cpst').textContent='$'+pst.toFixed(2);
   document.getElementById('ctot').textContent='$'+total.toFixed(2);
-  const delRow=document.getElementById('cdel-row');
-  if(delRow) delRow.style.display=orderType==='delivery'?'flex':'none';
+  var dr=document.getElementById('cdel-row');
+  if(dr)dr.style.display=orderType==='delivery'?'flex':'none';
 }
-function chgQty(key,d){const i=cart.findIndex(c=>c.key===key);if(i<0)return;cart[i].qty+=d;if(cart[i].qty<=0)cart.splice(i,1);updateCart();}
+function chgQty(key,d){
+  for(var i=0;i<cart.length;i++){if(cart[i].key===key){cart[i].qty+=d;if(cart[i].qty<=0)cart.splice(i,1);break;}}
+  updateCart();
+}
 function openCart(){document.getElementById('cart-ov').classList.add('open');}
 function closeCart(){document.getElementById('cart-ov').classList.remove('open');}
 
-// ── CHECKOUT ──────────────────────────────────────────────────
+// CHECKOUT
 function openCheckout(){closeCart();renderCheckoutForm();document.getElementById('modal-ov').classList.add('open');}
 function closeCheckout(){document.getElementById('modal-ov').classList.remove('open');}
-
-function renderCheckoutForm(){
-  const sub=cart.reduce((s,i)=>s+i.price*i.qty,0);
-  const gst=sub*0.05;const pst=sub*0.06;
-  const del=orderType==='delivery'?5.50:0;
-  const total=sub+gst+pst+del;
-
-  document.getElementById('mbd').innerHTML=`
-    <div id="co-preorder-note" class="preorder-note" style="display:none;">
-  <strong>⏰ Pre-Order</strong> — We're currently closed. Your order will be prepared when we open <span id="co-open-time"></span>. We'll call you to confirm!
-</div>
-<div class="otype-row">
-      <div class="oc on" id="ot-p" onclick="setOT('pickup')"><div class="oc-icon">🏃</div><div class="oc-lbl">Pickup</div><div class="oc-sub">Ready in ~20 min</div></div>
-      <div class="oc" id="ot-d" onclick="setOT('delivery')"><div class="oc-icon">🛵</div><div class="oc-lbl">Delivery</div><div class="oc-sub">+$5.50 · Regina</div></div>
-    </div>
-    <div class="fg"><label>Location</label>
-      <select id="o-loc" onchange="setLocation(this.value)">
-        <option value="albert-st">Albert Street — #3 155 Albert St N, Regina</option>
-        <option value="rochdale">Rochdale — 3881 Rochdale Blvd, Regina</option>
-        <option value="moose-jaw">Moose Jaw — 622 Main St N, Moose Jaw</option>
-      </select>
-    </div>
-    <div id="del-addr" class="fg hidden"><label>Delivery Address</label><input type="text" id="o-addr" placeholder="123 Main St, Regina, SK"></div>
-    <div id="del-note" class="del-note hidden">🛵 Delivery available within Regina. Flat rate $5.50.</div>
-    <div class="msec">YOUR INFO</div>
-    <div class="frow">
-      <div class="fg"><label>First Name</label><input type="text" id="o-fn" placeholder="First name"></div>
-      <div class="fg"><label>Last Name</label><input type="text" id="o-ln" placeholder="Last name"></div>
-    </div>
-    <div class="fg"><label>Phone</label><input type="tel" id="o-ph" placeholder="(306) 555-0123"></div>
-    <div class="fg"><label>Email</label><input type="email" id="o-em" placeholder="you@email.com"></div>
-    <div class="fg"><label>Order Notes</label><textarea id="o-notes" placeholder="Any special requests for the whole order..."></textarea></div>
-    <div class="msec">ORDER SUMMARY</div>
-    <div class="os-box">
-      ${cart.map(it=>`
-        <div class="os-row"><span>${it.name} ×${it.qty}</span><span>$${(it.price*it.qty).toFixed(2)}</span></div>
-        ${it.details?`<div class="os-row sub-row"><span>${it.details}</span><span></span></div>`:''}
-      `).join('')}
-      <div class="os-row" style="color:#888"><span>GST (5%)</span><span>$${gst.toFixed(2)}</span></div>
-      <div class="os-row" style="color:#888"><span>PST (6%)</span><span>$${pst.toFixed(2)}</span></div>
-      ${del>0?`<div class="os-row" style="color:#888"><span>Delivery</span><span>$${del.toFixed(2)}</span></div>`:''}
-      <div class="os-total"><span>Total</span><span>$${total.toFixed(2)}</span></div>
-    </div>
-    <div id="payment-section"></div>`;
-
-  detectAndSortLocations(true);
-  setTimeout(renderPaymentSection,200);
-  // Show pre-order note if closed
-  const poNote = document.getElementById('co-preorder-note');
-  const poTime = document.getElementById('co-open-time');
-  if(poNote && !isOpen()){
-    poNote.style.display='block';
-    if(poTime) poTime.textContent = getNextOpenTime();
-  }
-}
-
 function setOT(t){
   orderType=t;
-  document.getElementById('ot-p')?.classList.toggle('on',t==='pickup');
-  document.getElementById('ot-d')?.classList.toggle('on',t==='delivery');
-  document.getElementById('del-addr')?.classList.toggle('hidden',t==='pickup');
-  document.getElementById('del-note')?.classList.toggle('hidden',t==='pickup');
+  document.getElementById('ot-p').classList.toggle('on',t==='pickup');
+  document.getElementById('ot-d').classList.toggle('on',t==='delivery');
+  document.getElementById('del-addr').classList.toggle('hidden',t==='pickup');
+  document.getElementById('del-note').classList.toggle('hidden',t==='pickup');
   updateCart();
-  // Re-render summary with updated delivery charge
-  const sub=cart.reduce((s,i)=>s+i.price*i.qty,0);
-  const gst=sub*0.05;const pst=sub*0.06;
-  const del=t==='delivery'?5.50:0;
-  const total=sub+gst+pst+del;
-  const box=document.querySelector('.os-box');
-  if(box){
-    const totEl=box.querySelector('.os-total span:last-child');
-    if(totEl) totEl.textContent='$'+total.toFixed(2);
-  }
   renderPaymentSection();
 }
-
+function renderCheckoutForm(){
+  var sub=cart.reduce(function(s,i){return s+i.price*i.qty;},0);
+  var gst=sub*0.05,pst=sub*0.06,del=orderType==='delivery'?5.50:0,total=sub+gst+pst+del;
+  var itemRows=cart.map(function(it){
+    return '<div class="os-row"><span>'+it.name+' x'+it.qty+'</span><span>$'+(it.price*it.qty).toFixed(2)+'</span></div>'+(it.details?'<div class="os-row sub-row"><span>'+it.details+'</span><span></span></div>':'');
+  }).join('');
+  var preNote='';
+  if(!isOpen()){preNote='<div class="preorder-note"><strong>Pre-Order</strong> — We are currently closed. Your order will be prepared when we open '+getNextOpenTime()+'. We will call you to confirm!</div>';}
+  document.getElementById('mbd').innerHTML=preNote+'<div class="otype-row"><div class="oc on" id="ot-p" onclick="setOT(\'pickup\')"><div class="oc-icon">🏃</div><div class="oc-lbl">Pickup</div><div class="oc-sub">Ready in ~20 min</div></div><div class="oc" id="ot-d" onclick="setOT(\'delivery\')"><div class="oc-icon">🛵</div><div class="oc-lbl">Delivery</div><div class="oc-sub">+$5.50 · Regina</div></div></div><div class="fg"><label>Location</label><select id="o-loc" onchange="setLocation(this.value)"><option value="albert-st">Albert Street — #3 155 Albert St N, Regina</option><option value="rochdale">Rochdale — 3881 Rochdale Blvd, Regina</option><option value="moose-jaw">Moose Jaw — 622 Main St N, Moose Jaw</option></select></div><div id="del-addr" class="fg hidden"><label>Delivery Address</label><input type="text" id="o-addr" placeholder="123 Main St, Regina, SK"></div><div id="del-note" class="del-note hidden">Delivery available within Regina. Flat rate $5.50.</div><div class="msec">YOUR INFO</div><div class="frow"><div class="fg"><label>First Name</label><input type="text" id="o-fn" placeholder="First name"></div><div class="fg"><label>Last Name</label><input type="text" id="o-ln" placeholder="Last name"></div></div><div class="fg"><label>Phone</label><input type="tel" id="o-ph" placeholder="(306) 555-0123"></div><div class="fg"><label>Email</label><input type="email" id="o-em" placeholder="you@email.com"></div><div class="fg"><label>Order Notes</label><textarea id="o-notes" placeholder="Any special requests..."></textarea></div><div class="msec">ORDER SUMMARY</div><div class="os-box">'+itemRows+'<div class="os-row" style="color:#888"><span>GST (5%)</span><span>$'+gst.toFixed(2)+'</span></div><div class="os-row" style="color:#888"><span>PST (6%)</span><span>$'+pst.toFixed(2)+'</span></div>'+(del>0?'<div class="os-row" style="color:#888"><span>Delivery</span><span>$'+del.toFixed(2)+'</span></div>':'')+'<div class="os-total"><span>Total</span><span>$'+total.toFixed(2)+'</span></div></div><div id="payment-section"></div>';
+  detectAndSortLocations(true);
+  setTimeout(renderPaymentSection,200);
+}
 function renderPaymentSection(){
   var locId=document.getElementById('o-loc')?document.getElementById('o-loc').value:activeLocation;
-  var loc_data={
-    'albert-st':{onlinePayments:false},
-    'rochdale':{onlinePayments:true,cloverPublicKey:'cd46b0d8f6927c3420e884c39aa2a3c3'},
-    'moose-jaw':{onlinePayments:false}
-  };
-  var loc=loc_data[locId];
+  var isRochdale=locId==='rochdale';
   var sec=document.getElementById('payment-section');
   if(!sec)return;
   var sub=cart.reduce(function(s,i){return s+i.price*i.qty;},0);
   var del=orderType==='delivery'?5.50:0;
   var tot=((sub*1.11)+del).toFixed(2);
-  if(loc&&loc.onlinePayments){
-    sec.innerHTML='<div class="msec">PAYMENT</div>'
-      +'<p style="font-family:var(--font-head);font-size:.78rem;color:#888;letter-spacing:1px;margin-bottom:.75rem;">'+String.fromCodePoint(0x1F4B3)+' Enter your card details below — secured by Clover.</p>'
-      +'<div class="clover-pay-wrap" id="clover-iframe-wrap"></div>'
-      +'<div style="text-align:center;font-size:.74rem;color:#888;margin:.5rem 0 .75rem;">'+String.fromCodePoint(0x1F512)+' Secured by Clover · Your card details are encrypted</div>'
-      +'<button class="btn-place" id="pbtn" onclick="submitOrder()">PAY $'+tot+' NOW</button>';
-    if(loc.cloverPublicKey){setTimeout(function(){initCloverIframe(loc.cloverPublicKey);},150);}
+  if(isRochdale){
+    sec.innerHTML='<div class="msec">PAYMENT</div><p style="font-family:var(--font-head);font-size:.78rem;color:#888;letter-spacing:1px;margin-bottom:.75rem;">Enter your card details below — secured by Clover.</p><div class="clover-pay-wrap" id="clover-iframe-wrap"></div><div style="text-align:center;font-size:.74rem;color:#888;margin:.5rem 0 .75rem;">Secured by Clover · Your card details are encrypted</div><button class="btn-place" id="pbtn" onclick="submitOrder()">PAY $'+tot+' NOW</button>';
+    setTimeout(function(){initCloverIframe('cd46b0d8f6927c3420e884c39aa2a3c3');},150);
   } else {
-    sec.innerHTML='<div class="clover-badge">'+String.fromCodePoint(0x1F340)+' Orders sent to Clover POS</div>'
-      +'<p class="pay-note"><strong>Payment at pickup / on delivery.</strong></p>'
-      +(isPreOrder()?'<button class="btn-place" id="pbtn" onclick="submitOrder()" style="background:#F5A800;color:#0D0D0D;">PRE-ORDER FOR '+getNextOpenTime().toUpperCase()+' ⏰</button>':'<button class="btn-place" id="pbtn" onclick="submitOrder()">PLACE ORDER '+String.fromCodePoint(0x1F525)+'</button>');
+    var btnTxt=isPreOrder()?'PRE-ORDER FOR '+getNextOpenTime().toUpperCase():'PLACE ORDER';
+    var btnStyle=isPreOrder()?'style="background:#F5A800;color:#0D0D0D;"':'';
+    sec.innerHTML='<div class="clover-badge">Orders sent to Clover POS</div><p class="pay-note"><strong>Payment at pickup / on delivery.</strong></p><button class="btn-place" id="pbtn" onclick="submitOrder()" '+btnStyle+'>'+btnTxt+' 🔥</button>';
   }
 }
+function setLocation(v){
+  activeLocation=v;
+  var lbl=document.getElementById('cart-loc-label');
+  var names={'albert-st':'Albert Street','rochdale':'Rochdale','moose-jaw':'Moose Jaw'};
+  if(lbl)lbl.textContent=(names[v]||'Albert Street')+' · Pickup or Delivery';
+  setTimeout(renderPaymentSection,100);
+}
 
-// ── CLOVER IFRAME ─────────────────────────────────────────────
+// CLOVER
 var cloverInstance=null;
-function initCloverIframe(publicKey){
+function initCloverIframe(pk){
   var wrap=document.getElementById('clover-iframe-wrap');
   if(!wrap||!window.Clover)return;
   try{
-    cloverInstance=new window.Clover(publicKey);
-    var elements=cloverInstance.elements();
-    var cardNumber=elements.create('CARD_NUMBER');
-    var cardDate=elements.create('CARD_DATE');
-    var cardCvv=elements.create('CARD_CVV');
-    var cardPostal=elements.create('CARD_POSTAL_CODE');
-    wrap.innerHTML='<div style="display:grid;gap:.6rem;margin-bottom:.5rem;">'
-      +'<div><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">Card Number</label><div id="card-number" style="border:1.5px solid #E8E0D0;border-radius:4px;padding:.55rem .8rem;background:white;"></div></div>'
-      +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem;">'
-      +'<div><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">Expiry</label><div id="card-date" style="border:1.5px solid #E8E0D0;border-radius:4px;padding:.55rem .8rem;background:white;"></div></div>'
-      +'<div><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">CVV</label><div id="card-cvv" style="border:1.5px solid #E8E0D0;border-radius:4px;padding:.55rem .8rem;background:white;"></div></div>'
-      +'<div><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">Postal</label><div id="card-postal" style="border:1.5px solid #E8E0D0;border-radius:4px;padding:.55rem .8rem;background:white;"></div></div>'
-      +'</div></div>';
-    cardNumber.mount('#card-number');
-    cardDate.mount('#card-date');
-    cardCvv.mount('#card-cvv');
-    cardPostal.mount('#card-postal');
+    cloverInstance=new window.Clover(pk);
+    var els=cloverInstance.elements();
+    var cn=els.create('CARD_NUMBER'),cd=els.create('CARD_DATE'),cv=els.create('CARD_CVV'),cp=els.create('CARD_POSTAL_CODE');
+    wrap.innerHTML='<div style="display:grid;gap:.6rem;margin-bottom:.5rem;"><div><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">Card Number</label><div id="card-number" style="border:1.5px solid #E8E0D0;border-radius:4px;padding:.55rem .8rem;background:white;"></div></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem;"><div><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">Expiry</label><div id="card-date" style="border:1.5px solid #E8E0D0;border-radius:4px;padding:.55rem .8rem;background:white;"></div></div><div><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">CVV</label><div id="card-cvv" style="border:1.5px solid #E8E0D0;border-radius:4px;padding:.55rem .8rem;background:white;"></div></div><div><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">Postal</label><div id="card-postal" style="border:1.5px solid #E8E0D0;border-radius:4px;padding:.55rem .8rem;background:white;"></div></div></div></div>';
+    cn.mount('#card-number');cd.mount('#card-date');cv.mount('#card-cvv');cp.mount('#card-postal');
   }catch(e){console.error('Clover iframe error:',e);}
 }
 async function getCloverToken(){
   if(!cloverInstance)return null;
   try{
-    var result=await cloverInstance.createToken();
-    if(result.errors){var errs=Object.values(result.errors).filter(Boolean);if(errs.length){toast('⚠️ '+errs[0]);return null;}}
-    return result.token||null;
-  }catch(e){toast('⚠️ Card error: '+e.message);return null;}
+    var r=await cloverInstance.createToken();
+    if(r.errors){var errs=Object.values(r.errors).filter(Boolean);if(errs.length){toast(errs[0]);return null;}}
+    return r.token||null;
+  }catch(e){toast('Card error: '+e.message);return null;}
 }
 
-// ── SUBMIT ORDER ──────────────────────────────────────────────
+// SUBMIT ORDER
 async function submitOrder(){
-  const fn=document.getElementById('o-fn')?.value.trim();
-  const ln=document.getElementById('o-ln')?.value.trim()||'';
-  const ph=document.getElementById('o-ph')?.value.trim();
-  const em=document.getElementById('o-em')?.value.trim()||'';
-  const notes=document.getElementById('o-notes')?.value.trim()||'';
-  const addr=orderType==='delivery'?document.getElementById('o-addr')?.value.trim():'';
-  const locId=document.getElementById('o-loc')?.value||activeLocation;
-
-  if(!fn||!ph){toast('⚠️ Name & phone required');return;}
-  if(orderType==='delivery'&&!addr){toast('⚠️ Please enter delivery address');return;}
-
-  const onlinePayLocs=['rochdale'];
-  const btn=document.getElementById('pbtn');
+  var fn=document.getElementById('o-fn')?document.getElementById('o-fn').value.trim():'';
+  var ln=document.getElementById('o-ln')?document.getElementById('o-ln').value.trim():'';
+  var ph=document.getElementById('o-ph')?document.getElementById('o-ph').value.trim():'';
+  var em=document.getElementById('o-em')?document.getElementById('o-em').value.trim():'';
+  var notes=document.getElementById('o-notes')?document.getElementById('o-notes').value.trim():'';
+  var addr=orderType==='delivery'&&document.getElementById('o-addr')?document.getElementById('o-addr').value.trim():'';
+  var locId=document.getElementById('o-loc')?document.getElementById('o-loc').value:activeLocation;
+  if(!fn||!ph){toast('Name and phone required');return;}
+  if(orderType==='delivery'&&!addr){toast('Please enter delivery address');return;}
+  var btn=document.getElementById('pbtn');
   btn.disabled=true;
+  var sub=cart.reduce(function(s,i){return s+i.price*i.qty;},0);
+  var gst=sub*0.05,pst=sub*0.06,del=orderType==='delivery'?5.50:0;
+  var total=parseFloat((sub+gst+pst+del).toFixed(2));
 
-  const sub=cart.reduce((s,i)=>s+i.price*i.qty,0);
-  const gst=sub*0.05;const pst=sub*0.06;
-  const del=orderType==='delivery'?5.50:0;
-  const total=parseFloat((sub+gst+pst+del).toFixed(2));
-
-  // Handle Rochdale card payment
-  let cardToken=null;
-  if(onlinePayLocs.includes(locId)){
+  // Rochdale card payment
+  if(locId==='rochdale'){
     btn.innerHTML='<span class="spinner"></span>Processing card...';
-    cardToken=await getCloverToken();
+    var cardToken=await getCloverToken();
     if(!cardToken){btn.disabled=false;btn.innerHTML='PAY $'+total.toFixed(2)+' NOW';return;}
     btn.innerHTML='<span class="spinner"></span>Charging card...';
-    const onum2='WO-'+Math.floor(1000+Math.random()*9000);
+    var onum2='WO-'+Math.floor(1000+Math.random()*9000);
     try{
-      const cr=await fetch(API_BASE+'/api/charge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({locationId:locId,cardToken,amount:total,orderId:onum2,customer:{firstName:fn,phone:ph}})});
-      const cd=await cr.json();
-      if(!cd.success){toast('❌ '+cd.error);btn.disabled=false;btn.innerHTML='PAY $'+total.toFixed(2)+' NOW';return;}
-      showSuccess({success:true,orderNum:onum2,cloverSuccess:true,customer:fn,total:total.toFixed(2),phone:ph,orderType,location:'Rochdale',paid:true,last4:cd.last4});
+      var cr=await fetch(API_BASE+'/api/charge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({locationId:locId,cardToken:cardToken,amount:total,orderId:onum2,customer:{firstName:fn,phone:ph}})});
+      var cd=await cr.json();
+      if(!cd.success){toast(cd.error||'Payment failed');btn.disabled=false;btn.innerHTML='PAY $'+total.toFixed(2)+' NOW';return;}
+      showSuccess({success:true,orderNum:onum2,cloverSuccess:true,customer:fn,total:total.toFixed(2),phone:ph,orderType:orderType,location:'Rochdale',paid:true,last4:cd.last4});
       cart=[];updateCart();return;
-    }catch(e){toast('❌ Payment error — try again');btn.disabled=false;btn.innerHTML='PAY $'+total.toFixed(2)+' NOW';return;}
+    }catch(e){toast('Payment error — try again');btn.disabled=false;btn.innerHTML='PAY $'+total.toFixed(2)+' NOW';return;}
   }
 
   btn.innerHTML='<span class="spinner"></span>Sending to Kitchen...';
-
-  // Build items for server
-  const serverItems=cart.map(i=>{
-    const parts=[];
+  var serverItems=cart.map(function(i){
+    var parts=[];
     if(i.flavors&&i.flavors.length){
-      if(i.flavors.length===1) parts.push(i.flavors[0]);
-      else i.flavors.forEach((f,idx)=>parts.push(`Order ${idx+1}: ${f}`));
+      if(i.flavors.length===1)parts.push(i.flavors[0]);
+      else i.flavors.forEach(function(f,idx){parts.push('Order '+(idx+1)+': '+f);});
     }
-    if(i.cookieFl) parts.push(i.cookieFl);
-    if(i.sizeName) parts.push(i.sizeName);
-    if(i.upgradeName) parts.push(i.upgradeName);
-    if(i.notes) parts.push('Note: '+i.notes);
+    if(i.cookieFl)parts.push(i.cookieFl);
+    if(i.sizeName)parts.push(i.sizeName);
+    if(i.upgradeName)parts.push(i.upgradeName);
+    if(i.notes)parts.push('Note: '+i.notes);
     return {name:i.name,flavor:parts.join(' · '),price:i.price,qty:i.qty};
   });
-
+  var preOrderNote=isPreOrder()?'[PRE-ORDER — opens '+getNextOpenTime()+'] ':'';
   try{
-    const resp=await fetch(API_BASE+'/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({locationId:locId,orderType,customer:{firstName:fn,lastName:ln,phone:ph,email:em,address:addr},items:serverItems,notes:(isPreOrder()?'[PRE-ORDER — opens '+getNextOpenTime()+'] ':'')+(notes||''),subtotal:sub,tax:gst+pst,total,preOrder:isPreOrder(),openTime:getNextOpenTime()})});
-    const data=await resp.json();
-    if(data.success){showSuccess({...data,orderType,paid:false});cart=[];updateCart();}
+    var resp=await fetch(API_BASE+'/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({locationId:locId,orderType:orderType,customer:{firstName:fn,lastName:ln,phone:ph,email:em,address:addr},items:serverItems,notes:preOrderNote+(notes||''),subtotal:sub,tax:gst+pst,total:total,preOrder:isPreOrder(),openTime:getNextOpenTime()})});
+    var data=await resp.json();
+    if(data.success){showSuccess(Object.assign({},data,{orderType:orderType,paid:false}));cart=[];updateCart();}
     else{toast('Error: '+(data.error||'Unknown'));btn.disabled=false;btn.innerHTML='PLACE ORDER 🔥';}
   }catch(e){
-    const onum='WO-'+Math.floor(1000+Math.random()*9000);
-    showSuccess({success:true,orderNum:onum,cloverSuccess:false,customer:fn,total:total.toFixed(2),phone:ph,orderType,location:locId,paid:false});
+    var onum='WO-'+Math.floor(1000+Math.random()*9000);
+    showSuccess({success:true,orderNum:onum,cloverSuccess:false,customer:fn,total:total.toFixed(2),phone:ph,orderType:orderType,location:locId,paid:false});
     cart=[];updateCart();
   }
 }
-
 function showSuccess(d){
-  const locNames={'albert-st':'Albert Street','rochdale':'Rochdale','moose-jaw':'Moose Jaw'};
-  const locName=d.location?(locNames[d.location]||d.location):d.location;
-  document.getElementById('mbd').innerHTML=`<div class="success-view">
-    <div class="sv-icon">${d.paid?'💳':'🔥'}</div>
-    <h2>${d.paid?'PAYMENT CONFIRMED!':'ORDER PLACED!'}</h2>
-    <p>You're locked in, ${d.customer}!</p>
-    <div class="onum">${d.orderNum}</div>
-    ${d.paid?`<p style="color:#276749;font-weight:600;">✅ Payment of $${d.total} received · Card ending ${d.last4||'****'}</p>`:`<p><strong>Total:</strong> $${d.total} (pay at ${d.orderType==='pickup'?'pickup':'delivery'})</p>`}
-    <p><strong>${d.orderType==='pickup'?'🏃 Pickup':'🛵 Delivery'}</strong> · ${locName}</p>
-    <p>We'll call <strong>${d.phone}</strong> when it's ready.</p>
-    <p style="color:${d.cloverSuccess?'#276749':'#888'};font-size:.8rem;margin-top:.4rem">${d.cloverSuccess?'✓ Order sent to Clover POS':'📋 Order logged — kitchen notified'}</p>
-    <a class="btn-red" href="#" onclick="closeCheckout();showHome()" style="display:inline-block;margin-top:1.25rem;font-size:.95rem;padding:.8rem 1.8rem">Order Again 🍗</a>
-  </div>`;
+  var locNames={'albert-st':'Albert Street','rochdale':'Rochdale','moose-jaw':'Moose Jaw'};
+  var locName=d.location?(locNames[d.location]||d.location):'';
+  document.getElementById('mbd').innerHTML='<div class="success-view"><div class="sv-icon">'+(d.paid?'💳':'🔥')+'</div><h2>'+(d.paid?'PAYMENT CONFIRMED!':'ORDER PLACED!')+'</h2><p>You are locked in, '+d.customer+'!</p><div class="onum">'+d.orderNum+'</div>'+(d.paid?'<p style="color:#276749;font-weight:600;">Payment of $'+d.total+' received · Card ending '+(d.last4||'****')+'</p>':'<p><strong>Total:</strong> $'+d.total+' (pay at '+(d.orderType==='pickup'?'pickup':'delivery')+')</p>')+'<p><strong>'+(d.orderType==='pickup'?'Pickup':'Delivery')+'</strong> · '+locName+'</p><p>We will call <strong>'+d.phone+'</strong> when it is ready.</p><p style="color:'+(d.cloverSuccess?'#276749':'#888')+';;font-size:.8rem;margin-top:.4rem">'+(d.cloverSuccess?'✓ Order sent to Clover POS':'Order logged — kitchen notified')+'</p><a class="btn-red" href="#" onclick="closeCheckout();showHome()" style="display:inline-block;margin-top:1.25rem;font-size:.95rem;padding:.8rem 1.8rem">Order Again 🍗</a></div>';
 }
 
-// ── GEO ───────────────────────────────────────────────────────
-function setLocation(v){
-  activeLocation=v;
-  var lbl=document.getElementById('cart-loc-label');
-  var names={'albert-st':'Albert Street','rochdale':'Rochdale','moose-jaw':'Moose Jaw'};
-  if(lbl) lbl.textContent=(names[v]||'Albert Street')+' · Pickup or Delivery';
-  setTimeout(renderPaymentSection,100);
-}
-function deg2rad(d){return d*(Math.PI/180);}
-function distKm(lat1,lon1,lat2,lon2){
-  var R=6371,dLat=deg2rad(lat2-lat1),dLon=deg2rad(lon2-lon1);
-  var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(deg2rad(lat1))*Math.cos(deg2rad(lat2))*Math.sin(dLon/2)*Math.sin(dLon/2);
-  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
-}
-function applyGeoSort(lat,lng){
-  var ids=Object.keys(LOCATIONS_GEO);
-  ids.sort(function(a,b){return distKm(lat,lng,LOCATIONS_GEO[a].lat,LOCATIONS_GEO[a].lng)-distKm(lat,lng,LOCATIONS_GEO[b].lat,LOCATIONS_GEO[b].lng);});
-  var nearest=LOCATIONS_GEO[ids[0]];
-  activeLocation=ids[0];
-  var nb=document.getElementById('loc-banner'),nn=document.getElementById('loc-nearest-name');
-  if(nb)nb.style.display='block';
-  if(nn)nn.textContent=nearest.name+' · '+nearest.address;
-  // Sort checkout dropdown if open
-  var sel=document.getElementById('o-loc');
-  if(sel){
-    var opts={'albert-st':'Albert Street — #3 155 Albert St N, Regina','rochdale':'Rochdale — 3881 Rochdale Blvd, Regina','moose-jaw':'Moose Jaw — 622 Main St N, Moose Jaw'};
-    sel.innerHTML='';
-    ids.forEach(function(id,i){
-      var opt=document.createElement('option');
-      opt.value=id;opt.textContent=opts[id]+(i===0?' ⭐ Nearest':'');
-      sel.appendChild(opt);
-    });
-    sel.value=ids[0];
-    setLocation(ids[0]);
-  }
-}
+// GEO
+var LOCATIONS_GEO={'albert-st':{lat:50.4501,lng:-104.6178,name:'Albert Street',address:'#3 155 Albert St N, Regina'},'rochdale':{lat:50.4777,lng:-104.6494,name:'Rochdale',address:'3881 Rochdale Blvd, Regina'},'moose-jaw':{lat:50.3934,lng:-105.5348,name:'Moose Jaw',address:'622 Main St N, Moose Jaw'}};
+function distKm(lat1,lon1,lat2,lon2){var R=6371,dL=Math.PI*(lat2-lat1)/180,dO=Math.PI*(lon2-lon1)/180;var a=Math.sin(dL/2)*Math.sin(dL/2)+Math.cos(Math.PI*lat1/180)*Math.cos(Math.PI*lat2/180)*Math.sin(dO/2)*Math.sin(dO/2);return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
 function detectAndSortLocations(fromCheckout){
   if(!navigator.geolocation)return;
-  if(!fromCheckout){
-    navigator.geolocation.getCurrentPosition(
-      function(pos){applyGeoSort(pos.coords.latitude,pos.coords.longitude);},
-      function(){}
-    );
-  } else {
-    navigator.geolocation.getCurrentPosition(
-      function(pos){applyGeoSort(pos.coords.latitude,pos.coords.longitude);},
-      function(){}
-    );
-  }
+  navigator.geolocation.getCurrentPosition(function(pos){
+    var ids=Object.keys(LOCATIONS_GEO);
+    ids.sort(function(a,b){return distKm(pos.coords.latitude,pos.coords.longitude,LOCATIONS_GEO[a].lat,LOCATIONS_GEO[a].lng)-distKm(pos.coords.latitude,pos.coords.longitude,LOCATIONS_GEO[b].lat,LOCATIONS_GEO[b].lng);});
+    activeLocation=ids[0];
+    var nb=document.getElementById('loc-banner'),nn=document.getElementById('loc-nearest-name');
+    if(nb)nb.style.display='block';
+    if(nn)nn.textContent=LOCATIONS_GEO[ids[0]].name+' · '+LOCATIONS_GEO[ids[0]].address;
+    if(fromCheckout){
+      var sel=document.getElementById('o-loc');
+      if(sel){
+        var opts={'albert-st':'Albert Street — #3 155 Albert St N, Regina','rochdale':'Rochdale — 3881 Rochdale Blvd, Regina','moose-jaw':'Moose Jaw — 622 Main St N, Moose Jaw'};
+        sel.innerHTML='';
+        ids.forEach(function(id,i){var o=document.createElement('option');o.value=id;o.textContent=opts[id]+(i===0?' (Nearest)':'');sel.appendChild(o);});
+        sel.value=ids[0];setLocation(ids[0]);
+      }
+    }
+  },function(){});
 }
 
-// ── SAUCE VAULT ───────────────────────────────────────────────
+// SAUCE VAULT
 function renderSauces(){
-  document.getElementById('sgrid').innerHTML=Object.entries(FLAVORS).map(([cat,items])=>
-    `<div class="sgroup"><div class="sg-title">${cat}</div><ul>${items.map(f=>`<li>${f}</li>`).join('')}</ul></div>`
-  ).join('');
+  document.getElementById('sgrid').innerHTML=Object.keys(FLAVORS).map(function(cat){
+    return '<div class="sgroup"><div class="sg-title">'+cat+'</div><ul>'+FLAVORS[cat].map(function(f){return '<li>'+f+'</li>';}).join('')+'</ul></div>';
+  }).join('');
 }
 
-// ── API CHECK ─────────────────────────────────────────────────
+// API CHECK
 async function checkAPI(){
-  const dot=document.getElementById('api-dot'),txt=document.getElementById('api-txt');
-  try{const r=await fetch(API_BASE+'/api/health',{signal:AbortSignal.timeout(4000)});if(r.ok){dot.className='api-dot ok';txt.textContent='server online';}else throw new Error();}
-  catch{dot.className='api-dot err';txt.textContent='offline mode';}
+  var dot=document.getElementById('api-dot'),txt=document.getElementById('api-txt');
+  try{
+    var r=await fetch(API_BASE+'/api/health');
+    if(r.ok){dot.className='api-dot ok';txt.textContent='server online';}
+    else throw new Error();
+  }catch(e){dot.className='api-dot err';txt.textContent='offline mode';}
 }
 
-// ── IMPACT COUNTERS ───────────────────────────────────────────
-const BASE={date:new Date('2026-04-14T00:00:00-06:00'),wings:1084400,orders:135550};
-function getLive(){const secs=(Date.now()-BASE.date)/1000;const month=new Date().getMonth()+1;const daily=month>=5&&month<=9?505:320;const ops=daily/86400;return{wings:Math.floor(BASE.wings+ops*8*secs),orders:Math.floor(BASE.orders+ops*secs),spw:Math.round(86400/(daily*8))};}
+// COUNTERS
+var BASE={date:new Date('2026-04-14T00:00:00-06:00'),wings:1084400,orders:135550};
+function getLive(){
+  var secs=(Date.now()-BASE.date)/1000;
+  var month=new Date().getMonth()+1;
+  var daily=month>=5&&month<=9?505:320;
+  var ops=daily/86400;
+  return{wings:Math.floor(BASE.wings+ops*8*secs),orders:Math.floor(BASE.orders+ops*secs),spw:Math.round(86400/(daily*8))};
+}
 function fmt(n){return n.toLocaleString('en-CA');}
-async function fetchDonation(){try{const r=await fetch(API_BASE+'/api/donation');if(r.ok){const d=await r.json();document.getElementById('donation-counter').textContent=fmt(d.amount||0)+'+';}}catch{}}
-function animUp(el,target,dur){if(!el)return;const start=performance.now();function upd(now){const p=Math.min((now-start)/dur,1);const e=1-Math.pow(1-p,3);el.textContent=fmt(Math.floor(e*target));if(p<1)requestAnimationFrame(upd);}requestAnimationFrame(upd);}
-function updateCounters(){const l=getLive();const wc=document.getElementById('wings-counter');const oc=document.getElementById('orders-counter');const sw=document.getElementById('spw');if(wc)wc.textContent=fmt(l.wings);if(oc)oc.textContent=fmt(l.orders);if(sw)sw.textContent=l.spw;}
-// Run counters immediately on load - no observer needed
-function runCounters(){
-  const l=getLive();
+function animUp(el,target,dur){
+  if(!el)return;
+  var start=performance.now();
+  function upd(now){
+    var p=Math.min((now-start)/dur,1);
+    var e=1-Math.pow(1-p,3);
+    el.textContent=fmt(Math.floor(e*target));
+    if(p<1)requestAnimationFrame(upd);
+  }
+  requestAnimationFrame(upd);
+}
+function updateCounters(){
+  var l=getLive();
+  var wc=document.getElementById('wings-counter'),oc=document.getElementById('orders-counter'),sw=document.getElementById('spw');
+  if(wc)wc.textContent=fmt(l.wings);
+  if(oc)oc.textContent=fmt(l.orders);
+  if(sw)sw.textContent=l.spw;
+}
+async function fetchDonation(){
+  try{
+    var r=await fetch(API_BASE+'/api/donation');
+    if(r.ok){var d=await r.json();var el=document.getElementById('donation-counter');if(el)el.textContent=fmt(d.amount||27000)+'+';}
+  }catch(e){}
+}
+// Run counters after load
+setTimeout(function(){
+  var l=getLive();
   animUp(document.getElementById('wings-counter'),l.wings,2500);
   animUp(document.getElementById('orders-counter'),l.orders,2500);
-}
-// Run after DOM is ready
-setTimeout(runCounters, 800);
-fetchDonation();setInterval(updateCounters,1000);setInterval(fetchDonation,60000);
+},800);
+fetchDonation();
+setInterval(updateCounters,1000);
+setInterval(fetchDonation,60000);
 
-// ── INIT ──────────────────────────────────────────────────────
-// Handle browser back button
-window.addEventListener('popstate', function(e){
-  if(e.state&&e.state.page){
-    if(e.state.page==='home') _showHome();
-    else _showCat(e.state.page);
-  } else {
-    _showHome();
-  }
-});
-
-function goBack(){
-  if(window.history.length>1){
-    window.history.back();
-  } else {
-    showHome();
-  }
-}
-
-// Internal show functions (no history push)
-function _showHome(){
-  document.getElementById('home-page').style.display='block';
-  document.getElementById('menu-pages').style.display='none';
-  document.querySelectorAll('.menu-page').forEach(p=>p.classList.remove('active'));
-  currentPage='home';
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-function _showCat(cat){
-  document.getElementById('home-page').style.display='none';
-  document.getElementById('menu-pages').style.display='block';
-  document.querySelectorAll('.menu-page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+cat)?.classList.add('active');
-  currentPage=cat;
-  window.scrollTo({top:0,behavior:'smooth'});
-  renderGrid(cat);
-}
-
-// ── HOURS CHECK ──────────────────────────────────────────────
-const HOURS = {
-  // 0=Sun,1=Mon,2=Tue,3=Wed,4=Thu,5=Fri,6=Sat
-  // [openHour, closeHour] in Regina local time (24h)
-  // Mon-Wed: 11am-1am(next day), Thu-Sun: 11am-3am(next day)
-  0: [11, 27], // Sun: 11am - 3am (27=3am next day)
-  1: [11, 25], // Mon: 11am - 1am (25=1am next day)
-  2: [11, 25], // Tue
-  3: [11, 25], // Wed
-  4: [11, 27], // Thu
-  5: [11, 27], // Fri
-  6: [11, 27], // Sat
-};
-
-function isOpen() {
-  const now = new Date();
-  const regina = new Date(now.toLocaleString('en-US', { timeZone: 'America/Regina' }));
-  const day = regina.getDay();
-  const hour = regina.getHours() + regina.getMinutes() / 60;
-
-  // Check today's hours
-  const todayHours = HOURS[day];
-  if (hour >= todayHours[0]) {
-    if (todayHours[1] <= 24 && hour < todayHours[1]) return true;
-    if (todayHours[1] > 24 && hour >= todayHours[0]) return true;
-  }
-
-  // Check if we're in yesterday's late-night window
-  const yesterday = (day + 6) % 7;
-  const yHours = HOURS[yesterday];
-  if (yHours[1] > 24 && hour < (yHours[1] - 24)) return true;
-
+// HOURS
+var HOURS={0:[11,27],1:[11,25],2:[11,25],3:[11,25],4:[11,27],5:[11,27],6:[11,27]};
+function isOpen(){
+  var now=new Date();
+  var regina=new Date(now.toLocaleString('en-US',{timeZone:'America/Regina'}));
+  var day=regina.getDay(),hour=regina.getHours()+regina.getMinutes()/60;
+  var h=HOURS[day];
+  if(hour>=h[0]){if(h[1]<=24&&hour<h[1])return true;if(h[1]>24&&hour>=h[0])return true;}
+  var yh=HOURS[(day+6)%7];
+  if(yh[1]>24&&hour<(yh[1]-24))return true;
   return false;
 }
-
-function getNextOpenTime() {
-  const now = new Date();
-  const regina = new Date(now.toLocaleString('en-US', { timeZone: 'America/Regina' }));
-  const day = regina.getDay();
-  const hour = regina.getHours();
-
-  // If before 11am today, opens today at 11am
-  if (hour < 11) return 'today at 11:00 AM';
-
-  // Otherwise opens tomorrow at 11am
-  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  const tomorrow = (day + 1) % 7;
-  return days[tomorrow] + ' at 11:00 AM';
+function getNextOpenTime(){
+  var now=new Date();
+  var regina=new Date(now.toLocaleString('en-US',{timeZone:'America/Regina'}));
+  var day=regina.getDay(),hour=regina.getHours();
+  if(hour<11)return 'today at 11:00 AM';
+  var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  return days[(day+1)%7]+' at 11:00 AM';
 }
-
-function updateHoursBanner() {
-  const banner = document.getElementById('preorder-banner');
-  if (!banner) return;
-  if (!isOpen()) {
+function isPreOrder(){return !isOpen();}
+function updateHoursBanner(){
+  var banner=document.getElementById('preorder-banner');
+  if(!banner)return;
+  if(!isOpen()){
     banner.classList.add('show');
-    banner.querySelector('p').innerHTML = '<span class="preorder-badge">Pre-Order</span> We are closed right now — but you can <strong>pre-order for when we open!</strong> Opens ' + getNextOpenTime() + '.';
+    banner.querySelector('p').innerHTML='<span class="preorder-badge">Pre-Order</span> We are closed right now — but you can <strong>pre-order for when we open!</strong> Opens '+getNextOpenTime()+'.';
   } else {
     banner.classList.remove('show');
   }
 }
 
-function isPreOrder() {
-  return !isOpen();
-}
-
-checkAPI();
-renderSauces();
-updateCart();
-detectAndSortLocations(false);
-_showHome();
-history.replaceState({page:'home'},'');
-updateHoursBanner();
-setInterval(updateHoursBanner,60000);
-// Attach franchise button listener after DOM ready
-
+// FRANCHISE
 function openFranchise(){
-  var ov=document.getElementById('franchise-ov');
-  ov.style.display='block';
-  ov.style.zIndex='99999';
+  document.getElementById('franchise-ov').style.display='block';
   document.body.style.overflow='hidden';
-  // Scroll modal to top
-  ov.scrollTop=0;
 }
 function closeFranchise(){
   document.getElementById('franchise-ov').style.display='none';
   document.body.style.overflow='';
 }
+document.getElementById('franchise-ov').addEventListener('click',function(e){if(e.target===this)closeFranchise();});
 async function submitFranchise(){
-  const fn=document.getElementById('fr-fn').value.trim();
-  const ln=document.getElementById('fr-ln').value.trim();
-  const em=document.getElementById('fr-em').value.trim();
-  const ph=document.getElementById('fr-ph').value.trim();
-  const city=document.getElementById('fr-city').value.trim();
-  const budget=document.getElementById('fr-budget').value;
-  const msg=document.getElementById('fr-msg').value.trim();
-  if(!fn||!em||!ph||!city){toast('⚠️ Please fill in all required fields');return;}
-  const btn=document.getElementById('fr-btn');
+  var fn=document.getElementById('fr-fn').value.trim();
+  var em=document.getElementById('fr-em').value.trim();
+  var ph=document.getElementById('fr-ph').value.trim();
+  var city=document.getElementById('fr-city').value.trim();
+  if(!fn||!em||!ph||!city){toast('Please fill in all required fields');return;}
+  var btn=document.getElementById('fr-btn');
   btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Sending...';
-  try{
-    await fetch(API_BASE+'/api/franchise',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({firstName:fn,lastName:ln,email:em,phone:ph,city,budget,message:msg})});
-  }catch(e){console.log('Franchise submit:',e);}
-  document.getElementById('fr-msg-box').innerHTML='<div style="background:#F0FFF4;border:1px solid #C6F6D5;border-radius:6px;padding:1rem;text-align:center;margin-bottom:1rem;"><div style="font-family:var(--font-display);font-size:1.2rem;color:#276749;letter-spacing:1px;">✅ APPLICATION RECEIVED!</div><p style="font-size:.85rem;color:#555;margin-top:.4rem;">We'll be in touch within 48 hours. The Sauce Boss is excited to connect!</p></div>';
+  try{await fetch(API_BASE+'/api/franchise',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({firstName:fn,lastName:document.getElementById('fr-ln').value.trim(),email:em,phone:ph,city:city,budget:document.getElementById('fr-budget').value,message:document.getElementById('fr-msg').value.trim()})});}catch(e){}
+  document.getElementById('fr-msg-box').innerHTML='<div style="background:#F0FFF4;border:1px solid #C6F6D5;border-radius:6px;padding:1rem;text-align:center;margin-bottom:1rem;"><div style="font-family:var(--font-display);font-size:1.2rem;color:#276749;letter-spacing:1px;">APPLICATION RECEIVED!</div><p style="font-size:.85rem;color:#555;margin-top:.4rem;">We will be in touch within 48 hours. The Sauce Boss is excited to connect!</p></div>';
   btn.style.display='none';
 }
-// Close franchise modal on overlay click
-window.addEventListener('load',function(){
-  var fov=document.getElementById('franchise-ov');
-  if(fov) fov.addEventListener('click',function(e){if(e.target===this)closeFranchise();});
-});
 
+// INIT
+history.replaceState({page:'home'},'');
+renderSauces();
+updateCart();
+updateHoursBanner();
+setInterval(updateHoursBanner,60000);
+detectAndSortLocations(false);
+checkAPI();
 </script>
 <script src="https://checkout.clover.com/sdk.js"></script>
-
-<!-- FRANCHISE MODAL -->
-<div id="franchise-ov" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.85);padding:1rem;overflow-y:auto;justify-content:center;align-items:flex-start;">
-  <div style="background:white;border-radius:12px;width:min(620px,100%);margin:auto;overflow:hidden;">
-    <div style="background:var(--black);padding:1.5rem 1.75rem;display:flex;align-items:center;justify-content:space-between;">
-      <div>
-        <div style="font-family:var(--font-display);font-size:1.6rem;color:white;letter-spacing:2px;">🚀 FRANCHISE WITH WING-O</div>
-        <div style="font-family:var(--font-head);font-size:.75rem;color:#666;letter-spacing:2px;text-transform:uppercase;margin-top:3px;">Join Regina's fastest growing brand</div>
-      </div>
-      <button onclick="closeFranchise()" style="background:none;border:none;color:#555;font-size:1.4rem;cursor:pointer;padding:4px;">✕</button>
-    </div>
-    <div style="padding:1.75rem;">
-      <div style="background:rgba(232,25,10,.05);border:1px solid rgba(232,25,10,.15);border-radius:8px;padding:1rem 1.25rem;margin-bottom:1.5rem;">
-        <div style="font-family:var(--font-display);font-size:1.1rem;color:var(--red);letter-spacing:1px;margin-bottom:.35rem;">Why Wing-O?</div>
-        <div style="font-size:.83rem;color:#666;line-height:1.7;">125+ handcrafted flavors · Proven brand · 5 SK locations · Strong community following · Low startup costs · Full training & support from the Sauce Boss himself.</div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.85rem;margin-bottom:.85rem;">
-        <div style="display:flex;flex-direction:column;gap:.3rem;">
-          <label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;">First Name *</label>
-          <input type="text" id="fr-fn" placeholder="First name" style="border:1.5px solid #E8E0D0;border-radius:4px;padding:.55rem .8rem;font-family:var(--font-body);font-size:.88rem;outline:none;">
-        </div>
-        <div style="display:flex;flex-direction:column;gap:.3rem;">
-          <label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;">Last Name *</label>
-          <input type="text" id="fr-ln" placeholder="Last name" style="border:1.5px solid #E8E0D0;border-radius:4px;padding:.55rem .8rem;font-family:var(--font-body);font-size:.88rem;outline:none;">
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.85rem;margin-bottom:.85rem;">
-        <div style="display:flex;flex-direction:column;gap:.3rem;">
-          <label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;">Email *</label>
-          <input type="email" id="fr-em" placeholder="your@email.com" style="border:1.5px solid #E8E0D0;border-radius:4px;padding:.55rem .8rem;font-family:var(--font-body);font-size:.88rem;outline:none;">
-        </div>
-        <div style="display:flex;flex-direction:column;gap:.3rem;">
-          <label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;">Phone *</label>
-          <input type="tel" id="fr-ph" placeholder="(306) 555-0123" style="border:1.5px solid #E8E0D0;border-radius:4px;padding:.55rem .8rem;font-family:var(--font-body);font-size:.88rem;outline:none;">
-        </div>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:.3rem;margin-bottom:.85rem;">
-        <label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;">City / Province you want to open in *</label>
-        <input type="text" id="fr-city" placeholder="e.g. Winnipeg, MB" style="border:1.5px solid #E8E0D0;border-radius:4px;padding:.55rem .8rem;font-family:var(--font-body);font-size:.88rem;outline:none;">
-      </div>
-      <div style="display:flex;flex-direction:column;gap:.3rem;margin-bottom:.85rem;">
-        <label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;">Investment Budget</label>
-        <select id="fr-budget" style="border:1.5px solid #E8E0D0;border-radius:4px;padding:.55rem .8rem;font-family:var(--font-body);font-size:.88rem;outline:none;background:white;">
-          <option value="">Select your budget range</option>
-          <option>Under $100,000</option>
-          <option>$100,000 — $200,000</option>
-          <option>$200,000 — $350,000</option>
-          <option>$350,000+</option>
-        </select>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:.3rem;margin-bottom:1.25rem;">
-        <label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;">Tell us about yourself</label>
-        <textarea id="fr-msg" placeholder="Previous business experience, why Wing-O, timeline..." style="border:1.5px solid #E8E0D0;border-radius:4px;padding:.55rem .8rem;font-family:var(--font-body);font-size:.88rem;resize:vertical;min-height:80px;outline:none;"></textarea>
-      </div>
-      <div id="fr-msg-box"></div>
-      <button id="fr-btn" onclick="submitFranchise()" style="width:100%;background:var(--red);color:white;border:none;padding:.95rem;font-family:var(--font-display);font-size:1.15rem;letter-spacing:2px;cursor:pointer;border-radius:4px;text-transform:uppercase;">SEND MY APPLICATION 🚀</button>
-      <p style="text-align:center;font-size:.75rem;color:#aaa;margin-top:.75rem;">We'll get back to you within 48 hours · besaucy@wingorestaurants.com</p>
-    </div>
-  </div>
-</div>
 </body>
 </html>
