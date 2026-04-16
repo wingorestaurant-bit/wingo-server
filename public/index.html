@@ -468,7 +468,7 @@ let activeLocation='albert-st';
     <div class="impact-grid">
       <div class="ic"><div class="ic-icon">🍗</div><div class="ic-num" id="wings-counter">0</div><div class="ic-lbl">Wings Sold</div></div>
       <div class="ic"><div class="ic-icon">📦</div><div class="ic-num" id="orders-counter">0</div><div class="ic-lbl">Orders Fulfilled</div></div>
-      <div class="ic"><div class="ic-icon">❤️</div><div class="ic-num y" id="donation-counter">$0</div><div class="ic-lbl">Community Fridge</div></div>
+      <div class="ic"><div class="ic-icon">🍗</div><div class="ic-num y" id="donation-counter">0+</div><div class="ic-lbl">Wings Donated 🍗</div></div>
       <div class="ic"><div class="ic-icon">🔥</div><div class="ic-num">125+</div><div class="ic-lbl">Handcrafted Flavors</div></div>
     </div>
     <div class="live-bar"><div class="live-dot"></div><span style="font-family:var(--font-head);font-size:.82rem;color:rgba(255,255,255,.8);letter-spacing:1px;text-transform:uppercase;">Live · A wing is sold every <span id="spw" style="color:var(--yellow);font-weight:700;">27</span> seconds</span></div>
@@ -1367,7 +1367,7 @@ async function checkAPI(){
 const BASE={date:new Date('2026-04-14T00:00:00-06:00'),wings:1084400,orders:135550};
 function getLive(){const secs=(Date.now()-BASE.date)/1000;const month=new Date().getMonth()+1;const daily=month>=5&&month<=9?505:320;const ops=daily/86400;return{wings:Math.floor(BASE.wings+ops*8*secs),orders:Math.floor(BASE.orders+ops*secs),spw:Math.round(86400/(daily*8))};}
 function fmt(n){return n.toLocaleString('en-CA');}
-async function fetchDonation(){try{const r=await fetch(API_BASE+'/api/donation');if(r.ok){const d=await r.json();document.getElementById('donation-counter').textContent='$'+fmt(d.amount||0);}}catch{}}
+async function fetchDonation(){try{const r=await fetch(API_BASE+'/api/donation');if(r.ok){const d=await r.json();document.getElementById('donation-counter').textContent=fmt(d.amount||0)+'+';}}catch{}}
 function animUp(el,target,dur){if(!el)return;const start=performance.now();function upd(now){const p=Math.min((now-start)/dur,1);const e=1-Math.pow(1-p,3);el.textContent=fmt(Math.floor(e*target));if(p<1)requestAnimationFrame(upd);}requestAnimationFrame(upd);}
 function updateCounters(){const l=getLive();const wc=document.getElementById('wings-counter');const oc=document.getElementById('orders-counter');const sw=document.getElementById('spw');if(wc)wc.textContent=fmt(l.wings);if(oc)oc.textContent=fmt(l.orders);if(sw)sw.textContent=l.spw;}
 let impAnim=false;
