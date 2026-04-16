@@ -23,7 +23,7 @@ const LOCATIONS = {
   },
   "rochdale": {
     name: "Rochdale (Regina)",
-    merchantId: "318003460042",
+    merchantId: "HWQ8ZY3TTBAZ1",
     apiToken: process.env.CLOVER_API_TOKEN_ROCHDALE,
     address: "3881 Rochdale Blvd, Regina, SK",
     phone: "306-522-2112",
