@@ -353,7 +353,8 @@ let activeLocation='albert-st';
       <li><a href="#" onclick="showCat('midnight');return false;">Midnight 🌙</a></li>
     </ul>
     <div class="nav-right">
-      <span class="nav-phone">☎ 306-522-2111</span>
+      <a href="https://www.instagram.com/sauce_____boss?igsh=MWJvdnhmdnd1aWh0cg%3D%3D&utm_source=qr" target="_blank" style="color:#888;font-family:var(--font-head);font-size:.75rem;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:.4rem .7rem;border:1px solid rgba(255,255,255,.15);border-radius:3px;transition:all .15s;" onmouseover="this.style.borderColor='var(--yellow)';this.style.color='var(--yellow)'" onmouseout="this.style.borderColor='rgba(255,255,255,.15)';this.style.color='#888'">🔥 Sauce Boss</a>
+      <button onclick="openFranchise()" style="background:transparent;color:#888;border:1px solid rgba(255,255,255,.15);padding:.4rem .8rem;font-family:var(--font-head);font-size:.75rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:3px;transition:all .15s;" onmouseover="this.style.borderColor='var(--yellow)';this.style.color='var(--yellow)'" onmouseout="this.style.borderColor='rgba(255,255,255,.15)';this.style.color='#888'">🚀 Franchise</button>
       <button class="btn-cart" onclick="openCart()">🛒 Order <span class="cart-badge" id="cart-count">0</span></button>
     </div>
   </div>
@@ -652,9 +653,25 @@ let activeLocation='albert-st';
         <p class="fb-tag">125+ handcrafted flavors. Born in Regina. Built for everyone. More Than Wings.</p>
         <div class="comm-badge">❤️ Proud supporter of the Regina Community Fridge</div>
       </div>
-      <div class="fc"><h4>Menu</h4><ul><li>Wings & Ribs</li><li>Boneless & Fingers</li><li>Burgers</li><li>Combos · Platters</li><li>Sides · Salads</li><li>Midnight Ecstasy</li></ul></div>
+      <div class="fc"><h4>Menu</h4><ul>
+        <li onclick="showCat('wings')" style="cursor:pointer;">Wings</li>
+        <li onclick="showCat('ribs')" style="cursor:pointer;">Ribs</li>
+        <li onclick="showCat('boneless')" style="cursor:pointer;">Boneless Wings</li>
+        <li onclick="showCat('chickenfingers')" style="cursor:pointer;">Chicken Fingers</li>
+        <li onclick="showCat('burgers')" style="cursor:pointer;">Burgers</li>
+        <li onclick="showCat('combos')" style="cursor:pointer;">Combos</li>
+        <li onclick="showCat('sides')" style="cursor:pointer;">Sides</li>
+        <li onclick="showCat('midnight')" style="cursor:pointer;">Midnight Ecstasy</li>
+      </ul></div>
       <div class="fc"><h4>Locations</h4><ul><li>Albert St — Regina</li><li>Rochdale — Regina</li><li>East Regina</li><li>Moose Jaw</li><li>Regina Beach</li></ul></div>
-      <div class="fc"><h4>Connect</h4><ul><li>Instagram</li><li>Facebook</li><li>Franchise Info</li><li>Wingorestaurant@gmail.com</li><li>306-522-2111</li></ul></div>
+      <div class="fc"><h4>Connect</h4><ul>
+        <li><a href="https://www.instagram.com/wingorestaurants?igsh=dndtenNwZXh6emZk&utm_source=qr" target="_blank" style="color:#555;text-decoration:none;">📸 Instagram — @wingo.restaurants</a></li>
+        <li><a href="https://www.facebook.com/share/1AuXgHuEv9/?mibextid=wwXIfr" target="_blank" style="color:#555;text-decoration:none;">👍 Facebook — Wing-O</a></li>
+        <li><a href="https://www.instagram.com/sauce_____boss?igsh=MWJvdnhmdnd1aWh0cg%3D%3D&utm_source=qr" target="_blank" style="color:#555;text-decoration:none;">🔥 Follow Sauce Boss</a></li>
+        <li onclick="openFranchise()" style="cursor:pointer;">🚀 Franchise Info</li>
+        <li><a href="mailto:besaucy@wingorestaurants.com" style="color:#555;text-decoration:none;">besaucy@wingorestaurants.com</a></li>
+        <li><a href="tel:3065222111" style="color:#555;text-decoration:none;">306-522-2111</a></li>
+      </ul></div>
     </div>
     <div class="fbot">
       <p>© 2025 Wing-O Restaurants Ltd. All rights reserved. Regina, Saskatchewan 🌾</p>
@@ -1454,7 +1471,97 @@ updateCart();
 detectAndSortLocations(false);
 _showHome();
 history.replaceState({page:'home'},'');
+
+function openFranchise(){
+  document.getElementById('franchise-ov').style.display='flex';
+  document.body.style.overflow='hidden';
+}
+function closeFranchise(){
+  document.getElementById('franchise-ov').style.display='none';
+  document.body.style.overflow='';
+}
+async function submitFranchise(){
+  const fn=document.getElementById('fr-fn').value.trim();
+  const ln=document.getElementById('fr-ln').value.trim();
+  const em=document.getElementById('fr-em').value.trim();
+  const ph=document.getElementById('fr-ph').value.trim();
+  const city=document.getElementById('fr-city').value.trim();
+  const budget=document.getElementById('fr-budget').value;
+  const msg=document.getElementById('fr-msg').value.trim();
+  if(!fn||!em||!ph||!city){toast('⚠️ Please fill in all required fields');return;}
+  const btn=document.getElementById('fr-btn');
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Sending...';
+  try{
+    const r=await fetch(API_BASE+'/api/franchise',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({firstName:fn,lastName:ln,email:em,phone:ph,city,budget,message:msg})});
+    const d=await r.json();
+  }catch(e){}
+  document.getElementById('fr-msg-box').innerHTML='<div style="background:#F0FFF4;border:1px solid #C6F6D5;border-radius:6px;padding:1rem;text-align:center;margin-bottom:1rem;"><div style="font-family:var(--font-display);font-size:1.2rem;color:#276749;letter-spacing:1px;">✅ APPLICATION RECEIVED!</div><p style="font-size:.85rem;color:#555;margin-top:.4rem;">We'll be in touch within 48 hours. The Sauce Boss is excited to connect!</p></div>';
+  btn.style.display='none';
+}
+// Close franchise modal on overlay click
+document.getElementById('franchise-ov').addEventListener('click',function(e){if(e.target===this)closeFranchise();});
+
 </script>
 <script src="https://checkout.clover.com/sdk.js"></script>
+
+<!-- FRANCHISE MODAL -->
+<div id="franchise-ov" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.8);align-items:center;justify-content:center;padding:1rem;overflow-y:auto;">
+  <div style="background:white;border-radius:12px;width:min(620px,100%);margin:auto;overflow:hidden;">
+    <div style="background:var(--black);padding:1.5rem 1.75rem;display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div style="font-family:var(--font-display);font-size:1.6rem;color:white;letter-spacing:2px;">🚀 FRANCHISE WITH WING-O</div>
+        <div style="font-family:var(--font-head);font-size:.75rem;color:#666;letter-spacing:2px;text-transform:uppercase;margin-top:3px;">Join Regina's fastest growing brand</div>
+      </div>
+      <button onclick="closeFranchise()" style="background:none;border:none;color:#555;font-size:1.4rem;cursor:pointer;padding:4px;">✕</button>
+    </div>
+    <div style="padding:1.75rem;">
+      <div style="background:rgba(232,25,10,.05);border:1px solid rgba(232,25,10,.15);border-radius:8px;padding:1rem 1.25rem;margin-bottom:1.5rem;">
+        <div style="font-family:var(--font-display);font-size:1.1rem;color:var(--red);letter-spacing:1px;margin-bottom:.35rem;">Why Wing-O?</div>
+        <div style="font-size:.83rem;color:#666;line-height:1.7;">125+ handcrafted flavors · Proven brand · 5 SK locations · Strong community following · Low startup costs · Full training & support from the Sauce Boss himself.</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.85rem;margin-bottom:.85rem;">
+        <div style="display:flex;flex-direction:column;gap:.3rem;">
+          <label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;">First Name *</label>
+          <input type="text" id="fr-fn" placeholder="First name" style="border:1.5px solid #E8E0D0;border-radius:4px;padding:.55rem .8rem;font-family:var(--font-body);font-size:.88rem;outline:none;">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:.3rem;">
+          <label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;">Last Name *</label>
+          <input type="text" id="fr-ln" placeholder="Last name" style="border:1.5px solid #E8E0D0;border-radius:4px;padding:.55rem .8rem;font-family:var(--font-body);font-size:.88rem;outline:none;">
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.85rem;margin-bottom:.85rem;">
+        <div style="display:flex;flex-direction:column;gap:.3rem;">
+          <label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;">Email *</label>
+          <input type="email" id="fr-em" placeholder="your@email.com" style="border:1.5px solid #E8E0D0;border-radius:4px;padding:.55rem .8rem;font-family:var(--font-body);font-size:.88rem;outline:none;">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:.3rem;">
+          <label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;">Phone *</label>
+          <input type="tel" id="fr-ph" placeholder="(306) 555-0123" style="border:1.5px solid #E8E0D0;border-radius:4px;padding:.55rem .8rem;font-family:var(--font-body);font-size:.88rem;outline:none;">
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.3rem;margin-bottom:.85rem;">
+        <label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;">City / Province you want to open in *</label>
+        <input type="text" id="fr-city" placeholder="e.g. Winnipeg, MB" style="border:1.5px solid #E8E0D0;border-radius:4px;padding:.55rem .8rem;font-family:var(--font-body);font-size:.88rem;outline:none;">
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.3rem;margin-bottom:.85rem;">
+        <label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;">Investment Budget</label>
+        <select id="fr-budget" style="border:1.5px solid #E8E0D0;border-radius:4px;padding:.55rem .8rem;font-family:var(--font-body);font-size:.88rem;outline:none;background:white;">
+          <option value="">Select your budget range</option>
+          <option>Under $100,000</option>
+          <option>$100,000 — $200,000</option>
+          <option>$200,000 — $350,000</option>
+          <option>$350,000+</option>
+        </select>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:.3rem;margin-bottom:1.25rem;">
+        <label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;">Tell us about yourself</label>
+        <textarea id="fr-msg" placeholder="Previous business experience, why Wing-O, timeline..." style="border:1.5px solid #E8E0D0;border-radius:4px;padding:.55rem .8rem;font-family:var(--font-body);font-size:.88rem;resize:vertical;min-height:80px;outline:none;"></textarea>
+      </div>
+      <div id="fr-msg-box"></div>
+      <button id="fr-btn" onclick="submitFranchise()" style="width:100%;background:var(--red);color:white;border:none;padding:.95rem;font-family:var(--font-display);font-size:1.15rem;letter-spacing:2px;cursor:pointer;border-radius:4px;text-transform:uppercase;">SEND MY APPLICATION 🚀</button>
+      <p style="text-align:center;font-size:.75rem;color:#aaa;margin-top:.75rem;">We'll get back to you within 48 hours · besaucy@wingorestaurants.com</p>
+    </div>
+  </div>
+</div>
 </body>
 </html>
