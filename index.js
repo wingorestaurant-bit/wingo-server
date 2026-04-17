@@ -213,19 +213,40 @@ ${notes ? 'NOTES: ' + notes : ''}
   for (const item of items) {
     try {
       const itemName = item.flavor ? `${item.name} [${item.flavor}]` : item.name;
-      await fetch(
+      const lineResp = await fetch(
         `https://api.clover.com/v3/merchants/${loc.merchantId}/orders/${cloverId}/line_items`,
         {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${loc.apiToken}`, 'Content-Type': 'application/json' },
           body: JSON.stringify({
             name: itemName,
-            unitPrice: Math.round(item.price * 100),
-            unitQty: item.qty,
+            price: Math.round(item.price * 100),
+            unitQty: 1000,
             note: item.flavor || ''
           })
         }
       );
+      const lineData = await lineResp.json();
+      console.log(`  Line item: ${itemName} — ${lineResp.status} — id:${lineData.id||'?'}`);
+
+      // If qty > 1, add extra line items (Clover counts each separately)
+      if (item.qty > 1) {
+        for (let q = 1; q < item.qty; q++) {
+          await fetch(
+            `https://api.clover.com/v3/merchants/${loc.merchantId}/orders/${cloverId}/line_items`,
+            {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${loc.apiToken}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                name: itemName,
+                price: Math.round(item.price * 100),
+                unitQty: 1000,
+                note: item.flavor || ''
+              })
+            }
+          );
+        }
+      }
     } catch (e) { console.warn('Line item error:', e.message); }
   }
 
@@ -235,12 +256,12 @@ ${notes ? 'NOTES: ' + notes : ''}
     await fetch(`https://api.clover.com/v3/merchants/${loc.merchantId}/orders/${cloverId}/line_items`, {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${loc.apiToken}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: 'GST (5%)', unitPrice: gst, unitQty: 1 })
+      body: JSON.stringify({ name: 'GST (5%)', price: gst, unitQty: 1000 })
     });
     await fetch(`https://api.clover.com/v3/merchants/${loc.merchantId}/orders/${cloverId}/line_items`, {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${loc.apiToken}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: 'PST (6%)', unitPrice: pst, unitQty: 1 })
+      body: JSON.stringify({ name: 'PST (6%)', price: pst, unitQty: 1000 })
     });
   } catch (e) { console.warn('Tax line item error:', e.message); }
 
