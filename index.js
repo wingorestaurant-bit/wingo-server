@@ -2,11 +2,36 @@ const express = require('express');
 const cors = require('cors');
 const fetch = require('node-fetch');
 const path = require('path');
+const { MongoClient } = require('mongodb');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// ── MONGODB CONNECTION ────────────────────────────────────────
+const MONGO_URI = process.env.MONGODB_URI;
+let db = null;
+
+async function connectDB() {
+  if (db) return db;
+  try {
+    const client = new MongoClient(MONGO_URI);
+    await client.connect();
+    db = client.db('wingo');
+    console.log('✅ MongoDB connected — wingo database');
+    // Create indexes for fast lookup
+    await db.collection('loyalty').createIndex({ phone: 1 }, { unique: true });
+    await db.collection('loyalty').createIndex({ email: 1 });
+    await db.collection('loyalty').createIndex({ usedOrderNums: 1 });
+    return db;
+  } catch (e) {
+    console.error('❌ MongoDB connection failed:', e.message);
+    return null;
+  }
+}
+// Connect on startup
+connectDB();
 
 // ── LOCATION CONFIG ────────────────────────────────────────────
 const LOCATIONS = {
@@ -352,61 +377,181 @@ app.post('/api/franchise', async (req, res) => {
 });
 
 
-// ── LOYALTY PROGRAM ───────────────────────────────────────────
-const loyaltyDB = {}; // In-memory store (persists during server session)
+// ── LOYALTY PROGRAM (MongoDB) ────────────────────────────────
 
+// SIGNUP
 app.post('/api/loyalty/signup', async (req, res) => {
   const { name, email, phone } = req.body;
   if (!name || !email || !phone) return res.json({ success: false, error: 'Missing fields' });
-  
-  console.log(`🍗 Loyalty signup: ${name} — ${phone} — ${email}`);
-  loyaltyDB[phone] = loyaltyDB[phone] || { name, email, phone, stamps: 0, totalOrders: 0, freeEarned: 0, joinDate: new Date().toISOString() };
+  const cleanPhone = phone.replace(/\D/g, '');
 
-  // Notify you by email
-  sendEmail({
-    to: 'besaucy@wingorestaurants.com',
-    subject: `🍗 New Loyalty Member — ${name}`,
-    html: `<div style="font-family:Arial,sans-serif;max-width:500px;margin:0 auto;background:#0D0D0D;padding:24px;border-radius:8px;">
-      <h2 style="color:#F5A800;font-size:22px;margin:0 0 16px;">New Saucy Stamps Member!</h2>
-      <table style="width:100%;color:#CCC;font-size:14px;">
-        <tr><td style="padding:6px 0;color:#888;">Name</td><td style="font-weight:bold;color:white;">${name}</td></tr>
-        <tr><td style="padding:6px 0;color:#888;">Email</td><td>${email}</td></tr>
-        <tr><td style="padding:6px 0;color:#888;">Phone</td><td>${phone}</td></tr>
-        <tr><td style="padding:6px 0;color:#888;">Joined</td><td>${new Date().toLocaleString('en-CA', { timeZone: 'America/Regina' })}</td></tr>
-      </table>
-    </div>`
-  });
+  try {
+    const database = await connectDB();
+    if (!database) return res.json({ success: false, error: 'Database unavailable' });
 
-  res.json({ success: true });
-});
+    // Check if already exists
+    const existing = await database.collection('loyalty').findOne({ phone: cleanPhone });
+    if (existing) return res.json({ success: false, error: 'Phone already registered' });
 
-app.post('/api/loyalty/stamp', async (req, res) => {
-  const { phone, orderNum, gotFree } = req.body;
-  console.log(`🍗 Loyalty stamp: ${phone} — ${orderNum} — Free: ${gotFree}`);
+    const member = {
+      name, email,
+      phone: cleanPhone,
+      stamps: 0,
+      totalOrders: 0,
+      freeEarned: 0,
+      usedOrderNums: [],
+      history: [],
+      joinDate: new Date().toISOString(),
+      createdAt: new Date()
+    };
 
-  if (loyaltyDB[phone]) {
-    loyaltyDB[phone].stamps = loyaltyDB[phone].stamps || 0;
-    loyaltyDB[phone].totalOrders = (loyaltyDB[phone].totalOrders || 0) + 1;
-    if (gotFree) { loyaltyDB[phone].stamps = 0; loyaltyDB[phone].freeEarned = (loyaltyDB[phone].freeEarned || 0) + 1; }
-    else { loyaltyDB[phone].stamps++; }
-  }
+    await database.collection('loyalty').insertOne(member);
+    console.log(`🍗 New loyalty member: ${name} — ${cleanPhone}`);
 
-  if (gotFree) {
-    const member = loyaltyDB[phone] || {};
     sendEmail({
       to: 'besaucy@wingorestaurants.com',
-      subject: `🎉 FREE WINGS EARNED — ${member.name || phone}`,
-      html: `<div style="font-family:Arial;max-width:500px;margin:0 auto;background:#0D0D0D;padding:24px;border-radius:8px;"><h2 style="color:#E8190A;">🎉 Free Wings Earned!</h2><p style="color:#CCC;">${member.name || phone} has collected 10 stamps and earned a free half order of wings.</p><p style="color:#888;font-size:13px;">Phone: ${phone} · Order: ${orderNum}</p></div>`
+      subject: `🍗 New Saucy Stamps Member — ${name}`,
+      html: `<div style="font-family:Arial,sans-serif;max-width:500px;margin:0 auto;background:#0D0D0D;padding:24px;border-radius:8px;">
+        <h2 style="color:#F5A800;font-size:22px;margin:0 0 16px;">New Saucy Stamps Member! 🍗</h2>
+        <table style="width:100%;color:#CCC;font-size:14px;border-collapse:collapse;">
+          <tr><td style="padding:8px 0;color:#888;width:80px;">Name</td><td style="font-weight:bold;color:white;">${name}</td></tr>
+          <tr><td style="padding:8px 0;color:#888;">Email</td><td>${email}</td></tr>
+          <tr><td style="padding:8px 0;color:#888;">Phone</td><td>${cleanPhone}</td></tr>
+          <tr><td style="padding:8px 0;color:#888;">Joined</td><td>${new Date().toLocaleString('en-CA', { timeZone: 'America/Regina' })}</td></tr>
+        </table>
+      </div>`
     });
-  }
 
-  res.json({ success: true });
+    res.json({ success: true, member });
+  } catch (e) {
+    console.error('Loyalty signup error:', e.message);
+    res.json({ success: false, error: 'Signup failed' });
+  }
 });
 
-app.get('/api/loyalty/member/:phone', (req, res) => {
-  const member = loyaltyDB[req.params.phone];
-  if (!member) return res.json({ success: false, error: 'Member not found' });
-  res.json({ success: true, member });
+// LOOKUP by phone or email
+app.get('/api/loyalty/lookup', async (req, res) => {
+  const { q } = req.query;
+  if (!q) return res.json({ success: false, error: 'Missing search' });
+  const cleanPhone = q.replace(/\D/g, '');
+
+  try {
+    const database = await connectDB();
+    if (!database) return res.json({ success: false, error: 'Database unavailable' });
+
+    const member = await database.collection('loyalty').findOne({
+      $or: [
+        { phone: cleanPhone },
+        { email: q.toLowerCase().trim() }
+      ]
+    });
+
+    if (!member) return res.json({ success: false, error: 'Member not found' });
+    res.json({ success: true, member });
+  } catch (e) {
+    console.error('Loyalty lookup error:', e.message);
+    res.json({ success: false, error: 'Lookup failed' });
+  }
+});
+
+// ADD STAMP
+app.post('/api/loyalty/stamp', async (req, res) => {
+  const { phone, orderNum, autoStamp } = req.body;
+  const cleanPhone = phone.replace(/\D/g, '');
+  if (!cleanPhone || !orderNum) return res.json({ success: false, error: 'Missing fields' });
+
+  try {
+    const database = await connectDB();
+    if (!database) return res.json({ success: false, error: 'Database unavailable' });
+
+    const member = await database.collection('loyalty').findOne({ phone: cleanPhone });
+    if (!member) return res.json({ success: false, error: 'Member not found' });
+
+    // Check duplicate order number
+    if (member.usedOrderNums && member.usedOrderNums.includes(orderNum)) {
+      return res.json({ success: false, error: 'Order number already used' });
+    }
+
+    const newStamps = (member.stamps || 0) + 1;
+    const newTotalOrders = (member.totalOrders || 0) + 1;
+    const gotFree = newStamps >= 10;
+    const finalStamps = gotFree ? 0 : newStamps;
+    const newFreeEarned = gotFree ? (member.freeEarned || 0) + 1 : (member.freeEarned || 0);
+    const newHistory = [
+      { orderNum, date: new Date().toLocaleDateString('en-CA'), stamp: newTotalOrders },
+      ...(member.history || [])
+    ].slice(0, 50); // Keep last 50
+
+    await database.collection('loyalty').updateOne(
+      { phone: cleanPhone },
+      {
+        $set: {
+          stamps: finalStamps,
+          totalOrders: newTotalOrders,
+          freeEarned: newFreeEarned,
+          history: newHistory,
+          updatedAt: new Date()
+        },
+        $push: { usedOrderNums: orderNum }
+      }
+    );
+
+    const updated = await database.collection('loyalty').findOne({ phone: cleanPhone });
+    console.log(`🍗 Stamp added: ${member.name} — ${orderNum} — Total: ${newTotalOrders} — Free: ${gotFree}`);
+
+    if (gotFree) {
+      sendEmail({
+        to: 'besaucy@wingorestaurants.com',
+        subject: `🎉 FREE WINGS EARNED — ${member.name}`,
+        html: `<div style="font-family:Arial;max-width:500px;margin:0 auto;background:#0D0D0D;padding:24px;border-radius:8px;">
+          <h2 style="color:#E8190A;margin:0 0 16px;">🎉 Free Wings Earned!</h2>
+          <p style="color:#CCC;font-size:15px;margin-bottom:12px;"><strong style="color:white;">${member.name}</strong> just collected their 10th stamp!</p>
+          <table style="width:100%;color:#CCC;font-size:14px;">
+            <tr><td style="padding:6px 0;color:#888;">Phone</td><td>${cleanPhone}</td></tr>
+            <tr><td style="padding:6px 0;color:#888;">Order</td><td>${orderNum}</td></tr>
+            <tr><td style="padding:6px 0;color:#888;">Total Orders</td><td>${newTotalOrders}</td></tr>
+            <tr><td style="padding:6px 0;color:#888;">Free Wings #</td><td style="color:#F5A800;font-weight:bold;">${newFreeEarned}</td></tr>
+          </table>
+          <div style="background:#E8190A;border-radius:6px;padding:12px;margin-top:16px;text-align:center;">
+            <div style="color:white;font-size:13px;letter-spacing:1px;">REDEEM: Give customer one FREE half order of wings 🍗</div>
+          </div>
+        </div>`
+      });
+    }
+
+    res.json({ success: true, member: updated, gotFree, stamps: finalStamps, totalOrders: newTotalOrders });
+  } catch (e) {
+    console.error('Loyalty stamp error:', e.message);
+    res.json({ success: false, error: 'Failed to add stamp' });
+  }
+});
+
+// GET MEMBER
+app.get('/api/loyalty/member/:phone', async (req, res) => {
+  const cleanPhone = req.params.phone.replace(/\D/g, '');
+  try {
+    const database = await connectDB();
+    if (!database) return res.json({ success: false, error: 'Database unavailable' });
+    const member = await database.collection('loyalty').findOne({ phone: cleanPhone });
+    if (!member) return res.json({ success: false, error: 'Member not found' });
+    res.json({ success: true, member });
+  } catch (e) {
+    res.json({ success: false, error: 'Lookup failed' });
+  }
+});
+
+// ADMIN — view all members (password protected)
+app.get('/api/loyalty/admin/members', async (req, res) => {
+  if (req.query.password !== (process.env.ADMIN_PASSWORD || 'sauceboss2025')) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  try {
+    const database = await connectDB();
+    const members = await database.collection('loyalty').find({}).sort({ createdAt: -1 }).toArray();
+    res.json({ success: true, count: members.length, members });
+  } catch (e) {
+    res.json({ success: false, error: e.message });
+  }
 });
 
 // ── START ─────────────────────────────────────────────────────
