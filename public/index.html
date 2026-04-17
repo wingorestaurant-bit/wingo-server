@@ -1466,40 +1466,28 @@ checkAPI();
 
 // ══════════════════════════════════════════════
 //   WING-O SAUCY STAMPS — LOYALTY PROGRAM
+//   Powered by MongoDB Atlas — permanent storage
 // ══════════════════════════════════════════════
 
-var LOY_KEY = 'wingo_loyalty_member';
-var LOY_DB_KEY = 'wingo_loyalty_db';
+var LOY_SESSION_KEY = 'wingo_loyalty_session';
 
-// Get all members from localStorage
-function loyGetDB(){
-  try{ return JSON.parse(localStorage.getItem(LOY_DB_KEY)||'{}'); }
-  catch(e){ return {}; }
-}
-function loySaveDB(db){
-  localStorage.setItem(LOY_DB_KEY, JSON.stringify(db));
-}
-
-// Current logged-in member
-function loyGetCurrent(){
-  try{ return JSON.parse(localStorage.getItem(LOY_KEY)||'null'); }
+// Current session member (lightweight — just phone + name for session)
+function loyGetSession(){
+  try{ return JSON.parse(localStorage.getItem(LOY_SESSION_KEY)||'null'); }
   catch(e){ return null; }
 }
-function loySaveCurrent(member){
-  localStorage.setItem(LOY_KEY, JSON.stringify(member));
+function loySaveSession(member){
+  localStorage.setItem(LOY_SESSION_KEY, JSON.stringify({phone:member.phone,name:member.name,email:member.email}));
 }
 
 // Open/close
 function openLoyalty(){
   document.getElementById('loyalty-ov').classList.add('open');
   document.body.style.overflow='hidden';
-  var member = loyGetCurrent();
-  if(member){
-    var db = loyGetDB();
-    var latest = db[member.phone] || member;
-    loySaveCurrent(latest);
-    showLoyView('loy-dashboard');
-    renderDashboard();
+  var session = loyGetSession();
+  if(session){
+    // Reload fresh data from server
+    loyLoadMember(session.phone);
   } else {
     showLoyView('loy-signup');
   }
@@ -1514,254 +1502,203 @@ function showLoyView(id){
   if(el) el.classList.add('active');
 }
 
+// Load member from server
+async function loyLoadMember(phone){
+  try{
+    var r = await fetch(API_BASE+'/api/loyalty/member/'+phone.replace(/\D/g,''));
+    var d = await r.json();
+    if(d.success){
+      loySaveSession(d.member);
+      showLoyView('loy-dashboard');
+      renderDashboard(d.member);
+    } else {
+      localStorage.removeItem(LOY_SESSION_KEY);
+      showLoyView('loy-signup');
+    }
+  }catch(e){
+    // Offline fallback — show dashboard with session data
+    showLoyView('loy-signup');
+  }
+}
+
 // SIGNUP
-function loyaltySignup(){
+async function loyaltySignup(){
   var name = document.getElementById('loy-name').value.trim();
   var email = document.getElementById('loy-email').value.trim();
-  var phone = document.getElementById('loy-phone').value.trim().replace(/\D/g,'');
+  var phone = document.getElementById('loy-phone').value.trim();
   var errEl = document.getElementById('loy-signup-error');
   errEl.style.display='none';
 
   if(!name||!email||!phone){errEl.textContent='Please fill in all fields.';errEl.style.display='block';return;}
-  if(phone.length < 10){errEl.textContent='Please enter a valid phone number.';errEl.style.display='block';return;}
   if(!email.includes('@')){errEl.textContent='Please enter a valid email.';errEl.style.display='block';return;}
+  if(phone.replace(/\D/g,'').length < 10){errEl.textContent='Please enter a valid 10-digit phone number.';errEl.style.display='block';return;}
 
-  var db = loyGetDB();
-  // Check if already exists
-  if(db[phone]){
-    errEl.textContent='Phone already registered! Use "Find my card" to log in.';
+  var btn = document.querySelector('#loy-signup .loy-btn');
+  btn.textContent='Creating your card...';btn.disabled=true;
+
+  try{
+    var r = await fetch(API_BASE+'/api/loyalty/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,phone})});
+    var d = await r.json();
+    if(d.success){
+      loySaveSession(d.member);
+      showLoyView('loy-dashboard');
+      renderDashboard(d.member);
+      toast('Welcome to Saucy Stamps, '+name.split(' ')[0]+'! 🍗');
+    } else {
+      errEl.textContent = d.error==='Phone already registered' ? 'Phone already registered! Use "Find my card" to log in.' : (d.error||'Signup failed');
+      errEl.style.display='block';
+    }
+  }catch(e){
+    errEl.textContent='Connection error. Please try again.';
     errEl.style.display='block';
-    return;
   }
-
-  var member = {
-    name: name,
-    email: email,
-    phone: phone,
-    stamps: 0,
-    totalOrders: 0,
-    freeEarned: 0,
-    usedOrderNums: [],
-    history: [],
-    joinDate: new Date().toLocaleDateString('en-CA')
-  };
-
-  db[phone] = member;
-  loySaveDB(db);
-  loySaveCurrent(member);
-
-  // Send to server
-  fetch(API_BASE+'/api/loyalty/signup', {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({name:name, email:email, phone:phone})
-  }).catch(function(){});
-
-  showLoyView('loy-dashboard');
-  renderDashboard();
-  toast('Welcome to Saucy Stamps, '+name.split(' ')[0]+'! 🍗');
+  btn.textContent='CREATE MY STAMP CARD 🍗';btn.disabled=false;
 }
 
 // LOOKUP
-function loyaltyLookup(){
-  var input = document.getElementById('loy-lookup-input').value.trim().replace(/\D/g,'');
-  var inputRaw = document.getElementById('loy-lookup-input').value.trim().toLowerCase();
+async function loyaltyLookup(){
+  var input = document.getElementById('loy-lookup-input').value.trim();
   var errEl = document.getElementById('loy-lookup-error');
   errEl.style.display='none';
+  if(!input){errEl.textContent='Please enter your phone or email.';errEl.style.display='block';return;}
 
-  var db = loyGetDB();
-  var found = null;
+  var btn = document.querySelector('#loy-lookup .loy-btn');
+  btn.textContent='Searching...';btn.disabled=true;
 
-  // Try phone
-  if(db[input]) found = db[input];
-  // Try email
-  if(!found){
-    Object.values(db).forEach(function(m){
-      if(m.email && m.email.toLowerCase()===inputRaw) found=m;
-    });
-  }
-
-  if(!found){
-    errEl.textContent='No account found. Check your phone/email or sign up free!';
+  try{
+    var r = await fetch(API_BASE+'/api/loyalty/lookup?q='+encodeURIComponent(input));
+    var d = await r.json();
+    if(d.success){
+      loySaveSession(d.member);
+      showLoyView('loy-dashboard');
+      renderDashboard(d.member);
+      toast('Welcome back, '+d.member.name.split(' ')[0]+'! 🍗');
+    } else {
+      errEl.textContent='No account found. Check your phone/email or sign up free!';
+      errEl.style.display='block';
+    }
+  }catch(e){
+    errEl.textContent='Connection error. Please try again.';
     errEl.style.display='block';
-    return;
   }
-
-  loySaveCurrent(found);
-  showLoyView('loy-dashboard');
-  renderDashboard();
-  toast('Welcome back, '+found.name.split(' ')[0]+'! 🍗');
+  btn.textContent='FIND MY STAMPS 🍗';btn.disabled=false;
 }
 
 // ADD STAMP
-function loyaltyAddStamp(){
+async function loyaltyAddStamp(){
   var orderNum = document.getElementById('loy-order-num').value.trim().toUpperCase();
   var errEl = document.getElementById('loy-stamp-error');
   errEl.style.display='none';
 
-  if(!orderNum || !orderNum.startsWith('WO-')){
+  if(!orderNum||!orderNum.startsWith('WO-')){
     errEl.textContent='Please enter a valid Wing-O order number (WO-XXXX).';
+    errEl.style.display='block';return;
+  }
+
+  var session = loyGetSession();
+  if(!session){showLoyView('loy-signup');return;}
+
+  var btn = document.querySelector('#loy-add-stamp .loy-btn');
+  btn.textContent='Adding stamp...';btn.disabled=true;
+
+  try{
+    var r = await fetch(API_BASE+'/api/loyalty/stamp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:session.phone,orderNum})});
+    var d = await r.json();
+    if(d.success){
+      loySaveSession(d.member);
+      document.getElementById('loy-order-num').value='';
+      var msg = d.gotFree
+        ? '🎉 10 stamps! You earned FREE WINGS! Show your card to redeem.'
+        : 'Stamp #'+d.totalOrders+' added! '+(10-d.stamps)+' more until free wings 🍗';
+      document.getElementById('loy-stamp-success-msg').textContent=msg;
+      showLoyView('loy-stamp-success');
+      toast(d.gotFree ? '🎉 FREE WINGS EARNED!' : 'Stamp added! 🍗');
+    } else {
+      errEl.textContent = d.error==='Order number already used' ? 'This order number has already been used.' : (d.error||'Failed to add stamp');
+      errEl.style.display='block';
+    }
+  }catch(e){
+    errEl.textContent='Connection error. Please try again.';
     errEl.style.display='block';
-    return;
   }
-
-  var member = loyGetCurrent();
-  if(!member){ showLoyView('loy-signup'); return; }
-
-  var db = loyGetDB();
-  var m = db[member.phone];
-  if(!m){ showLoyView('loy-signup'); return; }
-
-  // Check duplicate
-  if(m.usedOrderNums && m.usedOrderNums.indexOf(orderNum) >= 0){
-    errEl.textContent='This order number has already been used. Each order = 1 stamp.';
-    errEl.style.display='block';
-    return;
-  }
-
-  // Add stamp
-  m.stamps = (m.stamps||0) + 1;
-  m.totalOrders = (m.totalOrders||0) + 1;
-  m.usedOrderNums = m.usedOrderNums||[];
-  m.usedOrderNums.push(orderNum);
-  m.history = m.history||[];
-  m.history.unshift({
-    orderNum: orderNum,
-    date: new Date().toLocaleDateString('en-CA'),
-    stamp: m.stamps
-  });
-
-  // Check if earned free wings (every 10 stamps)
-  var gotFree = false;
-  if(m.stamps >= 10){
-    m.stamps = 0; // Reset stamps
-    m.freeEarned = (m.freeEarned||0) + 1;
-    gotFree = true;
-  }
-
-  db[member.phone] = m;
-  loySaveDB(db);
-  loySaveCurrent(m);
-
-  // Notify server
-  fetch(API_BASE+'/api/loyalty/stamp', {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({phone:member.phone, orderNum:orderNum, gotFree:gotFree})
-  }).catch(function(){});
-
-  document.getElementById('loy-order-num').value='';
-  var successMsg = gotFree
-    ? '🎉 10 stamps collected! You earned FREE WINGS! Show your card to redeem.'
-    : 'Stamp #'+m.totalOrders+' added! '+(10-m.stamps)+' more until free wings 🍗';
-  document.getElementById('loy-stamp-success-msg').textContent = successMsg;
-  showLoyView('loy-stamp-success');
-  toast(gotFree ? '🎉 FREE WINGS EARNED!' : 'Stamp added! 🍗');
+  btn.textContent='STAMP MY CARD 🔥';btn.disabled=false;
 }
 
 // RENDER DASHBOARD
-function renderDashboard(){
-  var member = loyGetCurrent();
+function renderDashboard(member){
   if(!member) return;
-
   var stamps = member.stamps||0;
   var totalOrders = member.totalOrders||0;
   var freeEarned = member.freeEarned||0;
   var toNext = 10 - stamps;
 
-  // Name
   document.getElementById('dash-name').textContent = member.name;
   document.getElementById('dash-stamps').textContent = stamps;
   document.getElementById('dash-total-orders').textContent = totalOrders;
   document.getElementById('dash-free-earned').textContent = freeEarned;
   document.getElementById('dash-next-free').textContent = toNext;
 
-  // Progress bar
-  var pct = Math.min((stamps/10)*100, 100);
-  document.getElementById('loy-progress').style.width = pct+'%';
-  document.getElementById('loy-progress-label').textContent =
-    stamps+' of 10 stamps · '+toNext+' more to free wings';
+  var pct = Math.min((stamps/10)*100,100);
+  document.getElementById('loy-progress').style.width=pct+'%';
+  document.getElementById('loy-progress-label').textContent=stamps+' of 10 stamps · '+toNext+' more to free wings';
 
-  // Reward box
+  // Show reward box if just earned free (stamps reset to 0, freeEarned > 0)
   var rewardBox = document.getElementById('loy-reward-box');
-  if(freeEarned > 0 && stamps === 0){
-    // Just earned free wings (stamps reset to 0 after earning)
-    var code = 'SAUCY-'+member.phone.slice(-4);
-    document.getElementById('loy-reward-code').textContent = code;
+  if(stamps===0 && freeEarned>0 && member.history && member.history.length>0){
+    var code='SAUCY-'+member.phone.slice(-4);
+    document.getElementById('loy-reward-code').textContent=code;
     rewardBox.style.display='block';
   } else {
     rewardBox.style.display='none';
   }
 
-  // Render stamp grid — 2 rows of 5
-  var topGrid = document.getElementById('stamps-grid-top');
-  var botGrid = document.getElementById('stamps-grid-bot');
-  topGrid.innerHTML='';
-  botGrid.innerHTML='';
-
+  // Stamp grid
+  var topGrid=document.getElementById('stamps-grid-top');
+  var botGrid=document.getElementById('stamps-grid-bot');
+  topGrid.innerHTML='';botGrid.innerHTML='';
   for(var i=0;i<10;i++){
-    var div = document.createElement('div');
+    var div=document.createElement('div');
     div.className='stamp';
-    if(i < stamps){
-      div.classList.add('earned');
-      div.textContent='🍗';
-    } else if(i===9 && stamps===9){
-      div.textContent='🌟';
-    } else {
-      div.textContent='';
-    }
-    if(i<5) topGrid.appendChild(div);
+    if(i<stamps){div.classList.add('earned');div.textContent='🍗';}
+    else if(i===9&&stamps===9){div.textContent='🌟';}
+    if(i<5)topGrid.appendChild(div);
     else botGrid.appendChild(div);
   }
 
   // History
-  var histEl = document.getElementById('loy-history-list');
-  var hist = member.history||[];
+  var histEl=document.getElementById('loy-history-list');
+  var hist=member.history||[];
   if(!hist.length){
-    histEl.innerHTML='<div style="text-align:center;color:#AAA;font-size:.8rem;padding:1rem;">No stamps yet — place an order and add your order number!</div>';
+    histEl.innerHTML='<div style="text-align:center;color:#AAA;font-size:.8rem;padding:1rem 0;">No stamps yet — place an order and add your order number!</div>';
   } else {
-    histEl.innerHTML = hist.slice(0,8).map(function(h){
-      return '<div class="loy-hist-item"><div><div style="font-family:var(--font-head);font-size:.8rem;color:var(--ink);letter-spacing:.5px;">Order '+h.orderNum+'</div><div class="loy-hist-date">'+h.date+'</div></div><div style="color:var(--red);font-size:.85rem;font-weight:600;">🍗 Stamp #'+h.stamp+'</div></div>';
+    histEl.innerHTML=hist.slice(0,8).map(function(h){
+      return '<div class="loy-hist-item"><div><div style="font-family:var(--font-head);font-size:.8rem;color:var(--ink);letter-spacing:.5px;">'+h.orderNum+'</div><div class="loy-hist-date">'+h.date+'</div></div><div style="color:var(--red);font-size:.85rem;font-weight:600;">🍗 Stamp #'+h.stamp+'</div></div>';
     }).join('');
   }
 }
 
 function loyaltyLogout(){
-  localStorage.removeItem(LOY_KEY);
+  localStorage.removeItem(LOY_SESSION_KEY);
   document.getElementById('loy-name').value='';
   document.getElementById('loy-email').value='';
   document.getElementById('loy-phone').value='';
   showLoyView('loy-signup');
 }
 
-// Auto-add stamp after successful order
-function loyaltyAutoStamp(orderNum){
-  var member = loyGetCurrent();
-  if(!member) return;
-  var db = loyGetDB();
-  var m = db[member.phone];
-  if(!m) return;
-  if(m.usedOrderNums && m.usedOrderNums.indexOf(orderNum)>=0) return;
-
-  m.stamps = (m.stamps||0)+1;
-  m.totalOrders = (m.totalOrders||0)+1;
-  m.usedOrderNums = m.usedOrderNums||[];
-  m.usedOrderNums.push(orderNum);
-  m.history = m.history||[];
-  m.history.unshift({orderNum:orderNum, date:new Date().toLocaleDateString('en-CA'), stamp:m.stamps});
-
-  var gotFree = false;
-  if(m.stamps>=10){m.stamps=0;m.freeEarned=(m.freeEarned||0)+1;gotFree=true;}
-  db[member.phone]=m;
-  loySaveDB(db);
-  loySaveCurrent(m);
-
-  fetch(API_BASE+'/api/loyalty/stamp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:member.phone,orderNum:orderNum,gotFree:gotFree})}).catch(function(){});
-
-  if(gotFree){toast('🎉 10 stamps! FREE WINGS EARNED! Open Rewards to redeem.');}
-  else{toast('🍗 Stamp added to your Saucy Stamps card! ('+(10-m.stamps)+' to free wings)');}
+// Auto-stamp after successful online order
+async function loyaltyAutoStamp(orderNum){
+  var session = loyGetSession();
+  if(!session) return;
+  try{
+    var r = await fetch(API_BASE+'/api/loyalty/stamp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:session.phone,orderNum,autoStamp:true})});
+    var d = await r.json();
+    if(d.success){
+      loySaveSession(d.member);
+      if(d.gotFree) toast('🎉 10 stamps! FREE WINGS EARNED! Open Rewards to redeem.');
+      else toast('🍗 Stamp added! '+(10-d.stamps)+' more to free wings.');
+    }
+  }catch(e){console.log('Auto-stamp failed silently');}
 }
-
 </script>
 <script src="https://checkout.clover.com/sdk.js"></script>
 
