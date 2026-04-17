@@ -12,7 +12,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 const LOCATIONS = {
   "albert-st": {
     name: "Albert Street (Regina)",
-    merchantId: "318003593879",
+    merchantId: "5376RB8DAZMH1",
     apiToken: "4c89fafe-a989-0b53-7c24-2ad11e672879",
     address: "#3 - 155 Albert St N, Regina, SK",
     phone: "306-522-2111",
