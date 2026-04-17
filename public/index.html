@@ -927,15 +927,16 @@ function renderCheckoutForm(){
 }
 function renderPaymentSection(){
   var locId=document.getElementById('o-loc')?document.getElementById('o-loc').value:activeLocation;
-  var isRochdale=locId==='rochdale';
+  var onlinePayKeys={'rochdale':'cd46b0d8f6927c3420e884c39aa2a3c3','albert-st':'7593a1738dc053c38b349cd6201b17d1'};
+  var isOnlinePay=!!onlinePayKeys[locId];
   var sec=document.getElementById('payment-section');
   if(!sec)return;
   var sub=cart.reduce(function(s,i){return s+i.price*i.qty;},0);
   var del=orderType==='delivery'?5.50:0;
   var tot=((sub*1.11)+del).toFixed(2);
-  if(isRochdale){
+  if(isOnlinePay){
     sec.innerHTML='<div class="msec">PAYMENT</div><p style="font-family:var(--font-head);font-size:.78rem;color:#888;letter-spacing:1px;margin-bottom:.75rem;">Enter your card details below — secured by Clover.</p><div class="clover-pay-wrap" id="clover-iframe-wrap"></div><div style="text-align:center;font-size:.74rem;color:#888;margin:.5rem 0 .75rem;">Secured by Clover · Your card details are encrypted</div><button class="btn-place" id="pbtn" onclick="submitOrder()">PAY $'+tot+' NOW</button>';
-    setTimeout(function(){initCloverIframe('cd46b0d8f6927c3420e884c39aa2a3c3');},150);
+    setTimeout(function(){initCloverIframe(onlinePayKeys[locId]);},150);
   } else {
     var btnTxt=isPreOrder()?'PRE-ORDER FOR '+getNextOpenTime().toUpperCase():'PLACE ORDER';
     var btnStyle=isPreOrder()?'style="background:#F5A800;color:#0D0D0D;"':'';
@@ -990,7 +991,8 @@ async function submitOrder(){
   var total=parseFloat((sub+gst+pst+del).toFixed(2));
 
   // Rochdale card payment
-  if(locId==='rochdale'){
+  var onlineLocs=['rochdale','albert-st'];
+  if(onlineLocs.includes(locId)){
     btn.innerHTML='<span class="spinner"></span>Processing card...';
     var cardToken=await getCloverToken();
     if(!cardToken){btn.disabled=false;btn.innerHTML='PAY $'+total.toFixed(2)+' NOW';return;}
