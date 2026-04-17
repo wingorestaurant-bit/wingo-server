@@ -419,7 +419,7 @@ var activeLocation = 'albert-st';
     <div class="lgrid">
       <div class="lcard live"><span class="lbadge lb-live">✓ Online Ordering Live</span><div class="lname">Albert Street</div><div class="laddr">#3 – 155 Albert St N, Regina, SK</div><div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div><div class="lphone">📞 306-522-2111</div></div>
       <div class="lcard live"><span class="lbadge lb-live">✓ Online Ordering Live</span><div class="lname">Rochdale</div><div class="laddr">3881 Rochdale Blvd, Regina, SK</div><div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div><div class="lphone">📞 306-522-2112</div></div>
-      <div class="lcard"><span class="lbadge lb-soon">Coming Soon</span><div class="lname">East Regina</div><div class="laddr">Regina, SK</div><div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div></div>
+      <div class="lcard live"><span class="lbadge lb-live">✓ Online Ordering Live</span><div class="lname">East Regina</div><div class="laddr">534 University Park Drive<br>Regina, SK</div><div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div></div>
       <div class="lcard live"><span class="lbadge lb-live">✓ Online Ordering Live</span><div class="lname">Moose Jaw</div><div class="laddr">622 Main St N, Moose Jaw, SK</div><div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div><div class="lphone">📞 306-692-2113</div></div>
       <div class="lcard"><span class="lbadge lb-soon">Seasonal</span><div class="lname">Regina Beach</div><div class="laddr">Regina Beach, SK</div><div class="lhours">Summer Only</div></div>
       <div class="lcard" style="border-color:rgba(245,168,0,.3);opacity:.7"><span class="lbadge lb-soon">🚀 Coming Soon</span><div class="lname">Winnipeg</div><div class="laddr">Manitoba's first Wing-O!</div><div class="lhours">Stay Tuned</div></div>
@@ -921,13 +921,13 @@ function renderCheckoutForm(){
   }).join('');
   var preNote='';
   if(!isOpen()){preNote='<div class="preorder-note"><strong>Pre-Order</strong> — We are currently closed. Your order will be prepared when we open '+getNextOpenTime()+'. We will call you to confirm!</div>';}
-  document.getElementById('mbd').innerHTML=preNote+'<div class="otype-row"><div class="oc on" id="ot-p" onclick="setOT(\'pickup\')"><div class="oc-icon">🏃</div><div class="oc-lbl">Pickup</div><div class="oc-sub">Ready in ~20 min</div></div><div class="oc" id="ot-d" onclick="setOT(\'delivery\')"><div class="oc-icon">🛵</div><div class="oc-lbl">Delivery</div><div class="oc-sub">+$5.50 · Regina</div></div></div><div class="fg"><label>Location</label><select id="o-loc" onchange="setLocation(this.value)"><option value="albert-st">Albert Street — #3 155 Albert St N, Regina</option><option value="rochdale">Rochdale — 3881 Rochdale Blvd, Regina</option><option value="moose-jaw">Moose Jaw — 622 Main St N, Moose Jaw</option></select></div><div id="del-addr" class="fg hidden"><label>Delivery Address</label><input type="text" id="o-addr" placeholder="123 Main St, Regina, SK"></div><div id="del-note" class="del-note hidden">Delivery available within Regina. Flat rate $5.50.</div><div class="msec">YOUR INFO</div><div class="frow"><div class="fg"><label>First Name</label><input type="text" id="o-fn" placeholder="First name"></div><div class="fg"><label>Last Name</label><input type="text" id="o-ln" placeholder="Last name"></div></div><div class="fg"><label>Phone</label><input type="tel" id="o-ph" placeholder="(306) 555-0123"></div><div class="fg"><label>Email</label><input type="email" id="o-em" placeholder="you@email.com"></div><div class="fg"><label>Order Notes</label><textarea id="o-notes" placeholder="Any special requests..."></textarea></div><div class="msec">ORDER SUMMARY</div><div class="os-box">'+itemRows+'<div class="os-row" style="color:#888"><span>GST (5%)</span><span>$'+gst.toFixed(2)+'</span></div><div class="os-row" style="color:#888"><span>PST (6%)</span><span>$'+pst.toFixed(2)+'</span></div>'+(del>0?'<div class="os-row" style="color:#888"><span>Delivery</span><span>$'+del.toFixed(2)+'</span></div>':'')+'<div class="os-total"><span>Total</span><span>$'+total.toFixed(2)+'</span></div></div><div id="payment-section"></div>';
+  document.getElementById('mbd').innerHTML=preNote+'<div class="otype-row"><div class="oc on" id="ot-p" onclick="setOT(\'pickup\')"><div class="oc-icon">🏃</div><div class="oc-lbl">Pickup</div><div class="oc-sub">Ready in ~20 min</div></div><div class="oc" id="ot-d" onclick="setOT(\'delivery\')"><div class="oc-icon">🛵</div><div class="oc-lbl">Delivery</div><div class="oc-sub">+$5.50 · Regina</div></div></div><div class="fg"><label>Location</label><select id="o-loc" onchange="setLocation(this.value)"><option value="albert-st">Albert Street — #3 155 Albert St N, Regina</option><option value="rochdale">Rochdale — 3881 Rochdale Blvd, Regina</option><option value="east-regina">East Regina — 534 University Park Drive</option><option value="moose-jaw">Moose Jaw — 622 Main St N, Moose Jaw</option></select></div><div id="del-addr" class="fg hidden"><label>Delivery Address</label><input type="text" id="o-addr" placeholder="123 Main St, Regina, SK"></div><div id="del-note" class="del-note hidden">Delivery available within Regina. Flat rate $5.50.</div><div class="msec">YOUR INFO</div><div class="frow"><div class="fg"><label>First Name</label><input type="text" id="o-fn" placeholder="First name"></div><div class="fg"><label>Last Name</label><input type="text" id="o-ln" placeholder="Last name"></div></div><div class="fg"><label>Phone</label><input type="tel" id="o-ph" placeholder="(306) 555-0123"></div><div class="fg"><label>Email</label><input type="email" id="o-em" placeholder="you@email.com"></div><div class="fg"><label>Order Notes</label><textarea id="o-notes" placeholder="Any special requests..."></textarea></div><div class="msec">ORDER SUMMARY</div><div class="os-box">'+itemRows+'<div class="os-row" style="color:#888"><span>GST (5%)</span><span>$'+gst.toFixed(2)+'</span></div><div class="os-row" style="color:#888"><span>PST (6%)</span><span>$'+pst.toFixed(2)+'</span></div>'+(del>0?'<div class="os-row" style="color:#888"><span>Delivery</span><span>$'+del.toFixed(2)+'</span></div>':'')+'<div class="os-total"><span>Total</span><span>$'+total.toFixed(2)+'</span></div></div><div id="payment-section"></div>';
   detectAndSortLocations(true);
   setTimeout(renderPaymentSection,200);
 }
 function renderPaymentSection(){
   var locId=document.getElementById('o-loc')?document.getElementById('o-loc').value:activeLocation;
-  var onlinePayKeys={'rochdale':'cd46b0d8f6927c3420e884c39aa2a3c3','albert-st':'7593a1738dc053c38b349cd6201b17d1'};
+  var onlinePayKeys={'rochdale':'cd46b0d8f6927c3420e884c39aa2a3c3','albert-st':'7593a1738dc053c38b349cd6201b17d1','east-regina':'5c752e825f7c3fdab3c0c669a777650a'};
   var isOnlinePay=!!onlinePayKeys[locId];
   var sec=document.getElementById('payment-section');
   if(!sec)return;
@@ -946,7 +946,7 @@ function renderPaymentSection(){
 function setLocation(v){
   activeLocation=v;
   var lbl=document.getElementById('cart-loc-label');
-  var names={'albert-st':'Albert Street','rochdale':'Rochdale','moose-jaw':'Moose Jaw'};
+  var names={'albert-st':'Albert Street','rochdale':'Rochdale','east-regina':'East Regina','moose-jaw':'Moose Jaw'};
   if(lbl)lbl.textContent=(names[v]||'Albert Street')+' · Pickup or Delivery';
   setTimeout(renderPaymentSection,100);
 }
@@ -991,7 +991,7 @@ async function submitOrder(){
   var total=parseFloat((sub+gst+pst+del).toFixed(2));
 
   // Rochdale card payment
-  var onlineLocs=['rochdale','albert-st'];
+  var onlineLocs=['rochdale','albert-st','east-regina'];
   if(onlineLocs.includes(locId)){
     btn.innerHTML='<span class="spinner"></span>Processing card...';
     var cardToken=await getCloverToken();
@@ -1034,13 +1034,13 @@ async function submitOrder(){
   }
 }
 function showSuccess(d){
-  var locNames={'albert-st':'Albert Street','rochdale':'Rochdale','moose-jaw':'Moose Jaw'};
+  var locNames={'albert-st':'Albert Street','rochdale':'Rochdale','east-regina':'East Regina','moose-jaw':'Moose Jaw'};
   var locName=d.location?(locNames[d.location]||d.location):'';
   document.getElementById('mbd').innerHTML='<div class="success-view"><div class="sv-icon">'+(d.paid?'💳':'🔥')+'</div><h2>'+(d.paid?'PAYMENT CONFIRMED!':'ORDER PLACED!')+'</h2><p>You are locked in, '+d.customer+'!</p><div class="onum">'+d.orderNum+'</div>'+(d.paid?'<p style="color:#276749;font-weight:600;">Payment of $'+d.total+' received · Card ending '+(d.last4||'****')+'</p>':'<p><strong>Total:</strong> $'+d.total+' (pay at '+(d.orderType==='pickup'?'pickup':'delivery')+')</p>')+'<p><strong>'+(d.orderType==='pickup'?'Pickup':'Delivery')+'</strong> · '+locName+'</p><p>We will call <strong>'+d.phone+'</strong> when it is ready.</p><p style="color:'+(d.cloverSuccess?'#276749':'#888')+';;font-size:.8rem;margin-top:.4rem">'+(d.cloverSuccess?'✓ Order sent to Clover POS':'Order logged — kitchen notified')+'</p><a class="btn-red" href="#" onclick="closeCheckout();showHome()" style="display:inline-block;margin-top:1.25rem;font-size:.95rem;padding:.8rem 1.8rem">Order Again 🍗</a></div>';
 }
 
 // GEO
-var LOCATIONS_GEO={'albert-st':{lat:50.4501,lng:-104.6178,name:'Albert Street',address:'#3 155 Albert St N, Regina'},'rochdale':{lat:50.4777,lng:-104.6494,name:'Rochdale',address:'3881 Rochdale Blvd, Regina'},'moose-jaw':{lat:50.3934,lng:-105.5348,name:'Moose Jaw',address:'622 Main St N, Moose Jaw'}};
+var LOCATIONS_GEO={'albert-st':{lat:50.4501,lng:-104.6178,name:'Albert Street',address:'#3 155 Albert St N, Regina'},'rochdale':{lat:50.4777,lng:-104.6494,name:'Rochdale',address:'3881 Rochdale Blvd, Regina'},'east-regina':{lat:50.4282,lng:-104.5768,name:'East Regina',address:'534 University Park Drive, Regina'},'moose-jaw':{lat:50.3934,lng:-105.5348,name:'Moose Jaw',address:'622 Main St N, Moose Jaw'}};
 function distKm(lat1,lon1,lat2,lon2){var R=6371,dL=Math.PI*(lat2-lat1)/180,dO=Math.PI*(lon2-lon1)/180;var a=Math.sin(dL/2)*Math.sin(dL/2)+Math.cos(Math.PI*lat1/180)*Math.cos(Math.PI*lat2/180)*Math.sin(dO/2)*Math.sin(dO/2);return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
 function detectAndSortLocations(fromCheckout){
   if(!navigator.geolocation)return;
@@ -1054,7 +1054,7 @@ function detectAndSortLocations(fromCheckout){
     if(fromCheckout){
       var sel=document.getElementById('o-loc');
       if(sel){
-        var opts={'albert-st':'Albert Street — #3 155 Albert St N, Regina','rochdale':'Rochdale — 3881 Rochdale Blvd, Regina','moose-jaw':'Moose Jaw — 622 Main St N, Moose Jaw'};
+        var opts={'albert-st':'Albert Street — #3 155 Albert St N, Regina','rochdale':'Rochdale — 3881 Rochdale Blvd, Regina','east-regina':'East Regina — 534 University Park Drive','moose-jaw':'Moose Jaw — 622 Main St N, Moose Jaw'};
         sel.innerHTML='';
         ids.forEach(function(id,i){var o=document.createElement('option');o.value=id;o.textContent=opts[id]+(i===0?' (Nearest)':'');sel.appendChild(o);});
         sel.value=ids[0];setLocation(ids[0]);
