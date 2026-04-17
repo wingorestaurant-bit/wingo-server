@@ -30,6 +30,16 @@ const LOCATIONS = {
     onlinePayments: true,
     cloverPrivateKey: process.env.CLOVER_PRIVATE_KEY_ROCHDALE
   },
+  "east-regina": {
+    name: "East Regina (Wing-O East)",
+    merchantId: "4BB1SFERQNQF1",
+    apiToken: process.env.CLOVER_API_TOKEN_EAST,
+    address: "534 University Park Drive, Regina, SK",
+    phone: "306-522-2111",
+    hours: "Mon-Wed 11am-1am · Thu-Sun 11am-3am",
+    onlinePayments: true,
+    cloverPrivateKey: process.env.CLOVER_PRIVATE_KEY_EAST
+  },
   "moose-jaw": {
     name: "Moose Jaw",
     merchantId: "318003488638",
