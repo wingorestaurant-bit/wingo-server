@@ -927,7 +927,7 @@ function renderCheckoutForm(){
 }
 function renderPaymentSection(){
   var locId=document.getElementById('o-loc')?document.getElementById('o-loc').value:activeLocation;
-  var onlinePayKeys={'rochdale':'cd46b0d8f6927c3420e884c39aa2a3c3','albert-st':'7593a1738dc053c38b349cd6201b17d1','east-regina':'5c752e825f7c3fdab3c0c669a777650a'};
+  var onlinePayKeys={'rochdale':'cd46b0d8f6927c3420e884c39aa2a3c3','albert-st':'7593a1738dc053c38b349cd6201b17d1','east-regina':'5c752e825f7c3fdab3c0c669a777650a','moose-jaw':'725447e247b61b177aa8d5cd7028bd26'};
   var isOnlinePay=!!onlinePayKeys[locId];
   var sec=document.getElementById('payment-section');
   if(!sec)return;
@@ -991,7 +991,7 @@ async function submitOrder(){
   var total=parseFloat((sub+gst+pst+del).toFixed(2));
 
   // Rochdale card payment
-  var onlineLocs=['rochdale','albert-st','east-regina'];
+  var onlineLocs=['rochdale','albert-st','east-regina','moose-jaw'];
   if(onlineLocs.includes(locId)){
     btn.innerHTML='<span class="spinner"></span>Processing card...';
     var cardToken=await getCloverToken();
