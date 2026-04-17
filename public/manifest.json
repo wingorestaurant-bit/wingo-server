@@ -1,0 +1,37 @@
+{
+  "name": "Wing-O — More Than Wings",
+  "short_name": "Wing-O",
+  "description": "Order wings online from Wing-O. 125+ flavors, 5 SK locations. Regina's original wings eatery.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0D0D0D",
+  "theme_color": "#E8190A",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "images/logo.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "images/logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "images/wings-hero.jpg",
+      "sizes": "1280x720",
+      "type": "image/jpeg",
+      "form_factor": "wide"
+    }
+  ],
+  "categories": ["food", "lifestyle", "shopping"],
+  "lang": "en-CA",
+  "dir": "ltr",
+  "scope": "/",
+  "id": "wingo-restaurants-app"
+}
