@@ -13,12 +13,12 @@ const LOCATIONS = {
   "albert-st": {
     name: "Albert Street (Regina)",
     merchantId: "5376RB8DAZMH1",
-    apiToken: "4c89fafe-a989-0b53-7c24-2ad11e672879",
+    apiToken: process.env.CLOVER_API_TOKEN_ALBERT,
     address: "#3 - 155 Albert St N, Regina, SK",
     phone: "306-522-2111",
     hours: "Mon-Wed 11am-1am · Thu-Sun 11am-3am",
-    onlinePayments: false,
-    cloverPrivateKey: null
+    onlinePayments: true,
+    cloverPrivateKey: process.env.CLOVER_PRIVATE_KEY_ALBERT
   },
   "rochdale": {
     name: "Rochdale (Regina)",
