@@ -35,20 +35,20 @@ const LOCATIONS = {
     merchantId: "4BB1SFERQNQF1",
     apiToken: process.env.CLOVER_API_TOKEN_EAST,
     address: "534 University Park Drive, Regina, SK",
-    phone: "306-522-2111",
+    phone: "306-522-2114",
     hours: "Mon-Wed 11am-1am · Thu-Sun 11am-3am",
     onlinePayments: true,
     cloverPrivateKey: process.env.CLOVER_PRIVATE_KEY_EAST
   },
   "moose-jaw": {
     name: "Moose Jaw",
-    merchantId: "318003488638",
+    merchantId: "Z0S7JA8VG9CR1",
     apiToken: process.env.CLOVER_API_TOKEN_MOOSEJAW,
     address: "622 Main St N, Moose Jaw, SK",
     phone: "306-692-2113",
     hours: "Mon-Wed 11am-1am · Thu-Sun 11am-3am",
-    onlinePayments: false,
-    cloverPrivateKey: null
+    onlinePayments: true,
+    cloverPrivateKey: process.env.CLOVER_PRIVATE_KEY_MOOSEJAW
   }
 };
 
