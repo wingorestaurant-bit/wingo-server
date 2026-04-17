@@ -997,7 +997,8 @@ async function submitOrder(){
     btn.innerHTML='<span class="spinner"></span>Charging card...';
     var onum2='WO-'+Math.floor(1000+Math.random()*9000);
     try{
-      var cr=await fetch(API_BASE+'/api/charge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({locationId:locId,cardToken:cardToken,amount:total,orderId:onum2,customer:{firstName:fn,phone:ph}})});
+      var chargeItems=cart.map(function(i){var parts=[];if(i.flavors&&i.flavors.length){if(i.flavors.length===1)parts.push(i.flavors[0]);else i.flavors.forEach(function(f,idx){parts.push('Order '+(idx+1)+': '+f);});}if(i.cookieFl)parts.push(i.cookieFl);if(i.sizeName)parts.push(i.sizeName);if(i.upgradeName)parts.push(i.upgradeName);if(i.notes)parts.push('Note: '+i.notes);return{name:i.name,flavor:parts.join(' · '),price:i.price,qty:i.qty};});
+      var cr=await fetch(API_BASE+'/api/charge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({locationId:locId,cardToken:cardToken,amount:total,orderId:onum2,orderType:orderType,subtotal:sub,notes:notes,customer:{firstName:fn,lastName:ln,phone:ph,email:em,address:addr},items:chargeItems})});
       var cd=await cr.json();
       if(!cd.success){toast(cd.error||'Payment failed');btn.disabled=false;btn.innerHTML='PAY $'+total.toFixed(2)+' NOW';return;}
       showSuccess({success:true,orderNum:onum2,cloverSuccess:true,customer:fn,total:total.toFixed(2),phone:ph,orderType:orderType,location:'Rochdale',paid:true,last4:cd.last4});
