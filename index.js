@@ -351,6 +351,64 @@ app.post('/api/franchise', async (req, res) => {
   res.json({ success: true });
 });
 
+
+// ── LOYALTY PROGRAM ───────────────────────────────────────────
+const loyaltyDB = {}; // In-memory store (persists during server session)
+
+app.post('/api/loyalty/signup', async (req, res) => {
+  const { name, email, phone } = req.body;
+  if (!name || !email || !phone) return res.json({ success: false, error: 'Missing fields' });
+  
+  console.log(`🍗 Loyalty signup: ${name} — ${phone} — ${email}`);
+  loyaltyDB[phone] = loyaltyDB[phone] || { name, email, phone, stamps: 0, totalOrders: 0, freeEarned: 0, joinDate: new Date().toISOString() };
+
+  // Notify you by email
+  sendEmail({
+    to: 'besaucy@wingorestaurants.com',
+    subject: `🍗 New Loyalty Member — ${name}`,
+    html: `<div style="font-family:Arial,sans-serif;max-width:500px;margin:0 auto;background:#0D0D0D;padding:24px;border-radius:8px;">
+      <h2 style="color:#F5A800;font-size:22px;margin:0 0 16px;">New Saucy Stamps Member!</h2>
+      <table style="width:100%;color:#CCC;font-size:14px;">
+        <tr><td style="padding:6px 0;color:#888;">Name</td><td style="font-weight:bold;color:white;">${name}</td></tr>
+        <tr><td style="padding:6px 0;color:#888;">Email</td><td>${email}</td></tr>
+        <tr><td style="padding:6px 0;color:#888;">Phone</td><td>${phone}</td></tr>
+        <tr><td style="padding:6px 0;color:#888;">Joined</td><td>${new Date().toLocaleString('en-CA', { timeZone: 'America/Regina' })}</td></tr>
+      </table>
+    </div>`
+  });
+
+  res.json({ success: true });
+});
+
+app.post('/api/loyalty/stamp', async (req, res) => {
+  const { phone, orderNum, gotFree } = req.body;
+  console.log(`🍗 Loyalty stamp: ${phone} — ${orderNum} — Free: ${gotFree}`);
+
+  if (loyaltyDB[phone]) {
+    loyaltyDB[phone].stamps = loyaltyDB[phone].stamps || 0;
+    loyaltyDB[phone].totalOrders = (loyaltyDB[phone].totalOrders || 0) + 1;
+    if (gotFree) { loyaltyDB[phone].stamps = 0; loyaltyDB[phone].freeEarned = (loyaltyDB[phone].freeEarned || 0) + 1; }
+    else { loyaltyDB[phone].stamps++; }
+  }
+
+  if (gotFree) {
+    const member = loyaltyDB[phone] || {};
+    sendEmail({
+      to: 'besaucy@wingorestaurants.com',
+      subject: `🎉 FREE WINGS EARNED — ${member.name || phone}`,
+      html: `<div style="font-family:Arial;max-width:500px;margin:0 auto;background:#0D0D0D;padding:24px;border-radius:8px;"><h2 style="color:#E8190A;">🎉 Free Wings Earned!</h2><p style="color:#CCC;">${member.name || phone} has collected 10 stamps and earned a free half order of wings.</p><p style="color:#888;font-size:13px;">Phone: ${phone} · Order: ${orderNum}</p></div>`
+    });
+  }
+
+  res.json({ success: true });
+});
+
+app.get('/api/loyalty/member/:phone', (req, res) => {
+  const member = loyaltyDB[req.params.phone];
+  if (!member) return res.json({ success: false, error: 'Member not found' });
+  res.json({ success: true, member });
+});
+
 // ── START ─────────────────────────────────────────────────────
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
