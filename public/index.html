@@ -4,6 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Wing-O — More Than Wings | Order Online</title>
+
+<!-- PWA -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#E8190A">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Wing-O">
+<link rel="apple-touch-icon" href="images/logo.jpg">
+<meta name="description" content="Order wings online from Wing-O. 125+ flavors, 5 SK locations. Regina's original wings eatery.">
+
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600;700&family=Barlow:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -1736,5 +1747,62 @@ async function loyaltyAutoStamp(orderNum){
 </div>
 </div>
 
+<!-- PWA Install Banner -->
+<div id="pwa-banner" style="display:none;position:fixed;bottom:5rem;left:50%;transform:translateX(-50%);z-index:99999;background:var(--black);border:2px solid var(--yellow);border-radius:8px;padding:.85rem 1.25rem;display:none;align-items:center;gap:1rem;box-shadow:0 8px 32px rgba(0,0,0,.5);max-width:90vw;width:360px;">
+  <img src="images/logo.jpg" style="width:42px;height:42px;border-radius:6px;object-fit:cover;flex-shrink:0;">
+  <div style="flex:1;min-width:0;">
+    <div style="font-family:var(--font-display);font-size:.9rem;color:white;letter-spacing:1px;">INSTALL WING-O APP</div>
+    <div style="font-family:var(--font-head);font-size:.7rem;color:#888;letter-spacing:1px;text-transform:uppercase;margin-top:2px;">Order faster · Works offline</div>
+  </div>
+  <button id="pwa-install-btn" style="background:var(--red);color:white;border:none;padding:.45rem .9rem;font-family:var(--font-head);font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;border-radius:4px;cursor:pointer;white-space:nowrap;">Install</button>
+  <button onclick="document.getElementById('pwa-banner').style.display='none'" style="background:none;border:none;color:#555;font-size:1.1rem;cursor:pointer;padding:2px;flex-shrink:0;">✕</button>
+</div>
+
+<script>
+// ── SERVICE WORKER ─────────────────────────────────────────
+if('serviceWorker' in navigator){
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(function(reg){ console.log('[Wing-O] SW registered:', reg.scope); })
+      .catch(function(err){ console.log('[Wing-O] SW failed:', err); });
+  });
+}
+
+// ── PWA INSTALL PROMPT ─────────────────────────────────────
+var deferredPrompt = null;
+var installBanner = document.getElementById('pwa-banner');
+var installBtn = document.getElementById('pwa-install-btn');
+
+window.addEventListener('beforeinstallprompt', function(e){
+  e.preventDefault();
+  deferredPrompt = e;
+  // Show banner after 30 seconds if user hasn't dismissed
+  setTimeout(function(){
+    if(deferredPrompt){
+      installBanner.style.display = 'flex';
+    }
+  }, 30000);
+});
+
+if(installBtn){
+  installBtn.addEventListener('click', function(){
+    if(!deferredPrompt) return;
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function(result){
+      if(result.outcome === 'accepted'){
+        console.log('[Wing-O] App installed!');
+      }
+      deferredPrompt = null;
+      installBanner.style.display = 'none';
+    });
+  });
+}
+
+window.addEventListener('appinstalled', function(){
+  installBanner.style.display = 'none';
+  deferredPrompt = null;
+  toast('🍗 Wing-O app installed! Find it on your home screen.');
+});
+</script>
 </body>
 </html>
