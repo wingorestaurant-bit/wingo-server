@@ -20,7 +20,6 @@ async function connectDB() {
     await client.connect();
     db = client.db('wingo');
     console.log('✅ MongoDB connected — wingo database');
-    // Create indexes for fast lookup
     await db.collection('loyalty').createIndex({ phone: 1 }, { unique: true });
     await db.collection('loyalty').createIndex({ email: 1 });
     await db.collection('loyalty').createIndex({ usedOrderNums: 1 });
@@ -30,7 +29,6 @@ async function connectDB() {
     return null;
   }
 }
-// Connect on startup
 connectDB();
 
 // ── LOCATION CONFIG ────────────────────────────────────────────
@@ -93,6 +91,78 @@ async function sendEmail({ to, subject, html }) {
   } catch (e) { console.warn('Email failed:', e.message); }
 }
 
+// ── AUTO STAMP (called internally after confirmed order) ───────
+async function autoAddStamp(phone, orderNum, customerName) {
+  if (!phone || !orderNum) return null;
+  const cleanPhone = phone.replace(/\D/g, '');
+
+  try {
+    const database = await connectDB();
+    if (!database) return null;
+
+    const member = await database.collection('loyalty').findOne({ phone: cleanPhone });
+    if (!member) return null; // Not a loyalty member, skip silently
+
+    // Prevent duplicate stamps for same order
+    if (member.usedOrderNums && member.usedOrderNums.includes(orderNum)) {
+      console.log(`⚠️ Stamp already given for order ${orderNum}`);
+      return null;
+    }
+
+    const newStamps = (member.stamps || 0) + 1;
+    const newTotalOrders = (member.totalOrders || 0) + 1;
+    const gotFree = newStamps >= 10;
+    const finalStamps = gotFree ? 0 : newStamps;
+    const newFreeEarned = gotFree ? (member.freeEarned || 0) + 1 : (member.freeEarned || 0);
+    const newHistory = [
+      { orderNum, date: new Date().toLocaleDateString('en-CA'), stamp: newTotalOrders, auto: true },
+      ...(member.history || [])
+    ].slice(0, 50);
+
+    await database.collection('loyalty').updateOne(
+      { phone: cleanPhone },
+      {
+        $set: {
+          stamps: finalStamps,
+          totalOrders: newTotalOrders,
+          freeEarned: newFreeEarned,
+          history: newHistory,
+          updatedAt: new Date()
+        },
+        $push: { usedOrderNums: orderNum }
+      }
+    );
+
+    console.log(`🍗 AUTO-STAMP: ${member.name} — Order ${orderNum} — Stamp ${newTotalOrders} — Free: ${gotFree}`);
+
+    // Notify if free wings earned
+    if (gotFree) {
+      sendEmail({
+        to: 'besaucy@wingorestaurants.com',
+        subject: `🎉 FREE WINGS EARNED — ${member.name}`,
+        html: `<div style="font-family:Arial;max-width:500px;margin:0 auto;background:#0D0D0D;padding:24px;border-radius:8px;">
+          <h2 style="color:#E8190A;margin:0 0 16px;">🎉 Free Wings Earned!</h2>
+          <p style="color:#CCC;font-size:15px;margin-bottom:12px;"><strong style="color:white;">${member.name}</strong> just collected their 10th stamp!</p>
+          <table style="width:100%;color:#CCC;font-size:14px;">
+            <tr><td style="padding:6px 0;color:#888;">Phone</td><td>${cleanPhone}</td></tr>
+            <tr><td style="padding:6px 0;color:#888;">Order</td><td>${orderNum}</td></tr>
+            <tr><td style="padding:6px 0;color:#888;">Total Orders</td><td>${newTotalOrders}</td></tr>
+            <tr><td style="padding:6px 0;color:#888;">Free Wings #</td><td style="color:#F5A800;font-weight:bold;">${newFreeEarned}</td></tr>
+          </table>
+          <div style="background:#E8190A;border-radius:6px;padding:12px;margin-top:16px;text-align:center;">
+            <div style="color:white;font-size:13px;letter-spacing:1px;">REDEEM: Give customer one FREE half order of wings 🍗</div>
+          </div>
+        </div>`
+      });
+    }
+
+    return { gotFree, stamps: finalStamps, totalOrders: newTotalOrders, memberName: member.name };
+  } catch (e) {
+    console.error('Auto-stamp error:', e.message);
+    return null;
+  }
+}
+
 // ── CREATE CLOVER ORDER WITH LINE ITEMS ────────────────────────
 async function createCloverOrder(loc, orderNum, orderType, customer, items, subtotal, notes, timestamp) {
   const orderNote = `
@@ -120,7 +190,6 @@ ${items.map(i => `  ${i.name}${i.flavor ? ' [' + i.flavor + ']' : ''} x${i.qty} 
 ${notes ? 'NOTES: ' + notes : ''}
 =================================`.trim();
 
-  // Create order
   const createResp = await fetch(
     `https://api.clover.com/v3/merchants/${loc.merchantId}/orders`,
     {
@@ -141,7 +210,6 @@ ${notes ? 'NOTES: ' + notes : ''}
   const cloverId = createData.id;
   console.log(`✓ Clover order created: ${cloverId}`);
 
-  // Add line items with full name + flavor
   for (const item of items) {
     try {
       const itemName = item.flavor ? `${item.name} [${item.flavor}]` : item.name;
@@ -161,7 +229,6 @@ ${notes ? 'NOTES: ' + notes : ''}
     } catch (e) { console.warn('Line item error:', e.message); }
   }
 
-  // Add GST + PST as line items
   const gst = Math.round(Number(subtotal) * 0.05 * 100);
   const pst = Math.round(Number(subtotal) * 0.06 * 100);
   try {
@@ -207,6 +274,9 @@ app.post('/api/orders', async (req, res) => {
     cloverSuccess = !!cloverId;
   } catch (e) { console.error('Clover error:', e.message); }
 
+  // ── AUTO STAMP: fires only on real confirmed order ──
+  const stampResult = await autoAddStamp(customer.phone, orderNum, customer.firstName);
+
   // Send email notification
   sendEmail({
     to: 'besaucy@wingorestaurants.com',
@@ -223,6 +293,7 @@ app.post('/api/orders', async (req, res) => {
           <tr><td style="padding:6px 0;color:#888;font-size:13px;">Phone</td><td style="padding:6px 0;"><a href="tel:${customer.phone}" style="color:#E8190A;">${customer.phone}</a></td></tr>
           ${customer.email ? `<tr><td style="padding:6px 0;color:#888;font-size:13px;">Email</td><td>${customer.email}</td></tr>` : ''}
           ${orderType === 'delivery' ? `<tr><td style="padding:6px 0;color:#888;font-size:13px;">Address</td><td style="padding:6px 0;">${customer.address}</td></tr>` : ''}
+          ${stampResult ? `<tr><td style="padding:6px 0;color:#888;font-size:13px;">Loyalty</td><td style="padding:6px 0;color:#F5A800;">🍗 Stamp #${stampResult.totalOrders} added${stampResult.gotFree ? ' — 🎉 FREE WINGS EARNED!' : ''}</td></tr>` : ''}
         </table>
         <hr style="border:1px solid #E8E0D0;margin:16px 0;">
         ${items.map(i => `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #E8E0D0;"><div><div style="font-weight:bold;font-size:14px;">${i.name} x${i.qty}</div>${i.flavor ? `<div style="color:#E8190A;font-size:12px;">${i.flavor}</div>` : ''}</div><div style="font-weight:bold;">$${(i.price * i.qty).toFixed(2)}</div></div>`).join('')}
@@ -241,7 +312,10 @@ app.post('/api/orders', async (req, res) => {
     success: true, orderNum, cloverId, cloverSuccess,
     message: cloverSuccess ? `Order sent to ${loc.name} kitchen!` : 'Order recorded!',
     customer: customer.firstName, total: Number(total).toFixed(2),
-    phone: customer.phone, orderType, location: loc.name
+    phone: customer.phone, orderType, location: loc.name,
+    stampAdded: !!stampResult,
+    gotFreeWings: stampResult?.gotFree || false,
+    loyaltyStamps: stampResult?.stamps
   });
 });
 
@@ -282,19 +356,22 @@ app.post('/api/charge', async (req, res) => {
 
     console.log(`✅ Payment success — ${orderId} — $${amount} — Charge: ${chargeData.id}`);
 
-    // Step 2: Create Clover order with full item details NOW that payment succeeded
+    // Step 2: Create Clover order
     let cloverId = null;
     if (items && items.length && loc.apiToken) {
       try {
         cloverId = await createCloverOrder(
           loc, orderId, orderType || 'pickup',
-          customer || {firstName: 'Customer', phone: 'N/A'},
+          customer || { firstName: 'Customer', phone: 'N/A' },
           items, subtotal || amount, notes || '', timestamp
         );
       } catch (e) { console.warn('Post-payment order creation error:', e.message); }
     }
 
-    // Step 3: Send email
+    // Step 3: AUTO STAMP — only fires after payment confirmed ✅
+    const stampResult = await autoAddStamp(customer?.phone, orderId, customer?.firstName);
+
+    // Step 4: Send email
     sendEmail({
       to: 'besaucy@wingorestaurants.com',
       subject: `💳 PAID ${orderId} — ${loc.name} — $${amount}`,
@@ -307,6 +384,7 @@ app.post('/api/charge', async (req, res) => {
             <tr><td style="padding:6px 0;color:#888;font-size:13px;">Paid</td><td style="padding:6px 0;font-weight:bold;color:#276749;">$${amount} · Card ending ${chargeData.source?.last4 || '****'}</td></tr>
             <tr><td style="padding:6px 0;color:#888;font-size:13px;">Customer</td><td style="padding:6px 0;">${customer?.firstName || ''} — ${customer?.phone || ''}</td></tr>
             <tr><td style="padding:6px 0;color:#888;font-size:13px;">Time</td><td style="padding:6px 0;">${timestamp}</td></tr>
+            ${stampResult ? `<tr><td style="padding:6px 0;color:#888;font-size:13px;">Loyalty</td><td style="padding:6px 0;color:#F5A800;">🍗 Stamp #${stampResult.totalOrders} added${stampResult.gotFree ? ' — 🎉 FREE WINGS EARNED!' : ''}</td></tr>` : ''}
           </table>
           ${items ? '<hr style="border:1px solid #E8E0D0;margin:16px 0;">' + items.map(i => `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #E8E0D0;"><div><div style="font-weight:bold;font-size:14px;">${i.name} x${i.qty}</div>${i.flavor ? `<div style="color:#E8190A;font-size:12px;">${i.flavor}</div>` : ''}</div><div style="font-weight:bold;">$${(i.price * i.qty).toFixed(2)}</div></div>`).join('') : ''}
         </div>
@@ -318,7 +396,10 @@ app.post('/api/charge', async (req, res) => {
       chargeId: chargeData.id,
       cloverId: cloverId,
       amount: chargeData.amount,
-      last4: chargeData.source?.last4 || '****'
+      last4: chargeData.source?.last4 || '****',
+      stampAdded: !!stampResult,
+      gotFreeWings: stampResult?.gotFree || false,
+      loyaltyStamps: stampResult?.stamps
     });
 
   } catch (err) {
@@ -376,7 +457,6 @@ app.post('/api/franchise', async (req, res) => {
   res.json({ success: true });
 });
 
-
 // ── LOYALTY PROGRAM (MongoDB) ────────────────────────────────
 
 // SIGNUP
@@ -389,7 +469,6 @@ app.post('/api/loyalty/signup', async (req, res) => {
     const database = await connectDB();
     if (!database) return res.json({ success: false, error: 'Database unavailable' });
 
-    // Check if already exists
     const existing = await database.collection('loyalty').findOne({ phone: cleanPhone });
     if (existing) return res.json({ success: false, error: 'Phone already registered' });
 
@@ -454,11 +533,16 @@ app.get('/api/loyalty/lookup', async (req, res) => {
   }
 });
 
-// ADD STAMP
+// ADD STAMP (manual — admin use only, requires password)
 app.post('/api/loyalty/stamp', async (req, res) => {
-  const { phone, orderNum, autoStamp } = req.body;
+  const { phone, orderNum, password } = req.body;
   const cleanPhone = phone.replace(/\D/g, '');
   if (!cleanPhone || !orderNum) return res.json({ success: false, error: 'Missing fields' });
+
+  // Require admin password for manual stamp
+  if (!password || password !== (process.env.ADMIN_PASSWORD || 'sauceboss2025')) {
+    return res.status(401).json({ success: false, error: 'Unauthorized — admin password required' });
+  }
 
   try {
     const database = await connectDB();
@@ -467,7 +551,6 @@ app.post('/api/loyalty/stamp', async (req, res) => {
     const member = await database.collection('loyalty').findOne({ phone: cleanPhone });
     if (!member) return res.json({ success: false, error: 'Member not found' });
 
-    // Check duplicate order number
     if (member.usedOrderNums && member.usedOrderNums.includes(orderNum)) {
       return res.json({ success: false, error: 'Order number already used' });
     }
@@ -478,9 +561,9 @@ app.post('/api/loyalty/stamp', async (req, res) => {
     const finalStamps = gotFree ? 0 : newStamps;
     const newFreeEarned = gotFree ? (member.freeEarned || 0) + 1 : (member.freeEarned || 0);
     const newHistory = [
-      { orderNum, date: new Date().toLocaleDateString('en-CA'), stamp: newTotalOrders },
+      { orderNum, date: new Date().toLocaleDateString('en-CA'), stamp: newTotalOrders, manual: true },
       ...(member.history || [])
-    ].slice(0, 50); // Keep last 50
+    ].slice(0, 50);
 
     await database.collection('loyalty').updateOne(
       { phone: cleanPhone },
@@ -497,7 +580,7 @@ app.post('/api/loyalty/stamp', async (req, res) => {
     );
 
     const updated = await database.collection('loyalty').findOne({ phone: cleanPhone });
-    console.log(`🍗 Stamp added: ${member.name} — ${orderNum} — Total: ${newTotalOrders} — Free: ${gotFree}`);
+    console.log(`🍗 MANUAL STAMP: ${member.name} — ${orderNum} — Total: ${newTotalOrders} — Free: ${gotFree}`);
 
     if (gotFree) {
       sendEmail({
