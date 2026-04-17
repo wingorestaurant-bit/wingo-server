@@ -26,7 +26,6 @@ body{
   overflow-x:hidden;
   background-color:var(--paper);
   background-image:
-    /* Horizontal ruled lines like newsprint */
     repeating-linear-gradient(
       180deg,
       transparent,
@@ -34,12 +33,10 @@ body{
       rgba(139,109,56,.08) 28px,
       rgba(139,109,56,.08) 29px
     ),
-    /* Paper grain texture */
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E");
   background-size:100% 29px, 300px 300px;
 }
 
-/* FIXED NEWSPAPER OVERLAY — aged paper tint */
 body::before{
   content:'';
   position:fixed;inset:0;
@@ -305,113 +302,53 @@ textarea{resize:vertical;min-height:60px;}
 .hidden{display:none!important;}
 
 /* ── NEWSPAPER & PRAIRIE THEME ── */
-
-/* Aged paper tint on light sections */
 .cat-section::before,.loc-sec::before,.menu-page::before{
   content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
-  background:
-    repeating-linear-gradient(180deg,transparent,transparent 28px,rgba(139,109,56,.05) 28px,rgba(139,109,56,.05) 29px);
+  background:repeating-linear-gradient(180deg,transparent,transparent 28px,rgba(139,109,56,.05) 28px,rgba(139,109,56,.05) 29px);
 }
-
-/* Newspaper column border dividers */
 .cat-section{border-top:3px double var(--paper-line);border-bottom:3px double var(--paper-line);}
 .loc-sec{border-top:3px double var(--paper-line);}
-
-/* Newspaper masthead style eyebrow */
 .eyebrow{
-  font-family:var(--font-head) !important;
-  font-size:.72rem !important;
-  letter-spacing:4px !important;
-  text-transform:uppercase !important;
-  color:var(--red) !important;
-  border-top:1.5px solid var(--red);
-  border-bottom:1px solid var(--red);
-  padding:3px 0;
-  display:inline-block;
-  margin-bottom:.6rem !important;
+  font-family:var(--font-head) !important;font-size:.72rem !important;letter-spacing:4px !important;
+  text-transform:uppercase !important;color:var(--red) !important;
+  border-top:1.5px solid var(--red);border-bottom:1px solid var(--red);
+  padding:3px 0;display:inline-block;margin-bottom:.6rem !important;
 }
-
-/* Section titles look like newspaper headlines */
 .sec-title{
-  font-family:var(--font-display) !important;
-  text-transform:uppercase;
-  border-bottom:2px solid var(--ink);
-  padding-bottom:.4rem;
-  margin-bottom:1.5rem !important;
+  font-family:var(--font-display) !important;text-transform:uppercase;
+  border-bottom:2px solid var(--ink);padding-bottom:.4rem;margin-bottom:1.5rem !important;
 }
-
-/* Menu page paragraph text */
 .menu-page > .menu-page-inner > p{color:#7A6545;}
-
-/* Pop flag - ink stamp style */
 .pop-flag{
-  background:var(--red) !important;
-  color:white !important;
-  border-radius:2px !important;
-  font-family:var(--font-head) !important;
-  letter-spacing:2px !important;
-  text-transform:uppercase !important;
+  background:var(--red) !important;color:white !important;border-radius:2px !important;
+  font-family:var(--font-head) !important;letter-spacing:2px !important;text-transform:uppercase !important;
 }
-
-/* Wheat/Prairie decorative banner */
 .prairie-banner{
-  background:var(--ink);
-  color:var(--paper);
-  text-align:center;
-  padding:.5rem 1rem;
-  font-family:var(--font-head);
-  font-size:.72rem;
-  letter-spacing:4px;
-  text-transform:uppercase;
-  border-top:2px solid var(--yellow);
-  border-bottom:2px solid var(--yellow);
-  position:relative;
-  overflow:hidden;
+  background:var(--ink);color:var(--paper);text-align:center;padding:.5rem 1rem;
+  font-family:var(--font-head);font-size:.72rem;letter-spacing:4px;text-transform:uppercase;
+  border-top:2px solid var(--yellow);border-bottom:2px solid var(--yellow);position:relative;overflow:hidden;
 }
 .prairie-banner::before,.prairie-banner::after{
   content:'🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾';
-  position:absolute;top:50%;transform:translateY(-50%);
-  font-size:.9rem;opacity:.15;letter-spacing:8px;
-  white-space:nowrap;
+  position:absolute;top:50%;transform:translateY(-50%);font-size:.9rem;opacity:.15;letter-spacing:8px;white-space:nowrap;
 }
 .prairie-banner::before{left:-20px;}
 .prairie-banner::after{right:-20px;}
-
-/* Newspaper-style about section quote */
 .about-quote{
-  border-left:4px solid var(--red) !important;
-  padding-left:1rem !important;
-  font-style:italic !important;
-  font-size:1rem !important;
-  color:#CCC !important;
-  line-height:1.8 !important;
-  position:relative;
+  border-left:4px solid var(--red) !important;padding-left:1rem !important;font-style:italic !important;
+  font-size:1rem !important;color:#CCC !important;line-height:1.8 !important;position:relative;
 }
 .about-quote::before{
-  content:'"';
-  font-family:Georgia,serif;
-  font-size:4rem;
-  color:var(--red);
-  opacity:.3;
-  position:absolute;
-  top:-1rem;
-  left:-.5rem;
-  line-height:1;
+  content:'"';font-family:Georgia,serif;font-size:4rem;color:var(--red);opacity:.3;
+  position:absolute;top:-1rem;left:-.5rem;line-height:1;
 }
-
-/* Cart + checkout light */
 .item-modal{background:var(--paper) !important;}
 .im-name{color:var(--ink) !important;}
 .im-desc{color:#7A6545 !important;}
-
-/* Announce bar more newspaper */
 .announce{
-  font-family:var(--font-head) !important;
-  background:var(--ink) !important;
-  border-bottom:2px solid var(--yellow) !important;
-  letter-spacing:3px !important;
+  font-family:var(--font-head) !important;background:var(--ink) !important;
+  border-bottom:2px solid var(--yellow) !important;letter-spacing:3px !important;
 }
-
 
 /* ══════════════════════════════════════════════
    WING-O LOYALTY PROGRAM — SAUCY STAMPS
@@ -419,23 +356,15 @@ textarea{resize:vertical;min-height:60px;}
 .loyalty-ov{display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.88);padding:1rem;overflow-y:auto;}
 .loyalty-ov.open{display:flex;align-items:flex-start;justify-content:center;}
 .loyalty-modal{background:var(--paper);border-radius:6px;width:min(640px,100%);margin:2rem auto;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5);border:2px solid var(--paper-line);}
-
-/* Masthead */
 .loy-head{background:var(--ink);padding:1.5rem 1.75rem;position:relative;overflow:hidden;border-bottom:3px double var(--yellow);}
 .loy-head::before{content:'🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾';position:absolute;top:6px;left:0;right:0;text-align:center;font-size:.65rem;letter-spacing:6px;opacity:.15;white-space:nowrap;}
 .loy-head-title{font-family:var(--font-display);font-size:2rem;color:var(--yellow);letter-spacing:3px;text-align:center;position:relative;}
 .loy-head-sub{font-family:var(--font-head);font-size:.72rem;color:#888;letter-spacing:3px;text-transform:uppercase;text-align:center;margin-top:3px;position:relative;}
 .loy-close{position:absolute;top:12px;right:14px;background:none;border:none;color:#666;font-size:1.3rem;cursor:pointer;}
 .loy-close:hover{color:var(--yellow);}
-
-/* Body */
 .loy-body{padding:1.75rem;}
-
-/* Views */
 .loy-view{display:none;}
 .loy-view.active{display:block;}
-
-/* Signup form */
 .loy-form-title{font-family:var(--font-display);font-size:1.3rem;color:var(--ink);letter-spacing:2px;margin-bottom:.3rem;}
 .loy-form-sub{font-size:.82rem;color:#7A6545;margin-bottom:1.25rem;line-height:1.5;}
 .loy-input{width:100%;border:1.5px solid var(--paper-line);border-radius:3px;padding:.65rem .9rem;font-family:var(--font-body);font-size:.9rem;color:var(--ink);background:white;outline:none;margin-bottom:.7rem;transition:border-color .15s;}
@@ -447,8 +376,6 @@ textarea{resize:vertical;min-height:60px;}
 .loy-link{text-align:center;margin-top:.85rem;font-size:.8rem;color:#7A6545;}
 .loy-link a{color:var(--red);cursor:pointer;text-decoration:none;font-weight:600;}
 .loy-link a:hover{text-decoration:underline;}
-
-/* Stamp card */
 .stamp-card{background:var(--ink);border-radius:6px;padding:1.5rem;margin-bottom:1.25rem;border:2px solid var(--yellow);position:relative;overflow:hidden;}
 .stamp-card::before{content:'WING-O LOYALTY · SAUCY STAMPS · REGINA SK · EST. 2024';position:absolute;bottom:8px;left:0;right:0;text-align:center;font-family:var(--font-head);font-size:.55rem;letter-spacing:3px;color:rgba(245,168,0,.25);text-transform:uppercase;}
 .stamp-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.1rem;}
@@ -463,41 +390,29 @@ textarea{resize:vertical;min-height:60px;}
 .stamp-legend{display:flex;gap:1rem;justify-content:center;margin-top:.5rem;}
 .stamp-leg-item{display:flex;align-items:center;gap:5px;font-family:var(--font-head);font-size:.65rem;color:#888;letter-spacing:1px;text-transform:uppercase;}
 .stamp-leg-dot{width:10px;height:10px;border-radius:50%;}
-
-/* Progress bar */
 .progress-wrap{background:rgba(255,255,255,.08);border-radius:20px;height:8px;margin:1rem 0 .4rem;overflow:hidden;}
 .progress-bar{height:100%;background:linear-gradient(90deg,var(--red),var(--yellow));border-radius:20px;transition:width .8s ease;}
 .progress-label{font-family:var(--font-head);font-size:.72rem;color:#888;letter-spacing:1px;text-transform:uppercase;text-align:center;}
-
-/* Dashboard stats */
 .loy-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;margin-bottom:1.25rem;}
 .loy-stat{background:white;border:1.5px solid var(--paper-line);border-radius:4px;padding:.85rem;text-align:center;}
 .loy-stat-num{font-family:var(--font-display);font-size:1.6rem;color:var(--red);letter-spacing:1px;}
 .loy-stat-lbl{font-family:var(--font-head);font-size:.65rem;color:#7A6545;letter-spacing:1.5px;text-transform:uppercase;margin-top:2px;}
-
-/* Free wing reward box */
 .reward-box{background:linear-gradient(135deg,var(--red),#A8120A);border-radius:6px;padding:1.25rem;text-align:center;margin-bottom:1.25rem;position:relative;overflow:hidden;}
 .reward-box::before{content:'🍗 🍗 🍗 🍗 🍗 🍗 🍗 🍗 🍗 🍗 🍗 🍗';position:absolute;top:50%;transform:translateY(-50%);font-size:1.2rem;opacity:.1;white-space:nowrap;letter-spacing:8px;}
 .reward-title{font-family:var(--font-display);font-size:1.4rem;color:white;letter-spacing:2px;position:relative;}
 .reward-sub{font-family:var(--font-head);font-size:.78rem;color:rgba(255,255,255,.8);letter-spacing:1px;text-transform:uppercase;margin:.3rem 0 .9rem;position:relative;}
 .reward-code{background:white;color:var(--red);font-family:var(--font-display);font-size:1.6rem;letter-spacing:4px;padding:.5rem 1.5rem;border-radius:4px;display:inline-block;position:relative;}
-
-/* History */
 .loy-history{margin-top:1.25rem;}
 .loy-history-title{font-family:var(--font-head);font-size:.75rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#7A6545;margin-bottom:.6rem;border-bottom:1px solid var(--paper-line);padding-bottom:.4rem;}
 .loy-hist-item{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid rgba(200,184,154,.3);font-size:.8rem;color:#7A6545;}
 .loy-hist-item:last-child{border-bottom:none;}
 .loy-hist-date{font-family:var(--font-head);font-size:.7rem;color:#AAA;letter-spacing:1px;}
-
-/* Lookup view */
 .loy-lookup-wrap{text-align:center;padding:.5rem 0 1rem;}
 .loy-lookup-icon{font-size:3rem;margin-bottom:.5rem;}
-
 </style>
 </head>
 <body>
 
-<!-- API BASE - RELATIVE URL SO WORKS ON ANY DOMAIN -->
 <script>
 var API_BASE = '';
 var activeLocation = 'albert-st';
@@ -664,7 +579,6 @@ var activeLocation = 'albert-st';
       </div>
       <button onclick="openLoyalty()" style="background:var(--yellow);color:var(--black);border:none;padding:.9rem 2.2rem;font-family:var(--font-display);font-size:1rem;letter-spacing:2px;cursor:pointer;border-radius:3px;text-transform:uppercase;transition:all .2s;" onmouseover="this.style.background='#d48f00'" onmouseout="this.style.background='var(--yellow)'">JOIN FREE — GET STAMPING 🍗</button>
     </div>
-    <!-- Stamp card preview -->
     <div style="background:rgba(255,255,255,.04);border:2px solid rgba(245,168,0,.3);border-radius:6px;padding:1.5rem;max-width:320px;margin:0 auto;">
       <div style="font-family:var(--font-head);font-size:.65rem;color:var(--yellow);letter-spacing:3px;text-transform:uppercase;margin-bottom:.6rem;">Your Stamp Card</div>
       <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:.5rem;margin-bottom:.5rem;">
@@ -855,7 +769,6 @@ var currentCat = null;
 var selectedSizeIndex = 0;
 var selectedSizePrice = 0;
 
-// FLAVORS
 var FLAVORS = {
   "Flirty Ones":["Devil's Kiss","Honey Garlic","Lemon Pepper","Buffalo","Buffalo Ranch","BBQ Ranch","Honey Dill","Greek Dry","Greek Wet","Teriyaki","Creamy Dill Pickle","Medium"],
   "Hot As Hell":["Dead Angel (Carolina Reaper)","Spicy Mammilla","Sizzle Caesar","Caribbean Connection","Tropical Temptation","BBQ Seduction","Sentimental Sauce","Cobalt Kiss","Dragon Dip","Mild","Hot","Honey Buffalo","Honey Is Hot","Honey's Too Hot","Not So Hot","African Pepper","Island On Fire"],
@@ -996,7 +909,6 @@ window.addEventListener('popstate',function(e){
   }
 });
 
-// RENDER GRID
 function renderGrid(cat){
   var items=MENU[cat]||[];
   var el=document.getElementById('grid-'+cat);
@@ -1018,7 +930,6 @@ function renderCard(item,cat){
   return '<div class="mc" onclick="openItemModal(\''+item.id+'\',\''+cat+'\')"><div class="mc-img">'+img+'</div><div class="mc-body">'+pop+'<div class="mc-name">'+item.name+'</div><div class="mc-desc">'+item.desc+'</div><div class="mc-foot"><div class="mc-price" style="font-size:'+(item.sizes||item.sizes3?'.85rem':'1.2rem')+'">'+priceHtml+'</div><button class="btn-add" onclick="event.stopPropagation();openItemModal(\''+item.id+'\',\''+cat+'\')">+</button></div></div></div>';
 }
 
-// ITEM MODAL
 function openItemModal(id,cat){
   var items=MENU[cat]||[];
   var item=null;
@@ -1032,7 +943,6 @@ function openItemModal(id,cat){
   var img=item.img?'<div class="im-img"><img src="'+item.img+'" alt="'+item.name+'" loading="lazy"></div>':'';
   var body=img+'<div class="im-body"><div class="im-name">'+item.name+'</div><div class="im-desc">'+item.desc+'</div>';
 
-  // Size selection
   if(item.sizes&&item.price2){
     var labs=item.sizeLabels||['Small','Large'];
     body+='<div style="margin-bottom:.85rem;"><div style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:.5rem;">SIZE</div><div style="display:flex;gap:.5rem;"><button class="size-btn" id="sz-0" onclick="selectSize(0,'+item.price+',this)" style="flex:1;border:2px solid var(--red);background:rgba(232,25,10,.05);padding:.5rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.82rem;">'+labs[0]+' — $'+item.price.toFixed(2)+'</button><button class="size-btn" id="sz-1" onclick="selectSize(1,'+item.price2+',this)" style="flex:1;border:2px solid #E8E0D0;background:white;padding:.5rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.82rem;">'+labs[1]+' — $'+item.price2.toFixed(2)+'</button></div></div>';
@@ -1042,7 +952,6 @@ function openItemModal(id,cat){
     body+='<div style="margin-bottom:.85rem;"><div style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:.5rem;">SIZE</div><div style="display:flex;gap:.4rem;"><button class="size-btn" id="sz-0" onclick="selectSize(0,'+item.price+',this)" style="flex:1;border:2px solid var(--red);background:rgba(232,25,10,.05);padding:.45rem .3rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.75rem;">'+labs3[0]+'<br>$'+item.price.toFixed(2)+'</button><button class="size-btn" id="sz-1" onclick="selectSize(1,'+item.price2+',this)" style="flex:1;border:2px solid #E8E0D0;background:white;padding:.45rem .3rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.75rem;">'+labs3[1]+'<br>$'+item.price2.toFixed(2)+'</button><button class="size-btn" id="sz-2" onclick="selectSize(2,'+item.price3+',this)" style="flex:1;border:2px solid #E8E0D0;background:white;padding:.45rem .3rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.75rem;">'+labs3[2]+'<br>$'+item.price3.toFixed(2)+'</button></div></div>';
   }
 
-  // Flavor pickers
   if(item.flavorCount){
     body+='<div style="background:#FFF;border:1px solid #E8E0D0;border-radius:6px;padding:.85rem;margin-bottom:.85rem;"><div style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:.6rem;">🔥 '+(item.flavorCount>1?'Choose a Flavor for Each Order':'Choose Your Flavor')+'</div>';
     for(var fi=0;fi<item.flavorCount;fi++){
@@ -1057,12 +966,10 @@ function openItemModal(id,cat){
     body+='</div>';
   }
 
-  // Cookie dough
   if(item.cookieFlavors){
     body+='<div style="margin-bottom:.85rem;"><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.4rem;">Cookie Dough Flavor</label><select id="cookie-flavor" style="width:100%;border:1.5px solid #E8E0D0;border-radius:4px;padding:.45rem .7rem;font-family:var(--font-body);font-size:.83rem;outline:none;background:white;margin-bottom:.7rem;"><option value="Peanut Butter">Peanut Butter</option><option value="Double Chocolate">Double Chocolate</option><option value="Monster">Monster</option></select></div>';
   }
 
-  // Burger upgrades
   if(item.upgrades&&cat==='burgers'){
     body+='<div style="background:#FFF8EE;border:1px solid #F5D98A;border-radius:6px;padding:.75rem;margin-bottom:.85rem;"><div style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#7B3F00;margin-bottom:.5rem;">Upgrade (Optional)</div>';
     BURGER_UPGRADES.forEach(function(u,i){
@@ -1071,7 +978,6 @@ function openItemModal(id,cat){
     body+='</div>';
   }
 
-  // Combo upgrades
   if(item.upgrades&&cat==='combos'){
     body+='<div style="background:#FFF8EE;border:1px solid #F5D98A;border-radius:6px;padding:.75rem;margin-bottom:.85rem;"><div style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#7B3F00;margin-bottom:.5rem;">Upgrade Fries (Optional)</div>';
     COMBO_UPGRADES.forEach(function(u,i){
@@ -1080,9 +986,7 @@ function openItemModal(id,cat){
     body+='</div>';
   }
 
-  // Special instructions
   body+='<div style="margin-bottom:1rem;"><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.35rem;">Special Instructions (Optional)</label><textarea id="item-notes" placeholder="Extra sauce, no pickles, extra spicy..." style="width:100%;border:1.5px solid #E8E0D0;border-radius:4px;padding:.5rem .75rem;font-family:var(--font-body);font-size:.83rem;color:var(--black);resize:vertical;min-height:55px;outline:none;"></textarea></div>';
-
   body+='<div style="font-family:var(--font-display);font-size:1.8rem;color:var(--black);margin-bottom:1rem;" id="modal-price">$'+item.price.toFixed(2)+'</div>';
   body+='<button class="btn-place" onclick="addFromModal()">ADD TO ORDER 🍗</button>';
   body+='<button onclick="closeItemModal()" style="width:100%;background:none;border:1.5px solid #E8E0D0;color:#888;padding:.7rem;font-family:var(--font-head);font-size:.82rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:4px;margin-top:.5rem;">✕ Cancel</button>';
@@ -1145,7 +1049,6 @@ function addFromModal(){
   updateCart();toast('Added: '+item.name);closeItemModal();
 }
 
-// CART
 function updateCart(){
   var cnt=cart.reduce(function(s,i){return s+i.qty;},0);
   document.getElementById('cart-count').textContent=cnt;
@@ -1174,7 +1077,6 @@ function chgQty(key,d){
 function openCart(){document.getElementById('cart-ov').classList.add('open');}
 function closeCart(){document.getElementById('cart-ov').classList.remove('open');}
 
-// CHECKOUT
 function openCheckout(){closeCart();renderCheckoutForm();document.getElementById('modal-ov').classList.add('open');}
 function closeCheckout(){document.getElementById('modal-ov').classList.remove('open');}
 function setOT(t){
@@ -1224,7 +1126,6 @@ function setLocation(v){
   setTimeout(renderPaymentSection,100);
 }
 
-// CLOVER
 var cloverInstance=null;
 function initCloverIframe(pk){
   var wrap=document.getElementById('clover-iframe-wrap');
@@ -1246,7 +1147,6 @@ async function getCloverToken(){
   }catch(e){toast('Card error: '+e.message);return null;}
 }
 
-// SUBMIT ORDER
 async function submitOrder(){
   var fn=document.getElementById('o-fn')?document.getElementById('o-fn').value.trim():'';
   var ln=document.getElementById('o-ln')?document.getElementById('o-ln').value.trim():'';
@@ -1263,7 +1163,6 @@ async function submitOrder(){
   var gst=sub*0.05,pst=sub*0.06,del=orderType==='delivery'?5.50:0;
   var total=parseFloat((sub+gst+pst+del).toFixed(2));
 
-  // Rochdale card payment
   var onlineLocs=['rochdale','albert-st','east-regina','moose-jaw'];
   if(onlineLocs.includes(locId)){
     btn.innerHTML='<span class="spinner"></span>Processing card...';
@@ -1306,15 +1205,54 @@ async function submitOrder(){
     cart=[];updateCart();
   }
 }
+
+// ── SHOW SUCCESS — with loyalty stamp block ──────────────────
 function showSuccess(d){
-  // Auto-stamp loyalty card if member is logged in
+  // Fire auto-stamp on server
   if(d.orderNum) loyaltyAutoStamp(d.orderNum);
+
+  var session = loyGetSession();
   var locNames={'albert-st':'Albert Street','rochdale':'Rochdale','east-regina':'East Regina','moose-jaw':'Moose Jaw'};
   var locName=d.location?(locNames[d.location]||d.location):'';
-  document.getElementById('mbd').innerHTML='<div class="success-view"><div class="sv-icon">'+(d.paid?'💳':'🔥')+'</div><h2>'+(d.paid?'PAYMENT CONFIRMED!':'ORDER PLACED!')+'</h2><p>You are locked in, '+d.customer+'!</p><div class="onum">'+d.orderNum+'</div>'+(d.paid?'<p style="color:#276749;font-weight:600;">Payment of $'+d.total+' received · Card ending '+(d.last4||'****')+'</p>':'<p><strong>Total:</strong> $'+d.total+' (pay at '+(d.orderType==='pickup'?'pickup':'delivery')+')</p>')+'<p><strong>'+(d.orderType==='pickup'?'Pickup':'Delivery')+'</strong> · '+locName+'</p><p>We will call <strong>'+d.phone+'</strong> when it is ready.</p><p style="color:'+(d.cloverSuccess?'#276749':'#888')+';;font-size:.8rem;margin-top:.4rem">'+(d.cloverSuccess?'✓ Order sent to Clover POS':'Order logged — kitchen notified')+'</p><a class="btn-red" href="#" onclick="closeCheckout();showHome()" style="display:inline-block;margin-top:1.25rem;font-size:.95rem;padding:.8rem 1.8rem">Order Again 🍗</a></div>';
+
+  // Loyalty block — member vs non-member
+  var stampBlock='';
+  if(session){
+    // Member — stamp was just added automatically
+    stampBlock=
+      '<div style="background:linear-gradient(135deg,#0D0D0D,#1A1208);border:2px solid #F5A800;border-radius:8px;padding:1rem 1.25rem;margin:1rem 0;text-align:center;">'
+      +'<div style="font-family:var(--font-display);font-size:1.1rem;color:#F5A800;letter-spacing:2px;margin-bottom:.25rem;">🍗 STAMP ADDED!</div>'
+      +'<div style="font-family:var(--font-head);font-size:.75rem;color:#888;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:.7rem;">Saucy Stamps · '+session.name.split(' ')[0]+'\'s Card</div>'
+      +'<button onclick="closeCheckout();openLoyalty();" style="background:transparent;border:1.5px solid #F5A800;color:#F5A800;font-family:var(--font-head);font-size:.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:.4rem 1.1rem;border-radius:3px;cursor:pointer;">VIEW MY CARD →</button>'
+      +'</div>';
+  } else {
+    // Not a member — nudge to join
+    stampBlock=
+      '<div style="background:#F5F0E8;border:1.5px solid #C8B89A;border-radius:8px;padding:1rem 1.25rem;margin:1rem 0;text-align:center;">'
+      +'<div style="font-family:var(--font-display);font-size:1rem;color:#1A1208;letter-spacing:1px;margin-bottom:.25rem;">🌾 EARN FREE WINGS</div>'
+      +'<div style="font-family:var(--font-head);font-size:.75rem;color:#7A6545;letter-spacing:1px;margin-bottom:.7rem;">This order could be Stamp #1. Join Saucy Stamps — it\'s free!</div>'
+      +'<button onclick="closeCheckout();openLoyalty();" style="background:#E8190A;border:none;color:white;font-family:var(--font-head);font-size:.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:.45rem 1.2rem;border-radius:3px;cursor:pointer;">JOIN FREE 🍗</button>'
+      +'</div>';
+  }
+
+  document.getElementById('mbd').innerHTML=
+    '<div class="success-view">'
+    +'<div class="sv-icon">'+(d.paid?'💳':'🔥')+'</div>'
+    +'<h2>'+(d.paid?'PAYMENT CONFIRMED!':'ORDER PLACED!')+'</h2>'
+    +'<p>You are locked in, '+d.customer+'!</p>'
+    +'<div class="onum">'+d.orderNum+'</div>'
+    +(d.paid
+      ?'<p style="color:#276749;font-weight:600;">Payment of $'+d.total+' received · Card ending '+(d.last4||'****')+'</p>'
+      :'<p><strong>Total:</strong> $'+d.total+' (pay at '+(d.orderType==='pickup'?'pickup':'delivery')+')</p>'
+    )
+    +'<p><strong>'+(d.orderType==='pickup'?'Pickup':'Delivery')+'</strong> · '+locName+'</p>'
+    +'<p>We will call <strong>'+d.phone+'</strong> when it is ready.</p>'
+    + stampBlock
+    +'<p style="color:'+(d.cloverSuccess?'#276749':'#888')+';font-size:.8rem;margin-top:.4rem">'+(d.cloverSuccess?'✓ Order sent to Clover POS':'Order logged — kitchen notified')+'</p>'
+    +'<a class="btn-red" href="#" onclick="closeCheckout();showHome()" style="display:inline-block;margin-top:1.25rem;font-size:.95rem;padding:.8rem 1.8rem">Order Again 🍗</a>'
+    +'</div>';
 }
 
-// GEO
 var LOCATIONS_GEO={'albert-st':{lat:50.4501,lng:-104.6178,name:'Albert Street',address:'#3 155 Albert St N, Regina'},'rochdale':{lat:50.4777,lng:-104.6494,name:'Rochdale',address:'3881 Rochdale Blvd, Regina'},'east-regina':{lat:50.4282,lng:-104.5768,name:'East Regina',address:'534 University Park Drive, Regina'},'moose-jaw':{lat:50.3934,lng:-105.5348,name:'Moose Jaw',address:'622 Main St N, Moose Jaw'}};
 function distKm(lat1,lon1,lat2,lon2){var R=6371,dL=Math.PI*(lat2-lat1)/180,dO=Math.PI*(lon2-lon1)/180;var a=Math.sin(dL/2)*Math.sin(dL/2)+Math.cos(Math.PI*lat1/180)*Math.cos(Math.PI*lat2/180)*Math.sin(dO/2)*Math.sin(dO/2);return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
 function detectAndSortLocations(fromCheckout){
@@ -1338,14 +1276,12 @@ function detectAndSortLocations(fromCheckout){
   },function(){});
 }
 
-// SAUCE VAULT
 function renderSauces(){
   document.getElementById('sgrid').innerHTML=Object.keys(FLAVORS).map(function(cat){
     return '<div class="sgroup"><div class="sg-title">'+cat+'</div><ul>'+FLAVORS[cat].map(function(f){return '<li>'+f+'</li>';}).join('')+'</ul></div>';
   }).join('');
 }
 
-// API CHECK
 async function checkAPI(){
   var dot=document.getElementById('api-dot'),txt=document.getElementById('api-txt');
   try{
@@ -1355,7 +1291,6 @@ async function checkAPI(){
   }catch(e){dot.className='api-dot err';txt.textContent='offline mode';}
 }
 
-// COUNTERS
 var BASE={date:new Date('2026-04-14T00:00:00-06:00'),wings:1084400,orders:135550};
 function getLive(){
   var secs=(Date.now()-BASE.date)/1000;
@@ -1389,7 +1324,6 @@ async function fetchDonation(){
     if(r.ok){var d=await r.json();var el=document.getElementById('donation-counter');if(el)el.textContent=fmt(d.amount||27000)+'+';}
   }catch(e){}
 }
-// Run counters after load
 setTimeout(function(){
   var l=getLive();
   animUp(document.getElementById('wings-counter'),l.wings,2500);
@@ -1399,7 +1333,6 @@ fetchDonation();
 setInterval(updateCounters,1000);
 setInterval(fetchDonation,60000);
 
-// HOURS
 var HOURS={0:[11,27],1:[11,25],2:[11,25],3:[11,25],4:[11,27],5:[11,27],6:[11,27]};
 function isOpen(){
   var now=new Date();
@@ -1431,7 +1364,6 @@ function updateHoursBanner(){
   }
 }
 
-// FRANCHISE
 function openFranchise(){
   document.getElementById('franchise-ov').style.display='block';
   document.body.style.overflow='hidden';
@@ -1454,7 +1386,6 @@ async function submitFranchise(){
   btn.style.display='none';
 }
 
-// INIT
 history.replaceState({page:'home'},'');
 renderSauces();
 updateCart();
@@ -1466,12 +1397,10 @@ checkAPI();
 
 // ══════════════════════════════════════════════
 //   WING-O SAUCY STAMPS — LOYALTY PROGRAM
-//   Powered by MongoDB Atlas — permanent storage
 // ══════════════════════════════════════════════
 
 var LOY_SESSION_KEY = 'wingo_loyalty_session';
 
-// Current session member (lightweight — just phone + name for session)
 function loyGetSession(){
   try{ return JSON.parse(localStorage.getItem(LOY_SESSION_KEY)||'null'); }
   catch(e){ return null; }
@@ -1480,13 +1409,11 @@ function loySaveSession(member){
   localStorage.setItem(LOY_SESSION_KEY, JSON.stringify({phone:member.phone,name:member.name,email:member.email}));
 }
 
-// Open/close
 function openLoyalty(){
   document.getElementById('loyalty-ov').classList.add('open');
   document.body.style.overflow='hidden';
   var session = loyGetSession();
   if(session){
-    // Reload fresh data from server
     loyLoadMember(session.phone);
   } else {
     showLoyView('loy-signup');
@@ -1502,7 +1429,6 @@ function showLoyView(id){
   if(el) el.classList.add('active');
 }
 
-// Load member from server
 async function loyLoadMember(phone){
   try{
     var r = await fetch(API_BASE+'/api/loyalty/member/'+phone.replace(/\D/g,''));
@@ -1516,12 +1442,10 @@ async function loyLoadMember(phone){
       showLoyView('loy-signup');
     }
   }catch(e){
-    // Offline fallback — show dashboard with session data
     showLoyView('loy-signup');
   }
 }
 
-// SIGNUP
 async function loyaltySignup(){
   var name = document.getElementById('loy-name').value.trim();
   var email = document.getElementById('loy-email').value.trim();
@@ -1555,7 +1479,6 @@ async function loyaltySignup(){
   btn.textContent='CREATE MY STAMP CARD 🍗';btn.disabled=false;
 }
 
-// LOOKUP
 async function loyaltyLookup(){
   var input = document.getElementById('loy-lookup-input').value.trim();
   var errEl = document.getElementById('loy-lookup-error');
@@ -1584,7 +1507,6 @@ async function loyaltyLookup(){
   btn.textContent='FIND MY STAMPS 🍗';btn.disabled=false;
 }
 
-// ADD STAMP
 async function loyaltyAddStamp(){
   var orderNum = document.getElementById('loy-order-num').value.trim().toUpperCase();
   var errEl = document.getElementById('loy-stamp-error');
@@ -1602,7 +1524,7 @@ async function loyaltyAddStamp(){
   btn.textContent='Adding stamp...';btn.disabled=true;
 
   try{
-    var r = await fetch(API_BASE+'/api/loyalty/stamp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:session.phone,orderNum})});
+    var r = await fetch(API_BASE+'/api/loyalty/stamp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:session.phone,orderNum,password:'sauceboss2025'})});
     var d = await r.json();
     if(d.success){
       loySaveSession(d.member);
@@ -1624,7 +1546,6 @@ async function loyaltyAddStamp(){
   btn.textContent='STAMP MY CARD 🔥';btn.disabled=false;
 }
 
-// RENDER DASHBOARD
 function renderDashboard(member){
   if(!member) return;
   var stamps = member.stamps||0;
@@ -1642,7 +1563,6 @@ function renderDashboard(member){
   document.getElementById('loy-progress').style.width=pct+'%';
   document.getElementById('loy-progress-label').textContent=stamps+' of 10 stamps · '+toNext+' more to free wings';
 
-  // Show reward box if just earned free (stamps reset to 0, freeEarned > 0)
   var rewardBox = document.getElementById('loy-reward-box');
   if(stamps===0 && freeEarned>0 && member.history && member.history.length>0){
     var code='SAUCY-'+member.phone.slice(-4);
@@ -1652,7 +1572,6 @@ function renderDashboard(member){
     rewardBox.style.display='none';
   }
 
-  // Stamp grid
   var topGrid=document.getElementById('stamps-grid-top');
   var botGrid=document.getElementById('stamps-grid-bot');
   topGrid.innerHTML='';botGrid.innerHTML='';
@@ -1665,14 +1584,13 @@ function renderDashboard(member){
     else botGrid.appendChild(div);
   }
 
-  // History
   var histEl=document.getElementById('loy-history-list');
   var hist=member.history||[];
   if(!hist.length){
-    histEl.innerHTML='<div style="text-align:center;color:#AAA;font-size:.8rem;padding:1rem 0;">No stamps yet — place an order and add your order number!</div>';
+    histEl.innerHTML='<div style="text-align:center;color:#AAA;font-size:.8rem;padding:1rem 0;">No stamps yet — place an order to earn your first stamp!</div>';
   } else {
     histEl.innerHTML=hist.slice(0,8).map(function(h){
-      return '<div class="loy-hist-item"><div><div style="font-family:var(--font-head);font-size:.8rem;color:var(--ink);letter-spacing:.5px;">'+h.orderNum+'</div><div class="loy-hist-date">'+h.date+'</div></div><div style="color:var(--red);font-size:.85rem;font-weight:600;">🍗 Stamp #'+h.stamp+'</div></div>';
+      return '<div class="loy-hist-item"><div><div style="font-family:var(--font-head);font-size:.8rem;color:var(--ink);letter-spacing:.5px;">'+h.orderNum+'</div><div class="loy-hist-date">'+h.date+(h.auto?' · Auto':'')+'</div></div><div style="color:var(--red);font-size:.85rem;font-weight:600;">🍗 Stamp #'+h.stamp+'</div></div>';
     }).join('');
   }
 }
@@ -1685,12 +1603,12 @@ function loyaltyLogout(){
   showLoyView('loy-signup');
 }
 
-// Auto-stamp after successful online order
+// Auto-stamp — fires after confirmed order, server does the real work
 async function loyaltyAutoStamp(orderNum){
   var session = loyGetSession();
   if(!session) return;
   try{
-    var r = await fetch(API_BASE+'/api/loyalty/stamp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:session.phone,orderNum,autoStamp:true})});
+    var r = await fetch(API_BASE+'/api/loyalty/stamp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:session.phone,orderNum,password:'sauceboss2025'})});
     var d = await r.json();
     if(d.success){
       loySaveSession(d.member);
@@ -1706,7 +1624,6 @@ async function loyaltyAutoStamp(orderNum){
 <div class="loyalty-ov" id="loyalty-ov" onclick="if(event.target===this)closeLoyalty()">
 <div class="loyalty-modal">
 
-  <!-- MASTHEAD -->
   <div class="loy-head">
     <div class="loy-head-title">🍗 SAUCY STAMPS</div>
     <div class="loy-head-sub">Wing-O Loyalty Program · Collect 10 · Get 1 Free</div>
@@ -1743,7 +1660,6 @@ async function loyaltyAutoStamp(orderNum){
     <!-- VIEW: DASHBOARD -->
     <div class="loy-view" id="loy-dashboard">
 
-      <!-- FREE WINGS REWARD (shown when stamps >= 10) -->
       <div class="reward-box" id="loy-reward-box" style="display:none;">
         <div class="reward-title">🎉 FREE WINGS EARNED!</div>
         <div class="reward-sub">Show this to your server or mention it when ordering</div>
@@ -1751,7 +1667,6 @@ async function loyaltyAutoStamp(orderNum){
         <div style="font-family:var(--font-head);font-size:.7rem;color:rgba(255,255,255,.7);margin-top:.6rem;letter-spacing:1px;position:relative;">One free half order of wings · Any flavor 🌶️</div>
       </div>
 
-      <!-- STAMP CARD -->
       <div class="stamp-card">
         <div class="stamp-card-header">
           <div>
@@ -1763,43 +1678,35 @@ async function loyaltyAutoStamp(orderNum){
             stamps
           </div>
         </div>
-
-        <!-- 10 STAMPS GRID -->
         <div class="stamps-grid" id="stamps-grid-top"></div>
         <div class="stamps-grid" id="stamps-grid-bot"></div>
-
         <div class="stamp-legend">
           <div class="stamp-leg-item"><div class="stamp-leg-dot" style="background:var(--red);"></div>Earned</div>
           <div class="stamp-leg-item"><div class="stamp-leg-dot" style="background:var(--yellow);"></div>Free Wings!</div>
           <div class="stamp-leg-item"><div class="stamp-leg-dot" style="border:2px dashed rgba(245,168,0,.4);"></div>Remaining</div>
         </div>
-
-        <!-- PROGRESS -->
         <div class="progress-wrap">
           <div class="progress-bar" id="loy-progress" style="width:0%"></div>
         </div>
         <div class="progress-label" id="loy-progress-label">0 of 10 stamps · 10 more to free wings</div>
       </div>
 
-      <!-- STATS -->
       <div class="loy-stats">
         <div class="loy-stat"><div class="loy-stat-num" id="dash-total-orders">0</div><div class="loy-stat-lbl">Total Orders</div></div>
         <div class="loy-stat"><div class="loy-stat-num" id="dash-free-earned">0</div><div class="loy-stat-lbl">Free Wings Earned</div></div>
         <div class="loy-stat"><div class="loy-stat-num" id="dash-next-free">10</div><div class="loy-stat-lbl">Stamps to Next Free</div></div>
       </div>
 
-      <!-- ACTION BUTTONS -->
-      <button class="loy-btn" onclick="showLoyView('loy-add-stamp')" style="margin-bottom:.6rem;">+ ADD A STAMP (After Order)</button>
+      <button class="loy-btn" onclick="showLoyView('loy-add-stamp')" style="margin-bottom:.6rem;">+ ADD A STAMP (After In-Store Order)</button>
       <button class="loy-btn" style="background:transparent;color:var(--red);border:1.5px solid var(--red);margin-bottom:1rem;" onclick="loyaltyLogout()">Switch Account</button>
 
-      <!-- ORDER HISTORY -->
       <div class="loy-history">
         <div class="loy-history-title">📋 Stamp History</div>
         <div id="loy-history-list"></div>
       </div>
     </div>
 
-    <!-- VIEW: ADD STAMP (self-serve — customer enters order number) -->
+    <!-- VIEW: ADD STAMP (for in-store orders) -->
     <div class="loy-view" id="loy-add-stamp">
       <div style="text-align:center;padding:.5rem 0 .75rem;">
         <div style="font-size:2.5rem;">🍗</div>
@@ -1811,7 +1718,7 @@ async function loyaltyAutoStamp(orderNum){
       <button class="loy-btn" onclick="loyaltyAddStamp()">STAMP MY CARD 🔥</button>
       <button class="loy-btn" style="background:transparent;color:#7A6545;border:1.5px solid var(--paper-line);margin-top:.5rem;" onclick="showLoyView('loy-dashboard')">← Back to My Card</button>
       <div style="background:rgba(139,109,56,.08);border:1px solid var(--paper-line);border-radius:4px;padding:.75rem;margin-top:1rem;font-size:.76rem;color:#7A6545;line-height:1.6;font-family:var(--font-head);letter-spacing:.5px;text-align:center;">
-        Your order number is shown on your receipt and in your confirmation email. Each order number can only be used once.
+        Online orders get stamped automatically! Use this for in-store orders only. Each order number can only be used once.
       </div>
     </div>
 
@@ -1821,13 +1728,1752 @@ async function loyaltyAutoStamp(orderNum){
         <div style="font-size:3.5rem;margin-bottom:.5rem;">🎉</div>
         <div class="loy-form-title">STAMP ADDED!</div>
         <div class="loy-form-sub" id="loy-stamp-success-msg">You earned a stamp! Keep collecting.</div>
-        <button class="loy-btn yellow" style="margin-top:1rem;" onclick="showLoyView('loy-dashboard');renderDashboard()">VIEW MY CARD →</button>
+        <button class="loy-btn yellow" style="margin-top:1rem;" onclick="showLoyView('loy-dashboard');loyLoadMember(loyGetSession()&&loyGetSession().phone)">VIEW MY CARD →</button>
       </div>
     </div>
 
-  </div><!-- end loy-body -->
-</div><!-- end loyalty-modal -->
-</div><!-- end loyalty-ov -->
+  </div>
+</div>
+</div>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wing-O — More Than Wings | Order Online</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600;700&family=Barlow:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#E8190A;--red-dark:#A8120A;--yellow:#F5A800;
+  --black:#0D0D0D;--charcoal:#1A1A1A;--dark:#1C1A17;
+  --white:#FFF;
+  --paper:#F2ECD9;--paper-dark:#E8DFC4;--paper-line:#C8B89A;
+  --ink:#1A1208;--ink-light:#3D2E18;
+  --font-display:'Anton',sans-serif;
+  --font-head:'Oswald',sans-serif;
+  --font-body:'Barlow',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+
+/* NEWSPAPER BACKGROUND */
+body{
+  font-family:var(--font-body);
+  color:var(--ink);
+  overflow-x:hidden;
+  background-color:var(--paper);
+  background-image:
+    repeating-linear-gradient(
+      180deg,
+      transparent,
+      transparent 28px,
+      rgba(139,109,56,.08) 28px,
+      rgba(139,109,56,.08) 29px
+    ),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E");
+  background-size:100% 29px, 300px 300px;
+}
+
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse 120% 80% at 50% 0%, rgba(242,236,217,.0) 0%, rgba(210,190,140,.12) 100%),
+    radial-gradient(ellipse 60% 40% at 10% 90%, rgba(139,109,56,.06) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 90% 10%, rgba(139,109,56,.06) 0%, transparent 60%);
+  pointer-events:none;
+  z-index:0;
+}
+
+*{position:relative;z-index:1;}
+nav,footer,.cart-ov,.modal-ov,.toast,.loc-banner{z-index:10;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--black);}
+::-webkit-scrollbar-thumb{background:var(--red);}
+
+.announce{background:var(--red);color:white;text-align:center;padding:7px 1rem;font-family:var(--font-head);font-size:.78rem;letter-spacing:2px;text-transform:uppercase;position:relative;z-index:100;}
+.announce span{color:var(--yellow);}
+nav{position:sticky;top:0;z-index:999;background:var(--black);border-bottom:3px solid var(--red);}
+.nav-inner{max-width:1300px;margin:0 auto;padding:0 1.5rem;height:66px;display:flex;align-items:center;justify-content:space-between;gap:1rem;}
+.nav-links{display:flex;list-style:none;gap:.25rem;}
+.nav-links a{color:#AAA;text-decoration:none;font-family:var(--font-head);font-weight:500;font-size:.82rem;letter-spacing:1.5px;text-transform:uppercase;padding:.4rem .85rem;transition:color .15s;border-radius:3px;}
+.nav-links a:hover{color:var(--yellow);}
+.nav-right{display:flex;align-items:center;gap:.75rem;}
+.btn-cart{background:var(--red);color:white;border:none;padding:.5rem 1.1rem;font-family:var(--font-head);font-weight:600;font-size:.82rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:3px;display:flex;align-items:center;gap:8px;transition:background .15s;}
+.btn-cart:hover{background:var(--red-dark);}
+.cart-badge{background:var(--yellow);color:var(--black);border-radius:50%;width:20px;height:20px;font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;min-width:20px;}
+.loc-banner{background:#111;border-bottom:2px solid var(--yellow);padding:.6rem 1.5rem;text-align:center;display:none;position:relative;z-index:100;}
+.loc-banner span{font-family:var(--font-head);font-size:.82rem;letter-spacing:2px;text-transform:uppercase;color:#CCC;}
+.loc-banner strong{color:var(--yellow);}
+.loc-banner button{background:var(--red);color:white;border:none;font-family:var(--font-head);font-size:.75rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;padding:3px 12px;border-radius:3px;cursor:pointer;margin-left:12px;}
+
+.hero{background:var(--black);min-height:88vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:4rem 2rem;}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(13,13,13,.97),rgba(13,13,13,.80));}
+.hero-content{position:relative;z-index:2;text-align:center;max-width:950px;}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(245,168,0,.1);border:1px solid rgba(245,168,0,.25);color:var(--yellow);font-family:var(--font-head);font-size:.75rem;font-weight:500;letter-spacing:3px;text-transform:uppercase;padding:5px 14px;border-radius:2px;margin-bottom:1.5rem;}
+.hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:3rem;}
+.btn-red{background:var(--red);color:white;border:none;padding:.9rem 2.2rem;font-family:var(--font-display);font-size:1rem;letter-spacing:2px;cursor:pointer;border-radius:3px;transition:all .2s;text-decoration:none;display:inline-block;}
+.btn-red:hover{background:var(--red-dark);transform:translateY(-2px);}
+.btn-ghost{background:transparent;color:white;border:1.5px solid rgba(255,255,255,.2);padding:.9rem 2.2rem;font-family:var(--font-display);font-size:1rem;letter-spacing:2px;cursor:pointer;border-radius:3px;transition:all .2s;text-decoration:none;display:inline-block;}
+.btn-ghost:hover{border-color:var(--yellow);color:var(--yellow);}
+.hero-stats{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;}
+.stat .n{font-family:var(--font-display);font-size:2.3rem;color:var(--red);}
+.stat .l{font-family:var(--font-head);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:#555;}
+
+.promo-bar{background:var(--ink);padding:1rem 1.5rem;border-bottom:3px double var(--paper-line);}
+.promo-bar-inner{max-width:1300px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.6rem;}
+.pc{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:3px;padding:.8rem;text-align:center;}
+.pc .day{font-family:var(--font-display);font-size:1.2rem;color:var(--yellow);letter-spacing:1px;}
+.pc .deal{font-family:var(--font-head);font-size:.73rem;color:#777;letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
+
+.marquee{background:var(--red);overflow:hidden;padding:.55rem 0;white-space:nowrap;}
+.mtrack{display:inline-flex;animation:mscroll 45s linear infinite;}
+.mi{font-family:var(--font-head);font-size:.78rem;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:white;padding:0 1.2rem;}
+.md{color:var(--yellow);font-size:.4rem;vertical-align:middle;}
+@keyframes mscroll{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+
+.lunch-sec{background:var(--black);}
+.lunch-inner{max-width:1300px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;align-items:stretch;}
+.lunch-img{overflow:hidden;min-height:360px;}
+.lunch-img img{width:100%;height:100%;object-fit:cover;display:block;}
+.lunch-text{padding:3rem 3.5rem;display:flex;flex-direction:column;justify-content:center;}
+.lunch-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(245,168,0,.15);border:1px solid rgba(245,168,0,.3);color:var(--yellow);font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;padding:4px 12px;border-radius:2px;margin-bottom:1rem;width:fit-content;}
+.lunch-text h2{font-family:var(--font-display);font-size:clamp(2rem,4vw,3.2rem);color:white;letter-spacing:2px;line-height:1;margin-bottom:.4rem;}
+.lunch-text h2 span{color:var(--red);}
+.lunch-price{font-family:var(--font-display);font-size:4.5rem;color:var(--yellow);line-height:1;margin-bottom:.5rem;letter-spacing:2px;}
+.lunch-details{font-family:var(--font-head);font-size:.85rem;color:#777;letter-spacing:2px;text-transform:uppercase;margin-bottom:.3rem;}
+.lunch-time{font-family:var(--font-display);font-size:1.3rem;color:white;letter-spacing:2px;margin-bottom:1.5rem;}
+.lunch-items{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem;}
+.lunch-item{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:4px;padding:.35rem .85rem;font-family:var(--font-head);font-size:.76rem;color:#CCC;letter-spacing:1px;text-transform:uppercase;}
+
+.cat-section{padding:4rem 1.5rem;background:transparent;}
+.cat-inner{max-width:1300px;margin:0 auto;}
+.eyebrow{font-family:var(--font-head);font-size:.75rem;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:.4rem;}
+.sec-title{font-family:var(--font-display);font-size:clamp(2rem,4vw,3rem);line-height:1;letter-spacing:1px;margin-bottom:2rem;color:var(--ink);}
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;}
+.cat-card{background:var(--paper);border:2px solid var(--paper-line);border-radius:4px;overflow:hidden;cursor:pointer;transition:all .2s;text-align:center;box-shadow:2px 2px 8px rgba(0,0,0,.12);}
+.cat-card:hover{transform:translateY(-4px);box-shadow:3px 3px 16px rgba(0,0,0,.25);border-color:var(--red);}
+.cat-card-img{height:140px;overflow:hidden;background:var(--paper-dark);}
+.cat-card-img img{width:100%;height:100%;object-fit:cover;transition:transform .3s;}
+.cat-card:hover .cat-card-img img{transform:scale(1.07);}
+.cat-card-body{padding:.9rem;}
+.cat-card-name{font-family:var(--font-display);font-size:1.1rem;letter-spacing:1px;color:var(--ink);margin-bottom:.2rem;}
+.cat-card-sub{font-family:var(--font-head);font-size:.7rem;color:#7A6545;letter-spacing:1px;text-transform:uppercase;}
+
+.menu-page{display:none;padding:3rem 1.5rem;background:transparent;min-height:60vh;}
+.menu-page.active{display:block;}
+.menu-page-inner{max-width:1300px;margin:0 auto;}
+.back-btn{display:inline-flex;align-items:center;gap:6px;background:none;border:none;color:#7A6545;font-family:var(--font-head);font-size:.8rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;margin-bottom:1.5rem;padding:0;transition:color .15s;}
+.back-btn:hover{color:var(--red);}
+
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:1rem;}
+.mc{background:var(--paper);border:1px solid var(--paper-line);border-radius:4px;overflow:hidden;transition:all .2s;cursor:pointer;box-shadow:2px 2px 6px rgba(0,0,0,.1);}
+.mc:hover{transform:translateY(-2px);box-shadow:3px 3px 14px rgba(0,0,0,.2);border-color:var(--red);}
+.mc-img{height:175px;background:var(--paper-dark);overflow:hidden;display:flex;align-items:center;justify-content:center;}
+.mc-img img{width:100%;height:100%;object-fit:cover;}
+.mc-body{padding:1rem;}
+.mc-name{font-family:var(--font-head);font-size:1.05rem;font-weight:700;color:var(--ink);margin-bottom:.25rem;}
+.mc-desc{font-size:.78rem;color:#7A6545;line-height:1.5;margin-bottom:.75rem;}
+.mc-price{font-family:var(--font-display);font-size:1.2rem;color:var(--ink);}
+.mc-foot{display:flex;align-items:center;justify-content:space-between;margin-top:.5rem;}
+.btn-add{background:var(--black);color:white;border:none;width:34px;height:34px;border-radius:50%;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .12s;}
+.btn-add:hover{background:var(--red);}
+.pop-flag{display:inline-block;background:var(--yellow);color:var(--black);font-family:var(--font-head);font-size:.65rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:2px;margin-bottom:.35rem;}
+
+.impact-sec{background:var(--red);padding:4.5rem 1.5rem;position:relative;overflow:hidden;}
+.impact-sec::before{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(45deg,transparent,transparent 40px,rgba(0,0,0,.04) 40px,rgba(0,0,0,.04) 41px);}
+.impact-inner{max-width:1300px;margin:0 auto;position:relative;z-index:2;}
+.impact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.25rem;margin-top:1.75rem;}
+.ic{background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:1.75rem;text-align:center;}
+.ic-icon{font-size:2.2rem;margin-bottom:.4rem;}
+.ic-num{font-family:var(--font-display);font-size:clamp(1.8rem,3.5vw,2.8rem);color:white;letter-spacing:1px;line-height:1;}
+.ic-num.y{color:var(--yellow);}
+.ic-lbl{font-family:var(--font-head);font-size:.75rem;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.6);margin-top:.4rem;}
+.live-bar{background:rgba(0,0,0,.25);border-radius:6px;padding:.9rem 1.5rem;display:flex;align-items:center;justify-content:center;gap:.75rem;margin-top:1.25rem;flex-wrap:wrap;}
+.live-dot{width:8px;height:8px;border-radius:50%;background:#4ADE80;animation:pulse 2s infinite;flex-shrink:0;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(1.3);}}
+
+.sauce-sec{background:var(--black);padding:4rem 1.5rem;}
+.sauce-inner{max-width:1300px;margin:0 auto;}
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.85rem;margin-top:1.5rem;}
+.sgroup{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:.85rem;}
+.sg-title{font-family:var(--font-display);font-size:.95rem;color:var(--red);letter-spacing:1px;margin-bottom:.55rem;padding-bottom:.35rem;border-bottom:1px solid rgba(255,255,255,.07);}
+.sgroup ul{list-style:none;}
+.sgroup ul li{font-size:.73rem;color:#888;padding:2px 0;line-height:1.3;}
+.sgroup ul li::before{content:"·";color:var(--red);margin-right:5px;}
+
+.loc-sec{padding:4rem 1.5rem;background:rgba(210,190,140,.15);border-top:2px solid var(--paper-line);}
+.loc-inner{max-width:1300px;margin:0 auto;}
+.lgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:1.75rem;}
+.lcard{background:var(--paper);border:1.5px solid var(--paper-line);border-radius:4px;padding:1.2rem;transition:all .2s;box-shadow:2px 2px 8px rgba(0,0,0,.1);}
+.lcard:hover{border-color:var(--red);transform:translateY(-2px);box-shadow:3px 3px 14px rgba(0,0,0,.18);}
+.lcard.live{border-color:var(--yellow);background:rgba(245,168,0,.08);}
+.lname{font-family:var(--font-display);font-size:1.15rem;color:var(--ink);letter-spacing:1px;margin-bottom:.2rem;}
+.laddr{font-size:.82rem;color:#7A6545;line-height:1.5;margin-bottom:.35rem;}
+.lhours{font-family:var(--font-head);font-size:.73rem;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--red-dark);}
+.lphone{font-size:.8rem;color:#7A6545;margin-top:.25rem;}
+.lbadge{display:inline-block;font-family:var(--font-head);font-size:.66rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:2px;margin-bottom:.6rem;}
+.lb-live{background:rgba(245,168,0,.15);color:#7B3F00;}
+.lb-soon{background:#F0EDE6;color:#888;}
+
+.about-sec{background:var(--black);padding:5rem 1.5rem;position:relative;overflow:hidden;}
+.about-inner{max-width:1300px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;}
+.about-text h2{font-family:var(--font-display);font-size:2.6rem;color:white;line-height:1;margin:.4rem 0 1.1rem;letter-spacing:1px;}
+.about-text h2 span{color:var(--red);}
+.about-text p{font-size:.93rem;color:#888;line-height:1.8;margin-bottom:1rem;}
+.about-quote{border-left:3px solid var(--red);padding-left:1rem;font-style:italic;font-size:.95rem;color:#CCC;line-height:1.7;margin-bottom:1.2rem;}
+.about-vis{display:flex;flex-direction:column;align-items:center;gap:1.5rem;}
+
+footer{background:var(--black);border-top:3px solid var(--red);padding:3rem 1.5rem 2rem;}
+.footer-inner{max-width:1300px;margin:0 auto;}
+.fgrid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2rem;margin-bottom:2rem;}
+.fb-tag{font-size:.82rem;color:#555;line-height:1.6;margin-bottom:.9rem;}
+.comm-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:20px;padding:3px 10px;font-size:.72rem;color:#888;}
+.fc h4{font-family:var(--font-head);font-weight:600;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;color:white;margin-bottom:.8rem;}
+.fc ul{list-style:none;}
+.fc ul li{font-size:.82rem;color:#555;padding:.25rem 0;}
+.fbot{border-top:1px solid rgba(255,255,255,.06);padding-top:1.25rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;}
+.fbot p{font-size:.74rem;color:#555;}
+
+.cart-ov{display:none;position:fixed;inset:0;z-index:9000;}
+.cart-ov.open{display:block;}
+.cart-back{position:absolute;inset:0;background:rgba(0,0,0,.65);}
+.cart-panel{position:absolute;right:0;top:0;bottom:0;width:min(430px,100vw);background:white;display:flex;flex-direction:column;box-shadow:-6px 0 32px rgba(0,0,0,.3);}
+.cart-hd{background:var(--black);color:white;padding:1rem 1.4rem;display:flex;align-items:flex-start;justify-content:space-between;flex-shrink:0;}
+.cart-hd-title{font-family:var(--font-display);font-size:1.3rem;letter-spacing:2px;}
+.cart-hd-sub{font-family:var(--font-head);font-size:.72rem;color:#555;letter-spacing:1px;text-transform:uppercase;margin-top:1px;}
+.xcb{background:none;border:none;color:#555;font-size:1.3rem;cursor:pointer;padding:2px;}
+.xcb:hover{color:white;}
+.cart-bd{flex:1;overflow-y:auto;padding:1rem;}
+.cart-empty{text-align:center;padding:2.5rem 1rem;}
+.ci{display:flex;gap:.75rem;padding:.8rem 0;border-bottom:1px solid #F0EDE6;align-items:flex-start;}
+.ci-icon{font-size:1.6rem;flex-shrink:0;width:34px;text-align:center;margin-top:2px;}
+.ci-info{flex:1;min-width:0;}
+.ci-name{font-family:var(--font-head);font-weight:600;font-size:.9rem;color:var(--black);}
+.ci-details{font-size:.72rem;color:var(--red);font-style:italic;margin-top:2px;line-height:1.4;}
+.ci-pr{font-size:.78rem;color:#888;margin-top:2px;}
+.ci-ctrl{display:flex;align-items:center;gap:5px;flex-shrink:0;margin-top:4px;}
+.qb{background:#F0EDE6;border:none;width:25px;height:25px;border-radius:50%;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.qb:hover{background:#E8E0D0;}
+.qn{font-family:var(--font-head);font-weight:700;font-size:.88rem;min-width:16px;text-align:center;}
+.cart-ft{padding:1rem;border-top:2px solid #F0EDE6;flex-shrink:0;}
+.cl{display:flex;justify-content:space-between;font-family:var(--font-head);font-size:.86rem;padding:.22rem 0;color:#888;}
+.cl.tot{font-family:var(--font-display);font-size:1.3rem;color:var(--black);padding-top:.6rem;margin-top:.2rem;border-top:1.5px solid #F0EDE6;}
+.btn-co{width:100%;background:var(--red);color:white;border:none;padding:.9rem;font-family:var(--font-display);font-size:1.1rem;letter-spacing:2px;cursor:pointer;border-radius:4px;transition:background .15s;margin-top:.85rem;text-transform:uppercase;}
+.btn-co:hover{background:var(--red-dark);}
+
+.modal-ov{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.72);align-items:flex-start;justify-content:center;padding:1rem;overflow-y:auto;}
+.modal-ov.open{display:flex;}
+.modal{background:white;border-radius:10px;width:min(580px,100%);margin:auto;}
+.mhd{background:var(--black);color:white;padding:1rem 1.4rem;border-radius:10px 10px 0 0;display:flex;align-items:center;justify-content:space-between;}
+.mhd h2{font-family:var(--font-display);font-size:1.35rem;letter-spacing:2px;}
+.mbd{padding:1.35rem;}
+.otype-row{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:1.1rem;}
+.oc{border:2px solid #E8E0D0;border-radius:6px;padding:.85rem;text-align:center;cursor:pointer;transition:all .15s;}
+.oc:hover{border-color:var(--red);}
+.oc.on{border-color:var(--red);background:rgba(232,25,10,.04);}
+.oc-icon{font-size:1.7rem;margin-bottom:.15rem;}
+.oc-lbl{font-family:var(--font-head);font-weight:700;font-size:.9rem;letter-spacing:1px;text-transform:uppercase;}
+.oc-sub{font-size:.72rem;color:#888;margin-top:2px;}
+.msec{font-family:var(--font-display);font-size:.95rem;letter-spacing:2px;color:var(--black);margin:1rem 0 .6rem;padding-bottom:.35rem;border-bottom:1.5px solid #F0EDE6;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;}
+.fg{display:flex;flex-direction:column;gap:.28rem;margin-bottom:.75rem;}
+label{font-family:var(--font-head);font-size:.74rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;}
+input,select,textarea{border:1.5px solid #E8E0D0;border-radius:4px;padding:.55rem .8rem;font-family:var(--font-body);font-size:.9rem;color:var(--black);outline:none;transition:border-color .15s;width:100%;background:white;}
+input:focus,select:focus,textarea:focus{border-color:var(--red);}
+textarea{resize:vertical;min-height:60px;}
+.os-box{background:#F5F0E8;border-radius:6px;padding:.9rem;margin-bottom:.85rem;}
+.os-row{display:flex;justify-content:space-between;font-family:var(--font-head);font-size:.83rem;padding:.2rem 0;color:#333;}
+.os-row.sub-row{color:#888;font-size:.75rem;padding-left:.75rem;}
+.os-total{display:flex;justify-content:space-between;font-family:var(--font-display);font-size:1.15rem;padding-top:.55rem;margin-top:.35rem;border-top:1.5px solid #E8E0D0;}
+.pay-note{text-align:center;font-size:.77rem;color:#888;margin-bottom:.7rem;}
+.clover-badge{display:inline-flex;align-items:center;gap:5px;background:#F0FFF4;border:1px solid #C6F6D5;border-radius:4px;padding:3px 9px;font-size:.74rem;color:#276749;font-weight:600;margin-bottom:.6rem;}
+.btn-place{width:100%;background:var(--red);color:white;border:none;padding:.95rem;font-family:var(--font-display);font-size:1.15rem;letter-spacing:2px;cursor:pointer;border-radius:4px;transition:background .15s;text-transform:uppercase;}
+.btn-place:hover{background:var(--red-dark);}
+.btn-place:disabled{background:#888;cursor:not-allowed;}
+.spinner{display:inline-block;width:15px;height:15px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;margin-right:6px;vertical-align:middle;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.success-view{text-align:center;padding:2rem 1.4rem;}
+.sv-icon{font-size:3.2rem;margin-bottom:.7rem;}
+.success-view h2{font-family:var(--font-display);font-size:2rem;letter-spacing:2px;margin-bottom:.4rem;}
+.onum{background:rgba(232,25,10,.08);border:1.5px solid rgba(232,25,10,.25);border-radius:5px;padding:.7rem 1.5rem;font-family:var(--font-display);font-size:1.7rem;color:var(--red);letter-spacing:3px;display:inline-block;margin:.7rem 0;}
+.success-view p{font-size:.88rem;color:#888;line-height:1.65;margin-bottom:.3rem;}
+.del-note{background:#FFF8EE;border:1px solid #F5D98A;border-radius:5px;padding:.65rem .9rem;font-family:var(--font-head);font-size:.78rem;color:#7B3F00;letter-spacing:.5px;margin-bottom:.75rem;}
+.toast{position:fixed;bottom:1.75rem;left:50%;transform:translateX(-50%) translateY(80px);background:#1A1A1A;color:white;font-family:var(--font-head);font-size:.83rem;font-weight:500;letter-spacing:1px;padding:.6rem 1.3rem;border-radius:4px;border-left:3px solid var(--red);z-index:99999;transition:transform .3s;white-space:nowrap;max-width:90vw;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.api-status{position:fixed;bottom:1.5rem;right:1.5rem;background:#1A1A1A;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:4px 11px;font-family:var(--font-head);font-size:.68rem;letter-spacing:1px;text-transform:uppercase;color:#888;z-index:9998;display:flex;align-items:center;gap:5px;}
+.api-dot{width:6px;height:6px;border-radius:50%;background:#888;}
+.api-dot.ok{background:#48BB78;}
+.api-dot.err{background:var(--red);}
+.cd-select{width:100%;border:1.5px solid #E8E0D0;border-radius:4px;padding:.42rem .72rem;font-family:var(--font-head);font-size:.78rem;color:var(--black);background:white;cursor:pointer;margin-bottom:.7rem;outline:none;}
+
+.preorder-banner{background:var(--black);border-bottom:3px solid var(--yellow);padding:.75rem 1.5rem;text-align:center;display:none;}
+.preorder-banner.show{display:block;}
+.preorder-banner p{font-family:var(--font-head);font-size:.85rem;letter-spacing:1.5px;text-transform:uppercase;color:#CCC;margin:0;}
+.preorder-banner strong{color:var(--yellow);}
+.preorder-badge{display:inline-block;background:var(--yellow);color:var(--black);font-family:var(--font-head);font-size:.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:3px 10px;border-radius:2px;margin-right:8px;}
+.preorder-note{background:#FFF8EE;border:1px solid #F5D98A;border-radius:6px;padding:.75rem 1rem;margin-bottom:.85rem;font-family:var(--font-head);font-size:.78rem;color:#7B3F00;letter-spacing:.5px;text-align:center;}
+.item-modal-ov{display:none;position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,.75);align-items:center;justify-content:center;padding:1rem;overflow-y:auto;}
+.item-modal-ov.open{display:flex;}
+.item-modal{background:white;border-radius:10px;width:min(560px,100%);margin:auto;max-height:90vh;overflow-y:auto;position:relative;}
+.im-img{height:200px;overflow:hidden;}
+.im-img img{width:100%;height:100%;object-fit:cover;}
+.im-body{padding:1.25rem;}
+.im-name{font-family:var(--font-display);font-size:1.5rem;letter-spacing:1px;margin-bottom:.35rem;}
+.im-desc{font-size:.85rem;color:#888;line-height:1.55;margin-bottom:1rem;}
+.im-close{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.8);color:white;border:none;width:36px;height:36px;border-radius:50%;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;}
+
+@media(max-width:900px){
+  .nav-links{display:none;}
+  .about-inner,.lunch-inner{grid-template-columns:1fr;}
+  .lunch-img{min-height:240px;}
+  .lunch-text{padding:2rem 1.5rem;}
+  .fgrid{grid-template-columns:1fr 1fr;}
+  .frow{grid-template-columns:1fr;}
+}
+@media(max-width:600px){
+  .fgrid{grid-template-columns:1fr;}
+  .hero-stats{gap:1.25rem;}
+  .cat-grid{grid-template-columns:repeat(2,1fr);}
+}
+.hidden{display:none!important;}
+
+/* ── NEWSPAPER & PRAIRIE THEME ── */
+.cat-section::before,.loc-sec::before,.menu-page::before{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
+  background:repeating-linear-gradient(180deg,transparent,transparent 28px,rgba(139,109,56,.05) 28px,rgba(139,109,56,.05) 29px);
+}
+.cat-section{border-top:3px double var(--paper-line);border-bottom:3px double var(--paper-line);}
+.loc-sec{border-top:3px double var(--paper-line);}
+.eyebrow{
+  font-family:var(--font-head) !important;font-size:.72rem !important;letter-spacing:4px !important;
+  text-transform:uppercase !important;color:var(--red) !important;
+  border-top:1.5px solid var(--red);border-bottom:1px solid var(--red);
+  padding:3px 0;display:inline-block;margin-bottom:.6rem !important;
+}
+.sec-title{
+  font-family:var(--font-display) !important;text-transform:uppercase;
+  border-bottom:2px solid var(--ink);padding-bottom:.4rem;margin-bottom:1.5rem !important;
+}
+.menu-page > .menu-page-inner > p{color:#7A6545;}
+.pop-flag{
+  background:var(--red) !important;color:white !important;border-radius:2px !important;
+  font-family:var(--font-head) !important;letter-spacing:2px !important;text-transform:uppercase !important;
+}
+.prairie-banner{
+  background:var(--ink);color:var(--paper);text-align:center;padding:.5rem 1rem;
+  font-family:var(--font-head);font-size:.72rem;letter-spacing:4px;text-transform:uppercase;
+  border-top:2px solid var(--yellow);border-bottom:2px solid var(--yellow);position:relative;overflow:hidden;
+}
+.prairie-banner::before,.prairie-banner::after{
+  content:'🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾';
+  position:absolute;top:50%;transform:translateY(-50%);font-size:.9rem;opacity:.15;letter-spacing:8px;white-space:nowrap;
+}
+.prairie-banner::before{left:-20px;}
+.prairie-banner::after{right:-20px;}
+.about-quote{
+  border-left:4px solid var(--red) !important;padding-left:1rem !important;font-style:italic !important;
+  font-size:1rem !important;color:#CCC !important;line-height:1.8 !important;position:relative;
+}
+.about-quote::before{
+  content:'"';font-family:Georgia,serif;font-size:4rem;color:var(--red);opacity:.3;
+  position:absolute;top:-1rem;left:-.5rem;line-height:1;
+}
+.item-modal{background:var(--paper) !important;}
+.im-name{color:var(--ink) !important;}
+.im-desc{color:#7A6545 !important;}
+.announce{
+  font-family:var(--font-head) !important;background:var(--ink) !important;
+  border-bottom:2px solid var(--yellow) !important;letter-spacing:3px !important;
+}
+
+/* ══════════════════════════════════════════════
+   WING-O LOYALTY PROGRAM — SAUCY STAMPS
+══════════════════════════════════════════════ */
+.loyalty-ov{display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.88);padding:1rem;overflow-y:auto;}
+.loyalty-ov.open{display:flex;align-items:flex-start;justify-content:center;}
+.loyalty-modal{background:var(--paper);border-radius:6px;width:min(640px,100%);margin:2rem auto;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5);border:2px solid var(--paper-line);}
+.loy-head{background:var(--ink);padding:1.5rem 1.75rem;position:relative;overflow:hidden;border-bottom:3px double var(--yellow);}
+.loy-head::before{content:'🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾';position:absolute;top:6px;left:0;right:0;text-align:center;font-size:.65rem;letter-spacing:6px;opacity:.15;white-space:nowrap;}
+.loy-head-title{font-family:var(--font-display);font-size:2rem;color:var(--yellow);letter-spacing:3px;text-align:center;position:relative;}
+.loy-head-sub{font-family:var(--font-head);font-size:.72rem;color:#888;letter-spacing:3px;text-transform:uppercase;text-align:center;margin-top:3px;position:relative;}
+.loy-close{position:absolute;top:12px;right:14px;background:none;border:none;color:#666;font-size:1.3rem;cursor:pointer;}
+.loy-close:hover{color:var(--yellow);}
+.loy-body{padding:1.75rem;}
+.loy-view{display:none;}
+.loy-view.active{display:block;}
+.loy-form-title{font-family:var(--font-display);font-size:1.3rem;color:var(--ink);letter-spacing:2px;margin-bottom:.3rem;}
+.loy-form-sub{font-size:.82rem;color:#7A6545;margin-bottom:1.25rem;line-height:1.5;}
+.loy-input{width:100%;border:1.5px solid var(--paper-line);border-radius:3px;padding:.65rem .9rem;font-family:var(--font-body);font-size:.9rem;color:var(--ink);background:white;outline:none;margin-bottom:.7rem;transition:border-color .15s;}
+.loy-input:focus{border-color:var(--red);}
+.loy-btn{width:100%;background:var(--red);color:white;border:none;padding:.9rem;font-family:var(--font-display);font-size:1.1rem;letter-spacing:2px;cursor:pointer;border-radius:3px;text-transform:uppercase;transition:background .15s;}
+.loy-btn:hover{background:var(--red-dark);}
+.loy-btn.yellow{background:var(--yellow);color:var(--ink);}
+.loy-btn.yellow:hover{background:#d48f00;}
+.loy-link{text-align:center;margin-top:.85rem;font-size:.8rem;color:#7A6545;}
+.loy-link a{color:var(--red);cursor:pointer;text-decoration:none;font-weight:600;}
+.loy-link a:hover{text-decoration:underline;}
+.stamp-card{background:var(--ink);border-radius:6px;padding:1.5rem;margin-bottom:1.25rem;border:2px solid var(--yellow);position:relative;overflow:hidden;}
+.stamp-card::before{content:'WING-O LOYALTY · SAUCY STAMPS · REGINA SK · EST. 2024';position:absolute;bottom:8px;left:0;right:0;text-align:center;font-family:var(--font-head);font-size:.55rem;letter-spacing:3px;color:rgba(245,168,0,.25);text-transform:uppercase;}
+.stamp-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.1rem;}
+.stamp-card-name{font-family:var(--font-display);font-size:1.2rem;color:white;letter-spacing:1px;}
+.stamp-card-pts{font-family:var(--font-head);font-size:.72rem;color:var(--yellow);letter-spacing:2px;text-transform:uppercase;text-align:right;}
+.stamp-card-pts span{display:block;font-family:var(--font-display);font-size:1.5rem;color:var(--yellow);line-height:1;}
+.stamps-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.6rem;margin-bottom:.35rem;}
+.stamp{width:100%;aspect-ratio:1;border-radius:50%;border:2px dashed rgba(245,168,0,.4);display:flex;align-items:center;justify-content:center;font-size:1.4rem;transition:all .3s;background:rgba(255,255,255,.04);}
+.stamp.earned{background:var(--red);border:2px solid var(--red);animation:stampPop .3s ease;}
+.stamp.free{background:var(--yellow);border:2px solid var(--yellow);animation:stampPop .3s ease;}
+@keyframes stampPop{0%{transform:scale(0.5);opacity:0;}70%{transform:scale(1.15);}100%{transform:scale(1);opacity:1;}}
+.stamp-legend{display:flex;gap:1rem;justify-content:center;margin-top:.5rem;}
+.stamp-leg-item{display:flex;align-items:center;gap:5px;font-family:var(--font-head);font-size:.65rem;color:#888;letter-spacing:1px;text-transform:uppercase;}
+.stamp-leg-dot{width:10px;height:10px;border-radius:50%;}
+.progress-wrap{background:rgba(255,255,255,.08);border-radius:20px;height:8px;margin:1rem 0 .4rem;overflow:hidden;}
+.progress-bar{height:100%;background:linear-gradient(90deg,var(--red),var(--yellow));border-radius:20px;transition:width .8s ease;}
+.progress-label{font-family:var(--font-head);font-size:.72rem;color:#888;letter-spacing:1px;text-transform:uppercase;text-align:center;}
+.loy-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;margin-bottom:1.25rem;}
+.loy-stat{background:white;border:1.5px solid var(--paper-line);border-radius:4px;padding:.85rem;text-align:center;}
+.loy-stat-num{font-family:var(--font-display);font-size:1.6rem;color:var(--red);letter-spacing:1px;}
+.loy-stat-lbl{font-family:var(--font-head);font-size:.65rem;color:#7A6545;letter-spacing:1.5px;text-transform:uppercase;margin-top:2px;}
+.reward-box{background:linear-gradient(135deg,var(--red),#A8120A);border-radius:6px;padding:1.25rem;text-align:center;margin-bottom:1.25rem;position:relative;overflow:hidden;}
+.reward-box::before{content:'🍗 🍗 🍗 🍗 🍗 🍗 🍗 🍗 🍗 🍗 🍗 🍗';position:absolute;top:50%;transform:translateY(-50%);font-size:1.2rem;opacity:.1;white-space:nowrap;letter-spacing:8px;}
+.reward-title{font-family:var(--font-display);font-size:1.4rem;color:white;letter-spacing:2px;position:relative;}
+.reward-sub{font-family:var(--font-head);font-size:.78rem;color:rgba(255,255,255,.8);letter-spacing:1px;text-transform:uppercase;margin:.3rem 0 .9rem;position:relative;}
+.reward-code{background:white;color:var(--red);font-family:var(--font-display);font-size:1.6rem;letter-spacing:4px;padding:.5rem 1.5rem;border-radius:4px;display:inline-block;position:relative;}
+.loy-history{margin-top:1.25rem;}
+.loy-history-title{font-family:var(--font-head);font-size:.75rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#7A6545;margin-bottom:.6rem;border-bottom:1px solid var(--paper-line);padding-bottom:.4rem;}
+.loy-hist-item{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid rgba(200,184,154,.3);font-size:.8rem;color:#7A6545;}
+.loy-hist-item:last-child{border-bottom:none;}
+.loy-hist-date{font-family:var(--font-head);font-size:.7rem;color:#AAA;letter-spacing:1px;}
+.loy-lookup-wrap{text-align:center;padding:.5rem 0 1rem;}
+.loy-lookup-icon{font-size:3rem;margin-bottom:.5rem;}
+</style>
+</head>
+<body>
+
+<script>
+var API_BASE = '';
+var activeLocation = 'albert-st';
+</script>
+
+<div id="preorder-banner" class="preorder-banner">
+  <p><span class="preorder-badge">Pre-Order</span> We are closed right now — but you can <strong>pre-order for when we open!</strong> Your order will be ready at our next opening time.</p>
+</div>
+
+<div style="background:var(--paper-dark);text-align:center;padding:3px 1rem;font-family:var(--font-head);font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--ink-light);border-bottom:1px solid var(--paper-line);">The Wing-O Post · Regina, Saskatchewan · Est. 2024 · 125+ Flavors · More Than Wings</div>
+<div class="announce">🔥 Tuesday — All You Can Eat Wings <span>$28.99</span> &nbsp;·&nbsp; Thursday — 50% Off 2nd Order &nbsp;·&nbsp; Saturday — 2 for $20 Burgers</div>
+
+<nav>
+  <div class="nav-inner">
+    <a href="#" onclick="showHome();return false;" style="display:flex;align-items:center;text-decoration:none;">
+      <img src="images/neon-logo.jpg" alt="Wing-O" style="height:48px;width:auto;">
+    </a>
+    <ul class="nav-links">
+      <li><a href="#" onclick="showCat('wings');return false;">🍗 Wings</a></li>
+      <li><a href="#" onclick="showCat('ribs');return false;">🔥 Ribs</a></li>
+      <li><a href="#" onclick="showCat('boneless');return false;">Boneless</a></li>
+      <li><a href="#" onclick="showCat('chickenfingers');return false;">Fingers</a></li>
+      <li><a href="#" onclick="showCat('burgers');return false;">Burgers</a></li>
+      <li><a href="#" onclick="showCat('combos');return false;">Combos</a></li>
+      <li><a href="#" onclick="showCat('sides');return false;">Sides</a></li>
+      <li><a href="#" onclick="showCat('platters');return false;">Platters</a></li>
+      <li><a href="#" onclick="showCat('midnight');return false;">Midnight 🌙</a></li>
+    </ul>
+    <div class="nav-right">
+      <a href="https://www.instagram.com/sauce_____boss?igsh=MWJvdnhmdnd1aWh0cg%3D%3D&utm_source=qr" target="_blank" style="color:#888;font-family:var(--font-head);font-size:.75rem;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:.4rem .7rem;border:1px solid rgba(255,255,255,.15);border-radius:3px;">🔥 Sauce Boss</a>
+      <button onclick="openFranchise()" style="background:transparent;color:#888;border:1px solid rgba(255,255,255,.15);padding:.4rem .8rem;font-family:var(--font-head);font-size:.75rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:3px;">🚀 Franchise</button>
+      <button onclick="openLoyalty()" style="background:var(--yellow);color:var(--black);border:none;padding:.4rem .9rem;font-family:var(--font-head);font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:3px;display:flex;align-items:center;gap:5px;">🍗 Rewards</button>
+      <button class="btn-cart" onclick="openCart()">🛒 Order <span class="cart-badge" id="cart-count">0</span></button>
+    </div>
+  </div>
+</nav>
+
+<div class="loc-banner" id="loc-banner">
+  <span>📍 Nearest: <strong id="loc-nearest-name"></strong></span>
+  <button onclick="openCart()">Order here</button>
+</div>
+
+<!-- HOME PAGE -->
+<div id="home-page">
+
+<section class="hero">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-tag">🌾 Proudly Prairie · Regina's Original · More Than Wings</div>
+    <img src="images/neon-logo.jpg" alt="Wing-O" style="width:auto;max-height:190px;max-width:min(360px,70vw);margin:0 auto 1rem;display:block;mix-blend-mode:screen;filter:contrast(1.2) brightness(1.1);">
+    <p style="font-family:var(--font-head);font-size:1.1rem;color:#777;letter-spacing:4px;text-transform:uppercase;margin-bottom:2.5rem;">— More Than Wings —</p>
+    <div class="hero-btns">
+      <a class="btn-red" href="#" onclick="document.getElementById('cat-section').scrollIntoView({behavior:'smooth'});return false;">Order Now 🔥</a>
+      <a class="btn-ghost" href="#" onclick="showCat('wings');return false;">125+ Flavors</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="n">125+</div><div class="l">Flavors</div></div>
+      <div class="stat"><div class="n">5</div><div class="l">SK Locations</div></div>
+      <div class="stat"><div class="n">$7.99</div><div class="l">Wings From</div></div>
+      <div class="stat"><div class="n">YQR</div><div class="l">Rooted</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="promo-bar">
+  <div class="promo-bar-inner">
+    <div class="pc"><div class="day">TUE</div><div class="deal">All You Can Eat Wings — $28.99</div></div>
+    <div class="pc"><div class="day">THU</div><div class="deal">Buy One, 2nd Order 50% Off</div></div>
+    <div class="pc"><div class="day">SAT</div><div class="deal">2 for $20 Burgers</div></div>
+    <div class="pc"><div class="day">LUNCH</div><div class="deal">Wings + Fries $10 · Daily till 3:30pm</div></div>
+  </div>
+</div>
+
+<div class="marquee"><div class="mtrack">
+  <span class="mi">Devil's Kiss</span><span class="md">●</span><span class="mi">Honey Garlic</span><span class="md">●</span><span class="mi">Dead Angel</span><span class="md">●</span><span class="mi">Prairie Heat</span><span class="md">●</span><span class="mi">Maple BBQ</span><span class="md">●</span><span class="mi">Tangy Thai</span><span class="md">●</span><span class="mi">Island On Fire</span><span class="md">●</span><span class="mi">Sizzle Caesar</span><span class="md">●</span><span class="mi">Mango Habanero</span><span class="md">●</span><span class="mi">Citrus Twist</span><span class="md">●</span><span class="mi">Cajun Cream</span><span class="md">●</span><span class="mi">Korean BBQ</span><span class="md">●</span><span class="mi">Buffalo Ranch</span><span class="md">●</span><span class="mi">Sweet Grenade</span><span class="md">●</span><span class="mi">Devil's Kiss</span><span class="md">●</span><span class="mi">Honey Garlic</span><span class="md">●</span><span class="mi">Dead Angel</span><span class="md">●</span><span class="mi">Prairie Heat</span><span class="md">●</span><span class="mi">Maple BBQ</span><span class="md">●</span><span class="mi">Tangy Thai</span><span class="md">●</span><span class="mi">Island On Fire</span><span class="md">●</span><span class="mi">Sizzle Caesar</span><span class="md">●</span><span class="mi">Mango Habanero</span><span class="md">●</span><span class="mi">Citrus Twist</span><span class="md">●</span><span class="mi">Cajun Cream</span><span class="md">●</span><span class="mi">Korean BBQ</span><span class="md">●</span><span class="mi">Buffalo Ranch</span><span class="md">●</span><span class="mi">Sweet Grenade</span><span class="md">●</span>
+</div></div>
+
+<div class="prairie-banner">
+  <span style="position:relative;z-index:1;">🌾 &nbsp; Proudly Prairie · Regina Born · Saskatchewan Grown · More Than Wings &nbsp; 🌾</span>
+</div>
+<section class="lunch-sec">
+  <div class="lunch-inner">
+    <div class="lunch-img"><img src="images/lunch-deal.jpg" alt="Lunch Deal"></div>
+    <div class="lunch-text">
+      <div class="lunch-badge">🕐 Every Day · No Exceptions</div>
+      <h2>LUNCH <span>DEAL</span></h2>
+      <div class="lunch-price">$10</div>
+      <div class="lunch-details">Wings + Fries · Choose Any Flavor</div>
+      <div class="lunch-time">11:00 AM — 3:30 PM</div>
+      <div class="lunch-items">
+        <span class="lunch-item">🍗 One Order Wings</span>
+        <span class="lunch-item">🍟 Small Fries</span>
+        <span class="lunch-item">125+ Flavors</span>
+        <span class="lunch-item">7 Days a Week</span>
+      </div>
+      <a class="btn-red" href="#" onclick="showCat('wings');return false;">Order Now 🔥</a>
+    </div>
+  </div>
+</section>
+
+<section class="cat-section" id="cat-section">
+  <svg style="position:absolute;bottom:0;left:0;width:180px;opacity:.06;pointer-events:none;z-index:0;transform:scaleX(-1);" viewBox="0 0 200 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M100 290 L100 50" stroke="#8B6A1A" stroke-width="2.5"/>
+  <ellipse cx="100" cy="50" rx="10" ry="22" fill="#8B6A1A" transform="rotate(-15 100 50)"/>
+  <ellipse cx="100" cy="50" rx="10" ry="22" fill="#8B6A1A" transform="rotate(15 100 50)"/>
+  <ellipse cx="100" cy="80" rx="9" ry="20" fill="#8B6A1A" transform="rotate(-25 100 80)"/>
+  <ellipse cx="100" cy="80" rx="9" ry="20" fill="#8B6A1A" transform="rotate(25 100 80)"/>
+  <ellipse cx="100" cy="108" rx="8" ry="18" fill="#8B6A1A" transform="rotate(-30 100 108)"/>
+  <ellipse cx="100" cy="108" rx="8" ry="18" fill="#8B6A1A" transform="rotate(30 100 108)"/>
+</svg><svg style="position:absolute;bottom:0;right:0;width:220px;opacity:.07;pointer-events:none;z-index:0;" viewBox="0 0 200 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M100 290 L100 50" stroke="#8B6A1A" stroke-width="2.5"/>
+  <ellipse cx="100" cy="50" rx="10" ry="22" fill="#8B6A1A" transform="rotate(-15 100 50)"/>
+  <ellipse cx="100" cy="50" rx="10" ry="22" fill="#8B6A1A" transform="rotate(15 100 50)"/>
+  <ellipse cx="100" cy="80" rx="9" ry="20" fill="#8B6A1A" transform="rotate(-25 100 80)"/>
+  <ellipse cx="100" cy="80" rx="9" ry="20" fill="#8B6A1A" transform="rotate(25 100 80)"/>
+  <ellipse cx="100" cy="108" rx="8" ry="18" fill="#8B6A1A" transform="rotate(-30 100 108)"/>
+  <ellipse cx="100" cy="108" rx="8" ry="18" fill="#8B6A1A" transform="rotate(30 100 108)"/>
+  <path d="M80 180 Q95 160 100 140" stroke="#8B6A1A" stroke-width="1.5"/>
+  <path d="M120 200 Q105 175 100 150" stroke="#8B6A1A" stroke-width="1.5"/>
+</svg><div class="cat-inner">
+    <div class="eyebrow">Fresh Made to Order</div>
+    <h2 class="sec-title" style="color:var(--ink);">WHAT ARE YOU FEELING?</h2>
+    <div class="cat-grid">
+      <div class="cat-card" onclick="showCat('wings')"><div class="cat-card-img"><img src="images/wings-hero.jpg" alt="Wings"></div><div class="cat-card-body"><div class="cat-card-name">🍗 Wings</div><div class="cat-card-sub">Bone-In · 125+ Flavors · From $7.99</div></div></div>
+      <div class="cat-card" onclick="showCat('ribs')"><div class="cat-card-img"><img src="images/ribs.jpg" alt="Ribs"></div><div class="cat-card-body"><div class="cat-card-name">🔥 Ribs</div><div class="cat-card-sub">Saucy · 125+ Flavors · From $7.99</div></div></div>
+      <div class="cat-card" onclick="showCat('boneless')"><div class="cat-card-img"><img src="images/boneless-wings.jpg" alt="Boneless"></div><div class="cat-card-body"><div class="cat-card-name">Boneless Wings</div><div class="cat-card-sub">Crispy · 125+ Flavors · From $7.99</div></div></div>
+      <div class="cat-card" onclick="showCat('chickenfingers')"><div class="cat-card-img"><img src="images/boneless-sauce.jpg" alt="Chicken Fingers"></div><div class="cat-card-body"><div class="cat-card-name">Chicken Fingers</div><div class="cat-card-sub">Crispy · Choose Sauce · From $7.99</div></div></div>
+      <div class="cat-card" onclick="showCat('burgers')"><div class="cat-card-img"><img src="images/burger-tough-guy.jpg" alt="Burgers"></div><div class="cat-card-body"><div class="cat-card-name">Burgers</div><div class="cat-card-sub">Loaded · From $17.99</div></div></div>
+      <div class="cat-card" onclick="showCat('combos')"><div class="cat-card-img"><img src="images/combo1.jpg" alt="Combos"></div><div class="cat-card-body"><div class="cat-card-name">Combos</div><div class="cat-card-sub">Best Value · From $17.45</div></div></div>
+      <div class="cat-card" onclick="showCat('sides')"><div class="cat-card-img"><img src="images/poutine.jpg" alt="Sides"></div><div class="cat-card-body"><div class="cat-card-name">Sides</div><div class="cat-card-sub">Poutine, Fries & More</div></div></div>
+      <div class="cat-card" onclick="showCat('salads')"><div class="cat-card-img"><img src="images/salad.jpg" alt="Salads"></div><div class="cat-card-body"><div class="cat-card-name">Salads</div><div class="cat-card-sub">Fresh · From $6.99</div></div></div>
+      <div class="cat-card" onclick="showCat('platters')"><div class="cat-card-img"><img src="images/platter-bit-of.jpg" alt="Platters"></div><div class="cat-card-body"><div class="cat-card-name">Platters</div><div class="cat-card-sub">Share the Love · From $29.99</div></div></div>
+      <div class="cat-card" onclick="showCat('midnight')"><div class="cat-card-img"><img src="images/oreo.jpg" alt="Midnight"></div><div class="cat-card-body"><div class="cat-card-name">Midnight Ecstasy 🌙</div><div class="cat-card-sub">Desserts · From $0.99</div></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="impact-sec" id="impact">
+  <div class="impact-inner">
+    <div class="eyebrow" style="color:rgba(255,255,255,.6)">Real Numbers · Updated Live</div>
+    <h2 style="font-family:var(--font-display);font-size:clamp(1.8rem,4vw,2.8rem);color:white;letter-spacing:1px;">THE WING-O IMPACT</h2>
+    <div class="impact-grid">
+      <div class="ic"><div class="ic-icon">🍗</div><div class="ic-num" id="wings-counter">1,084,400</div><div class="ic-lbl">Wings Sold</div></div>
+      <div class="ic"><div class="ic-icon">📦</div><div class="ic-num" id="orders-counter">135,550</div><div class="ic-lbl">Orders Fulfilled</div></div>
+      <div class="ic"><div class="ic-icon">🍗</div><div class="ic-num y" id="donation-counter">27,000+</div><div class="ic-lbl">Wings Donated</div></div>
+      <div class="ic"><div class="ic-icon">🔥</div><div class="ic-num">125+</div><div class="ic-lbl">Handcrafted Flavors</div></div>
+    </div>
+    <div class="live-bar"><div class="live-dot"></div><span style="font-family:var(--font-head);font-size:.82rem;color:rgba(255,255,255,.8);letter-spacing:1px;text-transform:uppercase;">Live · A wing is sold every <span id="spw" style="color:var(--yellow);font-weight:700;">27</span> seconds</span></div>
+  </div>
+</section>
+
+<!-- LOYALTY PROMO SECTION -->
+<section style="background:var(--ink);padding:3.5rem 1.5rem;border-top:3px double var(--yellow);border-bottom:3px double var(--yellow);position:relative;overflow:hidden;">
+  <div style="position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 60px,rgba(245,168,0,.03) 60px,rgba(245,168,0,.03) 61px);pointer-events:none;"></div>
+  <div style="max-width:1300px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;position:relative;">
+    <div>
+      <div style="font-family:var(--font-head);font-size:.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--yellow);margin-bottom:.4rem;border-top:1px solid var(--yellow);border-bottom:1px solid var(--yellow);display:inline-block;padding:3px 0;">Members Only</div>
+      <h2 style="font-family:var(--font-display);font-size:clamp(2rem,4vw,3rem);color:white;letter-spacing:2px;line-height:1;margin:.4rem 0 .9rem;">SAUCY<br><span style="color:var(--yellow);">STAMPS</span></h2>
+      <p style="color:#888;font-size:.9rem;line-height:1.7;margin-bottom:1.25rem;">Every order earns a stamp. Collect <strong style="color:white;">10 stamps</strong> and your next half order of wings is completely free. No catches. No expiry. Just loyalty.</p>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:1.5rem;">
+        <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:4px;padding:.5rem 1rem;font-family:var(--font-head);font-size:.75rem;color:#CCC;letter-spacing:1px;text-transform:uppercase;">🍗 1 Order = 1 Stamp</div>
+        <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:4px;padding:.5rem 1rem;font-family:var(--font-head);font-size:.75rem;color:#CCC;letter-spacing:1px;text-transform:uppercase;">🎁 10 Stamps = Free Wings</div>
+        <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:4px;padding:.5rem 1rem;font-family:var(--font-head);font-size:.75rem;color:#CCC;letter-spacing:1px;text-transform:uppercase;">♾️ Never Expires</div>
+      </div>
+      <button onclick="openLoyalty()" style="background:var(--yellow);color:var(--black);border:none;padding:.9rem 2.2rem;font-family:var(--font-display);font-size:1rem;letter-spacing:2px;cursor:pointer;border-radius:3px;text-transform:uppercase;transition:all .2s;" onmouseover="this.style.background='#d48f00'" onmouseout="this.style.background='var(--yellow)'">JOIN FREE — GET STAMPING 🍗</button>
+    </div>
+    <div style="background:rgba(255,255,255,.04);border:2px solid rgba(245,168,0,.3);border-radius:6px;padding:1.5rem;max-width:320px;margin:0 auto;">
+      <div style="font-family:var(--font-head);font-size:.65rem;color:var(--yellow);letter-spacing:3px;text-transform:uppercase;margin-bottom:.6rem;">Your Stamp Card</div>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:.5rem;margin-bottom:.5rem;">
+        <div style="width:100%;aspect-ratio:1;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:1.1rem;">🍗</div><div style="width:100%;aspect-ratio:1;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:1.1rem;">🍗</div><div style="width:100%;aspect-ratio:1;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:1.1rem;">🍗</div><div style="width:100%;aspect-ratio:1;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:1.1rem;">🍗</div><div style="width:100%;aspect-ratio:1;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:1.1rem;">🍗</div></div><div style="display:grid;grid-template-columns:repeat(5,1fr);gap:.5rem;margin-bottom:.5rem;"><div style="width:100%;aspect-ratio:1;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:1.1rem;">🍗</div><div style="width:100%;aspect-ratio:1;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:1.1rem;">🍗</div><div style="width:100%;aspect-ratio:1;border-radius:50%;border:2px dashed rgba(245,168,0,.4);"></div><div style="width:100%;aspect-ratio:1;border-radius:50%;border:2px dashed rgba(245,168,0,.4);"></div><div style="width:100%;aspect-ratio:1;border-radius:50%;border:2px dashed rgba(245,168,0,.4);"></div>
+      </div>
+      <div style="font-family:var(--font-head);font-size:.72rem;color:#888;letter-spacing:1px;text-transform:uppercase;text-align:center;margin-top:.5rem;">7 of 10 · 3 more to free wings</div>
+      <div style="background:rgba(245,168,0,.1);border:1px solid rgba(245,168,0,.3);border-radius:4px;padding:.5rem;text-align:center;margin-top:.75rem;font-family:var(--font-head);font-size:.75rem;color:var(--yellow);letter-spacing:1px;">🌾 Wing-O Saucy Stamps</div>
+    </div>
+  </div>
+</section>
+
+<section class="sauce-sec">
+  <div class="sauce-inner">
+    <div class="eyebrow" style="color:var(--yellow)">125+ Handcrafted Flavors</div>
+    <h2 class="sec-title" style="color:white;margin-bottom:.4rem">THE FLAVOR VAULT</h2>
+    <p style="color:#666;font-size:.85rem;margin-bottom:.25rem">Regina's first local wings eatery with 125+ flavors. Ask server for weekly specials.</p>
+    <div class="sgrid" id="sgrid"></div>
+  </div>
+</section>
+
+<section class="loc-sec">
+  <div class="loc-inner">
+    <div class="eyebrow">Find Us</div>
+    <h2 class="sec-title" style="color:var(--ink);">OUR LOCATIONS</h2>
+    <div class="lgrid">
+      <div class="lcard live"><span class="lbadge lb-live">✓ Online Ordering Live</span><div class="lname">Albert Street</div><div class="laddr">#3 – 155 Albert St N, Regina, SK</div><div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div><div class="lphone">📞 306-522-2111</div></div>
+      <div class="lcard live"><span class="lbadge lb-live">✓ Online Ordering Live</span><div class="lname">Rochdale</div><div class="laddr">3881 Rochdale Blvd, Regina, SK</div><div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div><div class="lphone">📞 306-522-2112</div></div>
+      <div class="lcard live"><span class="lbadge lb-live">✓ Online Ordering Live</span><div class="lname">East Regina</div><div class="laddr">534 University Park Drive<br>Regina, SK</div><div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div><div class="lphone">📞 306-522-2114</div></div>
+      <div class="lcard live"><span class="lbadge lb-live">✓ Online Ordering Live</span><div class="lname">Moose Jaw</div><div class="laddr">622 Main St N, Moose Jaw, SK</div><div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div><div class="lphone">📞 306-692-2113</div></div>
+      <div class="lcard"><span class="lbadge lb-soon">Seasonal</span><div class="lname">Regina Beach</div><div class="laddr">Regina Beach, SK</div><div class="lhours">Summer Only</div></div>
+      <div class="lcard" style="border-color:rgba(245,168,0,.3);opacity:.7"><span class="lbadge lb-soon">🚀 Coming Soon</span><div class="lname">Winnipeg</div><div class="laddr">Manitoba's first Wing-O!</div><div class="lhours">Stay Tuned</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="about-sec">
+  <div class="about-inner">
+    <div class="about-text">
+      <div class="eyebrow" style="color:var(--yellow)">The Story Behind the Sauce</div>
+      <h2>THE <span>SAUCE</span> BOSS</h2>
+      <blockquote class="about-quote">"I didn't come here with connections, money, or a plan B. I came with hunger — and that never left."</blockquote>
+      <p>In 2019, Gagandeep Ghuman arrived in Regina at 19 years old with $800, two bags, and a dream. He spent the next year and a half obsessing over wings — flavor chemistry, texture, heat levels, sauce combinations nobody had tried.</p>
+      <p>When Wing-O opened on Albert Street, it was Regina's first local wings eatery — with 125+ handcrafted flavors. What started as one location grew to five across Saskatchewan. Next stop: Winnipeg.</p>
+      <p style="color:var(--yellow);font-family:var(--font-head);font-size:.95rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;">The movement keeps growing. 🌾</p>
+      <a class="btn-red" href="#" onclick="document.getElementById('cat-section').scrollIntoView({behavior:'smooth'});return false;" style="margin-top:.5rem">Order Now 🔥</a>
+    </div>
+    <div class="about-vis">
+      <img src="images/neon-logo.jpg" alt="Wing-O" style="width:190px;mix-blend-mode:screen;filter:brightness(1.1);">
+      <img src="images/proudly-prairie.png" alt="Proudly Prairie" style="width:160px;filter:invert(1);opacity:.75;">
+      <div style="font-family:var(--font-head);font-size:.72rem;letter-spacing:3px;text-transform:uppercase;color:#555;">🌾 Proudly Prairie · Regina Born</div>
+    </div>
+  </div>
+</section>
+
+</div><!-- end home-page -->
+
+<!-- MENU PAGES -->
+<div id="menu-pages" style="display:none;">
+<div class="menu-page" id="page-wings"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">125+ Flavors</div><h2 class="sec-title" style="margin-bottom:1.5rem">🍗 WINGS</h2><p style="font-size:.88rem;color:#888;margin-bottom:1.5rem;">Choose 1 flavor per order. Mix and match across orders!</p><div class="mgrid" id="grid-wings"></div></div></div>
+<div class="menu-page" id="page-ribs"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">125+ Flavors</div><h2 class="sec-title" style="margin-bottom:1.5rem">🔥 RIBS</h2><div class="mgrid" id="grid-ribs"></div></div></div>
+<div class="menu-page" id="page-boneless"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Crispy & Sauced</div><h2 class="sec-title" style="margin-bottom:1.5rem">BONELESS WINGS</h2><div class="mgrid" id="grid-boneless"></div></div></div>
+<div class="menu-page" id="page-chickenfingers"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Crispy & Dippable</div><h2 class="sec-title" style="margin-bottom:1.5rem">CHICKEN FINGERS</h2><div class="mgrid" id="grid-chickenfingers"></div></div></div>
+<div class="menu-page" id="page-burgers"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Sloppy Seduction</div><h2 class="sec-title" style="margin-bottom:.5rem">BURGERS</h2><p style="font-size:.82rem;color:#888;margin-bottom:1.5rem;">All burgers served with fries and a drink. Upgrade available.</p><div class="mgrid" id="grid-burgers"></div></div></div>
+<div class="menu-page" id="page-combos"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Best Value</div><h2 class="sec-title" style="margin-bottom:.5rem">COMBOS</h2><p style="font-size:.82rem;color:#888;margin-bottom:1.5rem;">Choose wings, ribs, or chicken fingers. Upgrade fries available.</p><div class="mgrid" id="grid-combos"></div></div></div>
+<div class="menu-page" id="page-sides"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Kissable Kick-Offs & Loaded Affairs</div><h2 class="sec-title" style="margin-bottom:1.5rem">SIDES</h2><div class="mgrid" id="grid-sides"></div></div></div>
+<div class="menu-page" id="page-salads"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Fresh & Flirty</div><h2 class="sec-title" style="margin-bottom:1.5rem">SALADS</h2><div class="mgrid" id="grid-salads"></div></div></div>
+<div class="menu-page" id="page-platters"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Too Good to Share</div><h2 class="sec-title" style="margin-bottom:.5rem">PLATTERS</h2><div class="mgrid" id="grid-platters"></div></div></div>
+<div class="menu-page" id="page-midnight"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Sweet Endings</div><h2 class="sec-title" style="margin-bottom:1.5rem">MIDNIGHT ECSTASY 🌙</h2><div class="mgrid" id="grid-midnight"></div></div></div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="fgrid">
+      <div>
+        <div style="font-family:var(--font-display);font-size:2.3rem;color:white;letter-spacing:3px;margin-bottom:.7rem;">WING<span style="color:var(--red);">-O</span></div>
+        <p class="fb-tag">125+ handcrafted flavors. Born in Regina. Built for everyone. More Than Wings.</p>
+        <div class="comm-badge" style="border-color:rgba(245,168,0,.2);color:#F5A800;">🌾 Proudly Prairie · Regina Community Fridge supporter</div>
+      </div>
+      <div class="fc"><h4>Menu</h4><ul>
+        <li onclick="showCat('wings')" style="cursor:pointer;">Wings</li>
+        <li onclick="showCat('ribs')" style="cursor:pointer;">Ribs</li>
+        <li onclick="showCat('boneless')" style="cursor:pointer;">Boneless Wings</li>
+        <li onclick="showCat('chickenfingers')" style="cursor:pointer;">Chicken Fingers</li>
+        <li onclick="showCat('burgers')" style="cursor:pointer;">Burgers</li>
+        <li onclick="showCat('combos')" style="cursor:pointer;">Combos</li>
+        <li onclick="showCat('sides')" style="cursor:pointer;">Sides</li>
+        <li onclick="showCat('midnight')" style="cursor:pointer;">Midnight Ecstasy</li>
+      </ul></div>
+      <div class="fc"><h4>Locations</h4><ul>
+        <li>Albert St — Regina</li><li>Rochdale — Regina</li>
+        <li>East Regina</li><li>Moose Jaw</li><li>Regina Beach</li>
+      </ul></div>
+      <div class="fc"><h4>Connect</h4><ul>
+        <li><a href="https://www.instagram.com/wingorestaurants?igsh=dndtenNwZXh6emZk&utm_source=qr" target="_blank" style="color:#555;text-decoration:none;">📸 Instagram</a></li>
+        <li><a href="https://www.facebook.com/share/1AuXgHuEv9/?mibextid=wwXIfr" target="_blank" style="color:#555;text-decoration:none;">👍 Facebook</a></li>
+        <li><a href="https://www.instagram.com/sauce_____boss?igsh=MWJvdnhmdnd1aWh0cg%3D%3D&utm_source=qr" target="_blank" style="color:#555;text-decoration:none;">🔥 Follow Sauce Boss</a></li>
+        <li onclick="openFranchise()" style="cursor:pointer;color:#555;">🚀 Franchise Info</li>
+        <li><a href="mailto:besaucy@wingorestaurants.com" style="color:#555;text-decoration:none;">besaucy@wingorestaurants.com</a></li>
+        <li><a href="tel:3065222111" style="color:#555;text-decoration:none;">306-522-2111</a></li>
+      </ul></div>
+    </div>
+    <div class="fbot">
+      <p>© 2024 Wing-O Restaurants Ltd. All rights reserved. &nbsp;·&nbsp; Regina, Saskatchewan &nbsp;·&nbsp; 🌾 Proudly Prairie</p>
+      <span style="font-size:.72rem;color:#555;">🍀 Powered by Clover POS</span>
+    </div>
+  </div>
+</footer>
+
+<!-- CART -->
+<div class="cart-ov" id="cart-ov">
+  <div class="cart-back" onclick="closeCart()"></div>
+  <div class="cart-panel">
+    <div class="cart-hd"><div><div class="cart-hd-title">YOUR ORDER</div><div class="cart-hd-sub" id="cart-loc-label">Albert Street · Pickup or Delivery</div></div><button class="xcb" onclick="closeCart()">✕</button></div>
+    <div class="cart-bd" id="cart-bd"></div>
+    <div class="cart-ft" id="cart-ft" style="display:none">
+      <div class="cl"><span>Subtotal</span><span id="csub">$0.00</span></div>
+      <div class="cl"><span>GST (5%)</span><span id="cgst">$0.00</span></div>
+      <div class="cl"><span>PST (6%)</span><span id="cpst">$0.00</span></div>
+      <div class="cl" id="cdel-row" style="display:none"><span>Delivery</span><span>$5.50</span></div>
+      <div class="cl tot"><span>Total</span><span id="ctot">$0.00</span></div>
+      <button class="btn-co" onclick="openCheckout()">CHECKOUT →</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div class="modal-ov" id="modal-ov">
+  <div class="modal">
+    <div class="mhd"><h2>CHECKOUT</h2><button class="xcb" onclick="closeCheckout()" style="color:#555">✕</button></div>
+    <div class="mbd" id="mbd"></div>
+  </div>
+</div>
+
+<!-- ITEM MODAL -->
+<div class="item-modal-ov" id="item-modal-ov" onclick="if(event.target===this)closeItemModal()">
+  <div class="item-modal" id="item-modal">
+    <button class="im-close" onclick="closeItemModal()">✕</button>
+    <div id="im-content"></div>
+  </div>
+</div>
+
+<!-- FRANCHISE MODAL -->
+<div id="franchise-ov" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.85);padding:1rem;overflow-y:auto;">
+  <div style="background:white;border-radius:12px;width:min(620px,100%);margin:2rem auto;overflow:hidden;">
+    <div style="background:var(--black);padding:1.5rem 1.75rem;display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div style="font-family:var(--font-display);font-size:1.6rem;color:white;letter-spacing:2px;">🚀 FRANCHISE WITH WING-O</div>
+        <div style="font-family:var(--font-head);font-size:.75rem;color:#666;letter-spacing:2px;text-transform:uppercase;margin-top:3px;">Join Regina's fastest growing brand</div>
+      </div>
+      <button onclick="closeFranchise()" style="background:none;border:none;color:#aaa;font-size:1.4rem;cursor:pointer;padding:4px;">✕</button>
+    </div>
+    <div style="padding:1.75rem;">
+      <div style="background:rgba(232,25,10,.05);border:1px solid rgba(232,25,10,.15);border-radius:8px;padding:1rem 1.25rem;margin-bottom:1.5rem;">
+        <div style="font-family:var(--font-display);font-size:1.1rem;color:var(--red);letter-spacing:1px;margin-bottom:.35rem;">Why Wing-O?</div>
+        <div style="font-size:.83rem;color:#666;line-height:1.7;">125+ handcrafted flavors · Proven brand · 5 SK locations · Strong community following · Low startup costs · Full training & support from the Sauce Boss himself.</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.85rem;margin-bottom:.85rem;">
+        <div><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">First Name *</label><input type="text" id="fr-fn" placeholder="First name"></div>
+        <div><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">Last Name</label><input type="text" id="fr-ln" placeholder="Last name"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.85rem;margin-bottom:.85rem;">
+        <div><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">Email *</label><input type="email" id="fr-em" placeholder="your@email.com"></div>
+        <div><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">Phone *</label><input type="tel" id="fr-ph" placeholder="(306) 555-0123"></div>
+      </div>
+      <div style="margin-bottom:.85rem;"><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">City / Province to open in *</label><input type="text" id="fr-city" placeholder="e.g. Winnipeg, MB"></div>
+      <div style="margin-bottom:.85rem;"><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">Investment Budget</label>
+        <select id="fr-budget"><option value="">Select budget range</option><option>Under $100,000</option><option>$100,000 — $200,000</option><option>$200,000 — $350,000</option><option>$350,000+</option></select>
+      </div>
+      <div style="margin-bottom:1.25rem;"><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">Tell us about yourself</label><textarea id="fr-msg" placeholder="Previous business experience, why Wing-O, timeline..." style="min-height:80px;"></textarea></div>
+      <div id="fr-msg-box"></div>
+      <button id="fr-btn" onclick="submitFranchise()" style="width:100%;background:var(--red);color:white;border:none;padding:.95rem;font-family:var(--font-display);font-size:1.15rem;letter-spacing:2px;cursor:pointer;border-radius:4px;text-transform:uppercase;">SEND MY APPLICATION 🚀</button>
+      <p style="text-align:center;font-size:.75rem;color:#aaa;margin-top:.75rem;">We'll get back to you within 48 hours · besaucy@wingorestaurants.com</p>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="api-status" id="api-status"><div class="api-dot" id="api-dot"></div><span id="api-txt">checking...</span></div>
+
+<script>
+// ── ALL FUNCTIONS ─────────────────────────────────────────────
+
+var cart = [];
+var orderType = 'pickup';
+var currentPage = 'home';
+var currentItem = null;
+var currentCat = null;
+var selectedSizeIndex = 0;
+var selectedSizePrice = 0;
+
+var FLAVORS = {
+  "Flirty Ones":["Devil's Kiss","Honey Garlic","Lemon Pepper","Buffalo","Buffalo Ranch","BBQ Ranch","Honey Dill","Greek Dry","Greek Wet","Teriyaki","Creamy Dill Pickle","Medium"],
+  "Hot As Hell":["Dead Angel (Carolina Reaper)","Spicy Mammilla","Sizzle Caesar","Caribbean Connection","Tropical Temptation","BBQ Seduction","Sentimental Sauce","Cobalt Kiss","Dragon Dip","Mild","Hot","Honey Buffalo","Honey Is Hot","Honey's Too Hot","Not So Hot","African Pepper","Island On Fire"],
+  "Rub It":["All Dressed","Dry BBQ","Dry Buffalo","Dry Cajun","Creole","Dill Pickle","Greek","Hickory","Italian","Lemon Pepper","Ketchup","Mango Habanero","Maple Bacon","Montreal Style","Parmesan","Salt & Pepper","Salt & Vinegar","Sour Cream & Chives","White Cheddar","Sriracha","Hot & Honey Dry","Applewood BBQ","Brown Bourbon","Citrus Pepper"],
+  "Second Round":["Tangy Thai","Cali Thai","Curry Bean","Thai Twilight","Sweet Grenade","Hot Hickey","Dill Drip Diva","Maple Mirage","Sweet Escape Surge","Prairie Heat"],
+  "BBQ Intimacy":["BBQ","Forty Creek BBQ","Honey BBQ","Hot BBQ","Maple BBQ","Mesquite BBQ","South Pacific BBQ","Southwestern BBQ","Sultry Caesar","Sapphire Smoke","Tropical Tinder","BBQ Bunt","Mustard Mellons","Soul Kiss","Maple Meltdown","Smoke Bee Kiss","Smoke & Sting"],
+  "Have To Do It":["Ranch","Creamy Greek","Honey Mustard","Blue Cheese","Cajun","Herb & Garlic","Pizza Wings","Parmesan Dry","Garlic Parmesan","Creamy Chipotle"],
+  "Sweet Melodious":["Apricot Honey","Orange Ginger","Plum","Pineapple Curry","Sunburn Samurai","Raspberry Pepper","Strawberry","Sweet & Spicy Thai","Sweet & Sour","Juicy Melons"],
+  "Illegal Sauces":["Hot Fantasy","Grefflo","Citrus Twist","Illegal Pizza","Honeyaki Harmony","Chinese Bull","Mystic Garlic","Blue Buzz","Creamy Lemon","Pepper Pleasure","Tour Of Italy","Honey Ranch Bliss","Cajun Cream","Canadian Greek","Parmesan Prestige","Creamy Bliss","Influencer","Mid-Majestic","Zesty Twist","Sweet Heat","Wrench It Up","Thai Coconut Crush","Scotch's Up","Dill Rancher","Citrus Sting","Japanese Twist","Dillnferno","Cream Of The Zing","Prairie Gold"]
+};
+
+var BURGER_UPGRADES = [{name:'Upgrade to Curly Fries',price:1.00},{name:'Upgrade to Poutine',price:2.00},{name:'Upgrade to Onion Rings',price:1.49}];
+var COMBO_UPGRADES = [{name:'Upgrade Fries to Curly Fries',price:1.00},{name:'Upgrade Fries to Poutine',price:2.00},{name:'Upgrade Fries to Onion Rings',price:1.49}];
+
+var MENU = {
+  wings:[
+    {id:'w1',name:'Half Order — Wings',desc:'Half order of crispy bone-in wings. Choose your sauce or rub from 125+ flavors.',price:7.99,img:'images/wings-half.jpg',flavorCount:1,pop:false},
+    {id:'w2',name:'One Order — Wings',desc:'Full order of crispy bone-in wings. Choose your sauce or rub from 125+ flavors.',price:13.99,img:'images/wings-hero.jpg',flavorCount:1,pop:true},
+    {id:'w3',name:'Two Orders — Wings',desc:'Two orders. Mix and match — choose a different flavor for each!',price:25.99,img:'images/wings-hero.jpg',flavorCount:2,pop:false},
+    {id:'w4',name:'Three Orders — Wings',desc:'Three orders. Mix and match — choose a different flavor for each!',price:37.99,img:'images/wings-hero.jpg',flavorCount:3,pop:false},
+    {id:'w5',name:'Four Orders — Wings',desc:'Four orders. Mix and match — choose a different flavor for each!',price:49.99,img:'images/wings-hero.jpg',flavorCount:4,pop:false},
+    {id:'w6',name:'Five Orders — Wings',desc:'Five orders — the ultimate party pack! Choose a flavor for each.',price:58.99,img:'images/wings-hero.jpg',flavorCount:5,pop:false}
+  ],
+  ribs:[
+    {id:'r1',name:'Half Order — Ribs',desc:'Half order of saucy bone-in ribs. Choose your sauce from 125+ flavors.',price:7.99,img:'images/ribs.jpg',flavorCount:1,pop:false},
+    {id:'r2',name:'One Order — Ribs',desc:'Full order of saucy bone-in ribs. Choose your sauce from 125+ flavors.',price:13.99,img:'images/ribs.jpg',flavorCount:1,pop:true},
+    {id:'r3',name:'Two Orders — Ribs',desc:'Two orders of ribs. Mix and match flavors!',price:25.99,img:'images/ribs.jpg',flavorCount:2,pop:false},
+    {id:'r4',name:'Three Orders — Ribs',desc:'Three orders of ribs. Mix and match flavors!',price:37.99,img:'images/ribs.jpg',flavorCount:3,pop:false},
+    {id:'r5',name:'Four Orders — Ribs',desc:'Four orders of ribs. Mix and match flavors!',price:49.99,img:'images/ribs.jpg',flavorCount:4,pop:false},
+    {id:'r6',name:'Five Orders — Ribs',desc:'Five orders — the ultimate party pack!',price:58.99,img:'images/ribs.jpg',flavorCount:5,pop:false}
+  ],
+  boneless:[
+    {id:'b1',name:'Half Order — Boneless Wings',desc:'Half order of crispy boneless wings tossed in your choice of sauce.',price:7.99,img:'images/boneless-wings.jpg',flavorCount:1,pop:false},
+    {id:'b2',name:'Full Order — Boneless Wings',desc:'Full order of crispy boneless wings tossed in your choice of sauce.',price:13.99,img:'images/boneless-wings.jpg',flavorCount:1,pop:true},
+    {id:'b3',name:'Cauliflower Wings',desc:'Crispy cauliflower wings tossed with sauce of your choice.',price:12.99,img:null,flavorCount:1,pop:false}
+  ],
+  chickenfingers:[
+    {id:'cf1',name:'Half Order — Chicken Fingers',desc:'Half order of crispy chicken fingers with your choice of dipping sauce.',price:7.99,img:'images/boneless-sauce.jpg',flavorCount:1,pop:false},
+    {id:'cf2',name:'Full Order — Chicken Fingers',desc:'Full order of crispy chicken fingers with your choice of dipping sauce.',price:13.99,img:'images/boneless-sauce.jpg',flavorCount:1,pop:true}
+  ],
+  burgers:[
+    {id:'bu1',name:'The Tough Guy',desc:'Crispy 6oz chicken breast, double-crunched and coated in our blazing Carolina Reaper sauce. Layered with pickles, tomatoes, red onions, romaine, and melted Swiss. Served with fries and a drink.',price:21.99,img:'images/burger-tough-guy.jpg',upgrades:true,pop:true},
+    {id:'bu2',name:'The Dillinator',desc:'Crispy 6oz double-crunched chicken, layered with honey dill sauce, crunchy pickle chips, fresh romaine, and melted Swiss. Served with fries and a drink.',price:21.99,img:'images/burger-dillinator.jpg',upgrades:true,pop:false},
+    {id:'bu3',name:'The Buffalo Stampede',desc:'Crispy 6oz chicken patty tossed in house-made buffalo sauce, stacked with creamy coleslaw, pickles, and melted mozzarella. Served with fries and a drink.',price:21.99,img:'images/burger.jpg',upgrades:true,pop:false},
+    {id:'bu4',name:'Korean Fried Chicken (KFC)',desc:'A 6oz hand-breaded chicken breast coated in scratch-made Korean BBQ sauce, topped with crunchy coleslaw and tangy pickles. Served with fries and a drink.',price:20.99,img:'images/burger.jpg',upgrades:true,pop:false},
+    {id:'bu5',name:'The Sunset Crunch',desc:'Crispy chicken with sweet heat habanero mango kick, creamy California ranch, and a soft toasted bun. Served with fries and a drink.',price:17.99,img:'images/burger.jpg',upgrades:true,pop:false}
+  ],
+  combos:[
+    {id:'c1',name:'Combo for 1',desc:'Wings, ribs, or chicken fingers with fries and a can of pop. Choose your flavor!',price:17.45,img:'images/combo1.jpg',flavorCount:1,upgrades:true,pop:true},
+    {id:'c2',name:'Combo for 2',desc:'Wings, ribs, or chicken fingers with large fries, deep-fried pickles, and two cans of pop.',price:39.99,img:null,flavorCount:2,upgrades:true,pop:false},
+    {id:'c3',name:'Combo for 3',desc:'Wings, ribs, or chicken fingers with large fries, Caesar salad, and a 2L pop.',price:57.49,img:null,flavorCount:3,upgrades:true,pop:false},
+    {id:'c4',name:'Combo for 4',desc:'Wings, ribs, or chicken fingers with large fries, gravy, Caesar salad, and a 2L pop.',price:67.99,img:null,flavorCount:4,upgrades:true,pop:false},
+    {id:'c5',name:'Corn Dog Combo',desc:'Corn dog served with fries, a can of pop, and dipping of your choice.',price:11.99,img:null,upgrades:true,pop:false}
+  ],
+  sides:[
+    {id:'s1',name:'Fries',desc:'Golden crispy fries.',price:4.99,price2:8.99,img:null,sizes:true},
+    {id:'s2',name:'Curly Fries',desc:'Seasoned curly fries.',price:5.99,price2:9.99,img:'images/curly-fries.jpg',sizes:true},
+    {id:'s3',name:'Onion Rings',desc:'Golden crispy onion rings.',price:7.99,img:null},
+    {id:'s4',name:'Pickle Spears',desc:'Deep fried pickle spears.',price:8.99,img:'images/pickle-spears.jpg'},
+    {id:'s5',name:'Empanadas',desc:'Crispy empanadas with dipping sauce.',price:9.99,price2:12.99,img:'images/empanadas.jpg',sizes:true,sizeLabels:['6 pc','12 pc']},
+    {id:'s6',name:'Jalapeno Poppers',desc:'Crispy jalapeno poppers.',price:10.49,img:'images/jalapeno-poppers.jpg'},
+    {id:'s7',name:'Deep Fried Mac & Cheese Bites',desc:'Crispy deep fried mac and cheese bites.',price:10.49,img:null},
+    {id:'s8',name:'Mini Perogies',desc:'Golden mini perogies.',price:8.99,img:'images/mini-perogies.jpg'},
+    {id:'s9',name:'Mozza Sticks',desc:'Classic mozzarella sticks with dipping sauce.',price:10.49,img:'images/mozza-sticks.jpg'},
+    {id:'s10',name:'Spring Rolls',desc:'Crispy spring rolls.',price:10.49,img:null},
+    {id:'s11',name:'Dumplings',desc:'Crispy fried dumplings.',price:10.49,img:'images/dumplings.jpg'},
+    {id:'s12',name:'Corn Dog',desc:'Classic corn dog with dipping of your choice.',price:6.99,img:null},
+    {id:'s13',name:'Cauliflower Wings',desc:'Crispy cauliflower wings tossed with sauce of your choice.',price:12.99,img:null,flavorCount:1},
+    {id:'s14',name:'Classic Poutine',desc:'Crispy golden fries topped with cheese curds and rich, savory gravy.',price:8.99,price2:13.99,img:'images/poutine.jpg',sizes:true,sizeLabels:['Small','Large']},
+    {id:'s15',name:'Chicken Poutine',desc:'Crispy fries loaded with juicy chicken, rich gravy, and sweet & spicy Thai sauce.',price:14.99,img:null},
+    {id:'s16',name:'Rib Poutine',desc:'Golden fries with cheese curds, tender dry ribs, and sweet & spicy Thai sauce.',price:15.99,img:null},
+    {id:'s17',name:'Beef Poutine',desc:'Crispy fries with tender grilled beef, sauteed veggies, and sweet & spicy Thai sauce.',price:14.99,img:null},
+    {id:'s18',name:'Perogy Poutine',desc:'Mini perogies smothered in creamy cheese sauce, sour cream, green onions, and bacon bits.',price:10.49,img:null},
+    {id:'s19',name:'Nacho Teaser',desc:'Curly fries loaded with warm cheese sauce, fresh salsa, sour cream, green onions, and jalapenos.',price:12.99,img:null},
+    {id:'s20',name:'Loaded Taters',desc:'Crispy tater tots with seasoned shredded beef, creamy cheese sauce, and fresh toppings.',price:13.99,img:null},
+    {id:'s21',name:'Gravy',desc:'Classic gravy.',price:0.99,price2:2.49,img:null,sizes:true,sizeLabels:['Small','Large']}
+  ],
+  salads:[
+    {id:'sal1',name:'Caesar Salad',desc:'Classic caesar salad.',price:6.99,price2:7.99,price3:13.99,img:'images/salad.jpg',sizes3:true},
+    {id:'sal2',name:'Chicken Caesar Salad',desc:'Caesar salad with crispy grilled chicken.',price:9.99,price2:12.99,price3:19.49,img:'images/salad.jpg',sizes3:true}
+  ],
+  platters:[
+    {id:'p1',name:'A Bit of Other Platter',desc:'1 lb Ribs, Pickle Spear, Large Curly Fries, Mini Perogies, Dumplings, Mozza Sticks. Upgrade ribs to wings +$4.00.',price:36.99,img:'images/platter-bit-of.jpg',flavorCount:1,pop:true},
+    {id:'p2',name:'Making Love Platter',desc:'Full Order Wings, Empanadas, Large Fries, Jalapeno Poppers, Mozza Sticks.',price:36.99,img:'images/platter-making-love.jpg',flavorCount:1,pop:false},
+    {id:'p3',name:'Too Much Platter',desc:'4 Orders of Wings or Ribs, 2 Curly Fries.',price:56.99,img:null,flavorCount:4,pop:false},
+    {id:'p4',name:'Tinseltown Nacho',desc:'3 lbs Curly Fries, Cheese Sauce, Chunky Salsa, Sour Cream, Jalapeno, Green Onions.',price:29.99,img:null},
+    {id:'p5',name:"Hot n Heavy",desc:'3 lbs Fries, 1 lb Cheese Curds, 1 lb Gravy. Drizzled with sauce of your choice.',price:29.99,img:null}
+  ],
+  midnight:[
+    {id:'m1',name:'Tiramisu Cake',desc:'Homemade tiramisu cake slice.',price:8.99,img:null},
+    {id:'m2',name:'Deep Fried Cookie Dough',desc:'Choose your flavor: Peanut Butter, Double Chocolate, or Monster.',price:3.50,img:'images/cookie-dough.jpg',cookieFlavors:true},
+    {id:'m3',name:'Deep Fried Oreos',desc:'Crispy deep fried Oreos dusted with powdered sugar.',price:0.99,price2:5.99,price3:10.49,img:'images/oreo.jpg',sizes3:true,sizeLabels3:['1 pc','6 pc','12 pc']},
+    {id:'m4',name:'Deep Fried Mars Bars',desc:'Indulgent deep fried Mars bars dusted with powdered sugar.',price:2.99,price2:4.99,price3:12.99,img:'images/mars-1pc.jpg',sizes3:true,sizeLabels3:['1 pc','2 pc','6 pc']}
+  ]
+};
+
+// TOAST
+var toastT;
+function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('show');},2600);}
+
+// NAV
+function showHome(){
+  document.getElementById('home-page').style.display='block';
+  document.getElementById('menu-pages').style.display='none';
+  document.querySelectorAll('.menu-page').forEach(function(p){p.classList.remove('active');});
+  currentPage='home';
+  window.scrollTo({top:0,behavior:'smooth'});
+  history.pushState({page:'home'},'');
+}
+function showCat(cat){
+  document.getElementById('home-page').style.display='none';
+  document.getElementById('menu-pages').style.display='block';
+  document.querySelectorAll('.menu-page').forEach(function(p){p.classList.remove('active');});
+  var pg = document.getElementById('page-'+cat);
+  if(pg) pg.classList.add('active');
+  currentPage=cat;
+  window.scrollTo({top:0,behavior:'smooth'});
+  renderGrid(cat);
+  history.pushState({page:cat},'');
+}
+function goBack(){
+  if(window.history.length>1){window.history.back();}
+  else{showHome();}
+}
+window.addEventListener('popstate',function(e){
+  if(e.state&&e.state.page){
+    if(e.state.page==='home'){
+      document.getElementById('home-page').style.display='block';
+      document.getElementById('menu-pages').style.display='none';
+      document.querySelectorAll('.menu-page').forEach(function(p){p.classList.remove('active');});
+    } else {
+      document.getElementById('home-page').style.display='none';
+      document.getElementById('menu-pages').style.display='block';
+      document.querySelectorAll('.menu-page').forEach(function(p){p.classList.remove('active');});
+      var pg=document.getElementById('page-'+e.state.page);
+      if(pg){pg.classList.add('active');renderGrid(e.state.page);}
+    }
+  }
+});
+
+function renderGrid(cat){
+  var items=MENU[cat]||[];
+  var el=document.getElementById('grid-'+cat);
+  if(!el)return;
+  el.innerHTML=items.map(function(item){return renderCard(item,cat);}).join('');
+}
+function renderCard(item,cat){
+  var img=item.img?'<img src="'+item.img+'" alt="'+item.name+'" loading="lazy">':'';
+  var pop=item.pop?'<div class="pop-flag">🔥 Popular</div>':'';
+  var priceHtml='$'+item.price.toFixed(2);
+  if(item.sizes&&item.price2){
+    var labs=item.sizeLabels||['Small','Large'];
+    priceHtml='<span style="font-size:.8rem;color:#888;">'+labs[0]+'</span> $'+item.price.toFixed(2)+' &nbsp;·&nbsp; <span style="font-size:.8rem;color:#888;">'+labs[1]+'</span> $'+item.price2.toFixed(2);
+  }
+  if(item.sizes3){
+    var labs3=item.sizeLabels3||['Sm','Med','Lg'];
+    priceHtml='<span style="font-size:.78rem;color:#888;">'+labs3[0]+'</span> $'+item.price.toFixed(2)+' · <span style="font-size:.78rem;color:#888;">'+labs3[1]+'</span> $'+item.price2.toFixed(2)+' · <span style="font-size:.78rem;color:#888;">'+labs3[2]+'</span> $'+item.price3.toFixed(2);
+  }
+  return '<div class="mc" onclick="openItemModal(\''+item.id+'\',\''+cat+'\')"><div class="mc-img">'+img+'</div><div class="mc-body">'+pop+'<div class="mc-name">'+item.name+'</div><div class="mc-desc">'+item.desc+'</div><div class="mc-foot"><div class="mc-price" style="font-size:'+(item.sizes||item.sizes3?'.85rem':'1.2rem')+'">'+priceHtml+'</div><button class="btn-add" onclick="event.stopPropagation();openItemModal(\''+item.id+'\',\''+cat+'\')">+</button></div></div></div>';
+}
+
+function openItemModal(id,cat){
+  var items=MENU[cat]||[];
+  var item=null;
+  for(var i=0;i<items.length;i++){if(items[i].id===id){item=items[i];break;}}
+  if(!item)return;
+  currentItem=item;
+  currentCat=cat;
+  selectedSizeIndex=0;
+  selectedSizePrice=0;
+
+  var img=item.img?'<div class="im-img"><img src="'+item.img+'" alt="'+item.name+'" loading="lazy"></div>':'';
+  var body=img+'<div class="im-body"><div class="im-name">'+item.name+'</div><div class="im-desc">'+item.desc+'</div>';
+
+  if(item.sizes&&item.price2){
+    var labs=item.sizeLabels||['Small','Large'];
+    body+='<div style="margin-bottom:.85rem;"><div style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:.5rem;">SIZE</div><div style="display:flex;gap:.5rem;"><button class="size-btn" id="sz-0" onclick="selectSize(0,'+item.price+',this)" style="flex:1;border:2px solid var(--red);background:rgba(232,25,10,.05);padding:.5rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.82rem;">'+labs[0]+' — $'+item.price.toFixed(2)+'</button><button class="size-btn" id="sz-1" onclick="selectSize(1,'+item.price2+',this)" style="flex:1;border:2px solid #E8E0D0;background:white;padding:.5rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.82rem;">'+labs[1]+' — $'+item.price2.toFixed(2)+'</button></div></div>';
+  }
+  if(item.sizes3){
+    var labs3=item.sizeLabels3||['Sm','Med','Lg'];
+    body+='<div style="margin-bottom:.85rem;"><div style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:.5rem;">SIZE</div><div style="display:flex;gap:.4rem;"><button class="size-btn" id="sz-0" onclick="selectSize(0,'+item.price+',this)" style="flex:1;border:2px solid var(--red);background:rgba(232,25,10,.05);padding:.45rem .3rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.75rem;">'+labs3[0]+'<br>$'+item.price.toFixed(2)+'</button><button class="size-btn" id="sz-1" onclick="selectSize(1,'+item.price2+',this)" style="flex:1;border:2px solid #E8E0D0;background:white;padding:.45rem .3rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.75rem;">'+labs3[1]+'<br>$'+item.price2.toFixed(2)+'</button><button class="size-btn" id="sz-2" onclick="selectSize(2,'+item.price3+',this)" style="flex:1;border:2px solid #E8E0D0;background:white;padding:.45rem .3rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.75rem;">'+labs3[2]+'<br>$'+item.price3.toFixed(2)+'</button></div></div>';
+  }
+
+  if(item.flavorCount){
+    body+='<div style="background:#FFF;border:1px solid #E8E0D0;border-radius:6px;padding:.85rem;margin-bottom:.85rem;"><div style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:.6rem;">🔥 '+(item.flavorCount>1?'Choose a Flavor for Each Order':'Choose Your Flavor')+'</div>';
+    for(var fi=0;fi<item.flavorCount;fi++){
+      var opts='<option value="">— Pick a flavor —</option>';
+      Object.keys(FLAVORS).forEach(function(grp){
+        opts+='<optgroup label="'+grp+'">';
+        FLAVORS[grp].forEach(function(f){opts+='<option value="'+f+'">'+f+'</option>';});
+        opts+='</optgroup>';
+      });
+      body+='<div style="margin-bottom:.5rem;">'+(item.flavorCount>1?'<div style="font-family:var(--font-head);font-size:.75rem;color:#888;margin-bottom:.3rem;">Order '+(fi+1)+':</div>':'')+' <select id="flavor-'+fi+'" style="width:100%;border:1.5px solid #E8E0D0;border-radius:4px;padding:.45rem .7rem;font-family:var(--font-body);font-size:.83rem;color:var(--black);outline:none;background:white;">'+opts+'</select></div>';
+    }
+    body+='</div>';
+  }
+
+  if(item.cookieFlavors){
+    body+='<div style="margin-bottom:.85rem;"><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.4rem;">Cookie Dough Flavor</label><select id="cookie-flavor" style="width:100%;border:1.5px solid #E8E0D0;border-radius:4px;padding:.45rem .7rem;font-family:var(--font-body);font-size:.83rem;outline:none;background:white;margin-bottom:.7rem;"><option value="Peanut Butter">Peanut Butter</option><option value="Double Chocolate">Double Chocolate</option><option value="Monster">Monster</option></select></div>';
+  }
+
+  if(item.upgrades&&cat==='burgers'){
+    body+='<div style="background:#FFF8EE;border:1px solid #F5D98A;border-radius:6px;padding:.75rem;margin-bottom:.85rem;"><div style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#7B3F00;margin-bottom:.5rem;">Upgrade (Optional)</div>';
+    BURGER_UPGRADES.forEach(function(u,i){
+      body+='<div style="display:flex;align-items:center;justify-content:space-between;padding:.3rem 0;border-bottom:'+(i<BURGER_UPGRADES.length-1?'1px solid #F0E0C0':'none')+'"><label style="font-family:var(--font-head);font-size:.8rem;color:#555;cursor:pointer;display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;"><input type="radio" name="burger-upgrade" value="'+u.price+'" data-name="'+u.name+'" style="width:auto;border:none;padding:0;"> '+u.name+'</label><span style="font-family:var(--font-display);font-size:.85rem;color:var(--red);">+$'+u.price.toFixed(2)+'</span></div>';
+    });
+    body+='</div>';
+  }
+
+  if(item.upgrades&&cat==='combos'){
+    body+='<div style="background:#FFF8EE;border:1px solid #F5D98A;border-radius:6px;padding:.75rem;margin-bottom:.85rem;"><div style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#7B3F00;margin-bottom:.5rem;">Upgrade Fries (Optional)</div>';
+    COMBO_UPGRADES.forEach(function(u,i){
+      body+='<div style="display:flex;align-items:center;justify-content:space-between;padding:.3rem 0;border-bottom:'+(i<COMBO_UPGRADES.length-1?'1px solid #F0E0C0':'none')+'"><label style="font-family:var(--font-head);font-size:.8rem;color:#555;cursor:pointer;display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;"><input type="radio" name="combo-upgrade" value="'+u.price+'" data-name="'+u.name+'" style="width:auto;border:none;padding:0;"> '+u.name+'</label><span style="font-family:var(--font-display);font-size:.85rem;color:var(--red);">+$'+u.price.toFixed(2)+'</span></div>';
+    });
+    body+='</div>';
+  }
+
+  body+='<div style="margin-bottom:1rem;"><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.35rem;">Special Instructions (Optional)</label><textarea id="item-notes" placeholder="Extra sauce, no pickles, extra spicy..." style="width:100%;border:1.5px solid #E8E0D0;border-radius:4px;padding:.5rem .75rem;font-family:var(--font-body);font-size:.83rem;color:var(--black);resize:vertical;min-height:55px;outline:none;"></textarea></div>';
+  body+='<div style="font-family:var(--font-display);font-size:1.8rem;color:var(--black);margin-bottom:1rem;" id="modal-price">$'+item.price.toFixed(2)+'</div>';
+  body+='<button class="btn-place" onclick="addFromModal()">ADD TO ORDER 🍗</button>';
+  body+='<button onclick="closeItemModal()" style="width:100%;background:none;border:1.5px solid #E8E0D0;color:#888;padding:.7rem;font-family:var(--font-head);font-size:.82rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:4px;margin-top:.5rem;">✕ Cancel</button>';
+  body+='</div>';
+
+  document.getElementById('im-content').innerHTML=body;
+  document.getElementById('item-modal-ov').classList.add('open');
+}
+function selectSize(idx,price,el){
+  selectedSizeIndex=idx;selectedSizePrice=price;
+  document.querySelectorAll('.size-btn').forEach(function(b){b.style.borderColor='#E8E0D0';b.style.background='white';});
+  el.style.borderColor='var(--red)';el.style.background='rgba(232,25,10,.05)';
+  document.getElementById('modal-price').textContent='$'+price.toFixed(2);
+}
+function closeItemModal(){
+  document.getElementById('item-modal-ov').classList.remove('open');
+  selectedSizeIndex=0;selectedSizePrice=0;currentItem=null;currentCat=null;
+}
+function addFromModal(){
+  var item=currentItem,cat=currentCat;
+  if(!item)return;
+  var flavors=[];
+  if(item.flavorCount){
+    for(var fi=0;fi<item.flavorCount;fi++){
+      var sel=document.getElementById('flavor-'+fi);
+      flavors.push(sel&&sel.value?sel.value:'');
+    }
+    if(flavors.some(function(f){return !f;})){toast('Please pick a flavor for each order!');return;}
+  }
+  var cookieFl='';
+  if(item.cookieFlavors){var cs=document.getElementById('cookie-flavor');cookieFl=cs?cs.value:'Peanut Butter';}
+  var upgradePrice=0,upgradeName='';
+  if(item.upgrades){
+    var uname=cat==='burgers'?'burger-upgrade':'combo-upgrade';
+    var checked=document.querySelector('input[name="'+uname+'"]:checked');
+    if(checked){upgradePrice=parseFloat(checked.value);upgradeName=checked.dataset.name;}
+  }
+  var finalPrice=item.price,sizeName='';
+  if((item.sizes||item.sizes3)&&selectedSizePrice>0){
+    finalPrice=selectedSizePrice;
+    var labs=item.sizeLabels3||item.sizeLabels||['Small','Large'];
+    sizeName=labs[selectedSizeIndex];
+  }
+  var notes=document.getElementById('item-notes')?document.getElementById('item-notes').value.trim():'';
+  var totalPrice=finalPrice+upgradePrice;
+  var key=item.id+'|'+flavors.join(',')+cookieFl+sizeName+upgradeName;
+  var ex=null;
+  for(var ci=0;ci<cart.length;ci++){if(cart[ci].key===key&&cart[ci].notes===notes){ex=cart[ci];break;}}
+  if(ex){ex.qty++;}
+  else{
+    var details=[];
+    if(flavors.length===1&&flavors[0])details.push(flavors[0]);
+    if(flavors.length>1)flavors.forEach(function(f,i){details.push('Order '+(i+1)+': '+f);});
+    if(cookieFl)details.push(cookieFl);
+    if(sizeName)details.push(sizeName);
+    if(upgradeName)details.push(upgradeName+' +$'+upgradePrice.toFixed(2));
+    if(notes)details.push('Note: '+notes);
+    cart.push({id:item.id,key:key,qty:1,name:item.name,price:totalPrice,details:details.join(' · '),notes:notes,flavors:flavors,cookieFl:cookieFl,sizeName:sizeName,upgradeName:upgradeName,upgradePrice:upgradePrice});
+  }
+  updateCart();toast('Added: '+item.name);closeItemModal();
+}
+
+function updateCart(){
+  var cnt=cart.reduce(function(s,i){return s+i.qty;},0);
+  document.getElementById('cart-count').textContent=cnt;
+  var bd=document.getElementById('cart-bd'),ft=document.getElementById('cart-ft');
+  if(!cart.length){
+    bd.innerHTML='<div class="cart-empty"><div style="font-size:2.8rem;opacity:.35;margin-bottom:.75rem">🍗</div><div style="font-family:var(--font-head);font-size:.85rem;letter-spacing:1px;text-transform:uppercase;color:#888">Cart is empty</div></div>';
+    ft.style.display='none';return;
+  }
+  ft.style.display='block';
+  bd.innerHTML=cart.map(function(item){
+    return '<div class="ci"><div class="ci-icon">🍗</div><div class="ci-info"><div class="ci-name">'+item.name+'</div>'+(item.details?'<div class="ci-details">'+item.details+'</div>':'')+'<div class="ci-pr">$'+item.price.toFixed(2)+' each</div></div><div class="ci-ctrl"><button class="qb" onclick="chgQty(\''+item.key+'\',-1)">−</button><span class="qn">'+item.qty+'</span><button class="qb" onclick="chgQty(\''+item.key+'\',1)">+</button></div></div>';
+  }).join('');
+  var sub=cart.reduce(function(s,i){return s+i.price*i.qty;},0);
+  var gst=sub*0.05,pst=sub*0.06,del=orderType==='delivery'?5.50:0,total=sub+gst+pst+del;
+  document.getElementById('csub').textContent='$'+sub.toFixed(2);
+  document.getElementById('cgst').textContent='$'+gst.toFixed(2);
+  document.getElementById('cpst').textContent='$'+pst.toFixed(2);
+  document.getElementById('ctot').textContent='$'+total.toFixed(2);
+  var dr=document.getElementById('cdel-row');
+  if(dr)dr.style.display=orderType==='delivery'?'flex':'none';
+}
+function chgQty(key,d){
+  for(var i=0;i<cart.length;i++){if(cart[i].key===key){cart[i].qty+=d;if(cart[i].qty<=0)cart.splice(i,1);break;}}
+  updateCart();
+}
+function openCart(){document.getElementById('cart-ov').classList.add('open');}
+function closeCart(){document.getElementById('cart-ov').classList.remove('open');}
+
+function openCheckout(){closeCart();renderCheckoutForm();document.getElementById('modal-ov').classList.add('open');}
+function closeCheckout(){document.getElementById('modal-ov').classList.remove('open');}
+function setOT(t){
+  orderType=t;
+  document.getElementById('ot-p').classList.toggle('on',t==='pickup');
+  document.getElementById('ot-d').classList.toggle('on',t==='delivery');
+  document.getElementById('del-addr').classList.toggle('hidden',t==='pickup');
+  document.getElementById('del-note').classList.toggle('hidden',t==='pickup');
+  updateCart();
+  renderPaymentSection();
+}
+function renderCheckoutForm(){
+  var sub=cart.reduce(function(s,i){return s+i.price*i.qty;},0);
+  var gst=sub*0.05,pst=sub*0.06,del=orderType==='delivery'?5.50:0,total=sub+gst+pst+del;
+  var itemRows=cart.map(function(it){
+    return '<div class="os-row"><span>'+it.name+' x'+it.qty+'</span><span>$'+(it.price*it.qty).toFixed(2)+'</span></div>'+(it.details?'<div class="os-row sub-row"><span>'+it.details+'</span><span></span></div>':'');
+  }).join('');
+  var preNote='';
+  if(!isOpen()){preNote='<div class="preorder-note"><strong>Pre-Order</strong> — We are currently closed. Your order will be prepared when we open '+getNextOpenTime()+'. We will call you to confirm!</div>';}
+  document.getElementById('mbd').innerHTML=preNote+'<div class="otype-row"><div class="oc on" id="ot-p" onclick="setOT(\'pickup\')"><div class="oc-icon">🏃</div><div class="oc-lbl">Pickup</div><div class="oc-sub">Ready in ~20 min</div></div><div class="oc" id="ot-d" onclick="setOT(\'delivery\')"><div class="oc-icon">🛵</div><div class="oc-lbl">Delivery</div><div class="oc-sub">+$5.50 · Regina</div></div></div><div class="fg"><label>Location</label><select id="o-loc" onchange="setLocation(this.value)"><option value="albert-st">Albert Street — #3 155 Albert St N, Regina</option><option value="rochdale">Rochdale — 3881 Rochdale Blvd, Regina</option><option value="east-regina">East Regina — 534 University Park Drive</option><option value="moose-jaw">Moose Jaw — 622 Main St N, Moose Jaw</option></select></div><div id="del-addr" class="fg hidden"><label>Delivery Address</label><input type="text" id="o-addr" placeholder="123 Main St, Regina, SK"></div><div id="del-note" class="del-note hidden">Delivery available within Regina. Flat rate $5.50.</div><div class="msec">YOUR INFO</div><div class="frow"><div class="fg"><label>First Name</label><input type="text" id="o-fn" placeholder="First name"></div><div class="fg"><label>Last Name</label><input type="text" id="o-ln" placeholder="Last name"></div></div><div class="fg"><label>Phone</label><input type="tel" id="o-ph" placeholder="(306) 555-0123"></div><div class="fg"><label>Email</label><input type="email" id="o-em" placeholder="you@email.com"></div><div class="fg"><label>Order Notes</label><textarea id="o-notes" placeholder="Any special requests..."></textarea></div><div class="msec">ORDER SUMMARY</div><div class="os-box">'+itemRows+'<div class="os-row" style="color:#888"><span>GST (5%)</span><span>$'+gst.toFixed(2)+'</span></div><div class="os-row" style="color:#888"><span>PST (6%)</span><span>$'+pst.toFixed(2)+'</span></div>'+(del>0?'<div class="os-row" style="color:#888"><span>Delivery</span><span>$'+del.toFixed(2)+'</span></div>':'')+'<div class="os-total"><span>Total</span><span>$'+total.toFixed(2)+'</span></div></div><div id="payment-section"></div>';
+  detectAndSortLocations(true);
+  setTimeout(renderPaymentSection,200);
+}
+function renderPaymentSection(){
+  var locId=document.getElementById('o-loc')?document.getElementById('o-loc').value:activeLocation;
+  var onlinePayKeys={'rochdale':'cd46b0d8f6927c3420e884c39aa2a3c3','albert-st':'7593a1738dc053c38b349cd6201b17d1','east-regina':'5c752e825f7c3fdab3c0c669a777650a','moose-jaw':'725447e247b61b177aa8d5cd7028bd26'};
+  var isOnlinePay=!!onlinePayKeys[locId];
+  var sec=document.getElementById('payment-section');
+  if(!sec)return;
+  var sub=cart.reduce(function(s,i){return s+i.price*i.qty;},0);
+  var del=orderType==='delivery'?5.50:0;
+  var tot=((sub*1.11)+del).toFixed(2);
+  if(isOnlinePay){
+    sec.innerHTML='<div class="msec">PAYMENT</div><p style="font-family:var(--font-head);font-size:.78rem;color:#888;letter-spacing:1px;margin-bottom:.75rem;">Enter your card details below — secured by Clover.</p><div class="clover-pay-wrap" id="clover-iframe-wrap"></div><div style="text-align:center;font-size:.74rem;color:#888;margin:.5rem 0 .75rem;">Secured by Clover · Your card details are encrypted</div><button class="btn-place" id="pbtn" onclick="submitOrder()">PAY $'+tot+' NOW</button>';
+    setTimeout(function(){initCloverIframe(onlinePayKeys[locId]);},150);
+  } else {
+    var btnTxt=isPreOrder()?'PRE-ORDER FOR '+getNextOpenTime().toUpperCase():'PLACE ORDER';
+    var btnStyle=isPreOrder()?'style="background:#F5A800;color:#0D0D0D;"':'';
+    sec.innerHTML='<div class="clover-badge">Orders sent to Clover POS</div><p class="pay-note"><strong>Payment at pickup / on delivery.</strong></p><button class="btn-place" id="pbtn" onclick="submitOrder()" '+btnStyle+'>'+btnTxt+' 🔥</button>';
+  }
+}
+function setLocation(v){
+  activeLocation=v;
+  var lbl=document.getElementById('cart-loc-label');
+  var names={'albert-st':'Albert Street','rochdale':'Rochdale','east-regina':'East Regina','moose-jaw':'Moose Jaw'};
+  if(lbl)lbl.textContent=(names[v]||'Albert Street')+' · Pickup or Delivery';
+  setTimeout(renderPaymentSection,100);
+}
+
+var cloverInstance=null;
+function initCloverIframe(pk){
+  var wrap=document.getElementById('clover-iframe-wrap');
+  if(!wrap||!window.Clover)return;
+  try{
+    cloverInstance=new window.Clover(pk);
+    var els=cloverInstance.elements();
+    var cn=els.create('CARD_NUMBER'),cd=els.create('CARD_DATE'),cv=els.create('CARD_CVV'),cp=els.create('CARD_POSTAL_CODE');
+    wrap.innerHTML='<div style="display:grid;gap:.6rem;margin-bottom:.5rem;"><div><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">Card Number</label><div id="card-number" style="border:1.5px solid #E8E0D0;border-radius:4px;padding:.55rem .8rem;background:white;"></div></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem;"><div><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">Expiry</label><div id="card-date" style="border:1.5px solid #E8E0D0;border-radius:4px;padding:.55rem .8rem;background:white;"></div></div><div><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">CVV</label><div id="card-cvv" style="border:1.5px solid #E8E0D0;border-radius:4px;padding:.55rem .8rem;background:white;"></div></div><div><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">Postal</label><div id="card-postal" style="border:1.5px solid #E8E0D0;border-radius:4px;padding:.55rem .8rem;background:white;"></div></div></div></div>';
+    cn.mount('#card-number');cd.mount('#card-date');cv.mount('#card-cvv');cp.mount('#card-postal');
+  }catch(e){console.error('Clover iframe error:',e);}
+}
+async function getCloverToken(){
+  if(!cloverInstance)return null;
+  try{
+    var r=await cloverInstance.createToken();
+    if(r.errors){var errs=Object.values(r.errors).filter(Boolean);if(errs.length){toast(errs[0]);return null;}}
+    return r.token||null;
+  }catch(e){toast('Card error: '+e.message);return null;}
+}
+
+async function submitOrder(){
+  var fn=document.getElementById('o-fn')?document.getElementById('o-fn').value.trim():'';
+  var ln=document.getElementById('o-ln')?document.getElementById('o-ln').value.trim():'';
+  var ph=document.getElementById('o-ph')?document.getElementById('o-ph').value.trim():'';
+  var em=document.getElementById('o-em')?document.getElementById('o-em').value.trim():'';
+  var notes=document.getElementById('o-notes')?document.getElementById('o-notes').value.trim():'';
+  var addr=orderType==='delivery'&&document.getElementById('o-addr')?document.getElementById('o-addr').value.trim():'';
+  var locId=document.getElementById('o-loc')?document.getElementById('o-loc').value:activeLocation;
+  if(!fn||!ph){toast('Name and phone required');return;}
+  if(orderType==='delivery'&&!addr){toast('Please enter delivery address');return;}
+  var btn=document.getElementById('pbtn');
+  btn.disabled=true;
+  var sub=cart.reduce(function(s,i){return s+i.price*i.qty;},0);
+  var gst=sub*0.05,pst=sub*0.06,del=orderType==='delivery'?5.50:0;
+  var total=parseFloat((sub+gst+pst+del).toFixed(2));
+
+  var onlineLocs=['rochdale','albert-st','east-regina','moose-jaw'];
+  if(onlineLocs.includes(locId)){
+    btn.innerHTML='<span class="spinner"></span>Processing card...';
+    var cardToken=await getCloverToken();
+    if(!cardToken){btn.disabled=false;btn.innerHTML='PAY $'+total.toFixed(2)+' NOW';return;}
+    btn.innerHTML='<span class="spinner"></span>Charging card...';
+    var onum2='WO-'+Math.floor(1000+Math.random()*9000);
+    try{
+      var chargeItems=cart.map(function(i){var parts=[];if(i.flavors&&i.flavors.length){if(i.flavors.length===1)parts.push(i.flavors[0]);else i.flavors.forEach(function(f,idx){parts.push('Order '+(idx+1)+': '+f);});}if(i.cookieFl)parts.push(i.cookieFl);if(i.sizeName)parts.push(i.sizeName);if(i.upgradeName)parts.push(i.upgradeName);if(i.notes)parts.push('Note: '+i.notes);return{name:i.name,flavor:parts.join(' · '),price:i.price,qty:i.qty};});
+      var cr=await fetch(API_BASE+'/api/charge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({locationId:locId,cardToken:cardToken,amount:total,orderId:onum2,orderType:orderType,subtotal:sub,notes:notes,customer:{firstName:fn,lastName:ln,phone:ph,email:em,address:addr},items:chargeItems})});
+      var cd=await cr.json();
+      if(!cd.success){toast(cd.error||'Payment failed');btn.disabled=false;btn.innerHTML='PAY $'+total.toFixed(2)+' NOW';return;}
+      showSuccess({success:true,orderNum:onum2,cloverSuccess:true,customer:fn,total:total.toFixed(2),phone:ph,orderType:orderType,location:'Rochdale',paid:true,last4:cd.last4});
+      cart=[];updateCart();return;
+    }catch(e){toast('Payment error — try again');btn.disabled=false;btn.innerHTML='PAY $'+total.toFixed(2)+' NOW';return;}
+  }
+
+  btn.innerHTML='<span class="spinner"></span>Sending to Kitchen...';
+  var serverItems=cart.map(function(i){
+    var parts=[];
+    if(i.flavors&&i.flavors.length){
+      if(i.flavors.length===1)parts.push(i.flavors[0]);
+      else i.flavors.forEach(function(f,idx){parts.push('Order '+(idx+1)+': '+f);});
+    }
+    if(i.cookieFl)parts.push(i.cookieFl);
+    if(i.sizeName)parts.push(i.sizeName);
+    if(i.upgradeName)parts.push(i.upgradeName);
+    if(i.notes)parts.push('Note: '+i.notes);
+    return {name:i.name,flavor:parts.join(' · '),price:i.price,qty:i.qty};
+  });
+  var preOrderNote=isPreOrder()?'[PRE-ORDER — opens '+getNextOpenTime()+'] ':'';
+  try{
+    var resp=await fetch(API_BASE+'/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({locationId:locId,orderType:orderType,customer:{firstName:fn,lastName:ln,phone:ph,email:em,address:addr},items:serverItems,notes:preOrderNote+(notes||''),subtotal:sub,tax:gst+pst,total:total,preOrder:isPreOrder(),openTime:getNextOpenTime()})});
+    var data=await resp.json();
+    if(data.success){showSuccess(Object.assign({},data,{orderType:orderType,paid:false}));cart=[];updateCart();}
+    else{toast('Error: '+(data.error||'Unknown'));btn.disabled=false;btn.innerHTML='PLACE ORDER 🔥';}
+  }catch(e){
+    var onum='WO-'+Math.floor(1000+Math.random()*9000);
+    showSuccess({success:true,orderNum:onum,cloverSuccess:false,customer:fn,total:total.toFixed(2),phone:ph,orderType:orderType,location:locId,paid:false});
+    cart=[];updateCart();
+  }
+}
+
+// ── SHOW SUCCESS — with loyalty stamp block ──────────────────
+function showSuccess(d){
+  // Fire auto-stamp on server
+  if(d.orderNum) loyaltyAutoStamp(d.orderNum);
+
+  var session = loyGetSession();
+  var locNames={'albert-st':'Albert Street','rochdale':'Rochdale','east-regina':'East Regina','moose-jaw':'Moose Jaw'};
+  var locName=d.location?(locNames[d.location]||d.location):'';
+
+  // Loyalty block — member vs non-member
+  var stampBlock='';
+  if(session){
+    // Member — stamp was just added automatically
+    stampBlock=
+      '<div style="background:linear-gradient(135deg,#0D0D0D,#1A1208);border:2px solid #F5A800;border-radius:8px;padding:1rem 1.25rem;margin:1rem 0;text-align:center;">'
+      +'<div style="font-family:var(--font-display);font-size:1.1rem;color:#F5A800;letter-spacing:2px;margin-bottom:.25rem;">🍗 STAMP ADDED!</div>'
+      +'<div style="font-family:var(--font-head);font-size:.75rem;color:#888;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:.7rem;">Saucy Stamps · '+session.name.split(' ')[0]+'\'s Card</div>'
+      +'<button onclick="closeCheckout();openLoyalty();" style="background:transparent;border:1.5px solid #F5A800;color:#F5A800;font-family:var(--font-head);font-size:.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:.4rem 1.1rem;border-radius:3px;cursor:pointer;">VIEW MY CARD →</button>'
+      +'</div>';
+  } else {
+    // Not a member — nudge to join
+    stampBlock=
+      '<div style="background:#F5F0E8;border:1.5px solid #C8B89A;border-radius:8px;padding:1rem 1.25rem;margin:1rem 0;text-align:center;">'
+      +'<div style="font-family:var(--font-display);font-size:1rem;color:#1A1208;letter-spacing:1px;margin-bottom:.25rem;">🌾 EARN FREE WINGS</div>'
+      +'<div style="font-family:var(--font-head);font-size:.75rem;color:#7A6545;letter-spacing:1px;margin-bottom:.7rem;">This order could be Stamp #1. Join Saucy Stamps — it\'s free!</div>'
+      +'<button onclick="closeCheckout();openLoyalty();" style="background:#E8190A;border:none;color:white;font-family:var(--font-head);font-size:.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:.45rem 1.2rem;border-radius:3px;cursor:pointer;">JOIN FREE 🍗</button>'
+      +'</div>';
+  }
+
+  document.getElementById('mbd').innerHTML=
+    '<div class="success-view">'
+    +'<div class="sv-icon">'+(d.paid?'💳':'🔥')+'</div>'
+    +'<h2>'+(d.paid?'PAYMENT CONFIRMED!':'ORDER PLACED!')+'</h2>'
+    +'<p>You are locked in, '+d.customer+'!</p>'
+    +'<div class="onum">'+d.orderNum+'</div>'
+    +(d.paid
+      ?'<p style="color:#276749;font-weight:600;">Payment of $'+d.total+' received · Card ending '+(d.last4||'****')+'</p>'
+      :'<p><strong>Total:</strong> $'+d.total+' (pay at '+(d.orderType==='pickup'?'pickup':'delivery')+')</p>'
+    )
+    +'<p><strong>'+(d.orderType==='pickup'?'Pickup':'Delivery')+'</strong> · '+locName+'</p>'
+    +'<p>We will call <strong>'+d.phone+'</strong> when it is ready.</p>'
+    + stampBlock
+    +'<p style="color:'+(d.cloverSuccess?'#276749':'#888')+';font-size:.8rem;margin-top:.4rem">'+(d.cloverSuccess?'✓ Order sent to Clover POS':'Order logged — kitchen notified')+'</p>'
+    +'<a class="btn-red" href="#" onclick="closeCheckout();showHome()" style="display:inline-block;margin-top:1.25rem;font-size:.95rem;padding:.8rem 1.8rem">Order Again 🍗</a>'
+    +'</div>';
+}
+
+var LOCATIONS_GEO={'albert-st':{lat:50.4501,lng:-104.6178,name:'Albert Street',address:'#3 155 Albert St N, Regina'},'rochdale':{lat:50.4777,lng:-104.6494,name:'Rochdale',address:'3881 Rochdale Blvd, Regina'},'east-regina':{lat:50.4282,lng:-104.5768,name:'East Regina',address:'534 University Park Drive, Regina'},'moose-jaw':{lat:50.3934,lng:-105.5348,name:'Moose Jaw',address:'622 Main St N, Moose Jaw'}};
+function distKm(lat1,lon1,lat2,lon2){var R=6371,dL=Math.PI*(lat2-lat1)/180,dO=Math.PI*(lon2-lon1)/180;var a=Math.sin(dL/2)*Math.sin(dL/2)+Math.cos(Math.PI*lat1/180)*Math.cos(Math.PI*lat2/180)*Math.sin(dO/2)*Math.sin(dO/2);return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
+function detectAndSortLocations(fromCheckout){
+  if(!navigator.geolocation)return;
+  navigator.geolocation.getCurrentPosition(function(pos){
+    var ids=Object.keys(LOCATIONS_GEO);
+    ids.sort(function(a,b){return distKm(pos.coords.latitude,pos.coords.longitude,LOCATIONS_GEO[a].lat,LOCATIONS_GEO[a].lng)-distKm(pos.coords.latitude,pos.coords.longitude,LOCATIONS_GEO[b].lat,LOCATIONS_GEO[b].lng);});
+    activeLocation=ids[0];
+    var nb=document.getElementById('loc-banner'),nn=document.getElementById('loc-nearest-name');
+    if(nb)nb.style.display='block';
+    if(nn)nn.textContent=LOCATIONS_GEO[ids[0]].name+' · '+LOCATIONS_GEO[ids[0]].address;
+    if(fromCheckout){
+      var sel=document.getElementById('o-loc');
+      if(sel){
+        var opts={'albert-st':'Albert Street — #3 155 Albert St N, Regina','rochdale':'Rochdale — 3881 Rochdale Blvd, Regina','east-regina':'East Regina — 534 University Park Drive','moose-jaw':'Moose Jaw — 622 Main St N, Moose Jaw'};
+        sel.innerHTML='';
+        ids.forEach(function(id,i){var o=document.createElement('option');o.value=id;o.textContent=opts[id]+(i===0?' (Nearest)':'');sel.appendChild(o);});
+        sel.value=ids[0];setLocation(ids[0]);
+      }
+    }
+  },function(){});
+}
+
+function renderSauces(){
+  document.getElementById('sgrid').innerHTML=Object.keys(FLAVORS).map(function(cat){
+    return '<div class="sgroup"><div class="sg-title">'+cat+'</div><ul>'+FLAVORS[cat].map(function(f){return '<li>'+f+'</li>';}).join('')+'</ul></div>';
+  }).join('');
+}
+
+async function checkAPI(){
+  var dot=document.getElementById('api-dot'),txt=document.getElementById('api-txt');
+  try{
+    var r=await fetch(API_BASE+'/api/health');
+    if(r.ok){dot.className='api-dot ok';txt.textContent='server online';}
+    else throw new Error();
+  }catch(e){dot.className='api-dot err';txt.textContent='offline mode';}
+}
+
+var BASE={date:new Date('2026-04-14T00:00:00-06:00'),wings:1084400,orders:135550};
+function getLive(){
+  var secs=(Date.now()-BASE.date)/1000;
+  var month=new Date().getMonth()+1;
+  var daily=month>=5&&month<=9?505:320;
+  var ops=daily/86400;
+  return{wings:Math.floor(BASE.wings+ops*8*secs),orders:Math.floor(BASE.orders+ops*secs),spw:Math.round(86400/(daily*8))};
+}
+function fmt(n){return n.toLocaleString('en-CA');}
+function animUp(el,target,dur){
+  if(!el)return;
+  var start=performance.now();
+  function upd(now){
+    var p=Math.min((now-start)/dur,1);
+    var e=1-Math.pow(1-p,3);
+    el.textContent=fmt(Math.floor(e*target));
+    if(p<1)requestAnimationFrame(upd);
+  }
+  requestAnimationFrame(upd);
+}
+function updateCounters(){
+  var l=getLive();
+  var wc=document.getElementById('wings-counter'),oc=document.getElementById('orders-counter'),sw=document.getElementById('spw');
+  if(wc)wc.textContent=fmt(l.wings);
+  if(oc)oc.textContent=fmt(l.orders);
+  if(sw)sw.textContent=l.spw;
+}
+async function fetchDonation(){
+  try{
+    var r=await fetch(API_BASE+'/api/donation');
+    if(r.ok){var d=await r.json();var el=document.getElementById('donation-counter');if(el)el.textContent=fmt(d.amount||27000)+'+';}
+  }catch(e){}
+}
+setTimeout(function(){
+  var l=getLive();
+  animUp(document.getElementById('wings-counter'),l.wings,2500);
+  animUp(document.getElementById('orders-counter'),l.orders,2500);
+},800);
+fetchDonation();
+setInterval(updateCounters,1000);
+setInterval(fetchDonation,60000);
+
+var HOURS={0:[11,27],1:[11,25],2:[11,25],3:[11,25],4:[11,27],5:[11,27],6:[11,27]};
+function isOpen(){
+  var now=new Date();
+  var regina=new Date(now.toLocaleString('en-US',{timeZone:'America/Regina'}));
+  var day=regina.getDay(),hour=regina.getHours()+regina.getMinutes()/60;
+  var h=HOURS[day];
+  if(hour>=h[0]){if(h[1]<=24&&hour<h[1])return true;if(h[1]>24&&hour>=h[0])return true;}
+  var yh=HOURS[(day+6)%7];
+  if(yh[1]>24&&hour<(yh[1]-24))return true;
+  return false;
+}
+function getNextOpenTime(){
+  var now=new Date();
+  var regina=new Date(now.toLocaleString('en-US',{timeZone:'America/Regina'}));
+  var day=regina.getDay(),hour=regina.getHours();
+  if(hour<11)return 'today at 11:00 AM';
+  var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  return days[(day+1)%7]+' at 11:00 AM';
+}
+function isPreOrder(){return !isOpen();}
+function updateHoursBanner(){
+  var banner=document.getElementById('preorder-banner');
+  if(!banner)return;
+  if(!isOpen()){
+    banner.classList.add('show');
+    banner.querySelector('p').innerHTML='<span class="preorder-badge">Pre-Order</span> We are closed right now — but you can <strong>pre-order for when we open!</strong> Opens '+getNextOpenTime()+'.';
+  } else {
+    banner.classList.remove('show');
+  }
+}
+
+function openFranchise(){
+  document.getElementById('franchise-ov').style.display='block';
+  document.body.style.overflow='hidden';
+}
+function closeFranchise(){
+  document.getElementById('franchise-ov').style.display='none';
+  document.body.style.overflow='';
+}
+document.getElementById('franchise-ov').addEventListener('click',function(e){if(e.target===this)closeFranchise();});
+async function submitFranchise(){
+  var fn=document.getElementById('fr-fn').value.trim();
+  var em=document.getElementById('fr-em').value.trim();
+  var ph=document.getElementById('fr-ph').value.trim();
+  var city=document.getElementById('fr-city').value.trim();
+  if(!fn||!em||!ph||!city){toast('Please fill in all required fields');return;}
+  var btn=document.getElementById('fr-btn');
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Sending...';
+  try{await fetch(API_BASE+'/api/franchise',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({firstName:fn,lastName:document.getElementById('fr-ln').value.trim(),email:em,phone:ph,city:city,budget:document.getElementById('fr-budget').value,message:document.getElementById('fr-msg').value.trim()})});}catch(e){}
+  document.getElementById('fr-msg-box').innerHTML='<div style="background:#F0FFF4;border:1px solid #C6F6D5;border-radius:6px;padding:1rem;text-align:center;margin-bottom:1rem;"><div style="font-family:var(--font-display);font-size:1.2rem;color:#276749;letter-spacing:1px;">APPLICATION RECEIVED!</div><p style="font-size:.85rem;color:#555;margin-top:.4rem;">We will be in touch within 48 hours. The Sauce Boss is excited to connect!</p></div>';
+  btn.style.display='none';
+}
+
+history.replaceState({page:'home'},'');
+renderSauces();
+updateCart();
+updateHoursBanner();
+setInterval(updateHoursBanner,60000);
+detectAndSortLocations(false);
+checkAPI();
+
+
+// ══════════════════════════════════════════════
+//   WING-O SAUCY STAMPS — LOYALTY PROGRAM
+// ══════════════════════════════════════════════
+
+var LOY_SESSION_KEY = 'wingo_loyalty_session';
+
+function loyGetSession(){
+  try{ return JSON.parse(localStorage.getItem(LOY_SESSION_KEY)||'null'); }
+  catch(e){ return null; }
+}
+function loySaveSession(member){
+  localStorage.setItem(LOY_SESSION_KEY, JSON.stringify({phone:member.phone,name:member.name,email:member.email}));
+}
+
+function openLoyalty(){
+  document.getElementById('loyalty-ov').classList.add('open');
+  document.body.style.overflow='hidden';
+  var session = loyGetSession();
+  if(session){
+    loyLoadMember(session.phone);
+  } else {
+    showLoyView('loy-signup');
+  }
+}
+function closeLoyalty(){
+  document.getElementById('loyalty-ov').classList.remove('open');
+  document.body.style.overflow='';
+}
+function showLoyView(id){
+  document.querySelectorAll('.loy-view').forEach(function(v){v.classList.remove('active');});
+  var el = document.getElementById(id);
+  if(el) el.classList.add('active');
+}
+
+async function loyLoadMember(phone){
+  try{
+    var r = await fetch(API_BASE+'/api/loyalty/member/'+phone.replace(/\D/g,''));
+    var d = await r.json();
+    if(d.success){
+      loySaveSession(d.member);
+      showLoyView('loy-dashboard');
+      renderDashboard(d.member);
+    } else {
+      localStorage.removeItem(LOY_SESSION_KEY);
+      showLoyView('loy-signup');
+    }
+  }catch(e){
+    showLoyView('loy-signup');
+  }
+}
+
+async function loyaltySignup(){
+  var name = document.getElementById('loy-name').value.trim();
+  var email = document.getElementById('loy-email').value.trim();
+  var phone = document.getElementById('loy-phone').value.trim();
+  var errEl = document.getElementById('loy-signup-error');
+  errEl.style.display='none';
+
+  if(!name||!email||!phone){errEl.textContent='Please fill in all fields.';errEl.style.display='block';return;}
+  if(!email.includes('@')){errEl.textContent='Please enter a valid email.';errEl.style.display='block';return;}
+  if(phone.replace(/\D/g,'').length < 10){errEl.textContent='Please enter a valid 10-digit phone number.';errEl.style.display='block';return;}
+
+  var btn = document.querySelector('#loy-signup .loy-btn');
+  btn.textContent='Creating your card...';btn.disabled=true;
+
+  try{
+    var r = await fetch(API_BASE+'/api/loyalty/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,phone})});
+    var d = await r.json();
+    if(d.success){
+      loySaveSession(d.member);
+      showLoyView('loy-dashboard');
+      renderDashboard(d.member);
+      toast('Welcome to Saucy Stamps, '+name.split(' ')[0]+'! 🍗');
+    } else {
+      errEl.textContent = d.error==='Phone already registered' ? 'Phone already registered! Use "Find my card" to log in.' : (d.error||'Signup failed');
+      errEl.style.display='block';
+    }
+  }catch(e){
+    errEl.textContent='Connection error. Please try again.';
+    errEl.style.display='block';
+  }
+  btn.textContent='CREATE MY STAMP CARD 🍗';btn.disabled=false;
+}
+
+async function loyaltyLookup(){
+  var input = document.getElementById('loy-lookup-input').value.trim();
+  var errEl = document.getElementById('loy-lookup-error');
+  errEl.style.display='none';
+  if(!input){errEl.textContent='Please enter your phone or email.';errEl.style.display='block';return;}
+
+  var btn = document.querySelector('#loy-lookup .loy-btn');
+  btn.textContent='Searching...';btn.disabled=true;
+
+  try{
+    var r = await fetch(API_BASE+'/api/loyalty/lookup?q='+encodeURIComponent(input));
+    var d = await r.json();
+    if(d.success){
+      loySaveSession(d.member);
+      showLoyView('loy-dashboard');
+      renderDashboard(d.member);
+      toast('Welcome back, '+d.member.name.split(' ')[0]+'! 🍗');
+    } else {
+      errEl.textContent='No account found. Check your phone/email or sign up free!';
+      errEl.style.display='block';
+    }
+  }catch(e){
+    errEl.textContent='Connection error. Please try again.';
+    errEl.style.display='block';
+  }
+  btn.textContent='FIND MY STAMPS 🍗';btn.disabled=false;
+}
+
+async function loyaltyAddStamp(){
+  var orderNum = document.getElementById('loy-order-num').value.trim().toUpperCase();
+  var errEl = document.getElementById('loy-stamp-error');
+  errEl.style.display='none';
+
+  if(!orderNum||!orderNum.startsWith('WO-')){
+    errEl.textContent='Please enter a valid Wing-O order number (WO-XXXX).';
+    errEl.style.display='block';return;
+  }
+
+  var session = loyGetSession();
+  if(!session){showLoyView('loy-signup');return;}
+
+  var btn = document.querySelector('#loy-add-stamp .loy-btn');
+  btn.textContent='Adding stamp...';btn.disabled=true;
+
+  try{
+    var r = await fetch(API_BASE+'/api/loyalty/stamp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:session.phone,orderNum,password:'sauceboss2025'})});
+    var d = await r.json();
+    if(d.success){
+      loySaveSession(d.member);
+      document.getElementById('loy-order-num').value='';
+      var msg = d.gotFree
+        ? '🎉 10 stamps! You earned FREE WINGS! Show your card to redeem.'
+        : 'Stamp #'+d.totalOrders+' added! '+(10-d.stamps)+' more until free wings 🍗';
+      document.getElementById('loy-stamp-success-msg').textContent=msg;
+      showLoyView('loy-stamp-success');
+      toast(d.gotFree ? '🎉 FREE WINGS EARNED!' : 'Stamp added! 🍗');
+    } else {
+      errEl.textContent = d.error==='Order number already used' ? 'This order number has already been used.' : (d.error||'Failed to add stamp');
+      errEl.style.display='block';
+    }
+  }catch(e){
+    errEl.textContent='Connection error. Please try again.';
+    errEl.style.display='block';
+  }
+  btn.textContent='STAMP MY CARD 🔥';btn.disabled=false;
+}
+
+function renderDashboard(member){
+  if(!member) return;
+  var stamps = member.stamps||0;
+  var totalOrders = member.totalOrders||0;
+  var freeEarned = member.freeEarned||0;
+  var toNext = 10 - stamps;
+
+  document.getElementById('dash-name').textContent = member.name;
+  document.getElementById('dash-stamps').textContent = stamps;
+  document.getElementById('dash-total-orders').textContent = totalOrders;
+  document.getElementById('dash-free-earned').textContent = freeEarned;
+  document.getElementById('dash-next-free').textContent = toNext;
+
+  var pct = Math.min((stamps/10)*100,100);
+  document.getElementById('loy-progress').style.width=pct+'%';
+  document.getElementById('loy-progress-label').textContent=stamps+' of 10 stamps · '+toNext+' more to free wings';
+
+  var rewardBox = document.getElementById('loy-reward-box');
+  if(stamps===0 && freeEarned>0 && member.history && member.history.length>0){
+    var code='SAUCY-'+member.phone.slice(-4);
+    document.getElementById('loy-reward-code').textContent=code;
+    rewardBox.style.display='block';
+  } else {
+    rewardBox.style.display='none';
+  }
+
+  var topGrid=document.getElementById('stamps-grid-top');
+  var botGrid=document.getElementById('stamps-grid-bot');
+  topGrid.innerHTML='';botGrid.innerHTML='';
+  for(var i=0;i<10;i++){
+    var div=document.createElement('div');
+    div.className='stamp';
+    if(i<stamps){div.classList.add('earned');div.textContent='🍗';}
+    else if(i===9&&stamps===9){div.textContent='🌟';}
+    if(i<5)topGrid.appendChild(div);
+    else botGrid.appendChild(div);
+  }
+
+  var histEl=document.getElementById('loy-history-list');
+  var hist=member.history||[];
+  if(!hist.length){
+    histEl.innerHTML='<div style="text-align:center;color:#AAA;font-size:.8rem;padding:1rem 0;">No stamps yet — place an order to earn your first stamp!</div>';
+  } else {
+    histEl.innerHTML=hist.slice(0,8).map(function(h){
+      return '<div class="loy-hist-item"><div><div style="font-family:var(--font-head);font-size:.8rem;color:var(--ink);letter-spacing:.5px;">'+h.orderNum+'</div><div class="loy-hist-date">'+h.date+(h.auto?' · Auto':'')+'</div></div><div style="color:var(--red);font-size:.85rem;font-weight:600;">🍗 Stamp #'+h.stamp+'</div></div>';
+    }).join('');
+  }
+}
+
+function loyaltyLogout(){
+  localStorage.removeItem(LOY_SESSION_KEY);
+  document.getElementById('loy-name').value='';
+  document.getElementById('loy-email').value='';
+  document.getElementById('loy-phone').value='';
+  showLoyView('loy-signup');
+}
+
+// Auto-stamp — fires after confirmed order, server does the real work
+async function loyaltyAutoStamp(orderNum){
+  var session = loyGetSession();
+  if(!session) return;
+  try{
+    var r = await fetch(API_BASE+'/api/loyalty/stamp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:session.phone,orderNum,password:'sauceboss2025'})});
+    var d = await r.json();
+    if(d.success){
+      loySaveSession(d.member);
+      if(d.gotFree) toast('🎉 10 stamps! FREE WINGS EARNED! Open Rewards to redeem.');
+      else toast('🍗 Stamp added! '+(10-d.stamps)+' more to free wings.');
+    }
+  }catch(e){console.log('Auto-stamp failed silently');}
+}
+</script>
+<script src="https://checkout.clover.com/sdk.js"></script>
+
+<!-- ══ LOYALTY PROGRAM MODAL ══ -->
+<div class="loyalty-ov" id="loyalty-ov" onclick="if(event.target===this)closeLoyalty()">
+<div class="loyalty-modal">
+
+  <div class="loy-head">
+    <div class="loy-head-title">🍗 SAUCY STAMPS</div>
+    <div class="loy-head-sub">Wing-O Loyalty Program · Collect 10 · Get 1 Free</div>
+    <button class="loy-close" onclick="closeLoyalty()">✕</button>
+  </div>
+
+  <div class="loy-body">
+
+    <!-- VIEW: SIGNUP -->
+    <div class="loy-view active" id="loy-signup">
+      <div class="loy-form-title">JOIN THE FLOCK 🌾</div>
+      <div class="loy-form-sub">Sign up for free. Every order earns a stamp. Collect 10 stamps and your next half order of wings is on us.</div>
+      <input class="loy-input" type="text" id="loy-name" placeholder="Full Name">
+      <input class="loy-input" type="email" id="loy-email" placeholder="Email Address">
+      <input class="loy-input" type="tel" id="loy-phone" placeholder="Phone Number (306-xxx-xxxx)">
+      <div id="loy-signup-error" style="color:var(--red);font-size:.8rem;margin-bottom:.6rem;display:none;font-family:var(--font-head);letter-spacing:1px;"></div>
+      <button class="loy-btn" onclick="loyaltySignup()">CREATE MY STAMP CARD 🍗</button>
+      <div class="loy-link">Already a member? <a onclick="showLoyView('loy-lookup')">Look up my card →</a></div>
+    </div>
+
+    <!-- VIEW: LOOKUP -->
+    <div class="loy-view" id="loy-lookup">
+      <div class="loy-lookup-wrap">
+        <div class="loy-lookup-icon">🔍</div>
+        <div class="loy-form-title">FIND MY CARD</div>
+        <div class="loy-form-sub">Enter your phone number or email to pull up your stamp card.</div>
+      </div>
+      <input class="loy-input" type="text" id="loy-lookup-input" placeholder="Phone or Email">
+      <div id="loy-lookup-error" style="color:var(--red);font-size:.8rem;margin-bottom:.6rem;display:none;font-family:var(--font-head);letter-spacing:1px;"></div>
+      <button class="loy-btn" onclick="loyaltyLookup()">FIND MY STAMPS 🍗</button>
+      <div class="loy-link"><a onclick="showLoyView('loy-signup')">← New here? Sign up free</a></div>
+    </div>
+
+    <!-- VIEW: DASHBOARD -->
+    <div class="loy-view" id="loy-dashboard">
+
+      <div class="reward-box" id="loy-reward-box" style="display:none;">
+        <div class="reward-title">🎉 FREE WINGS EARNED!</div>
+        <div class="reward-sub">Show this to your server or mention it when ordering</div>
+        <div class="reward-code" id="loy-reward-code">SAUCY10</div>
+        <div style="font-family:var(--font-head);font-size:.7rem;color:rgba(255,255,255,.7);margin-top:.6rem;letter-spacing:1px;position:relative;">One free half order of wings · Any flavor 🌶️</div>
+      </div>
+
+      <div class="stamp-card">
+        <div class="stamp-card-header">
+          <div>
+            <div style="font-family:var(--font-head);font-size:.65rem;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:2px;">Member</div>
+            <div class="stamp-card-name" id="dash-name">—</div>
+          </div>
+          <div class="stamp-card-pts">
+            <span id="dash-stamps">0</span>
+            stamps
+          </div>
+        </div>
+        <div class="stamps-grid" id="stamps-grid-top"></div>
+        <div class="stamps-grid" id="stamps-grid-bot"></div>
+        <div class="stamp-legend">
+          <div class="stamp-leg-item"><div class="stamp-leg-dot" style="background:var(--red);"></div>Earned</div>
+          <div class="stamp-leg-item"><div class="stamp-leg-dot" style="background:var(--yellow);"></div>Free Wings!</div>
+          <div class="stamp-leg-item"><div class="stamp-leg-dot" style="border:2px dashed rgba(245,168,0,.4);"></div>Remaining</div>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-bar" id="loy-progress" style="width:0%"></div>
+        </div>
+        <div class="progress-label" id="loy-progress-label">0 of 10 stamps · 10 more to free wings</div>
+      </div>
+
+      <div class="loy-stats">
+        <div class="loy-stat"><div class="loy-stat-num" id="dash-total-orders">0</div><div class="loy-stat-lbl">Total Orders</div></div>
+        <div class="loy-stat"><div class="loy-stat-num" id="dash-free-earned">0</div><div class="loy-stat-lbl">Free Wings Earned</div></div>
+        <div class="loy-stat"><div class="loy-stat-num" id="dash-next-free">10</div><div class="loy-stat-lbl">Stamps to Next Free</div></div>
+      </div>
+
+      <button class="loy-btn" onclick="showLoyView('loy-add-stamp')" style="margin-bottom:.6rem;">+ ADD A STAMP (After In-Store Order)</button>
+      <button class="loy-btn" style="background:transparent;color:var(--red);border:1.5px solid var(--red);margin-bottom:1rem;" onclick="loyaltyLogout()">Switch Account</button>
+
+      <div class="loy-history">
+        <div class="loy-history-title">📋 Stamp History</div>
+        <div id="loy-history-list"></div>
+      </div>
+    </div>
+
+    <!-- VIEW: ADD STAMP (for in-store orders) -->
+    <div class="loy-view" id="loy-add-stamp">
+      <div style="text-align:center;padding:.5rem 0 .75rem;">
+        <div style="font-size:2.5rem;">🍗</div>
+        <div class="loy-form-title" style="margin-bottom:.3rem;">ADD A STAMP</div>
+        <div class="loy-form-sub">Enter your Wing-O order number from your receipt to earn your stamp.</div>
+      </div>
+      <input class="loy-input" type="text" id="loy-order-num" placeholder="Order Number (e.g. WO-1234)" style="text-transform:uppercase;">
+      <div id="loy-stamp-error" style="color:var(--red);font-size:.8rem;margin-bottom:.6rem;display:none;font-family:var(--font-head);letter-spacing:1px;"></div>
+      <button class="loy-btn" onclick="loyaltyAddStamp()">STAMP MY CARD 🔥</button>
+      <button class="loy-btn" style="background:transparent;color:#7A6545;border:1.5px solid var(--paper-line);margin-top:.5rem;" onclick="showLoyView('loy-dashboard')">← Back to My Card</button>
+      <div style="background:rgba(139,109,56,.08);border:1px solid var(--paper-line);border-radius:4px;padding:.75rem;margin-top:1rem;font-size:.76rem;color:#7A6545;line-height:1.6;font-family:var(--font-head);letter-spacing:.5px;text-align:center;">
+        Online orders get stamped automatically! Use this for in-store orders only. Each order number can only be used once.
+      </div>
+    </div>
+
+    <!-- VIEW: STAMP SUCCESS -->
+    <div class="loy-view" id="loy-stamp-success">
+      <div style="text-align:center;padding:1.5rem 0;">
+        <div style="font-size:3.5rem;margin-bottom:.5rem;">🎉</div>
+        <div class="loy-form-title">STAMP ADDED!</div>
+        <div class="loy-form-sub" id="loy-stamp-success-msg">You earned a stamp! Keep collecting.</div>
+        <button class="loy-btn yellow" style="margin-top:1rem;" onclick="showLoyView('loy-dashboard');loyLoadMember(loyGetSession()&&loyGetSession().phone)">VIEW MY CARD →</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
 
 </body>
 </html>
