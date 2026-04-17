@@ -10,14 +10,47 @@
   --red:#E8190A;--red-dark:#A8120A;--yellow:#F5A800;
   --black:#0D0D0D;--charcoal:#1A1A1A;--dark:#1C1A17;
   --white:#FFF;
+  --paper:#F2ECD9;--paper-dark:#E8DFC4;--paper-line:#C8B89A;
+  --ink:#1A1208;--ink-light:#3D2E18;
   --font-display:'Anton',sans-serif;
   --font-head:'Oswald',sans-serif;
   --font-body:'Barlow',sans-serif;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
-body{font-family:var(--font-body);color:var(--black);overflow-x:hidden;background:#F5F0E8;}
-body::before{content:'';position:fixed;inset:0;background:rgba(245,240,232,0.93);pointer-events:none;z-index:0;}
+
+/* NEWSPAPER BACKGROUND */
+body{
+  font-family:var(--font-body);
+  color:var(--ink);
+  overflow-x:hidden;
+  background-color:var(--paper);
+  background-image:
+    /* Horizontal ruled lines like newsprint */
+    repeating-linear-gradient(
+      180deg,
+      transparent,
+      transparent 28px,
+      rgba(139,109,56,.08) 28px,
+      rgba(139,109,56,.08) 29px
+    ),
+    /* Paper grain texture */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E");
+  background-size:100% 29px, 300px 300px;
+}
+
+/* FIXED NEWSPAPER OVERLAY — aged paper tint */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse 120% 80% at 50% 0%, rgba(242,236,217,.0) 0%, rgba(210,190,140,.12) 100%),
+    radial-gradient(ellipse 60% 40% at 10% 90%, rgba(139,109,56,.06) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 90% 10%, rgba(139,109,56,.06) 0%, transparent 60%);
+  pointer-events:none;
+  z-index:0;
+}
+
 *{position:relative;z-index:1;}
 nav,footer,.cart-ov,.modal-ov,.toast,.loc-banner{z-index:10;}
 ::-webkit-scrollbar{width:5px;}
@@ -53,9 +86,9 @@ nav{position:sticky;top:0;z-index:999;background:var(--black);border-bottom:3px 
 .stat .n{font-family:var(--font-display);font-size:2.3rem;color:var(--red);}
 .stat .l{font-family:var(--font-head);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:#555;}
 
-.promo-bar{background:var(--dark);padding:1rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.05);}
+.promo-bar{background:var(--ink);padding:1rem 1.5rem;border-bottom:3px double var(--paper-line);}
 .promo-bar-inner{max-width:1300px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.6rem;}
-.pc{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:5px;padding:.8rem;text-align:center;}
+.pc{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:3px;padding:.8rem;text-align:center;}
 .pc .day{font-family:var(--font-display);font-size:1.2rem;color:var(--yellow);letter-spacing:1px;}
 .pc .deal{font-family:var(--font-head);font-size:.73rem;color:#777;letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
 
@@ -79,35 +112,35 @@ nav{position:sticky;top:0;z-index:999;background:var(--black);border-bottom:3px 
 .lunch-items{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem;}
 .lunch-item{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:4px;padding:.35rem .85rem;font-family:var(--font-head);font-size:.76rem;color:#CCC;letter-spacing:1px;text-transform:uppercase;}
 
-.cat-section{padding:4rem 1.5rem;background:rgba(245,240,232,.97);}
+.cat-section{padding:4rem 1.5rem;background:transparent;}
 .cat-inner{max-width:1300px;margin:0 auto;}
 .eyebrow{font-family:var(--font-head);font-size:.75rem;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:.4rem;}
-.sec-title{font-family:var(--font-display);font-size:clamp(2rem,4vw,3rem);line-height:1;letter-spacing:1px;margin-bottom:2rem;}
+.sec-title{font-family:var(--font-display);font-size:clamp(2rem,4vw,3rem);line-height:1;letter-spacing:1px;margin-bottom:2rem;color:var(--ink);}
 .cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;}
-.cat-card{background:white;border:2px solid #E8E0D0;border-radius:10px;overflow:hidden;cursor:pointer;transition:all .2s;text-align:center;}
-.cat-card:hover{transform:translateY(-4px);box-shadow:0 8px 30px rgba(0,0,0,.12);border-color:var(--red);}
-.cat-card-img{height:140px;overflow:hidden;background:#F5F0E8;}
+.cat-card{background:var(--paper);border:2px solid var(--paper-line);border-radius:4px;overflow:hidden;cursor:pointer;transition:all .2s;text-align:center;box-shadow:2px 2px 8px rgba(0,0,0,.12);}
+.cat-card:hover{transform:translateY(-4px);box-shadow:3px 3px 16px rgba(0,0,0,.25);border-color:var(--red);}
+.cat-card-img{height:140px;overflow:hidden;background:var(--paper-dark);}
 .cat-card-img img{width:100%;height:100%;object-fit:cover;transition:transform .3s;}
 .cat-card:hover .cat-card-img img{transform:scale(1.07);}
 .cat-card-body{padding:.9rem;}
-.cat-card-name{font-family:var(--font-display);font-size:1.1rem;letter-spacing:1px;color:var(--black);margin-bottom:.2rem;}
-.cat-card-sub{font-family:var(--font-head);font-size:.7rem;color:#888;letter-spacing:1px;text-transform:uppercase;}
+.cat-card-name{font-family:var(--font-display);font-size:1.1rem;letter-spacing:1px;color:var(--ink);margin-bottom:.2rem;}
+.cat-card-sub{font-family:var(--font-head);font-size:.7rem;color:#7A6545;letter-spacing:1px;text-transform:uppercase;}
 
-.menu-page{display:none;padding:3rem 1.5rem;background:rgba(245,240,232,.97);min-height:60vh;}
+.menu-page{display:none;padding:3rem 1.5rem;background:transparent;min-height:60vh;}
 .menu-page.active{display:block;}
 .menu-page-inner{max-width:1300px;margin:0 auto;}
-.back-btn{display:inline-flex;align-items:center;gap:6px;background:none;border:none;color:#888;font-family:var(--font-head);font-size:.8rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;margin-bottom:1.5rem;padding:0;transition:color .15s;}
+.back-btn{display:inline-flex;align-items:center;gap:6px;background:none;border:none;color:#7A6545;font-family:var(--font-head);font-size:.8rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;margin-bottom:1.5rem;padding:0;transition:color .15s;}
 .back-btn:hover{color:var(--red);}
 
 .mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:1rem;}
-.mc{background:white;border:1px solid #E8E0D0;border-radius:8px;overflow:hidden;transition:all .2s;cursor:pointer;}
-.mc:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(0,0,0,.1);}
-.mc-img{height:175px;background:#F5F0E8;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+.mc{background:var(--paper);border:1px solid var(--paper-line);border-radius:4px;overflow:hidden;transition:all .2s;cursor:pointer;box-shadow:2px 2px 6px rgba(0,0,0,.1);}
+.mc:hover{transform:translateY(-2px);box-shadow:3px 3px 14px rgba(0,0,0,.2);border-color:var(--red);}
+.mc-img{height:175px;background:var(--paper-dark);overflow:hidden;display:flex;align-items:center;justify-content:center;}
 .mc-img img{width:100%;height:100%;object-fit:cover;}
 .mc-body{padding:1rem;}
-.mc-name{font-family:var(--font-head);font-size:1.05rem;font-weight:700;color:var(--black);margin-bottom:.25rem;}
-.mc-desc{font-size:.78rem;color:#888;line-height:1.5;margin-bottom:.75rem;}
-.mc-price{font-family:var(--font-display);font-size:1.2rem;color:var(--black);}
+.mc-name{font-family:var(--font-head);font-size:1.05rem;font-weight:700;color:var(--ink);margin-bottom:.25rem;}
+.mc-desc{font-size:.78rem;color:#7A6545;line-height:1.5;margin-bottom:.75rem;}
+.mc-price{font-family:var(--font-display);font-size:1.2rem;color:var(--ink);}
 .mc-foot{display:flex;align-items:center;justify-content:space-between;margin-top:.5rem;}
 .btn-add{background:var(--black);color:white;border:none;width:34px;height:34px;border-radius:50%;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .12s;}
 .btn-add:hover{background:var(--red);}
@@ -135,16 +168,16 @@ nav{position:sticky;top:0;z-index:999;background:var(--black);border-bottom:3px 
 .sgroup ul li{font-size:.73rem;color:#888;padding:2px 0;line-height:1.3;}
 .sgroup ul li::before{content:"·";color:var(--red);margin-right:5px;}
 
-.loc-sec{padding:4rem 1.5rem;background:rgba(245,240,232,.97);}
+.loc-sec{padding:4rem 1.5rem;background:rgba(210,190,140,.15);border-top:2px solid var(--paper-line);}
 .loc-inner{max-width:1300px;margin:0 auto;}
 .lgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:1.75rem;}
-.lcard{background:white;border:1.5px solid #E8E0D0;border-radius:8px;padding:1.2rem;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.06);}
-.lcard:hover{border-color:var(--red);transform:translateY(-2px);}
-.lcard.live{border-color:var(--yellow);background:rgba(245,168,0,.04);}
-.lname{font-family:var(--font-display);font-size:1.15rem;color:var(--black);letter-spacing:1px;margin-bottom:.2rem;}
-.laddr{font-size:.82rem;color:#888;line-height:1.5;margin-bottom:.35rem;}
-.lhours{font-family:var(--font-head);font-size:.73rem;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--red);}
-.lphone{font-size:.8rem;color:#888;margin-top:.25rem;}
+.lcard{background:var(--paper);border:1.5px solid var(--paper-line);border-radius:4px;padding:1.2rem;transition:all .2s;box-shadow:2px 2px 8px rgba(0,0,0,.1);}
+.lcard:hover{border-color:var(--red);transform:translateY(-2px);box-shadow:3px 3px 14px rgba(0,0,0,.18);}
+.lcard.live{border-color:var(--yellow);background:rgba(245,168,0,.08);}
+.lname{font-family:var(--font-display);font-size:1.15rem;color:var(--ink);letter-spacing:1px;margin-bottom:.2rem;}
+.laddr{font-size:.82rem;color:#7A6545;line-height:1.5;margin-bottom:.35rem;}
+.lhours{font-family:var(--font-head);font-size:.73rem;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--red-dark);}
+.lphone{font-size:.8rem;color:#7A6545;margin-top:.25rem;}
 .lbadge{display:inline-block;font-family:var(--font-head);font-size:.66rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:2px;margin-bottom:.6rem;}
 .lb-live{background:rgba(245,168,0,.15);color:#7B3F00;}
 .lb-soon{background:#F0EDE6;color:#888;}
@@ -270,6 +303,115 @@ textarea{resize:vertical;min-height:60px;}
   .cat-grid{grid-template-columns:repeat(2,1fr);}
 }
 .hidden{display:none!important;}
+
+/* ── NEWSPAPER & PRAIRIE THEME ── */
+
+/* Aged paper tint on light sections */
+.cat-section::before,.loc-sec::before,.menu-page::before{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
+  background:
+    repeating-linear-gradient(180deg,transparent,transparent 28px,rgba(139,109,56,.05) 28px,rgba(139,109,56,.05) 29px);
+}
+
+/* Newspaper column border dividers */
+.cat-section{border-top:3px double var(--paper-line);border-bottom:3px double var(--paper-line);}
+.loc-sec{border-top:3px double var(--paper-line);}
+
+/* Newspaper masthead style eyebrow */
+.eyebrow{
+  font-family:var(--font-head) !important;
+  font-size:.72rem !important;
+  letter-spacing:4px !important;
+  text-transform:uppercase !important;
+  color:var(--red) !important;
+  border-top:1.5px solid var(--red);
+  border-bottom:1px solid var(--red);
+  padding:3px 0;
+  display:inline-block;
+  margin-bottom:.6rem !important;
+}
+
+/* Section titles look like newspaper headlines */
+.sec-title{
+  font-family:var(--font-display) !important;
+  text-transform:uppercase;
+  border-bottom:2px solid var(--ink);
+  padding-bottom:.4rem;
+  margin-bottom:1.5rem !important;
+}
+
+/* Menu page paragraph text */
+.menu-page > .menu-page-inner > p{color:#7A6545;}
+
+/* Pop flag - ink stamp style */
+.pop-flag{
+  background:var(--red) !important;
+  color:white !important;
+  border-radius:2px !important;
+  font-family:var(--font-head) !important;
+  letter-spacing:2px !important;
+  text-transform:uppercase !important;
+}
+
+/* Wheat/Prairie decorative banner */
+.prairie-banner{
+  background:var(--ink);
+  color:var(--paper);
+  text-align:center;
+  padding:.5rem 1rem;
+  font-family:var(--font-head);
+  font-size:.72rem;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  border-top:2px solid var(--yellow);
+  border-bottom:2px solid var(--yellow);
+  position:relative;
+  overflow:hidden;
+}
+.prairie-banner::before,.prairie-banner::after{
+  content:'🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾';
+  position:absolute;top:50%;transform:translateY(-50%);
+  font-size:.9rem;opacity:.15;letter-spacing:8px;
+  white-space:nowrap;
+}
+.prairie-banner::before{left:-20px;}
+.prairie-banner::after{right:-20px;}
+
+/* Newspaper-style about section quote */
+.about-quote{
+  border-left:4px solid var(--red) !important;
+  padding-left:1rem !important;
+  font-style:italic !important;
+  font-size:1rem !important;
+  color:#CCC !important;
+  line-height:1.8 !important;
+  position:relative;
+}
+.about-quote::before{
+  content:'"';
+  font-family:Georgia,serif;
+  font-size:4rem;
+  color:var(--red);
+  opacity:.3;
+  position:absolute;
+  top:-1rem;
+  left:-.5rem;
+  line-height:1;
+}
+
+/* Cart + checkout light */
+.item-modal{background:var(--paper) !important;}
+.im-name{color:var(--ink) !important;}
+.im-desc{color:#7A6545 !important;}
+
+/* Announce bar more newspaper */
+.announce{
+  font-family:var(--font-head) !important;
+  background:var(--ink) !important;
+  border-bottom:2px solid var(--yellow) !important;
+  letter-spacing:3px !important;
+}
+
 </style>
 </head>
 <body>
@@ -284,6 +426,7 @@ var activeLocation = 'albert-st';
   <p><span class="preorder-badge">Pre-Order</span> We are closed right now — but you can <strong>pre-order for when we open!</strong> Your order will be ready at our next opening time.</p>
 </div>
 
+<div style="background:var(--paper-dark);text-align:center;padding:3px 1rem;font-family:var(--font-head);font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--ink-light);border-bottom:1px solid var(--paper-line);">The Wing-O Post · Regina, Saskatchewan · Est. 2024 · 125+ Flavors · More Than Wings</div>
 <div class="announce">🔥 Tuesday — All You Can Eat Wings <span>$28.99</span> &nbsp;·&nbsp; Thursday — 50% Off 2nd Order &nbsp;·&nbsp; Saturday — 2 for $20 Burgers</div>
 
 <nav>
@@ -350,6 +493,9 @@ var activeLocation = 'albert-st';
   <span class="mi">Devil's Kiss</span><span class="md">●</span><span class="mi">Honey Garlic</span><span class="md">●</span><span class="mi">Dead Angel</span><span class="md">●</span><span class="mi">Prairie Heat</span><span class="md">●</span><span class="mi">Maple BBQ</span><span class="md">●</span><span class="mi">Tangy Thai</span><span class="md">●</span><span class="mi">Island On Fire</span><span class="md">●</span><span class="mi">Sizzle Caesar</span><span class="md">●</span><span class="mi">Mango Habanero</span><span class="md">●</span><span class="mi">Citrus Twist</span><span class="md">●</span><span class="mi">Cajun Cream</span><span class="md">●</span><span class="mi">Korean BBQ</span><span class="md">●</span><span class="mi">Buffalo Ranch</span><span class="md">●</span><span class="mi">Sweet Grenade</span><span class="md">●</span><span class="mi">Devil's Kiss</span><span class="md">●</span><span class="mi">Honey Garlic</span><span class="md">●</span><span class="mi">Dead Angel</span><span class="md">●</span><span class="mi">Prairie Heat</span><span class="md">●</span><span class="mi">Maple BBQ</span><span class="md">●</span><span class="mi">Tangy Thai</span><span class="md">●</span><span class="mi">Island On Fire</span><span class="md">●</span><span class="mi">Sizzle Caesar</span><span class="md">●</span><span class="mi">Mango Habanero</span><span class="md">●</span><span class="mi">Citrus Twist</span><span class="md">●</span><span class="mi">Cajun Cream</span><span class="md">●</span><span class="mi">Korean BBQ</span><span class="md">●</span><span class="mi">Buffalo Ranch</span><span class="md">●</span><span class="mi">Sweet Grenade</span><span class="md">●</span>
 </div></div>
 
+<div class="prairie-banner">
+  <span style="position:relative;z-index:1;">🌾 &nbsp; Proudly Prairie · Regina Born · Saskatchewan Grown · More Than Wings &nbsp; 🌾</span>
+</div>
 <section class="lunch-sec">
   <div class="lunch-inner">
     <div class="lunch-img"><img src="images/lunch-deal.jpg" alt="Lunch Deal"></div>
@@ -371,9 +517,27 @@ var activeLocation = 'albert-st';
 </section>
 
 <section class="cat-section" id="cat-section">
-  <div class="cat-inner">
+  <svg style="position:absolute;bottom:0;left:0;width:180px;opacity:.06;pointer-events:none;z-index:0;transform:scaleX(-1);" viewBox="0 0 200 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M100 290 L100 50" stroke="#8B6A1A" stroke-width="2.5"/>
+  <ellipse cx="100" cy="50" rx="10" ry="22" fill="#8B6A1A" transform="rotate(-15 100 50)"/>
+  <ellipse cx="100" cy="50" rx="10" ry="22" fill="#8B6A1A" transform="rotate(15 100 50)"/>
+  <ellipse cx="100" cy="80" rx="9" ry="20" fill="#8B6A1A" transform="rotate(-25 100 80)"/>
+  <ellipse cx="100" cy="80" rx="9" ry="20" fill="#8B6A1A" transform="rotate(25 100 80)"/>
+  <ellipse cx="100" cy="108" rx="8" ry="18" fill="#8B6A1A" transform="rotate(-30 100 108)"/>
+  <ellipse cx="100" cy="108" rx="8" ry="18" fill="#8B6A1A" transform="rotate(30 100 108)"/>
+</svg><svg style="position:absolute;bottom:0;right:0;width:220px;opacity:.07;pointer-events:none;z-index:0;" viewBox="0 0 200 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M100 290 L100 50" stroke="#8B6A1A" stroke-width="2.5"/>
+  <ellipse cx="100" cy="50" rx="10" ry="22" fill="#8B6A1A" transform="rotate(-15 100 50)"/>
+  <ellipse cx="100" cy="50" rx="10" ry="22" fill="#8B6A1A" transform="rotate(15 100 50)"/>
+  <ellipse cx="100" cy="80" rx="9" ry="20" fill="#8B6A1A" transform="rotate(-25 100 80)"/>
+  <ellipse cx="100" cy="80" rx="9" ry="20" fill="#8B6A1A" transform="rotate(25 100 80)"/>
+  <ellipse cx="100" cy="108" rx="8" ry="18" fill="#8B6A1A" transform="rotate(-30 100 108)"/>
+  <ellipse cx="100" cy="108" rx="8" ry="18" fill="#8B6A1A" transform="rotate(30 100 108)"/>
+  <path d="M80 180 Q95 160 100 140" stroke="#8B6A1A" stroke-width="1.5"/>
+  <path d="M120 200 Q105 175 100 150" stroke="#8B6A1A" stroke-width="1.5"/>
+</svg><div class="cat-inner">
     <div class="eyebrow">Fresh Made to Order</div>
-    <h2 class="sec-title">WHAT ARE YOU FEELING?</h2>
+    <h2 class="sec-title" style="color:var(--ink);">WHAT ARE YOU FEELING?</h2>
     <div class="cat-grid">
       <div class="cat-card" onclick="showCat('wings')"><div class="cat-card-img"><img src="images/wings-hero.jpg" alt="Wings"></div><div class="cat-card-body"><div class="cat-card-name">🍗 Wings</div><div class="cat-card-sub">Bone-In · 125+ Flavors · From $7.99</div></div></div>
       <div class="cat-card" onclick="showCat('ribs')"><div class="cat-card-img"><img src="images/ribs.jpg" alt="Ribs"></div><div class="cat-card-body"><div class="cat-card-name">🔥 Ribs</div><div class="cat-card-sub">Saucy · 125+ Flavors · From $7.99</div></div></div>
@@ -415,7 +579,7 @@ var activeLocation = 'albert-st';
 <section class="loc-sec">
   <div class="loc-inner">
     <div class="eyebrow">Find Us</div>
-    <h2 class="sec-title">OUR LOCATIONS</h2>
+    <h2 class="sec-title" style="color:var(--ink);">OUR LOCATIONS</h2>
     <div class="lgrid">
       <div class="lcard live"><span class="lbadge lb-live">✓ Online Ordering Live</span><div class="lname">Albert Street</div><div class="laddr">#3 – 155 Albert St N, Regina, SK</div><div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div><div class="lphone">📞 306-522-2111</div></div>
       <div class="lcard live"><span class="lbadge lb-live">✓ Online Ordering Live</span><div class="lname">Rochdale</div><div class="laddr">3881 Rochdale Blvd, Regina, SK</div><div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div><div class="lphone">📞 306-522-2112</div></div>
@@ -468,7 +632,7 @@ var activeLocation = 'albert-st';
       <div>
         <div style="font-family:var(--font-display);font-size:2.3rem;color:white;letter-spacing:3px;margin-bottom:.7rem;">WING<span style="color:var(--red);">-O</span></div>
         <p class="fb-tag">125+ handcrafted flavors. Born in Regina. Built for everyone. More Than Wings.</p>
-        <div class="comm-badge">❤️ Proud supporter of the Regina Community Fridge</div>
+        <div class="comm-badge" style="border-color:rgba(245,168,0,.2);color:#F5A800;">🌾 Proudly Prairie · Regina Community Fridge supporter</div>
       </div>
       <div class="fc"><h4>Menu</h4><ul>
         <li onclick="showCat('wings')" style="cursor:pointer;">Wings</li>
@@ -494,7 +658,7 @@ var activeLocation = 'albert-st';
       </ul></div>
     </div>
     <div class="fbot">
-      <p>© 2025 Wing-O Restaurants Ltd. All rights reserved. Regina, Saskatchewan 🌾</p>
+      <p>© 2024 Wing-O Restaurants Ltd. All rights reserved. &nbsp;·&nbsp; Regina, Saskatchewan &nbsp;·&nbsp; 🌾 Proudly Prairie</p>
       <span style="font-size:.72rem;color:#555;">🍀 Powered by Clover POS</span>
     </div>
   </div>
