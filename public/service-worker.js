@@ -1,5 +1,52 @@
-// Wing-O Service Worker — PWA offline support
-const CACHE_NAME = 'wingo-v1';
+// Wing-O Service Worker — PWA offline support + Push Notifications
+const CACHE_NAME = 'wingo-v2';
+
+// ── PUSH NOTIFICATION HANDLER ──────────────────────────────────
+self.addEventListener('push', event => {
+  let data = {};
+  try { data = event.data.json(); } catch(e) { data = { title: 'Wing-O 🍗', body: event.data?.text() || 'You have a new message!' }; }
+
+  const options = {
+    body: data.body || '',
+    icon: data.icon || '/images/logo.jpg',
+    badge: '/images/logo.jpg',
+    image: data.image || null,
+    data: { url: data.url || '/' },
+    vibrate: [200, 100, 200],
+    requireInteraction: false,
+    actions: [
+      { action: 'order', title: '🍗 Order Now' },
+      { action: 'close', title: '✕ Dismiss' }
+    ]
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(data.title || 'Wing-O 🍗', options)
+  );
+});
+
+// Handle notification click
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  const url = event.notification.data?.url || '/';
+
+  if (event.action === 'close') return;
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientList => {
+      // If app is already open, focus it
+      for (const client of clientList) {
+        if (client.url.includes(self.location.origin) && 'focus' in client) {
+          client.navigate(url);
+          return client.focus();
+        }
+      }
+      // Otherwise open new window
+      if (clients.openWindow) return clients.openWindow(url);
+    })
+  );
+});
+
 
 // Core files to cache for offline use
 const CORE_CACHE = [
