@@ -1888,30 +1888,107 @@ window.addEventListener('appinstalled',function(){
 
 // ── PUSH ADMIN PANEL ───────────────────────────────────────────
 function openPushAdmin(){
-  var pw=prompt('Admin password:');
-  if(!pw) return;
-  fetch(API_BASE+'/api/push/count?password='+encodeURIComponent(pw))
-    .then(function(r){return r.json();})
-    .then(function(d){
-      if(!d.success){alert('Wrong password');return;}
-      var msg=prompt('📢 Message to send to '+d.count+' subscribers:\n\nFormat: TITLE | Body text\nExample: 🔥 Thursday Deal | 50% off your 2nd order tonight only!');
-      if(!msg) return;
-      var parts=msg.split('|');
-      var title=parts[0]?parts[0].trim():'Wing-O 🍗';
-      var body=parts[1]?parts[1].trim():parts[0].trim();
-      var url=prompt('Link when tapped (press Enter for homepage):','/')||'/';
-      if(!confirm('Send to '+d.count+' subscribers?\n\nTitle: '+title+'\nMessage: '+body)) return;
-      fetch(API_BASE+'/api/push/send',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({password:pw,title:title,body:body,url:url})
-      }).then(function(r){return r.json();})
-        .then(function(d){
-          if(d.success) alert('✅ Sent to '+d.sent+' subscribers! ('+d.failed+' failed)');
-          else alert('Error: '+d.error);
-        });
+  document.getElementById('push-admin-ov').style.display='flex';
+}
+function closePushAdmin(){
+  document.getElementById('push-admin-ov').style.display='none';
+  document.getElementById('pa-status').textContent='';
+}
+async function pushAdminLogin(){
+  var pw=document.getElementById('pa-pw').value.trim();
+  if(!pw){document.getElementById('pa-status').textContent='Enter password';return;}
+  var btn=document.getElementById('pa-login-btn');
+  btn.textContent='Checking...';btn.disabled=true;
+  try{
+    var r=await fetch(API_BASE+'/api/push/count?password='+encodeURIComponent(pw));
+    var d=await r.json();
+    if(!d.success){
+      document.getElementById('pa-status').textContent='Wrong password';
+      btn.textContent='Login';btn.disabled=false;return;
+    }
+    document.getElementById('pa-step1').style.display='none';
+    document.getElementById('pa-step2').style.display='block';
+    document.getElementById('pa-count').textContent=d.count;
+    document.getElementById('pa-stored-pw').value=pw;
+  }catch(e){
+    document.getElementById('pa-status').textContent='Connection error';
+  }
+  btn.textContent='Login';btn.disabled=false;
+}
+async function pushAdminSend(){
+  var pw=document.getElementById('pa-stored-pw').value;
+  var title=document.getElementById('pa-title').value.trim();
+  var body=document.getElementById('pa-body').value.trim();
+  var url=document.getElementById('pa-url').value.trim()||'/';
+  var statusEl=document.getElementById('pa-send-status');
+
+  if(!title||!body){statusEl.textContent='Title and message required';statusEl.style.color='var(--red)';return;}
+
+  var btn=document.getElementById('pa-send-btn');
+  btn.textContent='Sending...';btn.disabled=true;
+  statusEl.textContent='';
+
+  try{
+    var r=await fetch(API_BASE+'/api/push/send',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({password:pw,title:title,body:body,url:url})
     });
+    var d=await r.json();
+    if(d.success){
+      statusEl.style.color='#48BB78';
+      statusEl.textContent='✅ Sent to '+d.sent+' subscribers!';
+      document.getElementById('pa-title').value='';
+      document.getElementById('pa-body').value='';
+    } else {
+      statusEl.style.color='var(--red)';
+      statusEl.textContent='Error: '+(d.error||'Unknown');
+    }
+  }catch(e){
+    statusEl.style.color='var(--red)';
+    statusEl.textContent='Connection error';
+  }
+  btn.textContent='SEND NOTIFICATION 🔔';btn.disabled=false;
 }
 </script>
+
+<!-- PUSH ADMIN MODAL -->
+<div id="push-admin-ov" style="display:none;position:fixed;inset:0;z-index:999999;background:rgba(0,0,0,.88);align-items:center;justify-content:center;padding:1rem;">
+  <div style="background:var(--paper);border-radius:8px;width:min(480px,100%);overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5);">
+    <div style="background:var(--ink);padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid var(--red);">
+      <div style="font-family:var(--font-display);font-size:1.2rem;color:white;letter-spacing:2px;">🔔 PUSH NOTIFICATIONS</div>
+      <button onclick="closePushAdmin()" style="background:none;border:none;color:#888;font-size:1.3rem;cursor:pointer;">✕</button>
+    </div>
+    <div style="padding:1.5rem;">
+
+      <!-- Step 1: Password -->
+      <div id="pa-step1">
+        <div style="font-family:var(--font-head);font-size:.8rem;color:#7A6545;letter-spacing:1px;text-transform:uppercase;margin-bottom:.5rem;">Admin Password</div>
+        <input id="pa-pw" type="password" placeholder="Enter password" style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.65rem .9rem;font-family:var(--font-body);font-size:.9rem;outline:none;margin-bottom:.75rem;" onkeydown="if(event.key==='Enter')pushAdminLogin()">
+        <div id="pa-status" style="color:var(--red);font-size:.8rem;margin-bottom:.5rem;font-family:var(--font-head);letter-spacing:1px;"></div>
+        <button id="pa-login-btn" onclick="pushAdminLogin()" style="width:100%;background:var(--red);color:white;border:none;padding:.85rem;font-family:var(--font-display);font-size:1rem;letter-spacing:2px;cursor:pointer;border-radius:4px;text-transform:uppercase;">LOGIN</button>
+      </div>
+
+      <!-- Step 2: Send notification -->
+      <div id="pa-step2" style="display:none;">
+        <input id="pa-stored-pw" type="hidden">
+        <div style="background:rgba(232,25,10,.07);border:1px solid rgba(232,25,10,.2);border-radius:6px;padding:.75rem 1rem;margin-bottom:1rem;text-align:center;">
+          <div style="font-family:var(--font-display);font-size:1.4rem;color:var(--red);" id="pa-count">0</div>
+          <div style="font-family:var(--font-head);font-size:.7rem;color:#7A6545;letter-spacing:2px;text-transform:uppercase;">Subscribers</div>
+        </div>
+        <div style="font-family:var(--font-head);font-size:.75rem;color:#7A6545;letter-spacing:1px;text-transform:uppercase;margin-bottom:.3rem;">Notification Title</div>
+        <input id="pa-title" type="text" placeholder="🔥 Thursday Deal" style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.6rem .9rem;font-family:var(--font-body);font-size:.9rem;outline:none;margin-bottom:.75rem;">
+        <div style="font-family:var(--font-head);font-size:.75rem;color:#7A6545;letter-spacing:1px;text-transform:uppercase;margin-bottom:.3rem;">Message</div>
+        <textarea id="pa-body" placeholder="50% off your 2nd order tonight only! 🍗" style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.6rem .9rem;font-family:var(--font-body);font-size:.9rem;outline:none;resize:none;height:80px;margin-bottom:.75rem;"></textarea>
+        <div style="font-family:var(--font-head);font-size:.75rem;color:#7A6545;letter-spacing:1px;text-transform:uppercase;margin-bottom:.3rem;">Link when tapped (optional)</div>
+        <input id="pa-url" type="text" placeholder="/ (homepage)" value="/" style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.6rem .9rem;font-family:var(--font-body);font-size:.9rem;outline:none;margin-bottom:.75rem;">
+        <div id="pa-send-status" style="font-family:var(--font-head);font-size:.8rem;letter-spacing:1px;margin-bottom:.5rem;min-height:1.2rem;"></div>
+        <button id="pa-send-btn" onclick="pushAdminSend()" style="width:100%;background:var(--red);color:white;border:none;padding:.85rem;font-family:var(--font-display);font-size:1rem;letter-spacing:2px;cursor:pointer;border-radius:4px;text-transform:uppercase;">SEND NOTIFICATION 🔔</button>
+        <button onclick="document.getElementById('pa-step1').style.display='block';document.getElementById('pa-step2').style.display='none';document.getElementById('pa-pw').value='';" style="width:100%;background:none;border:none;color:#AAA;font-family:var(--font-head);font-size:.75rem;letter-spacing:1px;cursor:pointer;margin-top:.5rem;padding:.4rem;">← Back</button>
+      </div>
+
+    </div>
+  </div>
+</div>
 </body>
 </html>
