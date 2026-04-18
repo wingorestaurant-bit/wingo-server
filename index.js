@@ -3,6 +3,12 @@ const cors = require('cors');
 const fetch = require('node-fetch');
 const path = require('path');
 const { MongoClient } = require('mongodb');
+const webpush = require('web-push');
+
+// ── VAPID PUSH NOTIFICATIONS ──────────────────────────────────
+const VAPID_PUBLIC  = process.env.VAPID_PUBLIC  || 'BE-f0tIsYd6Rd2Q8HWi9LRCv3rlHG8n6KlZ9MC3FdIrKqaBDi9vQakjJdmO41iioFFaOwWebU8QC41JkHGmMJBA';
+const VAPID_PRIVATE = process.env.VAPID_PRIVATE || 'mcxVGSZebPbBJhnhxWDoXWzyUPSS0ILxBtovaQ5XOM8';
+webpush.setVapidDetails('mailto:besaucy@wingorestaurants.com', VAPID_PUBLIC, VAPID_PRIVATE);
 
 const app = express();
 app.use(cors());
@@ -674,6 +680,122 @@ app.get('/api/loyalty/admin/members', async (req, res) => {
     const members = await database.collection('loyalty').find({}).sort({ createdAt: -1 }).toArray();
     res.json({ success: true, count: members.length, members });
   } catch (e) {
+    res.json({ success: false, error: e.message });
+  }
+});
+
+// ── PUSH NOTIFICATIONS ────────────────────────────────────────
+
+// Save subscription when customer allows notifications
+app.post('/api/push/subscribe', async (req, res) => {
+  const { subscription, info } = req.body;
+  if (!subscription || !subscription.endpoint) return res.json({ success: false, error: 'Invalid subscription' });
+
+  try {
+    const database = await connectDB();
+    if (!database) return res.json({ success: false, error: 'Database unavailable' });
+
+    // Upsert — don't create duplicates
+    await database.collection('push_subs').updateOne(
+      { endpoint: subscription.endpoint },
+      {
+        $set: {
+          subscription,
+          updatedAt: new Date(),
+          userAgent: info?.userAgent || '',
+          location: info?.location || ''
+        },
+        $setOnInsert: { createdAt: new Date() }
+      },
+      { upsert: true }
+    );
+
+    console.log(`🔔 Push subscriber saved: ${subscription.endpoint.slice(-30)}`);
+    res.json({ success: true });
+  } catch (e) {
+    console.error('Push subscribe error:', e.message);
+    res.json({ success: false, error: e.message });
+  }
+});
+
+// Unsubscribe
+app.post('/api/push/unsubscribe', async (req, res) => {
+  const { endpoint } = req.body;
+  try {
+    const database = await connectDB();
+    if (database) await database.collection('push_subs').deleteOne({ endpoint });
+    res.json({ success: true });
+  } catch (e) {
+    res.json({ success: false });
+  }
+});
+
+// Get subscriber count (admin)
+app.get('/api/push/count', async (req, res) => {
+  if (req.query.password !== (process.env.ADMIN_PASSWORD || 'sauceboss2025')) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  try {
+    const database = await connectDB();
+    const count = await database.collection('push_subs').countDocuments();
+    res.json({ success: true, count });
+  } catch (e) {
+    res.json({ success: false, count: 0 });
+  }
+});
+
+// Send push notification to all subscribers (admin only)
+app.post('/api/push/send', async (req, res) => {
+  const { password, title, body, url, icon } = req.body;
+
+  if (password !== (process.env.ADMIN_PASSWORD || 'sauceboss2025')) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  if (!title || !body) return res.json({ success: false, error: 'Title and body required' });
+
+  try {
+    const database = await connectDB();
+    if (!database) return res.json({ success: false, error: 'Database unavailable' });
+
+    const subs = await database.collection('push_subs').find({}).toArray();
+    if (!subs.length) return res.json({ success: true, sent: 0, message: 'No subscribers yet' });
+
+    const payload = JSON.stringify({
+      title: title || 'Wing-O 🍗',
+      body,
+      icon: icon || '/images/logo.jpg',
+      badge: '/images/logo.jpg',
+      url: url || '/',
+      timestamp: Date.now()
+    });
+
+    let sent = 0, failed = 0, expired = [];
+
+    await Promise.all(subs.map(async (sub) => {
+      try {
+        await webpush.sendNotification(sub.subscription, payload);
+        sent++;
+      } catch (e) {
+        failed++;
+        // 410 Gone = subscription expired, remove it
+        if (e.statusCode === 410 || e.statusCode === 404) {
+          expired.push(sub.endpoint);
+        }
+        console.warn(`Push failed for ${sub.endpoint.slice(-20)}: ${e.message}`);
+      }
+    }));
+
+    // Clean up expired subscriptions
+    if (expired.length) {
+      await database.collection('push_subs').deleteMany({ endpoint: { $in: expired } });
+      console.log(`🧹 Removed ${expired.length} expired push subscriptions`);
+    }
+
+    console.log(`🔔 Push sent: ${sent} success, ${failed} failed`);
+    res.json({ success: true, sent, failed, total: subs.length });
+
+  } catch (e) {
+    console.error('Push send error:', e.message);
     res.json({ success: false, error: e.message });
   }
 });
