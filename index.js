@@ -250,21 +250,6 @@ ${notes ? 'NOTES: ' + notes : ''}
     } catch (e) { console.warn('Line item error:', e.message); }
   }
 
-  const gst = Math.round(Number(subtotal) * 0.05 * 100);
-  const pst = Math.round(Number(subtotal) * 0.06 * 100);
-  try {
-    await fetch(`https://api.clover.com/v3/merchants/${loc.merchantId}/orders/${cloverId}/line_items`, {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${loc.apiToken}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: 'GST (5%)', price: gst, unitQty: 1000 })
-    });
-    await fetch(`https://api.clover.com/v3/merchants/${loc.merchantId}/orders/${cloverId}/line_items`, {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${loc.apiToken}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: 'PST (6%)', price: pst, unitQty: 1000 })
-    });
-  } catch (e) { console.warn('Tax line item error:', e.message); }
-
   console.log(`✓ Line items added to ${cloverId}`);
   return cloverId;
 }
@@ -387,6 +372,41 @@ app.post('/api/charge', async (req, res) => {
           items, subtotal || amount, notes || '', timestamp
         );
       } catch (e) { console.warn('Post-payment order creation error:', e.message); }
+    }
+
+    // Step 2b: Mark Clover order as PAID
+    if (cloverId && loc.apiToken) {
+      try {
+        const totalCents = Math.round(amount * 100);
+        // Record the payment against the order
+        await fetch(`https://api.clover.com/v3/merchants/${loc.merchantId}/orders/${cloverId}/payments`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${loc.apiToken}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            order: { id: cloverId },
+            amount: totalCents,
+            tipAmount: 0,
+            taxAmount: Math.round((subtotal || amount) * 0.11 * 100),
+            result: 'SUCCESS',
+            cardTransaction: {
+              authCode: chargeData.id,
+              referenceId: chargeData.id,
+              transactionNo: chargeData.id,
+              last4: chargeData.source?.last4 || '0000',
+              cardType: 'MC',
+              type: 'AUTH',
+              state: 'CLOSED'
+            }
+          })
+        });
+        // Also update order state to locked/paid
+        await fetch(`https://api.clover.com/v3/merchants/${loc.merchantId}/orders/${cloverId}`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${loc.apiToken}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ state: 'locked' })
+        });
+        console.log(`✅ Clover order ${cloverId} marked as paid`);
+      } catch (e) { console.warn('Mark paid error:', e.message); }
     }
 
     // Step 3: AUTO STAMP — only fires after payment confirmed ✅
