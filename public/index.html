@@ -1287,10 +1287,9 @@ function detectAndSortLocations(fromCheckout){
         sel.value=ids[0];setLocation(ids[0]);
       }
     }
-    // Show install banner after location allowed (on non-checkout page)
+    // Show install banner after location allowed
     if(!fromCheckout) setTimeout(function(){
       if(deferredPrompt) installBanner.style.display='flex';
-      else showNotifBanner(); // If already installed, show notif banner instead
     }, 2000);
   },function(){});
 }
@@ -1412,6 +1411,8 @@ updateHoursBanner();
 setInterval(updateHoursBanner,60000);
 detectAndSortLocations(false);
 checkAPI();
+// Show notification banner 3 seconds after page load
+setTimeout(showNotifBanner, 3000);
 
 
 // ══════════════════════════════════════════════
