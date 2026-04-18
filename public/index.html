@@ -1222,6 +1222,8 @@ async function submitOrder(){
 function showSuccess(d){
   // Fire auto-stamp on server
   if(d.orderNum) loyaltyAutoStamp(d.orderNum);
+  // Show notification banner after order — good moment to ask
+  setTimeout(showNotifBanner, 3000);
 
   var session = loyGetSession();
   var locNames={'albert-st':'Albert Street','rochdale':'Rochdale','east-regina':'East Regina','moose-jaw':'Moose Jaw'};
@@ -1285,8 +1287,11 @@ function detectAndSortLocations(fromCheckout){
         sel.value=ids[0];setLocation(ids[0]);
       }
     }
-    // ── Ask for push notifications right after location is allowed ──
-    if(!fromCheckout) setTimeout(requestPushPermission, 1500);
+    // Show install banner after location allowed (on non-checkout page)
+    if(!fromCheckout) setTimeout(function(){
+      if(deferredPrompt) installBanner.style.display='flex';
+      else showNotifBanner(); // If already installed, show notif banner instead
+    }, 2000);
   },function(){});
 }
 
@@ -1712,6 +1717,7 @@ async function loyaltyAutoStamp(orderNum){
       </div>
 
       <button class="loy-btn" onclick="showLoyView('loy-add-stamp')" style="margin-bottom:.6rem;">+ ADD A STAMP (After In-Store Order)</button>
+      <button id="loy-notif-btn" class="loy-btn" style="background:transparent;color:var(--yellow);border:1.5px solid var(--yellow);margin-bottom:.6rem;" onclick="enableNotifications();document.getElementById('loy-notif-btn').style.display='none'">🔔 Enable Deal Notifications</button>
       <button class="loy-btn" style="background:transparent;color:var(--red);border:1.5px solid var(--red);margin-bottom:1rem;" onclick="loyaltyLogout()">Switch Account</button>
 
       <div class="loy-history">
@@ -1751,14 +1757,25 @@ async function loyaltyAutoStamp(orderNum){
 </div>
 
 <!-- PWA Install Banner -->
-<div id="pwa-banner" style="display:none;position:fixed;bottom:5rem;left:50%;transform:translateX(-50%);z-index:99999;background:var(--black);border:2px solid var(--yellow);border-radius:8px;padding:.85rem 1.25rem;display:none;align-items:center;gap:1rem;box-shadow:0 8px 32px rgba(0,0,0,.5);max-width:90vw;width:360px;">
+<div id="pwa-banner" style="display:none;position:fixed;bottom:5rem;left:50%;transform:translateX(-50%);z-index:99999;background:var(--black);border:2px solid var(--yellow);border-radius:8px;padding:.85rem 1.25rem;align-items:center;gap:1rem;box-shadow:0 8px 32px rgba(0,0,0,.5);max-width:90vw;width:360px;">
   <img src="images/logo.jpg" style="width:42px;height:42px;border-radius:6px;object-fit:cover;flex-shrink:0;">
   <div style="flex:1;min-width:0;">
     <div style="font-family:var(--font-display);font-size:.9rem;color:white;letter-spacing:1px;">INSTALL WING-O APP</div>
-    <div style="font-family:var(--font-head);font-size:.7rem;color:#888;letter-spacing:1px;text-transform:uppercase;margin-top:2px;">Order faster · Works offline</div>
+    <div style="font-family:var(--font-head);font-size:.7rem;color:#888;letter-spacing:1px;text-transform:uppercase;margin-top:2px;">Order faster · Get deal alerts</div>
   </div>
   <button id="pwa-install-btn" style="background:var(--red);color:white;border:none;padding:.45rem .9rem;font-family:var(--font-head);font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;border-radius:4px;cursor:pointer;white-space:nowrap;">Install</button>
   <button onclick="document.getElementById('pwa-banner').style.display='none'" style="background:none;border:none;color:#555;font-size:1.1rem;cursor:pointer;padding:2px;flex-shrink:0;">✕</button>
+</div>
+
+<!-- Notification Permission Banner -->
+<div id="notif-banner" style="display:none;position:fixed;bottom:5rem;left:50%;transform:translateX(-50%);z-index:99998;background:var(--ink);border:2px solid var(--red);border-radius:8px;padding:.85rem 1.25rem;align-items:center;gap:1rem;box-shadow:0 8px 32px rgba(0,0,0,.5);max-width:90vw;width:360px;">
+  <div style="font-size:1.6rem;flex-shrink:0;">🔔</div>
+  <div style="flex:1;min-width:0;">
+    <div style="font-family:var(--font-display);font-size:.85rem;color:white;letter-spacing:1px;">GET DEAL ALERTS</div>
+    <div style="font-family:var(--font-head);font-size:.7rem;color:#888;letter-spacing:1px;text-transform:uppercase;margin-top:2px;">Thursday deals · Free wing alerts · New flavors</div>
+  </div>
+  <button onclick="enableNotifications()" style="background:var(--red);color:white;border:none;padding:.45rem .9rem;font-family:var(--font-head);font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;border-radius:4px;cursor:pointer;white-space:nowrap;">Enable</button>
+  <button onclick="document.getElementById('notif-banner').style.display='none'" style="background:none;border:none;color:#555;font-size:1.1rem;cursor:pointer;padding:2px;flex-shrink:0;">✕</button>
 </div>
 
 <script>
@@ -1794,6 +1811,29 @@ async function requestPushPermission(){
     var permission=await Notification.requestPermission();
     if(permission==='granted') await subscribeToPush();
   }catch(e){console.log('Push permission error:',e);}
+}
+
+// Called when user taps "Enable" button — user gesture required!
+async function enableNotifications(){
+  document.getElementById('notif-banner').style.display='none';
+  if(!('Notification' in window)){toast('Notifications not supported on this browser');return;}
+  if(Notification.permission==='granted'){
+    await subscribeToPush();
+    toast('🔔 Notifications already enabled!');
+    return;
+  }
+  if(Notification.permission==='denied'){
+    toast('Notifications blocked — enable in browser settings');
+    return;
+  }
+  await requestPushPermission();
+}
+
+function showNotifBanner(){
+  if(!('Notification' in window)||!('PushManager' in window)) return;
+  if(Notification.permission!=='default') return; // Already decided
+  var banner=document.getElementById('notif-banner');
+  if(banner) banner.style.display='flex';
 }
 
 async function subscribeToPush(){
