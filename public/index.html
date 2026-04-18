@@ -1285,6 +1285,8 @@ function detectAndSortLocations(fromCheckout){
         sel.value=ids[0];setLocation(ids[0]);
       }
     }
+    // ── Ask for push notifications right after location is allowed ──
+    if(!fromCheckout) setTimeout(requestPushPermission, 1500);
   },function(){});
 }
 
@@ -1780,8 +1782,6 @@ if('serviceWorker' in navigator){
       .then(function(reg){
         console.log('[Wing-O] SW registered:',reg.scope);
         swRegistration=reg;
-        // Ask for push permission after 45 seconds
-        setTimeout(requestPushPermission,45000);
       })
       .catch(function(err){console.log('[Wing-O] SW failed:',err);});
   });
