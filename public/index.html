@@ -694,6 +694,7 @@ var activeLocation = 'albert-st';
     <div class="fbot">
       <p>© 2024 Wing-O Restaurants Ltd. All rights reserved. &nbsp;·&nbsp; Regina, Saskatchewan &nbsp;·&nbsp; 🌾 Proudly Prairie</p>
       <span style="font-size:.72rem;color:#555;">🍀 Powered by Clover POS</span>
+      <button onclick="openPushAdmin()" style="background:none;border:none;color:#222;font-size:.65rem;cursor:pointer;padding:2px 6px;opacity:.3;" title="Push Admin">🔔</button>
     </div>
   </div>
 </footer>
@@ -1759,50 +1760,117 @@ async function loyaltyAutoStamp(orderNum){
 </div>
 
 <script>
-// ── SERVICE WORKER ─────────────────────────────────────────
+// ── SERVICE WORKER + PUSH NOTIFICATIONS ───────────────────────
+var VAPID_PUBLIC_KEY = 'BE-f0tIsYd6Rd2Q8HWi9LRCv3rlHG8n6KlZ9MC3FdIrKqaBDi9vQakjJdmO41iioFFaOwWebU8QC41JkHGmMJBA';
+
+function urlBase64ToUint8Array(base64String){
+  var padding='='.repeat((4-base64String.length%4)%4);
+  var base64=(base64String+padding).replace(/-/g,'+').replace(/_/g,'/');
+  var rawData=window.atob(base64);
+  var outputArray=new Uint8Array(rawData.length);
+  for(var i=0;i<rawData.length;++i) outputArray[i]=rawData.charCodeAt(i);
+  return outputArray;
+}
+
+var swRegistration=null;
+
 if('serviceWorker' in navigator){
-  window.addEventListener('load', function(){
+  window.addEventListener('load',function(){
     navigator.serviceWorker.register('/service-worker.js')
-      .then(function(reg){ console.log('[Wing-O] SW registered:', reg.scope); })
-      .catch(function(err){ console.log('[Wing-O] SW failed:', err); });
+      .then(function(reg){
+        console.log('[Wing-O] SW registered:',reg.scope);
+        swRegistration=reg;
+        // Ask for push permission after 45 seconds
+        setTimeout(requestPushPermission,45000);
+      })
+      .catch(function(err){console.log('[Wing-O] SW failed:',err);});
   });
 }
 
-// ── PWA INSTALL PROMPT ─────────────────────────────────────
-var deferredPrompt = null;
-var installBanner = document.getElementById('pwa-banner');
-var installBtn = document.getElementById('pwa-install-btn');
+async function requestPushPermission(){
+  if(!swRegistration||!('PushManager' in window)) return;
+  if(Notification.permission!=='default') return;
+  try{
+    var permission=await Notification.requestPermission();
+    if(permission==='granted') await subscribeToPush();
+  }catch(e){console.log('Push permission error:',e);}
+}
 
-window.addEventListener('beforeinstallprompt', function(e){
+async function subscribeToPush(){
+  if(!swRegistration) return;
+  try{
+    var existing=await swRegistration.pushManager.getSubscription();
+    if(existing) return;
+    var subscription=await swRegistration.pushManager.subscribe({
+      userVisibleOnly:true,
+      applicationServerKey:urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+    });
+    await fetch(API_BASE+'/api/push/subscribe',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({subscription,info:{userAgent:navigator.userAgent.substring(0,100)}})
+    });
+    console.log('[Wing-O] Push subscribed!');
+    toast('🔔 Notifications on! You\'ll hear about deals first 🍗');
+  }catch(e){console.log('Push subscribe error:',e);}
+}
+
+// ── PWA INSTALL PROMPT ─────────────────────────────────────────
+var deferredPrompt=null;
+var installBanner=document.getElementById('pwa-banner');
+var installBtn=document.getElementById('pwa-install-btn');
+
+window.addEventListener('beforeinstallprompt',function(e){
   e.preventDefault();
-  deferredPrompt = e;
-  // Show banner after 30 seconds if user hasn't dismissed
-  setTimeout(function(){
-    if(deferredPrompt){
-      installBanner.style.display = 'flex';
-    }
-  }, 30000);
+  deferredPrompt=e;
+  setTimeout(function(){if(deferredPrompt) installBanner.style.display='flex';},30000);
 });
 
 if(installBtn){
-  installBtn.addEventListener('click', function(){
+  installBtn.addEventListener('click',function(){
     if(!deferredPrompt) return;
     deferredPrompt.prompt();
     deferredPrompt.userChoice.then(function(result){
-      if(result.outcome === 'accepted'){
-        console.log('[Wing-O] App installed!');
-      }
-      deferredPrompt = null;
-      installBanner.style.display = 'none';
+      if(result.outcome==='accepted') console.log('[Wing-O] App installed!');
+      deferredPrompt=null;
+      installBanner.style.display='none';
     });
   });
 }
 
-window.addEventListener('appinstalled', function(){
-  installBanner.style.display = 'none';
-  deferredPrompt = null;
+window.addEventListener('appinstalled',function(){
+  installBanner.style.display='none';
+  deferredPrompt=null;
   toast('🍗 Wing-O app installed! Find it on your home screen.');
+  setTimeout(requestPushPermission,3000);
 });
+
+// ── PUSH ADMIN PANEL ───────────────────────────────────────────
+function openPushAdmin(){
+  var pw=prompt('Admin password:');
+  if(!pw) return;
+  fetch(API_BASE+'/api/push/count?password='+encodeURIComponent(pw))
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(!d.success){alert('Wrong password');return;}
+      var msg=prompt('📢 Message to send to '+d.count+' subscribers:\n\nFormat: TITLE | Body text\nExample: 🔥 Thursday Deal | 50% off your 2nd order tonight only!');
+      if(!msg) return;
+      var parts=msg.split('|');
+      var title=parts[0]?parts[0].trim():'Wing-O 🍗';
+      var body=parts[1]?parts[1].trim():parts[0].trim();
+      var url=prompt('Link when tapped (press Enter for homepage):','/')||'/';
+      if(!confirm('Send to '+d.count+' subscribers?\n\nTitle: '+title+'\nMessage: '+body)) return;
+      fetch(API_BASE+'/api/push/send',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({password:pw,title:title,body:body,url:url})
+      }).then(function(r){return r.json();})
+        .then(function(d){
+          if(d.success) alert('✅ Sent to '+d.sent+' subscribers! ('+d.failed+' failed)');
+          else alert('Error: '+d.error);
+        });
+    });
+}
 </script>
 </body>
 </html>
