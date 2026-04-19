@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wing-O Push Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#0D0D0D;font-family:'Barlow',sans-serif;color:white;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem;}
+.card{background:#1A1A1A;border:2px solid #E8190A;border-radius:10px;width:min(480px,100%);overflow:hidden;}
+.hd{background:#0D0D0D;padding:1.5rem;text-align:center;border-bottom:2px solid #E8190A;}
+.hd h1{font-family:'Anton',sans-serif;font-size:1.8rem;letter-spacing:3px;color:#E8190A;}
+.hd p{font-family:'Oswald',sans-serif;font-size:.75rem;color:#555;letter-spacing:2px;text-transform:uppercase;margin-top:4px;}
+.body{padding:1.5rem;}
+.label{font-family:'Oswald',sans-serif;font-size:.75rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#888;margin-bottom:.4rem;display:block;}
+input,textarea{width:100%;background:#111;border:1.5px solid #333;border-radius:6px;padding:.75rem 1rem;font-family:'Barlow',sans-serif;font-size:.95rem;color:white;outline:none;transition:border-color .15s;margin-bottom:1rem;}
+input:focus,textarea:focus{border-color:#E8190A;}
+textarea{resize:none;height:90px;}
+input[type=password]{letter-spacing:2px;}
+.btn{width:100%;background:#E8190A;color:white;border:none;padding:1rem;font-family:'Anton',sans-serif;font-size:1.1rem;letter-spacing:2px;cursor:pointer;border-radius:6px;text-transform:uppercase;transition:background .15s;}
+.btn:hover{background:#A8120A;}
+.btn:disabled{background:#444;cursor:not-allowed;}
+.btn-ghost{width:100%;background:transparent;color:#555;border:1.5px solid #333;padding:.7rem;font-family:'Oswald',sans-serif;font-size:.85rem;letter-spacing:1px;cursor:pointer;border-radius:6px;text-transform:uppercase;margin-top:.5rem;}
+.btn-ghost:hover{border-color:#888;color:#888;}
+.stat{background:#111;border:1px solid #333;border-radius:8px;padding:1.25rem;text-align:center;margin-bottom:1.25rem;}
+.stat-num{font-family:'Anton',sans-serif;font-size:3rem;color:#E8190A;line-height:1;}
+.stat-lbl{font-family:'Oswald',sans-serif;font-size:.72rem;color:#555;letter-spacing:2px;text-transform:uppercase;margin-top:4px;}
+.status{font-family:'Oswald',sans-serif;font-size:.85rem;letter-spacing:1px;min-height:1.4rem;margin-bottom:.75rem;text-align:center;}
+.status.ok{color:#48BB78;}
+.status.err{color:#E8190A;}
+.examples{background:#111;border:1px solid #333;border-radius:6px;padding:1rem;margin-bottom:1rem;}
+.examples p{font-family:'Oswald',sans-serif;font-size:.72rem;color:#555;letter-spacing:1px;text-transform:uppercase;margin-bottom:.5rem;}
+.ex{font-size:.8rem;color:#888;padding:.25rem 0;cursor:pointer;border-bottom:1px solid #222;line-height:1.4;}
+.ex:last-child{border-bottom:none;}
+.ex:hover{color:#F5A800;}
+.ex span{color:#F5A800;}
+#step1{display:block;}
+#step2{display:none;}
+.logo{font-family:'Anton',sans-serif;font-size:1.1rem;color:white;letter-spacing:2px;}
+.logo span{color:#E8190A;}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="hd">
+    <div class="logo">WING<span>-O</span></div>
+    <h1>🔔 PUSH ADMIN</h1>
+    <p>Send notifications to all subscribers</p>
+  </div>
+  <div class="body">
+
+    <!-- STEP 1: LOGIN -->
+    <div id="step1">
+      <label class="label">Admin Password</label>
+      <input type="password" id="pw" placeholder="Enter password" onkeydown="if(event.key==='Enter')login()">
+      <div class="status err" id="login-status"></div>
+      <button class="btn" id="login-btn" onclick="login()">LOGIN →</button>
+    </div>
+
+    <!-- STEP 2: SEND -->
+    <div id="step2">
+      <input type="hidden" id="stored-pw">
+
+      <div class="stat">
+        <div class="stat-num" id="sub-count">0</div>
+        <div class="stat-lbl">Active Subscribers</div>
+      </div>
+
+      <label class="label">Notification Title</label>
+      <input type="text" id="notif-title" placeholder="🔥 Thursday Deal">
+
+      <label class="label">Message</label>
+      <textarea id="notif-body" placeholder="50% off your 2nd order tonight only! Don't miss it 🍗"></textarea>
+
+      <label class="label">Link when tapped</label>
+      <input type="text" id="notif-url" value="/" placeholder="/ for homepage">
+
+      <div class="examples">
+        <p>Quick examples — tap to fill:</p>
+        <div class="ex" onclick="fill('🔥 Thursday Deal','50% off your 2nd order tonight only! 🍗','/')"><span>🔥 Thursday Deal</span> | 50% off your 2nd order tonight!</div>
+        <div class="ex" onclick="fill('🍗 Tuesday AYCE','All You Can Eat Wings $28.99 — tonight only!','/')"><span>🍗 Tuesday AYCE</span> | All You Can Eat Wings $28.99</div>
+        <div class="ex" onclick="fill('🎁 Free Wings Alert','You\'re close to your next free wings — order now!','/')"><span>🎁 Free Wings Alert</span> | You\'re close to free wings!</div>
+        <div class="ex" onclick="fill('🌶️ New Flavor Drop','Prairie Gold is back this weekend only!','/')"><span>🌶️ New Flavor Drop</span> | Prairie Gold is back!</div>
+        <div class="ex" onclick="fill('🍔 Saturday Deal','2 for $20 Burgers today only — don\'t sleep on it!','/')"><span>🍔 Saturday Deal</span> | 2 for $20 Burgers today!</div>
+      </div>
+
+      <div class="status" id="send-status"></div>
+      <button class="btn" id="send-btn" onclick="send()">SEND NOTIFICATION 🔔</button>
+      <button class="btn-ghost" onclick="logout()">← Logout</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+var API_BASE = '';
+
+async function login(){
+  var pw = document.getElementById('pw').value.trim();
+  var statusEl = document.getElementById('login-status');
+  var btn = document.getElementById('login-btn');
+  if(!pw){ statusEl.textContent = 'Enter your password'; return; }
+
+  btn.textContent = 'Checking...'; btn.disabled = true; statusEl.textContent = '';
+
+  try{
+    var r = await fetch(API_BASE + '/api/push/count?password=' + encodeURIComponent(pw));
+    var d = await r.json();
+    if(!d.success){ statusEl.textContent = 'Wrong password'; btn.textContent = 'LOGIN →'; btn.disabled = false; return; }
+    document.getElementById('stored-pw').value = pw;
+    document.getElementById('sub-count').textContent = d.count;
+    document.getElementById('step1').style.display = 'none';
+    document.getElementById('step2').style.display = 'block';
+  }catch(e){
+    statusEl.textContent = 'Connection error — check server';
+  }
+  btn.textContent = 'LOGIN →'; btn.disabled = false;
+}
+
+async function send(){
+  var pw = document.getElementById('stored-pw').value;
+  var title = document.getElementById('notif-title').value.trim();
+  var body = document.getElementById('notif-body').value.trim();
+  var url = document.getElementById('notif-url').value.trim() || '/';
+  var statusEl = document.getElementById('send-status');
+  var btn = document.getElementById('send-btn');
+
+  if(!title){ statusEl.className='status err'; statusEl.textContent='Title is required'; return; }
+  if(!body){ statusEl.className='status err'; statusEl.textContent='Message is required'; return; }
+
+  btn.textContent = 'Sending...'; btn.disabled = true; statusEl.textContent = '';
+
+  try{
+    var r = await fetch(API_BASE + '/api/push/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pw, title, body, url })
+    });
+    var d = await r.json();
+    if(d.success){
+      statusEl.className = 'status ok';
+      statusEl.textContent = '✅ Sent to ' + d.sent + ' subscribers! (' + d.failed + ' failed)';
+      // Refresh count
+      var rc = await fetch(API_BASE + '/api/push/count?password=' + encodeURIComponent(pw));
+      var rd = await rc.json();
+      if(rd.success) document.getElementById('sub-count').textContent = rd.count;
+    } else {
+      statusEl.className = 'status err';
+      statusEl.textContent = 'Error: ' + (d.error || 'Unknown');
+    }
+  }catch(e){
+    statusEl.className = 'status err';
+    statusEl.textContent = 'Connection error';
+  }
+  btn.textContent = 'SEND NOTIFICATION 🔔'; btn.disabled = false;
+}
+
+function fill(title, body, url){
+  document.getElementById('notif-title').value = title;
+  document.getElementById('notif-body').value = body;
+  document.getElementById('notif-url').value = url;
+}
+
+function logout(){
+  document.getElementById('step1').style.display = 'block';
+  document.getElementById('step2').style.display = 'none';
+  document.getElementById('pw').value = '';
+  document.getElementById('login-status').textContent = '';
+  document.getElementById('send-status').textContent = '';
+}
+
+// Allow pressing Enter in fields
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Enter' && document.getElementById('step2').style.display !== 'none'){
+    if(document.activeElement.id !== 'notif-body') send();
+  }
+});
+</script>
+</body>
+</html>
