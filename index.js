@@ -265,6 +265,11 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', locations: Object.keys(LOCATIONS), time: new Date().toISOString() });
 });
 
+// ── PUSH ADMIN PANEL ───────────────────────────────────────────
+app.get('/push-admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'push-admin.html'));
+});
+
 // ── PLACE ORDER → CLOVER (pickup/delivery, pay at store) ───────
 app.post('/api/orders', async (req, res) => {
   const { locationId, orderType, customer, items, notes, subtotal, tax, total, preOrder, openTime } = req.body;
