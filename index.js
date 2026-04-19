@@ -277,6 +277,12 @@ app.get('/push-admin', (req, res) => {
 app.get('/push-admin.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'push-admin.html'));
 });
+app.get('/sauce-boss-admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'push-admin.html'));
+});
+app.get('/sb-admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'push-admin.html'));
+});
 
 // ── SPA FALLBACK — serve index.html for all unmatched routes ──
 app.get('*', (req, res) => {
