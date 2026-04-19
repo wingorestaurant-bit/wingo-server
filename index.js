@@ -274,6 +274,14 @@ app.get('/api/health', (req, res) => {
 app.get('/push-admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'push-admin.html'));
 });
+app.get('/push-admin.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'push-admin.html'));
+});
+
+// ── SPA FALLBACK — serve index.html for all unmatched routes ──
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 // ── PLACE ORDER → CLOVER (pickup/delivery, pay at store) ───────
 app.post('/api/orders', async (req, res) => {
