@@ -378,7 +378,7 @@ app.post('/api/charge', async (req, res) => {
         amount: amountInCents,
         currency: 'cad',
         source: cardToken,
-        description: `Wing-O Order ${orderId} — ${customer?.firstName || 'Customer'}`,
+        description: `WO ${orderId} | ${customer?.firstName||''} ${customer?.lastName||''} | ${items ? items.map(i=>`${i.name}${i.flavor?' ['+i.flavor+']':''} x${i.qty}`).join(', ') : ''} | ${(orderType||'pickup').toUpperCase()}`,
         capture: true
       })
     });
@@ -392,51 +392,32 @@ app.post('/api/charge', async (req, res) => {
 
     console.log(`✅ Payment success — ${orderId} — $${amount} — Charge: ${chargeData.id}`);
 
-    // Step 2: Create Clover order
-    let cloverId = null;
-    if (items && items.length && loc.apiToken) {
-      try {
-        cloverId = await createCloverOrder(
-          loc, orderId, orderType || 'pickup',
-          customer || { firstName: 'Customer', phone: 'N/A' },
-          items, subtotal || amount, notes || '', timestamp
-        );
-      } catch (e) { console.warn('Post-payment order creation error:', e.message); }
-    }
-
-    // Step 2b: Mark Clover order as PAID
+    // Step 2: Update the ecommerce order note with full item details
+    // (Clover ecommerce already creates an order via scl.clover.com)
+    // We just need to update its title/note with customer + item details
+    let cloverId = chargeData.order?.id || null;
     if (cloverId && loc.apiToken) {
       try {
-        const totalCents = Math.round(amount * 100);
-        // Record the payment against the order
-        await fetch(`https://api.clover.com/v3/merchants/${loc.merchantId}/orders/${cloverId}/payments`, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${loc.apiToken}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            order: { id: cloverId },
-            amount: totalCents,
-            tipAmount: 0,
-            taxAmount: Math.round((subtotal || amount) * 0.11 * 100),
-            result: 'SUCCESS',
-            cardTransaction: {
-              authCode: chargeData.id,
-              referenceId: chargeData.id,
-              transactionNo: chargeData.id,
-              last4: chargeData.source?.last4 || '0000',
-              cardType: 'MC',
-              type: 'AUTH',
-              state: 'CLOSED'
-            }
-          })
-        });
-        // Also update order state to locked/paid
+        const itemSummary = items ? items.map(i => `${i.name}${i.flavor ? ' ['+i.flavor+']' : ''} x${i.qty}`).join(', ') : '';
+        const orderNote = `WING-O ONLINE ORDER
+ORDER #: ${orderId} | TIME: ${timestamp}
+TYPE: ${(orderType||'pickup').toUpperCase()} | LOCATION: ${loc.name}
+CUSTOMER: ${customer?.firstName||''} ${customer?.lastName||''} | PHONE: ${customer?.phone||''}
+${orderType==='delivery'?'DELIVER TO: '+(customer?.address||''):'PICKUP at store'}
+ITEMS: ${itemSummary}
+${notes ? 'NOTES: '+notes : ''}`.trim();
+
         await fetch(`https://api.clover.com/v3/merchants/${loc.merchantId}/orders/${cloverId}`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${loc.apiToken}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ state: 'locked' })
+          body: JSON.stringify({
+            title: `Online ${orderType||'pickup'} — ${customer?.firstName||'Customer'} ${customer?.lastName||''}`,
+            note: orderNote,
+            state: 'locked'
+          })
         });
-        console.log(`✅ Clover order ${cloverId} marked as paid`);
-      } catch (e) { console.warn('Mark paid error:', e.message); }
+        console.log(`✅ Clover order ${cloverId} updated with order details`);
+      } catch (e) { console.warn('Order update error:', e.message); }
     }
 
     // Step 3: AUTO STAMP — only fires after payment confirmed ✅
