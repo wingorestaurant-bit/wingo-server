@@ -3,12 +3,17 @@ const cors = require('cors');
 const fetch = require('node-fetch');
 const path = require('path');
 const { MongoClient } = require('mongodb');
-const webpush = require('web-push');
-
-// ── VAPID PUSH NOTIFICATIONS ──────────────────────────────────
-const VAPID_PUBLIC  = process.env.VAPID_PUBLIC  || 'BE-f0tIsYd6Rd2Q8HWi9LRCv3rlHG8n6KlZ9MC3FdIrKqaBDi9vQakjJdmO41iioFFaOwWebU8QC41JkHGmMJBA';
-const VAPID_PRIVATE = process.env.VAPID_PRIVATE || 'mcxVGSZebPbBJhnhxWDoXWzyUPSS0ILxBtovaQ5XOM8';
-webpush.setVapidDetails('mailto:besaucy@wingorestaurants.com', VAPID_PUBLIC, VAPID_PRIVATE);
+let webpush = null;
+try {
+  webpush = require('web-push');
+  // ── VAPID PUSH NOTIFICATIONS ──────────────────────────────────
+  const VAPID_PUBLIC  = process.env.VAPID_PUBLIC  || 'BE-f0tIsYd6Rd2Q8HWi9LRCv3rlHG8n6KlZ9MC3FdIrKqaBDi9vQakjJdmO41iioFFaOwWebU8QC41JkHGmMJBA';
+  const VAPID_PRIVATE = process.env.VAPID_PRIVATE || 'mcxVGSZebPbBJhnhxWDoXWzyUPSS0ILxBtovaQ5XOM8';
+  webpush.setVapidDetails('mailto:besaucy@wingorestaurants.com', VAPID_PUBLIC, VAPID_PRIVATE);
+  console.log('✅ web-push loaded');
+} catch(e) {
+  console.warn('⚠️ web-push not available:', e.message);
+}
 
 const app = express();
 app.use(cors());
@@ -764,6 +769,8 @@ app.post('/api/push/send', async (req, res) => {
 
     const subs = await database.collection('push_subs').find({}).toArray();
     if (!subs.length) return res.json({ success: true, sent: 0, message: 'No subscribers yet' });
+
+    if (!webpush) return res.json({ success: false, error: 'Push notifications not available — web-push not installed' });
 
     const payload = JSON.stringify({
       title: title || 'Wing-O 🍗',
