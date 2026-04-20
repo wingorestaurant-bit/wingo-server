@@ -15,6 +15,31 @@
 <link rel="apple-touch-icon" href="images/logo.jpg">
 <meta name="description" content="Order wings online from Wing-O. 125+ flavors, 5 SK locations. Regina's original wings eatery.">
 
+<!-- OneSignal Push Notifications -->
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "22633d46-7380-4873-beea-b1c24b8bd044",
+      notifyButton: { enable: false },
+      promptOptions: {
+        slidedown: {
+          prompts: [{
+            type: "push",
+            autoPrompt: false,
+            text: {
+              actionMessage: "🍗 Get Wing-O deal alerts — be the first to know about Thursday specials and free wing drops!",
+              acceptButton: "Yes, notify me!",
+              cancelButton: "No thanks"
+            }
+          }]
+        }
+      }
+    });
+  });
+</script>
+
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600;700&family=Barlow:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -1814,26 +1839,17 @@ async function requestPushPermission(){
   }catch(e){console.log('Push permission error:',e);}
 }
 
-// Called when user taps "Enable" button — user gesture required!
 async function enableNotifications(){
   document.getElementById('notif-banner').style.display='none';
-  if(!('Notification' in window)){toast('Notifications not supported on this browser');return;}
-  if(Notification.permission==='granted'){
-    await subscribeToPush();
-    toast('🔔 Notifications already enabled!');
-    return;
-  }
-  if(Notification.permission==='denied'){
-    toast('Notifications blocked — enable in browser settings');
-    return;
-  }
-  await requestPushPermission();
+  try {
+    OneSignalDeferred.push(async function(OneSignal) {
+      await OneSignal.Slidedown.promptPush();
+    });
+  } catch(e) { console.log('OneSignal error:', e); }
 }
 
 function showNotifBanner(){
-  if(!('Notification' in window)||!('PushManager' in window)) return;
-  if(Notification.permission!=='default') return; // Already decided
-  var banner=document.getElementById('notif-banner');
+  var banner = document.getElementById('notif-banner');
   if(banner) banner.style.display='flex';
 }
 
