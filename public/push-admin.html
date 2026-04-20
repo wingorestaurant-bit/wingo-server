@@ -107,7 +107,7 @@ async function login(){
   try{
     var r = await fetch(API_BASE + '/api/push/count?password=' + encodeURIComponent(pw));
     var d = await r.json();
-    if(!d.success){ statusEl.textContent = 'Wrong password'; btn.textContent = 'LOGIN →'; btn.disabled = false; return; }
+    if(d.error === 'Unauthorized' || (!d.success && d.error)){ statusEl.textContent = 'Wrong password'; btn.textContent = 'LOGIN →'; btn.disabled = false; return; }
     document.getElementById('stored-pw').value = pw;
     document.getElementById('sub-count').textContent = d.count;
     document.getElementById('step1').style.display = 'none';
