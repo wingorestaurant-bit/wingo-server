@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Which Sauce Boss Pick Are You?</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;500;600;700&family=Special+Elite&family=Anton&display=swap');
+
+  body {
+    font-family: 'Oswald', sans-serif;
+    background: #3a2817;
+    background-image:
+      radial-gradient(circle at 15% 20%, rgba(245, 220, 180, 0.15) 0%, transparent 40%),
+      radial-gradient(circle at 85% 80%, rgba(245, 220, 180, 0.1) 0%, transparent 40%);
+    min-height: 100vh;
+    color: #2a2520;
+    padding: 12px;
+    overflow-x: hidden;
+  }
+
+  .app {
+    max-width: 480px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  /* ===== SCROLL BANNER HEADER (like the poster) ===== */
+  .scroll-banner {
+    position: relative;
+    background: #3a2817;
+    padding: 12px 8px 16px;
+    margin: 0 -8px 0;
+    border-radius: 4px 4px 0 0;
+  }
+
+  .scroll-banner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 10% 30%, rgba(201, 74, 29, 0.15) 2px, transparent 3px),
+      radial-gradient(circle at 30% 60%, rgba(232, 168, 120, 0.2) 2px, transparent 3px),
+      radial-gradient(circle at 60% 20%, rgba(201, 74, 29, 0.12) 2px, transparent 3px),
+      radial-gradient(circle at 80% 70%, rgba(232, 168, 120, 0.15) 2px, transparent 3px),
+      radial-gradient(circle at 50% 85%, rgba(201, 74, 29, 0.1) 2px, transparent 3px);
+    opacity: 0.8;
+    pointer-events: none;
+  }
+
+  .banner-icons {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    opacity: 0.25;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .banner-icons span {
+    font-size: 18px;
+    color: #e8a878;
+    transform: rotate(-15deg);
+  }
+
+  .banner-content {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    z-index: 2;
+  }
+
+  .banner-scroll {
+    flex: 1;
+    background: linear-gradient(180deg, #f2e8d0 0%, #e8dcc0 100%);
+    padding: 10px 14px;
+    position: relative;
+    text-align: center;
+    border-radius: 2px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+
+  .banner-scroll::before, .banner-scroll::after {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 10px;
+    background: #d4c4a0;
+  }
+  .banner-scroll::before {
+    left: -8px;
+    border-radius: 50% 0 0 50%;
+    box-shadow: inset -2px 0 3px rgba(0,0,0,0.2);
+  }
+  .banner-scroll::after {
+    right: -8px;
+    border-radius: 0 50% 50% 0;
+    box-shadow: inset 2px 0 3px rgba(0,0,0,0.2);
+  }
+
+  .logo-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 2px;
+    color: #c94a1d;
+    line-height: 1;
+  }
+
+  .logo-title .flame {
+    color: #c94a1d;
+    display: inline-block;
+    transform: rotate(-15deg);
+    margin-left: 2px;
+  }
+
+  .logo-sub {
+    font-family: 'Special Elite', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: #5a4a3a;
+    text-transform: uppercase;
+    margin: 2px 0;
+  }
+
+  .logo-main {
+    font-family: 'Anton', sans-serif;
+    font-size: 18px;
+    letter-spacing: 3px;
+    color: #2a2520;
+    line-height: 1;
+  }
+
+  .corner-avatar {
+    width: 58px;
+    height: 70px;
+    flex-shrink: 0;
+    object-fit: contain;
+  }
+
+  .corner-rooster {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+  }
+
+  /* ===== AGED PAPER CARD ===== */
+  .card {
+    background: #ede0c4;
+    background-image:
+      radial-gradient(ellipse at 10% 10%, rgba(101, 67, 33, 0.08) 0%, transparent 30%),
+      radial-gradient(ellipse at 90% 90%, rgba(101, 67, 33, 0.08) 0%, transparent 30%),
+      radial-gradient(ellipse at 50% 50%, rgba(139, 90, 60, 0.04) 0%, transparent 60%),
+      repeating-linear-gradient(45deg, transparent 0, transparent 10px, rgba(101, 67, 33, 0.02) 10px, rgba(101, 67, 33, 0.02) 11px);
+    border: 2px solid #3a2817;
+    border-top: none;
+    padding: 20px 18px 24px;
+    position: relative;
+    box-shadow: 0 8px 20px rgba(60, 40, 20, 0.3);
+  }
+
+  /* Paper curl corners */
+  .card::before, .card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 30px; height: 20px;
+    background: linear-gradient(135deg, transparent 40%, #c4b890 45%, #d4c8a0 55%, transparent 60%);
+    pointer-events: none;
+  }
+  .card::before { left: 0; transform: scaleX(-1); }
+  .card::after { right: 0; }
+
+  /* ===== INTRO SCREEN ===== */
+  .hero-avatar-wrap {
+    text-align: center;
+    position: relative;
+    margin: 8px 0 0;
+  }
+
+  .hero-avatar {
+    width: 200px;
+    height: auto;
+    filter: drop-shadow(3px 4px 0 rgba(0,0,0,0.2));
+  }
+
+  .speech-bubble {
+    background: #fff5e0;
+    border: 2px solid #2a2520;
+    border-radius: 18px;
+    padding: 12px 16px;
+    margin: 14px 8px 8px;
+    position: relative;
+    box-shadow: 3px 3px 0 #2a2520;
+    font-family: 'Special Elite', monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #2a2520;
+    text-align: center;
+  }
+
+  .speech-bubble::before {
+    content: '';
+    position: absolute;
+    top: -12px;
+    left: 40px;
+    width: 18px;
+    height: 18px;
+    background: #fff5e0;
+    border-left: 2px solid #2a2520;
+    border-top: 2px solid #2a2520;
+    transform: rotate(45deg);
+  }
+
+  .intro-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 34px;
+    line-height: 0.95;
+    letter-spacing: 1px;
+    color: #2a2520;
+    text-align: center;
+    margin: 18px 0 10px;
+    padding: 0 4px;
+    text-shadow: 2px 2px 0 rgba(201, 74, 29, 0.15);
+  }
+
+  .intro-title em {
+    color: #c94a1d;
+    font-style: normal;
+    display: block;
+    font-size: 42px;
+  }
+
+  .intro-sub {
+    font-family: 'Special Elite', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #5a4a3a;
+    text-align: center;
+    padding: 0 10px;
+    margin-bottom: 20px;
+  }
+
+  .intro-stats {
+    display: flex;
+    justify-content: space-around;
+    background: #2a2520;
+    color: #fff5e0;
+    padding: 10px;
+    margin: 0 -4px 20px;
+    border: 2px solid #2a2520;
+  }
+
+  .stat {
+    text-align: center;
+    flex: 1;
+  }
+
+  .stat-num {
+    font-family: 'Anton', sans-serif;
+    font-size: 20px;
+    color: #e8a878;
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-family: 'Special Elite', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+    color: #d4c8a0;
+    text-transform: uppercase;
+    margin-top: 3px;
+  }
+
+  .stat-divider {
+    width: 1px;
+    background: #5a4a3a;
+  }
+
+  /* ===== BUTTONS ===== */
+  .btn {
+    display: block;
+    width: 100%;
+    background: #c94a1d;
+    color: #fff5e0;
+    border: 2px solid #2a2520;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 3px;
+    padding: 14px;
+    cursor: pointer;
+    text-transform: uppercase;
+    box-shadow: 4px 4px 0 #2a2520;
+    transition: all 0.12s;
+    margin-bottom: 10px;
+    position: relative;
+  }
+
+  .btn:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 #2a2520;
+    background: #d95828;
+  }
+
+  .btn:active {
+    transform: translate(4px, 4px);
+    box-shadow: 0 0 0 #2a2520;
+  }
+
+  .btn-secondary {
+    background: #fff5e0;
+    color: #2a2520;
+  }
+
+  .btn .arrow {
+    display: inline-block;
+    transition: transform 0.2s;
+  }
+
+  .btn:hover .arrow {
+    transform: translateX(4px);
+  }
+
+  /* ===== JOURNEY ROAD PROGRESS ===== */
+  .journey-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    padding: 0 4px;
+  }
+
+  .journey-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: #5a4a3a;
+  }
+
+  .journey-mile {
+    font-family: 'Anton', sans-serif;
+    font-size: 16px;
+    color: #c94a1d;
+    letter-spacing: 1px;
+  }
+
+  .road-wrap {
+    position: relative;
+    height: 40px;
+    margin-bottom: 18px;
+  }
+
+  .road {
+    position: absolute;
+    top: 50%;
+    left: 0; right: 0;
+    transform: translateY(-50%);
+    height: 16px;
+    background: #2a2520;
+    border: 1px solid #1a1510;
+    border-radius: 2px;
+  }
+
+  .road::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 8px; right: 8px;
+    height: 2px;
+    transform: translateY(-50%);
+    background-image: linear-gradient(90deg, #fff5e0 50%, transparent 50%);
+    background-size: 16px 100%;
+  }
+
+  .road-traveler {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 32px;
+    height: 32px;
+    background: #c94a1d;
+    border: 2px solid #2a2520;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Anton', sans-serif;
+    font-size: 14px;
+    color: #fff5e0;
+    transition: left 0.6s cubic-bezier(0.34, 1.3, 0.64, 1);
+    z-index: 2;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+
+  .road-flag {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    font-size: 20px;
+    color: #c94a1d;
+    z-index: 1;
+  }
+
+  /* ===== QUESTION CARD ===== */
+  .chapter-mark {
+    text-align: center;
+    font-family: 'Special Elite', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: #5a4a3a;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    position: relative;
+  }
+
+  .chapter-mark::before, .chapter-mark::after {
+    content: '';
+    display: inline-block;
+    width: 30px;
+    height: 1px;
+    background: #8a7a5a;
+    vertical-align: middle;
+    margin: 0 8px;
+  }
+
+  .question-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    line-height: 1.1;
+    letter-spacing: 1px;
+    color: #2a2520;
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 0 4px;
+  }
+
+  .sauce-boss-quote {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #fff5e0;
+    border: 1.5px solid #8a7a5a;
+    border-left: 4px solid #c94a1d;
+    padding: 8px 10px;
+    margin-bottom: 18px;
+    font-family: 'Special Elite', monospace;
+    font-size: 11px;
+    line-height: 1.5;
+    color: #5a4a3a;
+    font-style: italic;
+  }
+
+  .result-boss-avatar {
+    width: 60px;
+    height: 70px;
+    flex-shrink: 0;
+    background: #fff5e0;
+    border-radius: 4px;
+    padding: 3px;
+    border: 2px solid #c94a1d;
+    object-fit: contain;
+  }
+
+  .sauce-boss-mini {
+    width: 36px;
+    height: 42px;
+    flex-shrink: 0;
+    background: #2a2520;
+    border-radius: 4px;
+    padding: 2px;
+    object-fit: contain;
+  }
+
+  .answers {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  .answer {
+    background: #f5ecd0;
+    border: 2px solid #2a2520;
+    padding: 12px 14px;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    color: #2a2520;
+    cursor: pointer;
+    text-align: left;
+    box-shadow: 3px 3px 0 #2a2520;
+    transition: all 0.12s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    line-height: 1.3;
+  }
+
+  .answer:hover {
+    background: #fff5e0;
+    transform: translate(1px, 1px);
+    box-shadow: 2px 2px 0 #2a2520;
+  }
+
+  .answer:active {
+    transform: translate(3px, 3px);
+    box-shadow: 0 0 0 #2a2520;
+    background: #ffd9a8;
+  }
+
+  .answer-letter {
+    background: #c94a1d;
+    color: #fff5e0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Anton', sans-serif;
+    font-size: 15px;
+    flex-shrink: 0;
+    border: 2px solid #2a2520;
+  }
+
+  /* ===== RESULT SCREEN (newspaper front page) ===== */
+  .newspaper-masthead {
+    text-align: center;
+    border-top: 4px double #2a2520;
+    border-bottom: 4px double #2a2520;
+    padding: 8px 0;
+    margin-bottom: 14px;
+    position: relative;
+  }
+
+  .masthead-top {
+    font-family: 'Special Elite', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: #5a4a3a;
+    text-transform: uppercase;
+  }
+
+  .masthead-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 4px;
+    color: #2a2520;
+    line-height: 1;
+    margin: 3px 0;
+  }
+
+  .masthead-bottom {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Special Elite', monospace;
+    font-size: 8px;
+    letter-spacing: 2px;
+    color: #5a4a3a;
+    text-transform: uppercase;
+    padding: 0 4px;
+  }
+
+  .result-headline-kicker {
+    font-family: 'Special Elite', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: #c94a1d;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 4px;
+  }
+
+  .result-title {
+    font-family: 'Anton', sans-serif;
+    font-size: 38px;
+    line-height: 0.95;
+    letter-spacing: 1px;
+    color: #c94a1d;
+    text-align: center;
+    margin-bottom: 8px;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+  }
+
+  .result-byline {
+    font-family: 'Special Elite', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: #5a4a3a;
+    text-transform: uppercase;
+    text-align: center;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed #8a7a5a;
+    margin-bottom: 12px;
+  }
+
+  .result-boss-quote {
+    display: flex;
+    gap: 10px;
+    background: #2a2520;
+    color: #fff5e0;
+    padding: 12px;
+    margin-bottom: 14px;
+    border: 2px solid #2a2520;
+    align-items: flex-start;
+  }
+
+  .result-boss-text {
+    font-family: 'Special Elite', monospace;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #fff5e0;
+  }
+
+  .result-boss-text strong {
+    color: #e8a878;
+    font-weight: normal;
+    display: block;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .result-item-box {
+    background: #fff5e0;
+    border: 2px solid #2a2520;
+    padding: 10px 12px;
+    text-align: center;
+    margin-bottom: 14px;
+  }
+
+  .result-item-label {
+    font-family: 'Special Elite', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: #5a4a3a;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+
+  .result-item {
+    font-family: 'Anton', sans-serif;
+    font-size: 18px;
+    letter-spacing: 1px;
+    color: #2a2520;
+    line-height: 1.1;
+  }
+
+  .result-item-price {
+    display: inline-block;
+    background: #c94a1d;
+    color: #fff5e0;
+    padding: 2px 8px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 14px;
+    letter-spacing: 1px;
+    margin-top: 4px;
+  }
+
+  .result-desc {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #2a2520;
+    text-align: center;
+    padding: 0 4px;
+    margin-bottom: 16px;
+  }
+
+  .result-desc::first-letter {
+    font-family: 'Anton', sans-serif;
+    font-size: 36px;
+    float: left;
+    line-height: 0.9;
+    padding: 2px 6px 0 0;
+    color: #c94a1d;
+  }
+
+  /* Match strength meter */
+  .match-meter {
+    margin-bottom: 14px;
+  }
+
+  .match-meter-label {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Special Elite', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: #5a4a3a;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .match-meter-bar {
+    height: 10px;
+    background: #c4b890;
+    border: 1.5px solid #2a2520;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .match-meter-fill {
+    height: 100%;
+    background: repeating-linear-gradient(45deg, #c94a1d 0, #c94a1d 6px, #d95828 6px, #d95828 12px);
+    width: 0;
+    transition: width 1s cubic-bezier(0.34, 1.3, 0.64, 1) 0.3s;
+  }
+
+  .traits {
+    background: #fff5e0;
+    border: 2px dashed #c94a1d;
+    padding: 10px 12px;
+    margin-bottom: 14px;
+  }
+
+  .traits-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: #c94a1d;
+    text-align: center;
+    margin-bottom: 6px;
+  }
+
+  .traits-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    justify-content: center;
+  }
+
+  .trait {
+    background: #2a2520;
+    color: #fff5e0;
+    padding: 3px 9px;
+    font-family: 'Oswald', sans-serif;
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .share-box {
+    background: #c94a1d;
+    color: #fff5e0;
+    border: 2px solid #2a2520;
+    padding: 12px;
+    text-align: center;
+    margin-bottom: 14px;
+    box-shadow: 3px 3px 0 #2a2520;
+  }
+
+  .share-box-title {
+    font-family: 'Anton', sans-serif;
+    font-size: 16px;
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+
+  .share-box-text {
+    font-family: 'Special Elite', monospace;
+    font-size: 11px;
+    line-height: 1.5;
+  }
+
+  .share-box-tag {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 15px;
+    letter-spacing: 2px;
+    background: #2a2520;
+    padding: 4px 8px;
+    display: inline-block;
+    margin-top: 6px;
+  }
+
+  /* ===== PRAIRIE FOOTER ===== */
+  .prairie-scene {
+    position: relative;
+    height: 60px;
+    margin: 14px -4px 0;
+    background: #ede0c4;
+    border-top: 1.5px solid #8a7a5a;
+    overflow: hidden;
+  }
+
+  .prairie-ground {
+    position: absolute;
+    bottom: 0;
+    left: 0; right: 0;
+    height: 14px;
+    background-image: repeating-linear-gradient(90deg, #8a7a5a 0, #8a7a5a 2px, transparent 2px, transparent 6px);
+    opacity: 0.4;
+  }
+
+  /* Ticker tape */
+  .ticker {
+    background: #2a2520;
+    color: #e8a878;
+    padding: 8px 0;
+    overflow: hidden;
+    position: relative;
+    margin: 0 -4px;
+    border-top: 2px solid #c94a1d;
+    border-bottom: 2px solid #c94a1d;
+  }
+
+  .ticker-content {
+    display: flex;
+    gap: 28px;
+    animation: ticker 28s linear infinite;
+    white-space: nowrap;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    letter-spacing: 2px;
+  }
+
+  .ticker-content span {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .ticker-content span::after {
+    content: 'â';
+    color: #c94a1d;
+    margin-left: 22px;
+  }
+
+  @keyframes ticker {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  .footer-credit {
+    font-family: 'Special Elite', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: #5a4a3a;
+    text-align: center;
+    text-transform: uppercase;
+    padding: 10px 0 6px;
+    background: #ede0c4;
+    margin: 0 -4px -4px;
+    border-top: 1px solid #8a7a5a;
+  }
+
+  /* ===== ANIMATIONS ===== */
+  .screen {
+    animation: fadeIn 0.4s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translate(-50%, -50%); }
+    50% { transform: translate(-50%, -65%); }
+  }
+
+  .traveler-bounce {
+    animation: bounce 0.6s ease;
+  }
+
+  @keyframes slamIn {
+    0% { opacity: 0; transform: scale(0.5) rotate(-5deg); }
+    60% { opacity: 1; transform: scale(1.1) rotate(2deg); }
+    100% { opacity: 1; transform: scale(1) rotate(0); }
+  }
+
+  .slam-in {
+    animation: slamIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .hidden { display: none; }
+
+  @media (max-width: 380px) {
+    .intro-title { font-size: 28px; }
+    .intro-title em { font-size: 34px; }
+    .hero-avatar { width: 150px; }
+    .question-text { font-size: 20px; }
+    .result-title { font-size: 32px; }
+    .logo-title { font-size: 24px; }
+    .masthead-title { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- REUSABLE SAUCE BOSS AVATAR - uses uploaded PNG -->
+<!-- NOTE: For production deployment, host sauce-boss.png on wingorestaurants.com and replace the src below with https://wingorestaurants.com/sauce-boss.png -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="sauce-boss-avatar" viewBox="0 0 200 220">
+      <!-- Fallback SVG silhouette used only if image fails to load -->
+      <rect width="200" height="220" fill="#1a1510"/>
+      <text x="100" y="115" text-anchor="middle" font-family="Anton, sans-serif" font-size="24" font-weight="900" fill="#c94a1d">SAUCE</text>
+      <text x="100" y="140" text-anchor="middle" font-family="Anton, sans-serif" font-size="24" font-weight="900" fill="#c94a1d">BOSS</text>
+    </symbol>
+
+    <!-- Rooster silhouette -->
+    <symbol id="rooster" viewBox="0 0 100 100">
+      <path d="M 50 85 L 48 75 Q 45 68 48 60 L 42 55 Q 35 52 32 45 Q 30 38 35 32 Q 32 28 34 24 Q 38 20 42 22 L 45 18 Q 50 14 55 18 Q 58 14 62 18 L 60 22 Q 65 24 65 28 L 62 30 Q 60 34 58 36 L 60 42 Q 65 48 68 55 Q 72 62 70 70 L 75 72 Q 80 74 82 78 L 78 80 L 75 82 L 70 80 L 65 82 L 60 80 L 55 85 Z"
+            fill="#2a2520"/>
+      <path d="M 42 22 Q 38 15 42 10 Q 45 15 48 18" fill="#c94a1d"/>
+      <circle cx="50" cy="26" r="1.5" fill="#fff5e0"/>
+      <path d="M 55 32 L 58 36 L 54 38 Z" fill="#c94a1d"/>
+      <path d="M 70 70 L 78 74 L 82 80 L 85 78 L 88 82 L 82 85 L 76 82 L 72 78 Z" fill="#2a2520"/>
+      <path d="M 50 85 L 48 92 L 52 92 Z M 55 85 L 58 92 L 54 92 Z" fill="#2a2520"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="app">
+
+  <!-- ===== INTRO SCREEN ===== -->
+  <div id="screen-intro" class="screen">
+    <!-- Scroll banner header -->
+    <div class="scroll-banner">
+      <div class="banner-icons">
+        <span>ð¶</span><span>ð</span><span>ð¶</span><span>ð</span><span>ð¶</span><span>ð</span><span>ð¶</span>
+      </div>
+      <div class="banner-content">
+        <img class="corner-avatar" src="https://wingorestaurants.com/images/sauce-boss.png" alt="Sauce Boss" onerror="this.style.display='none'">
+        <div class="banner-scroll">
+          <div class="logo-title">WING-O<span class="flame">ð¥</span></div>
+          <div class="logo-sub">- More Than Wings -</div>
+          <div class="logo-main">THE QUIZ</div>
+        </div>
+        <svg class="corner-rooster" viewBox="0 0 100 100"><use href="#rooster"/></svg>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="hero-avatar-wrap">
+        <img class="hero-avatar" src="https://wingorestaurants.com/images/sauce-boss.png" alt="The Sauce Boss">
+      </div>
+
+      <div class="speech-bubble">
+        "Every sauce tells a story, friend.<br>
+        Pull up a stool â let's find out which one is <strong>yours</strong>."<br>
+        <span style="font-size:10px; color:#c94a1d; letter-spacing:1px;">â THE SAUCE BOSS</span>
+      </div>
+
+      <div class="intro-title">WHICH<em>SAUCE BOSS PICK</em>ARE YOU?</div>
+
+      <div class="intro-sub">
+        Six questions. One flavor destiny.<br>
+        Straight from the prairie to your plate.
+      </div>
+
+      <div class="intro-stats">
+        <div class="stat">
+          <div class="stat-num">125+</div>
+          <div class="stat-label">Flavors</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <div class="stat-num">5</div>
+          <div class="stat-label">Locations</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <div class="stat-num">6</div>
+          <div class="stat-label">Picks</div>
+        </div>
+      </div>
+
+      <button class="btn" onclick="startQuiz()">Begin The Journey <span class="arrow">â</span></button>
+
+      <div style="text-align:center; font-family:'Special Elite',monospace; font-size:10px; letter-spacing:2px; color:#5a4a3a; margin-top:6px;">
+        Â· TAKES 60 SECONDS Â· REGINA MADE Â·
+      </div>
+    </div>
+
+    <div class="ticker">
+      <div class="ticker-content">
+        <span>EST. 2024</span><span>125+ FLAVORS</span><span>REGINA MADE</span><span>SAUCE BOSS APPROVED</span>
+        <span>EST. 2024</span><span>125+ FLAVORS</span><span>REGINA MADE</span><span>SAUCE BOSS APPROVED</span>
+      </div>
+    </div>
+    <div class="footer-credit">WINGORESTAURANTS.COM Â· ALBERT ST Â· ROCHDALE Â· EAST REGINA Â· MOOSE JAW Â· REGINA BEACH</div>
+  </div>
+
+  <!-- ===== QUIZ SCREEN ===== -->
+  <div id="screen-quiz" class="screen hidden">
+    <div class="scroll-banner">
+      <div class="banner-content">
+        <img class="corner-avatar" src="https://wingorestaurants.com/images/sauce-boss.png" alt="Sauce Boss" onerror="this.style.display='none'">
+        <div class="banner-scroll">
+          <div class="logo-title" style="font-size:22px;">SAUCE BOSS</div>
+          <div class="logo-sub">- On The Road -</div>
+          <div class="logo-main" style="font-size:14px;">THE JOURNEY</div>
+        </div>
+        <svg class="corner-rooster" viewBox="0 0 100 100"><use href="#rooster"/></svg>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="journey-header">
+        <div class="journey-label" id="journey-label">MILE MARKER 1 OF 6</div>
+        <div class="journey-mile" id="journey-mile">17% IN</div>
+      </div>
+
+      <div class="road-wrap">
+        <div class="road"></div>
+        <div class="road-flag">â</div>
+        <div class="road-traveler" id="road-traveler" style="left:8%">
+          <span id="traveler-num">1</span>
+        </div>
+      </div>
+
+      <div class="chapter-mark" id="chapter-mark">CHAPTER ONE</div>
+      <div class="question-text" id="question-text"></div>
+
+      <div class="sauce-boss-quote">
+        <img class="sauce-boss-mini" src="https://wingorestaurants.com/images/sauce-boss.png" alt="Sauce Boss" onerror="this.style.display='none'">
+        <span id="boss-hint"></span>
+      </div>
+
+      <div class="answers" id="answers"></div>
+    </div>
+
+    <div class="ticker">
+      <div class="ticker-content">
+        <span>STAY SAUCY</span><span>REGINA STRONG</span><span>125+ FLAVORS</span><span>WINGO FOREVER</span>
+        <span>STAY SAUCY</span><span>REGINA STRONG</span><span>125+ FLAVORS</span><span>WINGO FOREVER</span>
+      </div>
+    </div>
+    <div class="footer-credit">Â· THE SAUCE BOSS IS WATCHING Â·</div>
+  </div>
+
+  <!-- ===== RESULT SCREEN ===== -->
+  <div id="screen-result" class="screen hidden">
+    <div class="scroll-banner">
+      <div class="banner-content">
+        <img class="corner-avatar" src="https://wingorestaurants.com/images/sauce-boss.png" alt="Sauce Boss" onerror="this.style.display='none'">
+        <div class="banner-scroll">
+          <div class="logo-title" style="font-size:22px;">VERDICT IN</div>
+          <div class="logo-sub">- Special Edition -</div>
+          <div class="logo-main" style="font-size:14px;">THE GAZETTE</div>
+        </div>
+        <svg class="corner-rooster" viewBox="0 0 100 100"><use href="#rooster"/></svg>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="newspaper-masthead">
+        <div class="masthead-top">Â· The Saucy Gazette Â·</div>
+        <div class="masthead-title">YOUR MATCH</div>
+        <div class="masthead-bottom">
+          <span>Vol. 1, No. 1</span>
+          <span id="result-date">REGINA Â· TODAY</span>
+          <span>25Â¢</span>
+        </div>
+      </div>
+
+      <div class="result-headline-kicker">â EXCLUSIVE REPORT â</div>
+      <div class="result-title slam-in" id="result-title"></div>
+      <div class="result-byline" id="result-byline">AS DECLARED BY THE SAUCE BOSS HIMSELF</div>
+
+      <div class="result-boss-quote">
+        <img class="result-boss-avatar" src="https://wingorestaurants.com/images/sauce-boss.png" alt="Sauce Boss" onerror="this.style.display='none'">
+        <div class="result-boss-text">
+          <strong>THE BOSS SAYS:</strong>
+          <span id="boss-verdict"></span>
+        </div>
+      </div>
+
+      <div class="result-item-box">
+        <div class="result-item-label">Â· Your Order Â·</div>
+        <div class="result-item" id="result-item-name"></div>
+        <div class="result-item-price" id="result-item-price"></div>
+      </div>
+
+      <div class="result-desc" id="result-desc"></div>
+
+      <div class="match-meter">
+        <div class="match-meter-label">
+          <span>MATCH STRENGTH</span>
+          <span id="match-percent">0%</span>
+        </div>
+        <div class="match-meter-bar">
+          <div class="match-meter-fill" id="match-fill"></div>
+        </div>
+      </div>
+
+      <div class="traits">
+        <div class="traits-title">Â· YOUR FLAVOR PROFILE Â·</div>
+        <div class="traits-list" id="result-traits"></div>
+      </div>
+
+      <div class="share-box">
+        <div class="share-box-title">SPREAD THE SAUCE</div>
+        <div class="share-box-text">
+          Screenshot this page. Post it. Tag us.<br>
+          Show Regina who you really are.
+        </div>
+        <div class="share-box-tag">@WINGORESTAURANTS Â· #SAUCEBOSSPICK</div>
+      </div>
+
+      <button class="btn" onclick="shareResult()">Share My Verdict <span class="arrow">â</span></button>
+      <button class="btn btn-secondary" onclick="restart()">Take It Again â»</button>
+
+      <div style="text-align:center; font-family:'Special Elite',monospace; font-size:10px; letter-spacing:2px; color:#5a4a3a; margin-top:10px;">
+        Â· ORDER YOURS AT WINGORESTAURANTS.COM Â·
+      </div>
+    </div>
+
+    <div class="ticker">
+      <div class="ticker-content">
+        <span>â SAUCE BOSS APPROVED â</span><span>REGINA Â· MOOSE JAW Â· REGINA BEACH Â· WINNIPEG SOON</span><span>COMMUNITY FIRST</span>
+        <span>â SAUCE BOSS APPROVED â</span><span>REGINA Â· MOOSE JAW Â· REGINA BEACH Â· WINNIPEG SOON</span><span>COMMUNITY FIRST</span>
+      </div>
+    </div>
+    <div class="footer-credit">WING-O Â· MORE THAN WINGS Â· EST. 2024</div>
+  </div>
+
+</div>
+
+<script>
+  // ===== QUIZ DATA =====
+
+  const picks = {
+    toughGuy: {
+      title: "THE FIRE BREATHER",
+      itemName: "THE TOUGH GUY BURGER",
+      itemPrice: "$21.99",
+      desc: "You don't flinch. You don't water it down. You ordered the Carolina Reaper special and you're already asking what's hotter. The Sauce Boss salutes you â and maybe fears you a little.",
+      verdict: "This one's built different. Handed them the Reaper and they smiled. Respect.",
+      traits: ["Fearless", "Bold", "Unfiltered", "Pure Fire"]
+    },
+    buffalo: {
+      title: "THE PRAIRIE REBEL",
+      itemName: "BUFFALO STAMPEDE BURGER",
+      itemPrice: "$21.99",
+      desc: "House buffalo, creamy slaw, a chicken patty with attitude. You're loud, loyal, and a little bit wild â the one holding it down at every Rider tailgate. Regina runs through you.",
+      verdict: "Loud, loyal, born of the prairie. You don't follow trends â trends follow you.",
+      traits: ["Loyal", "Loud", "Local", "All Heart"]
+    },
+    chickenPoutine: {
+      title: "THE FLAVOR CHASER",
+      itemName: "CHICKEN POUTINE",
+      itemPrice: "$14.99",
+      desc: "Cheese curds, gravy, juicy chicken, and that sweet & spicy Thai kiss on top. You live for the plot twist. Comfort food is great â comfort food with a secret weapon is your love language.",
+      verdict: "You chase the twist, the surprise, the 'what-if.' That's how great flavors are born.",
+      traits: ["Curious", "Playful", "Adventurous", "Saucy"]
+    },
+    hotNHeavy: {
+      title: "THE RIDE OR DIE",
+      itemName: "HOT 'N' HEAVY",
+      itemPrice: "$29.99",
+      desc: "Three pounds of fries. A pound of curds. A pound of gravy. You don't do half-measures. When you show up, you SHOW UP â and you bring the whole crew with you.",
+      verdict: "You're the one everybody calls when it's time to eat. Big heart, bigger appetite.",
+      traits: ["Generous", "Committed", "Big Energy", "Crew Goals"]
+    },
+    dillinator: {
+      title: "THE SMOOTH OPERATOR",
+      itemName: "THE DILLINATOR BURGER",
+      itemPrice: "$21.99",
+      desc: "Honey dill, crunchy pickle, melted Swiss. You're the one everyone trusts â calm, magnetic, and way more interesting than people realize. The Sauce Boss calls you a classic in the making.",
+      verdict: "Quiet fire. You don't need to shout â your flavor does the talking.",
+      traits: ["Charming", "Reliable", "Effortless", "Quiet Legend"]
+    },
+    kfc: {
+      title: "THE TRENDSETTER",
+      itemName: "KOREAN FRIED CHICKEN",
+      itemPrice: "$20.99",
+      desc: "Korean BBQ glaze, tangy pickles, crisp slaw on a toasted bun. You're two steps ahead of everyone else. You knew about it first, you told your friends, and now they owe you.",
+      verdict: "Always two steps ahead. By the time the rest catch up, you're already on the next thing.",
+      traits: ["Stylish", "Forward", "Cool", "Ahead Of Curve"]
+    }
+  };
+
+  const bossHints = [
+    "Don't overthink it. First instinct wins.",
+    "Your palate knows you better than you do.",
+    "Every choice tells me a little more about you.",
+    "Halfway there. The sauce is getting warm.",
+    "Almost home. The plate is nearly full.",
+    "Last stop. Make it count."
+  ];
+
+  const questions = [
+    {
+      q: "It's Friday night in Regina. What's the move?",
+      answers: [
+        { text: "Bar crawl downtown â loud, late, zero regrets", primary: "buffalo", secondary: "hotNHeavy" },
+        { text: "House party with the whole crew â I'm bringing the snacks", primary: "hotNHeavy", secondary: "chickenPoutine" },
+        { text: "New restaurant opening â gotta check it first", primary: "kfc", secondary: "chickenPoutine" },
+        { text: "Quiet night in with my person. Candles optional.", primary: "dillinator", secondary: "toughGuy" }
+      ]
+    },
+    {
+      q: "Pick your sauce personality",
+      answers: [
+        { text: "Reaper-level â if it doesn't hurt, it's wrong", primary: "toughGuy", secondary: "buffalo" },
+        { text: "Sweet & spicy Thai â keep 'em guessing", primary: "chickenPoutine", secondary: "kfc" },
+        { text: "Honey dill â creamy, calm, secretly the best", primary: "dillinator", secondary: "hotNHeavy" },
+        { text: "Buffalo classic â don't fix what ain't broken", primary: "buffalo", secondary: "toughGuy" }
+      ]
+    },
+    {
+      q: "Someone asks what makes you you. You say...",
+      answers: [
+        { text: "I go hard. All in, every time.", primary: "toughGuy", secondary: "hotNHeavy" },
+        { text: "I keep it real. No fakes, no filters.", primary: "buffalo", secondary: "dillinator" },
+        { text: "I'm always ahead of the trend", primary: "kfc", secondary: "chickenPoutine" },
+        { text: "I'm the one everybody calls", primary: "hotNHeavy", secondary: "buffalo" }
+      ]
+    },
+    {
+      q: "Your WingO order vibe?",
+      answers: [
+        { text: "Solo mission. Me, a burger, peace.", primary: "dillinator", secondary: "toughGuy" },
+        { text: "Feeding the squad â platters only", primary: "hotNHeavy", secondary: "buffalo" },
+        { text: "Mixing it up â sauces I haven't tried yet", primary: "chickenPoutine", secondary: "kfc" },
+        { text: "Dare me with the hottest thing on the menu", primary: "toughGuy", secondary: "chickenPoutine" }
+      ]
+    },
+    {
+      q: "Pick a Prairie power move",
+      answers: [
+        { text: "Riders home game, face paint, all the way", primary: "buffalo", secondary: "hotNHeavy" },
+        { text: "Winter road trip, six friends, one playlist", primary: "hotNHeavy", secondary: "chickenPoutine" },
+        { text: "Summer patio hang, sunset, slow sipping", primary: "dillinator", secondary: "kfc" },
+        { text: "Finding the new spot before it blows up", primary: "kfc", secondary: "toughGuy" }
+      ]
+    },
+    {
+      q: "Real talk â your heat tolerance?",
+      answers: [
+        { text: "Bring it. I laugh at Carolina Reaper.", primary: "toughGuy", secondary: "buffalo" },
+        { text: "Medium-hot sweet spot. I live there.", primary: "chickenPoutine", secondary: "kfc" },
+        { text: "Gimme flavor first, heat second", primary: "dillinator", secondary: "kfc" },
+        { text: "Whatever my crew is having", primary: "hotNHeavy", secondary: "buffalo" }
+      ]
+    }
+  ];
+
+  // ===== STATE =====
+  let currentQ = 0;
+  let scores = { toughGuy: 0, buffalo: 0, chickenPoutine: 0, hotNHeavy: 0, dillinator: 0, kfc: 0 };
+
+  // ===== FUNCTIONS =====
+  function startQuiz() {
+    currentQ = 0;
+    scores = { toughGuy: 0, buffalo: 0, chickenPoutine: 0, hotNHeavy: 0, dillinator: 0, kfc: 0 };
+    document.getElementById('screen-intro').classList.add('hidden');
+    document.getElementById('screen-result').classList.add('hidden');
+    document.getElementById('screen-quiz').classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    renderQuestion();
+  }
+
+  function renderQuestion() {
+    const q = questions[currentQ];
+    const letters = ['A', 'B', 'C', 'D'];
+    const numWords = ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX'];
+
+    const percent = Math.round(((currentQ + 1) / questions.length) * 100);
+    const travelPos = 8 + ((currentQ) / (questions.length - 1)) * 82;
+
+    document.getElementById('journey-label').textContent = `MILE MARKER ${currentQ + 1} OF ${questions.length}`;
+    document.getElementById('journey-mile').textContent = `${percent}% IN`;
+    document.getElementById('traveler-num').textContent = currentQ + 1;
+
+    const traveler = document.getElementById('road-traveler');
+    traveler.style.left = `${travelPos}%`;
+    traveler.classList.remove('traveler-bounce');
+    void traveler.offsetWidth;
+    traveler.classList.add('traveler-bounce');
+
+    document.getElementById('chapter-mark').textContent = `â CHAPTER ${numWords[currentQ]} â`;
+    document.getElementById('question-text').textContent = q.q;
+    document.getElementById('boss-hint').textContent = bossHints[currentQ];
+
+    const answersEl = document.getElementById('answers');
+    answersEl.innerHTML = '';
+    q.answers.forEach((ans, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'answer';
+      btn.innerHTML = `<span class="answer-letter">${letters[i]}</span><span>${ans.text}</span>`;
+      btn.onclick = () => selectAnswer(ans);
+      answersEl.appendChild(btn);
+    });
+  }
+
+  function selectAnswer(ans) {
+    scores[ans.primary] += 2;
+    scores[ans.secondary] += 1;
+
+    currentQ++;
+    if (currentQ >= questions.length) {
+      setTimeout(showResult, 250);
+    } else {
+      const screen = document.getElementById('screen-quiz');
+      screen.style.opacity = '0';
+      setTimeout(() => {
+        renderQuestion();
+        screen.style.opacity = '1';
+      }, 180);
+    }
+  }
+
+  function showResult() {
+    let winner = 'chickenPoutine';
+    let maxScore = -1;
+    let totalScore = 0;
+    for (const key in scores) {
+      totalScore += scores[key];
+      if (scores[key] > maxScore) {
+        maxScore = scores[key];
+        winner = key;
+      }
+    }
+
+    // Calculate match strength (how dominant the winner was)
+    const maxPossible = questions.length * 2; // if every answer was primary
+    const matchPct = Math.min(100, Math.round((maxScore / maxPossible) * 100));
+
+    const pick = picks[winner];
+    document.getElementById('result-title').textContent = pick.title;
+    document.getElementById('result-item-name').textContent = pick.itemName;
+    document.getElementById('result-item-price').textContent = pick.itemPrice;
+    document.getElementById('result-desc').textContent = pick.desc;
+    document.getElementById('boss-verdict').textContent = `"${pick.verdict}"`;
+    document.getElementById('match-percent').textContent = `${matchPct}%`;
+
+    const traitsEl = document.getElementById('result-traits');
+    traitsEl.innerHTML = '';
+    pick.traits.forEach(t => {
+      const span = document.createElement('span');
+      span.className = 'trait';
+      span.textContent = t;
+      traitsEl.appendChild(span);
+    });
+
+    document.getElementById('screen-quiz').classList.add('hidden');
+    document.getElementById('screen-result').classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Animate match meter after display
+    setTimeout(() => {
+      document.getElementById('match-fill').style.width = `${matchPct}%`;
+    }, 400);
+  }
+
+  function restart() {
+    startQuiz();
+  }
+
+  function shareResult() {
+    const title = document.getElementById('result-title').textContent;
+    const text = `I'm ${title} ð¥ Take the WingO Sauce Boss quiz and find your flavor destiny â wingorestaurants.com`;
+
+    if (navigator.share) {
+      navigator.share({
+        title: 'My WingO Sauce Boss Pick',
+        text: text,
+        url: 'https://wingorestaurants.com'
+      }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Result copied! Paste it anywhere and tag @wingorestaurants');
+      }).catch(() => {
+        alert('Screenshot this page and tag @wingorestaurants!');
+      });
+    }
+  }
+</script>
+
+</body>
+</html>
