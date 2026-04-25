@@ -1232,7 +1232,8 @@ async function submitOrder(){
       var cr=await fetch(API_BASE+'/api/charge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({locationId:locId,cardToken:cardToken,amount:total,orderId:onum2,orderType:orderType,subtotal:sub,notes:notes,customer:{firstName:fn,lastName:ln,phone:ph,email:em,address:addr},items:chargeItems})});
       var cd=await cr.json();
       if(!cd.success){toast(cd.error||'Payment failed');btn.disabled=false;btn.innerHTML='PAY $'+total.toFixed(2)+' NOW';return;}
-      showSuccess({success:true,orderNum:onum2,cloverSuccess:true,customer:fn,total:total.toFixed(2),phone:ph,orderType:orderType,location:'Rochdale',paid:true,last4:cd.last4});
+      var locName={'albert-st':'Albert Street','rochdale':'Rochdale','east-regina':'East Regina','moose-jaw':'Moose Jaw'}[locId]||locId;
+      showSuccess({success:true,orderNum:onum2,cloverSuccess:true,customer:fn,total:total.toFixed(2),phone:ph,orderType:orderType,location:locName,paid:true,last4:cd.last4});
       cart=[];updateCart();return;
     }catch(e){toast('Payment error — try again');btn.disabled=false;btn.innerHTML='PAY $'+total.toFixed(2)+' NOW';return;}
   }
