@@ -284,8 +284,9 @@ app.get('/sb-admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'push-admin.html'));
 });
 
-// ── SPA FALLBACK — serve index.html for all unmatched routes ──
-app.get('*', (req, res) => {
+// ── SPA FALLBACK — serve index.html for non-API unmatched routes ──
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api/')) return next();
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
@@ -392,13 +393,48 @@ app.post('/api/charge', async (req, res) => {
 
     console.log(`✅ Payment success — ${orderId} — $${amount} — Charge: ${chargeData.id}`);
 
-    // Step 2: Update the ecommerce order note with full item details
-    // (Clover ecommerce already creates an order via scl.clover.com)
-    // We just need to update its title/note with customer + item details
+    // Step 2: Add proper line items to the ecommerce order + update note
     let cloverId = chargeData.order?.id || null;
-    if (cloverId && loc.apiToken) {
+    if (cloverId && loc.apiToken && items && items.length) {
       try {
-        const itemSummary = items ? items.map(i => `${i.name}${i.flavor ? ' ['+i.flavor+']' : ''} x${i.qty}`).join(', ') : '';
+        // First DELETE the auto-created "Item 1" line item from ecommerce charge
+        try {
+          const existingResp = await fetch(`https://api.clover.com/v3/merchants/${loc.merchantId}/orders/${cloverId}/line_items`, {
+            headers: { 'Authorization': `Bearer ${loc.apiToken}` }
+          });
+          const existingData = await existingResp.json();
+          if (existingData.elements) {
+            for (const li of existingData.elements) {
+              await fetch(`https://api.clover.com/v3/merchants/${loc.merchantId}/orders/${cloverId}/line_items/${li.id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${loc.apiToken}` }
+              });
+            }
+            console.log(`✓ Deleted ${existingData.elements.length} default line items`);
+          }
+        } catch (e) { console.warn('Delete existing items error:', e.message); }
+
+        // Now add proper line items with real names
+        for (const item of items) {
+          const itemName = item.flavor ? `${item.name} [${item.flavor}]` : item.name;
+          const qty = item.qty || 1;
+          for (let q = 0; q < qty; q++) {
+            await fetch(`https://api.clover.com/v3/merchants/${loc.merchantId}/orders/${cloverId}/line_items`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${loc.apiToken}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                name: itemName,
+                price: Math.round(item.price * 100),
+                unitQty: 1000,
+                note: item.flavor || ''
+              })
+            });
+          }
+          console.log(`✓ Added line item: ${itemName} x${qty}`);
+        }
+
+        // Update order note + lock it
+        const itemSummary = items.map(i => `${i.name}${i.flavor ? ' ['+i.flavor+']' : ''} x${i.qty}`).join(', ');
         const orderNote = `WING-O ONLINE ORDER
 ORDER #: ${orderId} | TIME: ${timestamp}
 TYPE: ${(orderType||'pickup').toUpperCase()} | LOCATION: ${loc.name}
@@ -416,7 +452,7 @@ ${notes ? 'NOTES: '+notes : ''}`.trim();
             state: 'locked'
           })
         });
-        console.log(`✅ Clover order ${cloverId} updated with order details`);
+        console.log(`✅ Clover order ${cloverId} updated with line items + details`);
       } catch (e) { console.warn('Order update error:', e.message); }
     }
 
