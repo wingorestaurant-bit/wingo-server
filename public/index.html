@@ -1195,13 +1195,29 @@ function initCloverIframe(pk){
   }
 }
 async function getCloverToken(){
-  if(!cloverInstance){toast('Card form not ready — please wait a moment and try again');return null;}
+  if(!cloverInstance){
+    toast('⚠️ Card form not loaded — refresh page and try again');
+    return null;
+  }
   try{
     var r=await cloverInstance.createToken();
-    if(r.errors){var errs=Object.values(r.errors).filter(Boolean);if(errs.length){toast(errs[0]);return null;}}
-    if(!r.token){toast('Card details incomplete — please check all fields');return null;}
+    console.log('Clover token response:', JSON.stringify(r));
+    if(r.errors){
+      var errs=Object.values(r.errors).filter(Boolean);
+      if(errs.length){
+        toast('⚠️ '+errs[0]);
+        return null;
+      }
+    }
+    if(!r.token){
+      toast('⚠️ Card details incomplete — fill all 4 fields (number, expiry, CVV, postal)');
+      return null;
+    }
     return r.token;
-  }catch(e){toast('Card error: '+(e.message||'Please check card details'));return null;}
+  }catch(e){
+    toast('⚠️ Card error: '+(e.message||'Please refresh and try again'));
+    return null;
+  }
 }
 
 async function submitOrder(){
