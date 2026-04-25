@@ -1,11 +1,10 @@
 // Wing-O Service Worker — PWA offline support + Push Notifications
-const CACHE_NAME = 'wingo-v2';
+const CACHE_NAME = 'wingo-v3';
 
 // ── PUSH NOTIFICATION HANDLER ──────────────────────────────────
 self.addEventListener('push', event => {
   let data = {};
   try { data = event.data.json(); } catch(e) { data = { title: 'Wing-O 🍗', body: event.data?.text() || 'You have a new message!' }; }
-
   const options = {
     body: data.body || '',
     icon: data.icon || '/images/logo.jpg',
@@ -19,7 +18,6 @@ self.addEventListener('push', event => {
       { action: 'close', title: '✕ Dismiss' }
     ]
   };
-
   event.waitUntil(
     self.registration.showNotification(data.title || 'Wing-O 🍗', options)
   );
@@ -29,9 +27,7 @@ self.addEventListener('push', event => {
 self.addEventListener('notificationclick', event => {
   event.notification.close();
   const url = event.notification.data?.url || '/';
-
   if (event.action === 'close') return;
-
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientList => {
       // If app is already open, focus it
@@ -46,7 +42,6 @@ self.addEventListener('notificationclick', event => {
     })
   );
 });
-
 
 // Core files to cache for offline use
 const CORE_CACHE = [
@@ -101,36 +96,40 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Fetch — serve from cache, fall back to network
+// Fetch handler
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
 
-  // Always go network-first for API calls
-  if (url.pathname.startsWith('/api/')) {
-    event.respondWith(
-      fetch(event.request).catch(() =>
-        new Response(JSON.stringify({ error: 'You are offline. Please check your connection.' }), {
-          headers: { 'Content-Type': 'application/json' }
-        })
-      )
-    );
+  // 1. Skip cross-origin requests entirely (Clover, OneSignal, Google Fonts, etc.)
+  //    Let the browser handle these directly — never intercept third-party calls
+  if (url.origin !== self.location.origin) {
     return;
   }
 
-  // For everything else: cache first, fall back to network
+  // 2. API calls — always pass through to network, never cache, never fake offline response
+  if (url.pathname.startsWith('/api/')) {
+    return; // Let the browser handle it directly — frontend gets real errors if any
+  }
+
+  // 3. POST/PUT/DELETE — never cache, always pass through
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
+  // 4. For GET requests to our origin: cache first, fall back to network
   event.respondWith(
     caches.match(event.request).then(cached => {
       if (cached) return cached;
       return fetch(event.request).then(response => {
         // Cache successful GET responses
-        if (event.request.method === 'GET' && response.status === 200) {
+        if (response.status === 200) {
           const copy = response.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
         }
         return response;
       }).catch(() => {
-        // Offline fallback for HTML pages
-        if (event.request.headers.get('accept').includes('text/html')) {
+        // Offline fallback for HTML pages only
+        if (event.request.headers.get('accept')?.includes('text/html')) {
           return caches.match('/index.html');
         }
       });
