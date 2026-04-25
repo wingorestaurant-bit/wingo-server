@@ -15,6 +15,9 @@
 <link rel="apple-touch-icon" href="images/logo.jpg">
 <meta name="description" content="Order wings online from Wing-O. 125+ flavors, 5 SK locations. Regina's original wings eatery.">
 
+<!-- Clover SDK (load early so payment iframes work) -->
+<script src="https://checkout.clover.com/sdk.js"></script>
+
 <!-- OneSignal Push Notifications -->
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
@@ -1166,22 +1169,39 @@ function setLocation(v){
 var cloverInstance=null;
 function initCloverIframe(pk){
   var wrap=document.getElementById('clover-iframe-wrap');
-  if(!wrap||!window.Clover)return;
+  if(!wrap){console.error('Clover wrap missing');return;}
+  if(!window.Clover){
+    // SDK not loaded yet — retry
+    console.log('Clover SDK not ready, retrying...');
+    setTimeout(function(){initCloverIframe(pk);},500);
+    return;
+  }
+  if(!pk){
+    wrap.innerHTML='<div style="padding:1rem;background:#FED7D7;border-radius:6px;color:#C53030;font-size:.85rem;text-align:center;">Card payment unavailable for this location. Please choose a different location.</div>';
+    return;
+  }
   try{
     cloverInstance=new window.Clover(pk);
     var els=cloverInstance.elements();
     var cn=els.create('CARD_NUMBER'),cd=els.create('CARD_DATE'),cv=els.create('CARD_CVV'),cp=els.create('CARD_POSTAL_CODE');
-    wrap.innerHTML='<div style="display:grid;gap:.6rem;margin-bottom:.5rem;"><div><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">Card Number</label><div id="card-number" style="border:1.5px solid #E8E0D0;border-radius:4px;padding:.55rem .8rem;background:white;"></div></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem;"><div><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">Expiry</label><div id="card-date" style="border:1.5px solid #E8E0D0;border-radius:4px;padding:.55rem .8rem;background:white;"></div></div><div><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">CVV</label><div id="card-cvv" style="border:1.5px solid #E8E0D0;border-radius:4px;padding:.55rem .8rem;background:white;"></div></div><div><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">Postal</label><div id="card-postal" style="border:1.5px solid #E8E0D0;border-radius:4px;padding:.55rem .8rem;background:white;"></div></div></div></div>';
-    cn.mount('#card-number');cd.mount('#card-date');cv.mount('#card-cvv');cp.mount('#card-postal');
-  }catch(e){console.error('Clover iframe error:',e);}
+    wrap.innerHTML='<div style="display:grid;gap:.6rem;margin-bottom:.5rem;"><div><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">Card Number</label><div id="card-number" style="border:1.5px solid #E8E0D0;border-radius:4px;padding:.55rem .8rem;background:white;min-height:38px;"></div></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem;"><div><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">Expiry</label><div id="card-date" style="border:1.5px solid #E8E0D0;border-radius:4px;padding:.55rem .8rem;background:white;min-height:38px;"></div></div><div><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">CVV</label><div id="card-cvv" style="border:1.5px solid #E8E0D0;border-radius:4px;padding:.55rem .8rem;background:white;min-height:38px;"></div></div><div><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">Postal</label><div id="card-postal" style="border:1.5px solid #E8E0D0;border-radius:4px;padding:.55rem .8rem;background:white;min-height:38px;"></div></div></div></div>';
+    setTimeout(function(){
+      try{cn.mount('#card-number');cd.mount('#card-date');cv.mount('#card-cvv');cp.mount('#card-postal');console.log('✓ Clover iframes mounted');}
+      catch(me){console.error('Clover mount error:',me);wrap.innerHTML='<div style="padding:1rem;background:#FED7D7;border-radius:6px;color:#C53030;font-size:.85rem;text-align:center;">Payment form failed to load. Please refresh the page.</div>';}
+    },50);
+  }catch(e){
+    console.error('Clover iframe error:',e);
+    wrap.innerHTML='<div style="padding:1rem;background:#FED7D7;border-radius:6px;color:#C53030;font-size:.85rem;text-align:center;">Payment form failed to load: '+e.message+'</div>';
+  }
 }
 async function getCloverToken(){
-  if(!cloverInstance)return null;
+  if(!cloverInstance){toast('Card form not ready — please wait a moment and try again');return null;}
   try{
     var r=await cloverInstance.createToken();
     if(r.errors){var errs=Object.values(r.errors).filter(Boolean);if(errs.length){toast(errs[0]);return null;}}
-    return r.token||null;
-  }catch(e){toast('Card error: '+e.message);return null;}
+    if(!r.token){toast('Card details incomplete — please check all fields');return null;}
+    return r.token;
+  }catch(e){toast('Card error: '+(e.message||'Please check card details'));return null;}
 }
 
 async function submitOrder(){
