@@ -4,8 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Wing-O — More Than Wings | Order Online</title>
-
-<!-- PWA -->
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#E8190A">
 <meta name="mobile-web-app-capable" content="yes">
@@ -14,11 +12,7 @@
 <meta name="apple-mobile-web-app-title" content="Wing-O">
 <link rel="apple-touch-icon" href="images/logo.jpg">
 <meta name="description" content="Order wings online from Wing-O. 125+ flavors, 5 SK locations. Regina's original wings eatery.">
-
-<!-- Clover SDK (load early so payment iframes work) -->
 <script src="https://checkout.clover.com/sdk.js"></script>
-
-<!-- OneSignal Push Notifications -->
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
   window.OneSignalDeferred = window.OneSignalDeferred || [];
@@ -42,57 +36,16 @@
     });
   });
 </script>
-
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600;700&family=Barlow:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
-:root{
-  --red:#E8190A;--red-dark:#A8120A;--yellow:#F5A800;
-  --black:#0D0D0D;--charcoal:#1A1A1A;--dark:#1C1A17;
-  --white:#FFF;
-  --paper:#F2ECD9;--paper-dark:#E8DFC4;--paper-line:#C8B89A;
-  --ink:#1A1208;--ink-light:#3D2E18;
-  --font-display:'Anton',sans-serif;
-  --font-head:'Oswald',sans-serif;
-  --font-body:'Barlow',sans-serif;
-}
+:root{--red:#E8190A;--red-dark:#A8120A;--yellow:#F5A800;--black:#0D0D0D;--charcoal:#1A1A1A;--dark:#1C1A17;--white:#FFF;--paper:#F2ECD9;--paper-dark:#E8DFC4;--paper-line:#C8B89A;--ink:#1A1208;--ink-light:#3D2E18;--font-display:'Anton',sans-serif;--font-head:'Oswald',sans-serif;--font-body:'Barlow',sans-serif;}
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
-
-/* NEWSPAPER BACKGROUND */
-body{
-  font-family:var(--font-body);
-  color:var(--ink);
-  overflow-x:hidden;
-  background-color:var(--paper);
-  background-image:
-    repeating-linear-gradient(
-      180deg,
-      transparent,
-      transparent 28px,
-      rgba(139,109,56,.08) 28px,
-      rgba(139,109,56,.08) 29px
-    ),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E");
-  background-size:100% 29px, 300px 300px;
-}
-
-body::before{
-  content:'';
-  position:fixed;inset:0;
-  background:
-    radial-gradient(ellipse 120% 80% at 50% 0%, rgba(242,236,217,.0) 0%, rgba(210,190,140,.12) 100%),
-    radial-gradient(ellipse 60% 40% at 10% 90%, rgba(139,109,56,.06) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 40% at 90% 10%, rgba(139,109,56,.06) 0%, transparent 60%);
-  pointer-events:none;
-  z-index:0;
-}
-
+body{font-family:var(--font-body);color:var(--ink);overflow-x:hidden;background-color:var(--paper);background-image:repeating-linear-gradient(180deg,transparent,transparent 28px,rgba(139,109,56,.08) 28px,rgba(139,109,56,.08) 29px),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E");background-size:100% 29px, 300px 300px;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 120% 80% at 50% 0%, rgba(242,236,217,.0) 0%, rgba(210,190,140,.12) 100%),radial-gradient(ellipse 60% 40% at 10% 90%, rgba(139,109,56,.06) 0%, transparent 60%),radial-gradient(ellipse 60% 40% at 90% 10%, rgba(139,109,56,.06) 0%, transparent 60%);pointer-events:none;z-index:0;}
 *{position:relative;z-index:1;}
 nav,footer,.cart-ov,.modal-ov,.toast,.loc-banner{z-index:10;}
-::-webkit-scrollbar{width:5px;}
-::-webkit-scrollbar-track{background:var(--black);}
-::-webkit-scrollbar-thumb{background:var(--red);}
-
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--black);}::-webkit-scrollbar-thumb{background:var(--red);}
 .announce{background:var(--red);color:white;text-align:center;padding:7px 1rem;font-family:var(--font-head);font-size:.78rem;letter-spacing:2px;text-transform:uppercase;position:relative;z-index:100;}
 .announce span{color:var(--yellow);}
 nav{position:sticky;top:0;z-index:999;background:var(--black);border-bottom:3px solid var(--red);}
@@ -108,7 +61,6 @@ nav{position:sticky;top:0;z-index:999;background:var(--black);border-bottom:3px 
 .loc-banner span{font-family:var(--font-head);font-size:.82rem;letter-spacing:2px;text-transform:uppercase;color:#CCC;}
 .loc-banner strong{color:var(--yellow);}
 .loc-banner button{background:var(--red);color:white;border:none;font-family:var(--font-head);font-size:.75rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;padding:3px 12px;border-radius:3px;cursor:pointer;margin-left:12px;}
-
 .hero{background:var(--black);min-height:88vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:4rem 2rem;}
 .hero-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(13,13,13,.97),rgba(13,13,13,.80));}
 .hero-content{position:relative;z-index:2;text-align:center;max-width:950px;}
@@ -121,19 +73,16 @@ nav{position:sticky;top:0;z-index:999;background:var(--black);border-bottom:3px 
 .hero-stats{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;}
 .stat .n{font-family:var(--font-display);font-size:2.3rem;color:var(--red);}
 .stat .l{font-family:var(--font-head);font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:#555;}
-
 .promo-bar{background:var(--ink);padding:1rem 1.5rem;border-bottom:3px double var(--paper-line);}
 .promo-bar-inner{max-width:1300px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.6rem;}
 .pc{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:3px;padding:.8rem;text-align:center;}
 .pc .day{font-family:var(--font-display);font-size:1.2rem;color:var(--yellow);letter-spacing:1px;}
 .pc .deal{font-family:var(--font-head);font-size:.73rem;color:#777;letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
-
 .marquee{background:var(--red);overflow:hidden;padding:.55rem 0;white-space:nowrap;}
 .mtrack{display:inline-flex;animation:mscroll 45s linear infinite;}
 .mi{font-family:var(--font-head);font-size:.78rem;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:white;padding:0 1.2rem;}
 .md{color:var(--yellow);font-size:.4rem;vertical-align:middle;}
 @keyframes mscroll{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
-
 .lunch-sec{background:var(--black);}
 .lunch-inner{max-width:1300px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;align-items:stretch;}
 .lunch-img{overflow:hidden;min-height:360px;}
@@ -147,7 +96,6 @@ nav{position:sticky;top:0;z-index:999;background:var(--black);border-bottom:3px 
 .lunch-time{font-family:var(--font-display);font-size:1.3rem;color:white;letter-spacing:2px;margin-bottom:1.5rem;}
 .lunch-items{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.5rem;}
 .lunch-item{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:4px;padding:.35rem .85rem;font-family:var(--font-head);font-size:.76rem;color:#CCC;letter-spacing:1px;text-transform:uppercase;}
-
 .cat-section{padding:4rem 1.5rem;background:transparent;}
 .cat-inner{max-width:1300px;margin:0 auto;}
 .eyebrow{font-family:var(--font-head);font-size:.75rem;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--red);margin-bottom:.4rem;}
@@ -161,13 +109,11 @@ nav{position:sticky;top:0;z-index:999;background:var(--black);border-bottom:3px 
 .cat-card-body{padding:.9rem;}
 .cat-card-name{font-family:var(--font-display);font-size:1.1rem;letter-spacing:1px;color:var(--ink);margin-bottom:.2rem;}
 .cat-card-sub{font-family:var(--font-head);font-size:.7rem;color:#7A6545;letter-spacing:1px;text-transform:uppercase;}
-
 .menu-page{display:none;padding:3rem 1.5rem;background:transparent;min-height:60vh;}
 .menu-page.active{display:block;}
 .menu-page-inner{max-width:1300px;margin:0 auto;}
 .back-btn{display:inline-flex;align-items:center;gap:6px;background:none;border:none;color:#7A6545;font-family:var(--font-head);font-size:.8rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;margin-bottom:1.5rem;padding:0;transition:color .15s;}
 .back-btn:hover{color:var(--red);}
-
 .mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:1rem;}
 .mc{background:var(--paper);border:1px solid var(--paper-line);border-radius:4px;overflow:hidden;transition:all .2s;cursor:pointer;box-shadow:2px 2px 6px rgba(0,0,0,.1);}
 .mc:hover{transform:translateY(-2px);box-shadow:3px 3px 14px rgba(0,0,0,.2);border-color:var(--red);}
@@ -181,7 +127,6 @@ nav{position:sticky;top:0;z-index:999;background:var(--black);border-bottom:3px 
 .btn-add{background:var(--black);color:white;border:none;width:34px;height:34px;border-radius:50%;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .12s;}
 .btn-add:hover{background:var(--red);}
 .pop-flag{display:inline-block;background:var(--yellow);color:var(--black);font-family:var(--font-head);font-size:.65rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:2px;margin-bottom:.35rem;}
-
 .impact-sec{background:var(--red);padding:4.5rem 1.5rem;position:relative;overflow:hidden;}
 .impact-sec::before{content:'';position:absolute;inset:0;background-image:repeating-linear-gradient(45deg,transparent,transparent 40px,rgba(0,0,0,.04) 40px,rgba(0,0,0,.04) 41px);}
 .impact-inner{max-width:1300px;margin:0 auto;position:relative;z-index:2;}
@@ -194,7 +139,6 @@ nav{position:sticky;top:0;z-index:999;background:var(--black);border-bottom:3px 
 .live-bar{background:rgba(0,0,0,.25);border-radius:6px;padding:.9rem 1.5rem;display:flex;align-items:center;justify-content:center;gap:.75rem;margin-top:1.25rem;flex-wrap:wrap;}
 .live-dot{width:8px;height:8px;border-radius:50%;background:#4ADE80;animation:pulse 2s infinite;flex-shrink:0;}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(1.3);}}
-
 .sauce-sec{background:var(--black);padding:4rem 1.5rem;}
 .sauce-inner{max-width:1300px;margin:0 auto;}
 .sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.85rem;margin-top:1.5rem;}
@@ -203,7 +147,6 @@ nav{position:sticky;top:0;z-index:999;background:var(--black);border-bottom:3px 
 .sgroup ul{list-style:none;}
 .sgroup ul li{font-size:.73rem;color:#888;padding:2px 0;line-height:1.3;}
 .sgroup ul li::before{content:"·";color:var(--red);margin-right:5px;}
-
 .loc-sec{padding:4rem 1.5rem;background:rgba(210,190,140,.15);border-top:2px solid var(--paper-line);}
 .loc-inner{max-width:1300px;margin:0 auto;}
 .lgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:1.75rem;}
@@ -217,7 +160,6 @@ nav{position:sticky;top:0;z-index:999;background:var(--black);border-bottom:3px 
 .lbadge{display:inline-block;font-family:var(--font-head);font-size:.66rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:2px;margin-bottom:.6rem;}
 .lb-live{background:rgba(245,168,0,.15);color:#7B3F00;}
 .lb-soon{background:#F0EDE6;color:#888;}
-
 .about-sec{background:var(--black);padding:5rem 1.5rem;position:relative;overflow:hidden;}
 .about-inner{max-width:1300px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;}
 .about-text h2{font-family:var(--font-display);font-size:2.6rem;color:white;line-height:1;margin:.4rem 0 1.1rem;letter-spacing:1px;}
@@ -225,7 +167,6 @@ nav{position:sticky;top:0;z-index:999;background:var(--black);border-bottom:3px 
 .about-text p{font-size:.93rem;color:#888;line-height:1.8;margin-bottom:1rem;}
 .about-quote{border-left:3px solid var(--red);padding-left:1rem;font-style:italic;font-size:.95rem;color:#CCC;line-height:1.7;margin-bottom:1.2rem;}
 .about-vis{display:flex;flex-direction:column;align-items:center;gap:1.5rem;}
-
 footer{background:var(--black);border-top:3px solid var(--red);padding:3rem 1.5rem 2rem;}
 .footer-inner{max-width:1300px;margin:0 auto;}
 .fgrid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2rem;margin-bottom:2rem;}
@@ -236,7 +177,6 @@ footer{background:var(--black);border-top:3px solid var(--red);padding:3rem 1.5r
 .fc ul li{font-size:.82rem;color:#555;padding:.25rem 0;}
 .fbot{border-top:1px solid rgba(255,255,255,.06);padding-top:1.25rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;}
 .fbot p{font-size:.74rem;color:#555;}
-
 .cart-ov{display:none;position:fixed;inset:0;z-index:9000;}
 .cart-ov.open{display:block;}
 .cart-back{position:absolute;inset:0;background:rgba(0,0,0,.65);}
@@ -263,7 +203,6 @@ footer{background:var(--black);border-top:3px solid var(--red);padding:3rem 1.5r
 .cl.tot{font-family:var(--font-display);font-size:1.3rem;color:var(--black);padding-top:.6rem;margin-top:.2rem;border-top:1.5px solid #F0EDE6;}
 .btn-co{width:100%;background:var(--red);color:white;border:none;padding:.9rem;font-family:var(--font-display);font-size:1.1rem;letter-spacing:2px;cursor:pointer;border-radius:4px;transition:background .15s;margin-top:.85rem;text-transform:uppercase;}
 .btn-co:hover{background:var(--red-dark);}
-
 .modal-ov{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.72);align-items:flex-start;justify-content:center;padding:1rem;overflow-y:auto;}
 .modal-ov.open{display:flex;}
 .modal{background:white;border-radius:10px;width:min(580px,100%);margin:auto;}
@@ -308,7 +247,6 @@ textarea{resize:vertical;min-height:60px;}
 .api-dot.ok{background:#48BB78;}
 .api-dot.err{background:var(--red);}
 .cd-select{width:100%;border:1.5px solid #E8E0D0;border-radius:4px;padding:.42rem .72rem;font-family:var(--font-head);font-size:.78rem;color:var(--black);background:white;cursor:pointer;margin-bottom:.7rem;outline:none;}
-
 .preorder-banner{background:var(--black);border-bottom:3px solid var(--yellow);padding:.75rem 1.5rem;text-align:center;display:none;}
 .preorder-banner.show{display:block;}
 .preorder-banner p{font-family:var(--font-head);font-size:.85rem;letter-spacing:1.5px;text-transform:uppercase;color:#CCC;margin:0;}
@@ -324,74 +262,26 @@ textarea{resize:vertical;min-height:60px;}
 .im-name{font-family:var(--font-display);font-size:1.5rem;letter-spacing:1px;margin-bottom:.35rem;}
 .im-desc{font-size:.85rem;color:#888;line-height:1.55;margin-bottom:1rem;}
 .im-close{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.8);color:white;border:none;width:36px;height:36px;border-radius:50%;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;}
-
-@media(max-width:900px){
-  .nav-links{display:none;}
-  .about-inner,.lunch-inner{grid-template-columns:1fr;}
-  .lunch-img{min-height:240px;}
-  .lunch-text{padding:2rem 1.5rem;}
-  .fgrid{grid-template-columns:1fr 1fr;}
-  .frow{grid-template-columns:1fr;}
-}
-@media(max-width:600px){
-  .fgrid{grid-template-columns:1fr;}
-  .hero-stats{gap:1.25rem;}
-  .cat-grid{grid-template-columns:repeat(2,1fr);}
-}
+@media(max-width:900px){.nav-links{display:none;}.about-inner,.lunch-inner{grid-template-columns:1fr;}.lunch-img{min-height:240px;}.lunch-text{padding:2rem 1.5rem;}.fgrid{grid-template-columns:1fr 1fr;}.frow{grid-template-columns:1fr;}}
+@media(max-width:600px){.fgrid{grid-template-columns:1fr;}.hero-stats{gap:1.25rem;}.cat-grid{grid-template-columns:repeat(2,1fr);}}
 .hidden{display:none!important;}
-
-/* ── NEWSPAPER & PRAIRIE THEME ── */
-.cat-section::before,.loc-sec::before,.menu-page::before{
-  content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
-  background:repeating-linear-gradient(180deg,transparent,transparent 28px,rgba(139,109,56,.05) 28px,rgba(139,109,56,.05) 29px);
-}
+.cat-section::before,.loc-sec::before,.menu-page::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;background:repeating-linear-gradient(180deg,transparent,transparent 28px,rgba(139,109,56,.05) 28px,rgba(139,109,56,.05) 29px);}
 .cat-section{border-top:3px double var(--paper-line);border-bottom:3px double var(--paper-line);}
 .loc-sec{border-top:3px double var(--paper-line);}
-.eyebrow{
-  font-family:var(--font-head) !important;font-size:.72rem !important;letter-spacing:4px !important;
-  text-transform:uppercase !important;color:var(--red) !important;
-  border-top:1.5px solid var(--red);border-bottom:1px solid var(--red);
-  padding:3px 0;display:inline-block;margin-bottom:.6rem !important;
-}
-.sec-title{
-  font-family:var(--font-display) !important;text-transform:uppercase;
-  border-bottom:2px solid var(--ink);padding-bottom:.4rem;margin-bottom:1.5rem !important;
-}
+.eyebrow{font-family:var(--font-head) !important;font-size:.72rem !important;letter-spacing:4px !important;text-transform:uppercase !important;color:var(--red) !important;border-top:1.5px solid var(--red);border-bottom:1px solid var(--red);padding:3px 0;display:inline-block;margin-bottom:.6rem !important;}
+.sec-title{font-family:var(--font-display) !important;text-transform:uppercase;border-bottom:2px solid var(--ink);padding-bottom:.4rem;margin-bottom:1.5rem !important;}
 .menu-page > .menu-page-inner > p{color:#7A6545;}
-.pop-flag{
-  background:var(--red) !important;color:white !important;border-radius:2px !important;
-  font-family:var(--font-head) !important;letter-spacing:2px !important;text-transform:uppercase !important;
-}
-.prairie-banner{
-  background:var(--ink);color:var(--paper);text-align:center;padding:.5rem 1rem;
-  font-family:var(--font-head);font-size:.72rem;letter-spacing:4px;text-transform:uppercase;
-  border-top:2px solid var(--yellow);border-bottom:2px solid var(--yellow);position:relative;overflow:hidden;
-}
-.prairie-banner::before,.prairie-banner::after{
-  content:'🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾';
-  position:absolute;top:50%;transform:translateY(-50%);font-size:.9rem;opacity:.15;letter-spacing:8px;white-space:nowrap;
-}
+.pop-flag{background:var(--red) !important;color:white !important;border-radius:2px !important;font-family:var(--font-head) !important;letter-spacing:2px !important;text-transform:uppercase !important;}
+.prairie-banner{background:var(--ink);color:var(--paper);text-align:center;padding:.5rem 1rem;font-family:var(--font-head);font-size:.72rem;letter-spacing:4px;text-transform:uppercase;border-top:2px solid var(--yellow);border-bottom:2px solid var(--yellow);position:relative;overflow:hidden;}
+.prairie-banner::before,.prairie-banner::after{content:'🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾 🌾';position:absolute;top:50%;transform:translateY(-50%);font-size:.9rem;opacity:.15;letter-spacing:8px;white-space:nowrap;}
 .prairie-banner::before{left:-20px;}
 .prairie-banner::after{right:-20px;}
-.about-quote{
-  border-left:4px solid var(--red) !important;padding-left:1rem !important;font-style:italic !important;
-  font-size:1rem !important;color:#CCC !important;line-height:1.8 !important;position:relative;
-}
-.about-quote::before{
-  content:'"';font-family:Georgia,serif;font-size:4rem;color:var(--red);opacity:.3;
-  position:absolute;top:-1rem;left:-.5rem;line-height:1;
-}
+.about-quote{border-left:4px solid var(--red) !important;padding-left:1rem !important;font-style:italic !important;font-size:1rem !important;color:#CCC !important;line-height:1.8 !important;position:relative;}
+.about-quote::before{content:'"';font-family:Georgia,serif;font-size:4rem;color:var(--red);opacity:.3;position:absolute;top:-1rem;left:-.5rem;line-height:1;}
 .item-modal{background:var(--paper) !important;}
 .im-name{color:var(--ink) !important;}
 .im-desc{color:#7A6545 !important;}
-.announce{
-  font-family:var(--font-head) !important;background:var(--ink) !important;
-  border-bottom:2px solid var(--yellow) !important;letter-spacing:3px !important;
-}
-
-/* ══════════════════════════════════════════════
-   WING-O LOYALTY PROGRAM — SAUCY STAMPS
-══════════════════════════════════════════════ */
+.announce{font-family:var(--font-head) !important;background:var(--ink) !important;border-bottom:2px solid var(--yellow) !important;letter-spacing:3px !important;}
 .loyalty-ov{display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.88);padding:1rem;overflow-y:auto;}
 .loyalty-ov.open{display:flex;align-items:flex-start;justify-content:center;}
 .loyalty-modal{background:var(--paper);border-radius:6px;width:min(640px,100%);margin:2rem auto;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5);border:2px solid var(--paper-line);}
@@ -451,19 +341,15 @@ textarea{resize:vertical;min-height:60px;}
 </style>
 </head>
 <body>
-
 <script>
 var API_BASE = '';
 var activeLocation = 'albert-st';
 </script>
-
 <div id="preorder-banner" class="preorder-banner">
   <p><span class="preorder-badge">Pre-Order</span> We are closed right now — but you can <strong>pre-order for when we open!</strong> Your order will be ready at our next opening time.</p>
 </div>
-
 <div style="background:var(--paper-dark);text-align:center;padding:3px 1rem;font-family:var(--font-head);font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--ink-light);border-bottom:1px solid var(--paper-line);">The Wing-O Post · Regina, Saskatchewan · Est. 2024 · 125+ Flavors · More Than Wings</div>
 <div class="announce">🔥 Tuesday — All You Can Eat Wings <span>$28.99</span> &nbsp;·&nbsp; Thursday — 50% Off 2nd Order &nbsp;·&nbsp; Saturday — 2 for $20 Burgers</div>
-
 <nav>
   <div class="nav-inner">
     <a href="#" onclick="showHome();return false;" style="display:flex;align-items:center;text-decoration:none;">
@@ -488,15 +374,11 @@ var activeLocation = 'albert-st';
     </div>
   </div>
 </nav>
-
 <div class="loc-banner" id="loc-banner">
   <span>📍 Nearest: <strong id="loc-nearest-name"></strong></span>
   <button onclick="openCart()">Order here</button>
 </div>
-
-<!-- HOME PAGE -->
 <div id="home-page">
-
 <section class="hero">
   <div class="hero-overlay"></div>
   <div class="hero-content">
@@ -515,7 +397,6 @@ var activeLocation = 'albert-st';
     </div>
   </div>
 </section>
-
 <div class="promo-bar">
   <div class="promo-bar-inner">
     <div class="pc"><div class="day">TUE</div><div class="deal">All You Can Eat Wings — $28.99</div></div>
@@ -524,11 +405,9 @@ var activeLocation = 'albert-st';
     <div class="pc"><div class="day">LUNCH</div><div class="deal">Wings + Fries $10 · Daily till 3:30pm</div></div>
   </div>
 </div>
-
 <div class="marquee"><div class="mtrack">
   <span class="mi">Devil's Kiss</span><span class="md">●</span><span class="mi">Honey Garlic</span><span class="md">●</span><span class="mi">Dead Angel</span><span class="md">●</span><span class="mi">Prairie Heat</span><span class="md">●</span><span class="mi">Maple BBQ</span><span class="md">●</span><span class="mi">Tangy Thai</span><span class="md">●</span><span class="mi">Island On Fire</span><span class="md">●</span><span class="mi">Sizzle Caesar</span><span class="md">●</span><span class="mi">Mango Habanero</span><span class="md">●</span><span class="mi">Citrus Twist</span><span class="md">●</span><span class="mi">Cajun Cream</span><span class="md">●</span><span class="mi">Korean BBQ</span><span class="md">●</span><span class="mi">Buffalo Ranch</span><span class="md">●</span><span class="mi">Sweet Grenade</span><span class="md">●</span><span class="mi">Devil's Kiss</span><span class="md">●</span><span class="mi">Honey Garlic</span><span class="md">●</span><span class="mi">Dead Angel</span><span class="md">●</span><span class="mi">Prairie Heat</span><span class="md">●</span><span class="mi">Maple BBQ</span><span class="md">●</span><span class="mi">Tangy Thai</span><span class="md">●</span><span class="mi">Island On Fire</span><span class="md">●</span><span class="mi">Sizzle Caesar</span><span class="md">●</span><span class="mi">Mango Habanero</span><span class="md">●</span><span class="mi">Citrus Twist</span><span class="md">●</span><span class="mi">Cajun Cream</span><span class="md">●</span><span class="mi">Korean BBQ</span><span class="md">●</span><span class="mi">Buffalo Ranch</span><span class="md">●</span><span class="mi">Sweet Grenade</span><span class="md">●</span>
 </div></div>
-
 <div class="prairie-banner">
   <span style="position:relative;z-index:1;">🌾 &nbsp; Proudly Prairie · Regina Born · Saskatchewan Grown · More Than Wings &nbsp; 🌾</span>
 </div>
@@ -551,7 +430,6 @@ var activeLocation = 'albert-st';
     </div>
   </div>
 </section>
-
 <section class="cat-section" id="cat-section">
   <svg style="position:absolute;bottom:0;left:0;width:180px;opacity:.06;pointer-events:none;z-index:0;transform:scaleX(-1);" viewBox="0 0 200 300" fill="none" xmlns="http://www.w3.org/2000/svg">
   <path d="M100 290 L100 50" stroke="#8B6A1A" stroke-width="2.5"/>
@@ -588,7 +466,6 @@ var activeLocation = 'albert-st';
     </div>
   </div>
 </section>
-
 <section class="impact-sec" id="impact">
   <div class="impact-inner">
     <div class="eyebrow" style="color:rgba(255,255,255,.6)">Real Numbers · Updated Live</div>
@@ -602,8 +479,6 @@ var activeLocation = 'albert-st';
     <div class="live-bar"><div class="live-dot"></div><span style="font-family:var(--font-head);font-size:.82rem;color:rgba(255,255,255,.8);letter-spacing:1px;text-transform:uppercase;">Live · A wing is sold every <span id="spw" style="color:var(--yellow);font-weight:700;">27</span> seconds</span></div>
   </div>
 </section>
-
-<!-- LOYALTY PROMO SECTION -->
 <section style="background:var(--ink);padding:3.5rem 1.5rem;border-top:3px double var(--yellow);border-bottom:3px double var(--yellow);position:relative;overflow:hidden;">
   <div style="position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 60px,rgba(245,168,0,.03) 60px,rgba(245,168,0,.03) 61px);pointer-events:none;"></div>
   <div style="max-width:1300px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;position:relative;">
@@ -628,7 +503,6 @@ var activeLocation = 'albert-st';
     </div>
   </div>
 </section>
-
 <section class="sauce-sec">
   <div class="sauce-inner">
     <div class="eyebrow" style="color:var(--yellow)">125+ Handcrafted Flavors</div>
@@ -637,7 +511,6 @@ var activeLocation = 'albert-st';
     <div class="sgrid" id="sgrid"></div>
   </div>
 </section>
-
 <section class="loc-sec">
   <div class="loc-inner">
     <div class="eyebrow">Find Us</div>
@@ -652,7 +525,6 @@ var activeLocation = 'albert-st';
     </div>
   </div>
 </section>
-
 <section class="about-sec">
   <div class="about-inner">
     <div class="about-text">
@@ -671,10 +543,7 @@ var activeLocation = 'albert-st';
     </div>
   </div>
 </section>
-
-</div><!-- end home-page -->
-
-<!-- MENU PAGES -->
+</div>
 <div id="menu-pages" style="display:none;">
 <div class="menu-page" id="page-wings"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">125+ Flavors</div><h2 class="sec-title" style="margin-bottom:1.5rem">🍗 WINGS</h2><p style="font-size:.88rem;color:#888;margin-bottom:1.5rem;">Choose 1 flavor per order. Mix and match across orders!</p><div class="mgrid" id="grid-wings"></div></div></div>
 <div class="menu-page" id="page-ribs"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">125+ Flavors</div><h2 class="sec-title" style="margin-bottom:1.5rem">🔥 RIBS</h2><div class="mgrid" id="grid-ribs"></div></div></div>
@@ -687,7 +556,6 @@ var activeLocation = 'albert-st';
 <div class="menu-page" id="page-platters"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Too Good to Share</div><h2 class="sec-title" style="margin-bottom:.5rem">PLATTERS</h2><div class="mgrid" id="grid-platters"></div></div></div>
 <div class="menu-page" id="page-midnight"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Sweet Endings</div><h2 class="sec-title" style="margin-bottom:1.5rem">MIDNIGHT ECSTASY 🌙</h2><div class="mgrid" id="grid-midnight"></div></div></div>
 </div>
-
 <footer>
   <div class="footer-inner">
     <div class="fgrid">
@@ -726,8 +594,6 @@ var activeLocation = 'albert-st';
     </div>
   </div>
 </footer>
-
-<!-- CART -->
 <div class="cart-ov" id="cart-ov">
   <div class="cart-back" onclick="closeCart()"></div>
   <div class="cart-panel">
@@ -743,24 +609,18 @@ var activeLocation = 'albert-st';
     </div>
   </div>
 </div>
-
-<!-- CHECKOUT MODAL -->
 <div class="modal-ov" id="modal-ov">
   <div class="modal">
     <div class="mhd"><h2>CHECKOUT</h2><button class="xcb" onclick="closeCheckout()" style="color:#555">✕</button></div>
     <div class="mbd" id="mbd"></div>
   </div>
 </div>
-
-<!-- ITEM MODAL -->
 <div class="item-modal-ov" id="item-modal-ov" onclick="if(event.target===this)closeItemModal()">
   <div class="item-modal" id="item-modal">
     <button class="im-close" onclick="closeItemModal()">✕</button>
     <div id="im-content"></div>
   </div>
 </div>
-
-<!-- FRANCHISE MODAL -->
 <div id="franchise-ov" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.85);padding:1rem;overflow-y:auto;">
   <div style="background:white;border-radius:12px;width:min(620px,100%);margin:2rem auto;overflow:hidden;">
     <div style="background:var(--black);padding:1.5rem 1.75rem;display:flex;align-items:center;justify-content:space-between;">
@@ -794,13 +654,9 @@ var activeLocation = 'albert-st';
     </div>
   </div>
 </div>
-
 <div class="toast" id="toast"></div>
 <div class="api-status" id="api-status"><div class="api-dot" id="api-dot"></div><span id="api-txt">checking...</span></div>
-
 <script>
-// ── ALL FUNCTIONS ─────────────────────────────────────────────
-
 var cart = [];
 var orderType = 'pickup';
 var currentPage = 'home';
@@ -808,7 +664,6 @@ var currentItem = null;
 var currentCat = null;
 var selectedSizeIndex = 0;
 var selectedSizePrice = 0;
-
 var FLAVORS = {
   "Flirty Ones":["Devil's Kiss","Honey Garlic","Lemon Pepper","Buffalo","Buffalo Ranch","BBQ Ranch","Honey Dill","Greek Dry","Greek Wet","Teriyaki","Creamy Dill Pickle","Medium"],
   "Hot As Hell":["Dead Angel (Carolina Reaper)","Spicy Mammilla","Sizzle Caesar","Caribbean Connection","Tropical Temptation","BBQ Seduction","Sentimental Sauce","Cobalt Kiss","Dragon Dip","Mild","Hot","Honey Buffalo","Honey Is Hot","Honey's Too Hot","Not So Hot","African Pepper","Island On Fire"],
@@ -819,10 +674,8 @@ var FLAVORS = {
   "Sweet Melodious":["Apricot Honey","Orange Ginger","Plum","Pineapple Curry","Sunburn Samurai","Raspberry Pepper","Strawberry","Sweet & Spicy Thai","Sweet & Sour","Juicy Melons"],
   "Illegal Sauces":["Hot Fantasy","Grefflo","Citrus Twist","Illegal Pizza","Honeyaki Harmony","Chinese Bull","Mystic Garlic","Blue Buzz","Creamy Lemon","Pepper Pleasure","Tour Of Italy","Honey Ranch Bliss","Cajun Cream","Canadian Greek","Parmesan Prestige","Creamy Bliss","Influencer","Mid-Majestic","Zesty Twist","Sweet Heat","Wrench It Up","Thai Coconut Crush","Scotch's Up","Dill Rancher","Citrus Sting","Japanese Twist","Dillnferno","Cream Of The Zing","Prairie Gold"]
 };
-
 var BURGER_UPGRADES = [{name:'Upgrade to Curly Fries',price:1.00},{name:'Upgrade to Poutine',price:2.00},{name:'Upgrade to Onion Rings',price:1.49}];
 var COMBO_UPGRADES = [{name:'Upgrade Fries to Curly Fries',price:1.00},{name:'Upgrade Fries to Poutine',price:2.00},{name:'Upgrade Fries to Onion Rings',price:1.49}];
-
 var MENU = {
   wings:[
     {id:'w1',name:'Half Order — Wings',desc:'Half order of crispy bone-in wings. Choose your sauce or rub from 125+ flavors.',price:7.99,img:'images/wings-half.jpg',flavorCount:1,pop:false},
@@ -904,12 +757,8 @@ var MENU = {
     {id:'m4',name:'Deep Fried Mars Bars',desc:'Indulgent deep fried Mars bars dusted with powdered sugar.',price:2.99,price2:4.99,price3:12.99,img:'images/mars-1pc.jpg',sizes3:true,sizeLabels3:['1 pc','2 pc','6 pc']}
   ]
 };
-
-// TOAST
 var toastT;
 function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('show');},2600);}
-
-// NAV
 function showHome(){
   document.getElementById('home-page').style.display='block';
   document.getElementById('menu-pages').style.display='none';
@@ -948,7 +797,6 @@ window.addEventListener('popstate',function(e){
     }
   }
 });
-
 function renderGrid(cat){
   var items=MENU[cat]||[];
   var el=document.getElementById('grid-'+cat);
@@ -969,7 +817,6 @@ function renderCard(item,cat){
   }
   return '<div class="mc" onclick="openItemModal(\''+item.id+'\',\''+cat+'\')"><div class="mc-img">'+img+'</div><div class="mc-body">'+pop+'<div class="mc-name">'+item.name+'</div><div class="mc-desc">'+item.desc+'</div><div class="mc-foot"><div class="mc-price" style="font-size:'+(item.sizes||item.sizes3?'.85rem':'1.2rem')+'">'+priceHtml+'</div><button class="btn-add" onclick="event.stopPropagation();openItemModal(\''+item.id+'\',\''+cat+'\')">+</button></div></div></div>';
 }
-
 function openItemModal(id,cat){
   var items=MENU[cat]||[];
   var item=null;
@@ -979,10 +826,8 @@ function openItemModal(id,cat){
   currentCat=cat;
   selectedSizeIndex=0;
   selectedSizePrice=0;
-
   var img=item.img?'<div class="im-img"><img src="'+item.img+'" alt="'+item.name+'" loading="lazy"></div>':'';
   var body=img+'<div class="im-body"><div class="im-name">'+item.name+'</div><div class="im-desc">'+item.desc+'</div>';
-
   if(item.sizes&&item.price2){
     var labs=item.sizeLabels||['Small','Large'];
     body+='<div style="margin-bottom:.85rem;"><div style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:.5rem;">SIZE</div><div style="display:flex;gap:.5rem;"><button class="size-btn" id="sz-0" onclick="selectSize(0,'+item.price+',this)" style="flex:1;border:2px solid var(--red);background:rgba(232,25,10,.05);padding:.5rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.82rem;">'+labs[0]+' — $'+item.price.toFixed(2)+'</button><button class="size-btn" id="sz-1" onclick="selectSize(1,'+item.price2+',this)" style="flex:1;border:2px solid #E8E0D0;background:white;padding:.5rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.82rem;">'+labs[1]+' — $'+item.price2.toFixed(2)+'</button></div></div>';
@@ -991,7 +836,6 @@ function openItemModal(id,cat){
     var labs3=item.sizeLabels3||['Sm','Med','Lg'];
     body+='<div style="margin-bottom:.85rem;"><div style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:.5rem;">SIZE</div><div style="display:flex;gap:.4rem;"><button class="size-btn" id="sz-0" onclick="selectSize(0,'+item.price+',this)" style="flex:1;border:2px solid var(--red);background:rgba(232,25,10,.05);padding:.45rem .3rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.75rem;">'+labs3[0]+'<br>$'+item.price.toFixed(2)+'</button><button class="size-btn" id="sz-1" onclick="selectSize(1,'+item.price2+',this)" style="flex:1;border:2px solid #E8E0D0;background:white;padding:.45rem .3rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.75rem;">'+labs3[1]+'<br>$'+item.price2.toFixed(2)+'</button><button class="size-btn" id="sz-2" onclick="selectSize(2,'+item.price3+',this)" style="flex:1;border:2px solid #E8E0D0;background:white;padding:.45rem .3rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.75rem;">'+labs3[2]+'<br>$'+item.price3.toFixed(2)+'</button></div></div>';
   }
-
   if(item.flavorCount){
     body+='<div style="background:#FFF;border:1px solid #E8E0D0;border-radius:6px;padding:.85rem;margin-bottom:.85rem;"><div style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:.6rem;">🔥 '+(item.flavorCount>1?'Choose a Flavor for Each Order':'Choose Your Flavor')+'</div>';
     for(var fi=0;fi<item.flavorCount;fi++){
@@ -1005,11 +849,9 @@ function openItemModal(id,cat){
     }
     body+='</div>';
   }
-
   if(item.cookieFlavors){
     body+='<div style="margin-bottom:.85rem;"><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.4rem;">Cookie Dough Flavor</label><select id="cookie-flavor" style="width:100%;border:1.5px solid #E8E0D0;border-radius:4px;padding:.45rem .7rem;font-family:var(--font-body);font-size:.83rem;outline:none;background:white;margin-bottom:.7rem;"><option value="Peanut Butter">Peanut Butter</option><option value="Double Chocolate">Double Chocolate</option><option value="Monster">Monster</option></select></div>';
   }
-
   if(item.upgrades&&cat==='burgers'){
     body+='<div style="background:#FFF8EE;border:1px solid #F5D98A;border-radius:6px;padding:.75rem;margin-bottom:.85rem;"><div style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#7B3F00;margin-bottom:.5rem;">Upgrade (Optional)</div>';
     BURGER_UPGRADES.forEach(function(u,i){
@@ -1017,7 +859,6 @@ function openItemModal(id,cat){
     });
     body+='</div>';
   }
-
   if(item.upgrades&&cat==='combos'){
     body+='<div style="background:#FFF8EE;border:1px solid #F5D98A;border-radius:6px;padding:.75rem;margin-bottom:.85rem;"><div style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#7B3F00;margin-bottom:.5rem;">Upgrade Fries (Optional)</div>';
     COMBO_UPGRADES.forEach(function(u,i){
@@ -1025,13 +866,11 @@ function openItemModal(id,cat){
     });
     body+='</div>';
   }
-
   body+='<div style="margin-bottom:1rem;"><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.35rem;">Special Instructions (Optional)</label><textarea id="item-notes" placeholder="Extra sauce, no pickles, extra spicy..." style="width:100%;border:1.5px solid #E8E0D0;border-radius:4px;padding:.5rem .75rem;font-family:var(--font-body);font-size:.83rem;color:var(--black);resize:vertical;min-height:55px;outline:none;"></textarea></div>';
   body+='<div style="font-family:var(--font-display);font-size:1.8rem;color:var(--black);margin-bottom:1rem;" id="modal-price">$'+item.price.toFixed(2)+'</div>';
   body+='<button class="btn-place" onclick="addFromModal()">ADD TO ORDER 🍗</button>';
   body+='<button onclick="closeItemModal()" style="width:100%;background:none;border:1.5px solid #E8E0D0;color:#888;padding:.7rem;font-family:var(--font-head);font-size:.82rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:4px;margin-top:.5rem;">✕ Cancel</button>';
   body+='</div>';
-
   document.getElementById('im-content').innerHTML=body;
   document.getElementById('item-modal-ov').classList.add('open');
 }
@@ -1088,7 +927,6 @@ function addFromModal(){
   }
   updateCart();toast('Added: '+item.name);closeItemModal();
 }
-
 function updateCart(){
   var cnt=cart.reduce(function(s,i){return s+i.qty;},0);
   document.getElementById('cart-count').textContent=cnt;
@@ -1116,7 +954,6 @@ function chgQty(key,d){
 }
 function openCart(){document.getElementById('cart-ov').classList.add('open');}
 function closeCart(){document.getElementById('cart-ov').classList.remove('open');}
-
 function openCheckout(){closeCart();renderCheckoutForm();document.getElementById('modal-ov').classList.add('open');}
 function closeCheckout(){document.getElementById('modal-ov').classList.remove('open');}
 function setOT(t){
@@ -1165,13 +1002,11 @@ function setLocation(v){
   if(lbl)lbl.textContent=(names[v]||'Albert Street')+' · Pickup or Delivery';
   setTimeout(renderPaymentSection,100);
 }
-
 var cloverInstance=null;
 function initCloverIframe(pk){
   var wrap=document.getElementById('clover-iframe-wrap');
   if(!wrap){console.error('Clover wrap missing');return;}
   if(!window.Clover){
-    // SDK not loaded yet — retry
     console.log('Clover SDK not ready, retrying...');
     setTimeout(function(){initCloverIframe(pk);},500);
     return;
@@ -1204,10 +1039,7 @@ async function getCloverToken(){
     console.log('Clover token response:', JSON.stringify(r));
     if(r.errors){
       var errs=Object.values(r.errors).filter(Boolean);
-      if(errs.length){
-        toast('⚠️ '+errs[0]);
-        return null;
-      }
+      if(errs.length){toast('⚠️ '+errs[0]);return null;}
     }
     if(!r.token){
       toast('⚠️ Card details incomplete — fill all 4 fields (number, expiry, CVV, postal)');
@@ -1219,7 +1051,6 @@ async function getCloverToken(){
     return null;
   }
 }
-
 async function submitOrder(){
   var fn=document.getElementById('o-fn')?document.getElementById('o-fn').value.trim():'';
   var ln=document.getElementById('o-ln')?document.getElementById('o-ln').value.trim():'';
@@ -1235,7 +1066,6 @@ async function submitOrder(){
   var sub=cart.reduce(function(s,i){return s+i.price*i.qty;},0);
   var gst=sub*0.05,pst=sub*0.06,del=orderType==='delivery'?5.50:0;
   var total=parseFloat((sub+gst+pst+del).toFixed(2));
-
   var onlineLocs=['rochdale','albert-st','east-regina','moose-jaw'];
   if(onlineLocs.includes(locId)){
     btn.innerHTML='<span class="spinner"></span>Processing card...';
@@ -1253,7 +1083,6 @@ async function submitOrder(){
       cart=[];updateCart();return;
     }catch(e){toast('Payment error — try again');btn.disabled=false;btn.innerHTML='PAY $'+total.toFixed(2)+' NOW';return;}
   }
-
   btn.innerHTML='<span class="spinner"></span>Sending to Kitchen...';
   var serverItems=cart.map(function(i){
     var parts=[];
@@ -1279,56 +1108,20 @@ async function submitOrder(){
     cart=[];updateCart();
   }
 }
-
-// ── SHOW SUCCESS — with loyalty stamp block ──────────────────
 function showSuccess(d){
-  // Fire auto-stamp on server
   if(d.orderNum) loyaltyAutoStamp(d.orderNum);
-  // Show notification banner after order — good moment to ask
   setTimeout(showNotifBanner, 3000);
-
   var session = loyGetSession();
   var locNames={'albert-st':'Albert Street','rochdale':'Rochdale','east-regina':'East Regina','moose-jaw':'Moose Jaw'};
   var locName=d.location?(locNames[d.location]||d.location):'';
-
-  // Loyalty block — member vs non-member
   var stampBlock='';
   if(session){
-    // Member — stamp was just added automatically
-    stampBlock=
-      '<div style="background:linear-gradient(135deg,#0D0D0D,#1A1208);border:2px solid #F5A800;border-radius:8px;padding:1rem 1.25rem;margin:1rem 0;text-align:center;">'
-      +'<div style="font-family:var(--font-display);font-size:1.1rem;color:#F5A800;letter-spacing:2px;margin-bottom:.25rem;">🍗 STAMP ADDED!</div>'
-      +'<div style="font-family:var(--font-head);font-size:.75rem;color:#888;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:.7rem;">Saucy Stamps · '+session.name.split(' ')[0]+'\'s Card</div>'
-      +'<button onclick="closeCheckout();openLoyalty();" style="background:transparent;border:1.5px solid #F5A800;color:#F5A800;font-family:var(--font-head);font-size:.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:.4rem 1.1rem;border-radius:3px;cursor:pointer;">VIEW MY CARD →</button>'
-      +'</div>';
+    stampBlock='<div style="background:linear-gradient(135deg,#0D0D0D,#1A1208);border:2px solid #F5A800;border-radius:8px;padding:1rem 1.25rem;margin:1rem 0;text-align:center;"><div style="font-family:var(--font-display);font-size:1.1rem;color:#F5A800;letter-spacing:2px;margin-bottom:.25rem;">🍗 STAMP ADDED!</div><div style="font-family:var(--font-head);font-size:.75rem;color:#888;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:.7rem;">Saucy Stamps · '+session.name.split(' ')[0]+'\'s Card</div><button onclick="closeCheckout();openLoyalty();" style="background:transparent;border:1.5px solid #F5A800;color:#F5A800;font-family:var(--font-head);font-size:.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:.4rem 1.1rem;border-radius:3px;cursor:pointer;">VIEW MY CARD →</button></div>';
   } else {
-    // Not a member — nudge to join
-    stampBlock=
-      '<div style="background:#F5F0E8;border:1.5px solid #C8B89A;border-radius:8px;padding:1rem 1.25rem;margin:1rem 0;text-align:center;">'
-      +'<div style="font-family:var(--font-display);font-size:1rem;color:#1A1208;letter-spacing:1px;margin-bottom:.25rem;">🌾 EARN FREE WINGS</div>'
-      +'<div style="font-family:var(--font-head);font-size:.75rem;color:#7A6545;letter-spacing:1px;margin-bottom:.7rem;">This order could be Stamp #1. Join Saucy Stamps — it\'s free!</div>'
-      +'<button onclick="closeCheckout();openLoyalty();" style="background:#E8190A;border:none;color:white;font-family:var(--font-head);font-size:.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:.45rem 1.2rem;border-radius:3px;cursor:pointer;">JOIN FREE 🍗</button>'
-      +'</div>';
+    stampBlock='<div style="background:#F5F0E8;border:1.5px solid #C8B89A;border-radius:8px;padding:1rem 1.25rem;margin:1rem 0;text-align:center;"><div style="font-family:var(--font-display);font-size:1rem;color:#1A1208;letter-spacing:1px;margin-bottom:.25rem;">🌾 EARN FREE WINGS</div><div style="font-family:var(--font-head);font-size:.75rem;color:#7A6545;letter-spacing:1px;margin-bottom:.7rem;">This order could be Stamp #1. Join Saucy Stamps — it\'s free!</div><button onclick="closeCheckout();openLoyalty();" style="background:#E8190A;border:none;color:white;font-family:var(--font-head);font-size:.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:.45rem 1.2rem;border-radius:3px;cursor:pointer;">JOIN FREE 🍗</button></div>';
   }
-
-  document.getElementById('mbd').innerHTML=
-    '<div class="success-view">'
-    +'<div class="sv-icon">'+(d.paid?'💳':'🔥')+'</div>'
-    +'<h2>'+(d.paid?'PAYMENT CONFIRMED!':'ORDER PLACED!')+'</h2>'
-    +'<p>You are locked in, '+d.customer+'!</p>'
-    +'<div class="onum">'+d.orderNum+'</div>'
-    +(d.paid
-      ?'<p style="color:#276749;font-weight:600;">Payment of $'+d.total+' received · Card ending '+(d.last4||'****')+'</p>'
-      :'<p><strong>Total:</strong> $'+d.total+' (pay at '+(d.orderType==='pickup'?'pickup':'delivery')+')</p>'
-    )
-    +'<p><strong>'+(d.orderType==='pickup'?'Pickup':'Delivery')+'</strong> · '+locName+'</p>'
-    +'<p>We will call <strong>'+d.phone+'</strong> when it is ready.</p>'
-    + stampBlock
-    +'<p style="color:'+(d.cloverSuccess?'#276749':'#888')+';font-size:.8rem;margin-top:.4rem">'+(d.cloverSuccess?'✓ Order sent to Clover POS':'Order logged — kitchen notified')+'</p>'
-    +'<a class="btn-red" href="#" onclick="closeCheckout();showHome()" style="display:inline-block;margin-top:1.25rem;font-size:.95rem;padding:.8rem 1.8rem">Order Again 🍗</a>'
-    +'</div>';
+  document.getElementById('mbd').innerHTML='<div class="success-view"><div class="sv-icon">'+(d.paid?'💳':'🔥')+'</div><h2>'+(d.paid?'PAYMENT CONFIRMED!':'ORDER PLACED!')+'</h2><p>You are locked in, '+d.customer+'!</p><div class="onum">'+d.orderNum+'</div>'+(d.paid?'<p style="color:#276749;font-weight:600;">Payment of $'+d.total+' received · Card ending '+(d.last4||'****')+'</p>':'<p><strong>Total:</strong> $'+d.total+' (pay at '+(d.orderType==='pickup'?'pickup':'delivery')+')</p>')+'<p><strong>'+(d.orderType==='pickup'?'Pickup':'Delivery')+'</strong> · '+locName+'</p><p>We will call <strong>'+d.phone+'</strong> when it is ready.</p>'+stampBlock+'<p style="color:'+(d.cloverSuccess?'#276749':'#888')+';font-size:.8rem;margin-top:.4rem">'+(d.cloverSuccess?'✓ Order sent to Clover POS':'Order logged — kitchen notified')+'</p><a class="btn-red" href="#" onclick="closeCheckout();showHome()" style="display:inline-block;margin-top:1.25rem;font-size:.95rem;padding:.8rem 1.8rem">Order Again 🍗</a></div>';
 }
-
 var LOCATIONS_GEO={'albert-st':{lat:50.4501,lng:-104.6178,name:'Albert Street',address:'#3 155 Albert St N, Regina'},'rochdale':{lat:50.4777,lng:-104.6494,name:'Rochdale',address:'3881 Rochdale Blvd, Regina'},'east-regina':{lat:50.4282,lng:-104.5768,name:'East Regina',address:'534 University Park Drive, Regina'},'moose-jaw':{lat:50.3934,lng:-105.5348,name:'Moose Jaw',address:'622 Main St N, Moose Jaw'}};
 function distKm(lat1,lon1,lat2,lon2){var R=6371,dL=Math.PI*(lat2-lat1)/180,dO=Math.PI*(lon2-lon1)/180;var a=Math.sin(dL/2)*Math.sin(dL/2)+Math.cos(Math.PI*lat1/180)*Math.cos(Math.PI*lat2/180)*Math.sin(dO/2)*Math.sin(dO/2);return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
 function detectAndSortLocations(fromCheckout){
@@ -1349,28 +1142,38 @@ function detectAndSortLocations(fromCheckout){
         sel.value=ids[0];setLocation(ids[0]);
       }
     }
-    // Show install banner after location allowed
     if(!fromCheckout) setTimeout(function(){
       if(deferredPrompt) installBanner.style.display='flex';
     }, 2000);
   },function(){});
 }
-
 function renderSauces(){
   document.getElementById('sgrid').innerHTML=Object.keys(FLAVORS).map(function(cat){
     return '<div class="sgroup"><div class="sg-title">'+cat+'</div><ul>'+FLAVORS[cat].map(function(f){return '<li>'+f+'</li>';}).join('')+'</ul></div>';
   }).join('');
 }
-
 async function checkAPI(){
   var dot=document.getElementById('api-dot'),txt=document.getElementById('api-txt');
-  try{
-    var r=await fetch(API_BASE+'/api/health');
-    if(r.ok){dot.className='api-dot ok';txt.textContent='server online';}
-    else throw new Error();
-  }catch(e){dot.className='api-dot err';txt.textContent='offline mode';}
+  for(var attempt=1; attempt<=3; attempt++){
+    try{
+      var r=await fetch(API_BASE+'/api/health?_='+Date.now(),{cache:'no-store'});
+      if(r.ok){
+        var data=await r.json();
+        if(data.status==='ok'){
+          dot.className='api-dot ok';
+          txt.textContent='server online';
+          return;
+        }
+      }
+    }catch(e){
+      console.log('[Wing-O] Health check attempt '+attempt+' failed:', e.message);
+    }
+    if(attempt<3) await new Promise(function(res){setTimeout(res, 1000*attempt);});
+  }
+  dot.className='api-dot err';
+  txt.textContent='reconnecting...';
+  setTimeout(checkAPI, 30000);
 }
-
 var BASE={date:new Date('2026-04-14T00:00:00-06:00'),wings:1084400,orders:135550};
 function getLive(){
   var secs=(Date.now()-BASE.date)/1000;
@@ -1412,7 +1215,6 @@ setTimeout(function(){
 fetchDonation();
 setInterval(updateCounters,1000);
 setInterval(fetchDonation,60000);
-
 var HOURS={0:[11,27],1:[11,25],2:[11,25],3:[11,25],4:[11,27],5:[11,27],6:[11,27]};
 function isOpen(){
   var now=new Date();
@@ -1443,7 +1245,6 @@ function updateHoursBanner(){
     banner.classList.remove('show');
   }
 }
-
 function openFranchise(){
   document.getElementById('franchise-ov').style.display='block';
   document.body.style.overflow='hidden';
@@ -1465,7 +1266,6 @@ async function submitFranchise(){
   document.getElementById('fr-msg-box').innerHTML='<div style="background:#F0FFF4;border:1px solid #C6F6D5;border-radius:6px;padding:1rem;text-align:center;margin-bottom:1rem;"><div style="font-family:var(--font-display);font-size:1.2rem;color:#276749;letter-spacing:1px;">APPLICATION RECEIVED!</div><p style="font-size:.85rem;color:#555;margin-top:.4rem;">We will be in touch within 48 hours. The Sauce Boss is excited to connect!</p></div>';
   btn.style.display='none';
 }
-
 history.replaceState({page:'home'},'');
 renderSauces();
 updateCart();
@@ -1473,16 +1273,8 @@ updateHoursBanner();
 setInterval(updateHoursBanner,60000);
 detectAndSortLocations(false);
 checkAPI();
-// Show notification banner 3 seconds after page load
 setTimeout(showNotifBanner, 3000);
-
-
-// ══════════════════════════════════════════════
-//   WING-O SAUCY STAMPS — LOYALTY PROGRAM
-// ══════════════════════════════════════════════
-
 var LOY_SESSION_KEY = 'wingo_loyalty_session';
-
 function loyGetSession(){
   try{ return JSON.parse(localStorage.getItem(LOY_SESSION_KEY)||'null'); }
   catch(e){ return null; }
@@ -1490,7 +1282,6 @@ function loyGetSession(){
 function loySaveSession(member){
   localStorage.setItem(LOY_SESSION_KEY, JSON.stringify({phone:member.phone,name:member.name,email:member.email}));
 }
-
 function openLoyalty(){
   document.getElementById('loyalty-ov').classList.add('open');
   document.body.style.overflow='hidden';
@@ -1510,7 +1301,6 @@ function showLoyView(id){
   var el = document.getElementById(id);
   if(el) el.classList.add('active');
 }
-
 async function loyLoadMember(phone){
   try{
     var r = await fetch(API_BASE+'/api/loyalty/member/'+phone.replace(/\D/g,''));
@@ -1527,21 +1317,17 @@ async function loyLoadMember(phone){
     showLoyView('loy-signup');
   }
 }
-
 async function loyaltySignup(){
   var name = document.getElementById('loy-name').value.trim();
   var email = document.getElementById('loy-email').value.trim();
   var phone = document.getElementById('loy-phone').value.trim();
   var errEl = document.getElementById('loy-signup-error');
   errEl.style.display='none';
-
   if(!name||!email||!phone){errEl.textContent='Please fill in all fields.';errEl.style.display='block';return;}
   if(!email.includes('@')){errEl.textContent='Please enter a valid email.';errEl.style.display='block';return;}
   if(phone.replace(/\D/g,'').length < 10){errEl.textContent='Please enter a valid 10-digit phone number.';errEl.style.display='block';return;}
-
   var btn = document.querySelector('#loy-signup .loy-btn');
   btn.textContent='Creating your card...';btn.disabled=true;
-
   try{
     var r = await fetch(API_BASE+'/api/loyalty/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,phone})});
     var d = await r.json();
@@ -1560,16 +1346,13 @@ async function loyaltySignup(){
   }
   btn.textContent='CREATE MY STAMP CARD 🍗';btn.disabled=false;
 }
-
 async function loyaltyLookup(){
   var input = document.getElementById('loy-lookup-input').value.trim();
   var errEl = document.getElementById('loy-lookup-error');
   errEl.style.display='none';
   if(!input){errEl.textContent='Please enter your phone or email.';errEl.style.display='block';return;}
-
   var btn = document.querySelector('#loy-lookup .loy-btn');
   btn.textContent='Searching...';btn.disabled=true;
-
   try{
     var r = await fetch(API_BASE+'/api/loyalty/lookup?q='+encodeURIComponent(input));
     var d = await r.json();
@@ -1588,32 +1371,25 @@ async function loyaltyLookup(){
   }
   btn.textContent='FIND MY STAMPS 🍗';btn.disabled=false;
 }
-
 async function loyaltyAddStamp(){
   var orderNum = document.getElementById('loy-order-num').value.trim().toUpperCase();
   var errEl = document.getElementById('loy-stamp-error');
   errEl.style.display='none';
-
   if(!orderNum||!orderNum.startsWith('WO-')){
     errEl.textContent='Please enter a valid Wing-O order number (WO-XXXX).';
     errEl.style.display='block';return;
   }
-
   var session = loyGetSession();
   if(!session){showLoyView('loy-signup');return;}
-
   var btn = document.querySelector('#loy-add-stamp .loy-btn');
   btn.textContent='Adding stamp...';btn.disabled=true;
-
   try{
     var r = await fetch(API_BASE+'/api/loyalty/stamp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:session.phone,orderNum,password:'sauceboss2025'})});
     var d = await r.json();
     if(d.success){
       loySaveSession(d.member);
       document.getElementById('loy-order-num').value='';
-      var msg = d.gotFree
-        ? '🎉 10 stamps! You earned FREE WINGS! Show your card to redeem.'
-        : 'Stamp #'+d.totalOrders+' added! '+(10-d.stamps)+' more until free wings 🍗';
+      var msg = d.gotFree ? '🎉 10 stamps! You earned FREE WINGS! Show your card to redeem.' : 'Stamp #'+d.totalOrders+' added! '+(10-d.stamps)+' more until free wings 🍗';
       document.getElementById('loy-stamp-success-msg').textContent=msg;
       showLoyView('loy-stamp-success');
       toast(d.gotFree ? '🎉 FREE WINGS EARNED!' : 'Stamp added! 🍗');
@@ -1627,24 +1403,20 @@ async function loyaltyAddStamp(){
   }
   btn.textContent='STAMP MY CARD 🔥';btn.disabled=false;
 }
-
 function renderDashboard(member){
   if(!member) return;
   var stamps = member.stamps||0;
   var totalOrders = member.totalOrders||0;
   var freeEarned = member.freeEarned||0;
   var toNext = 10 - stamps;
-
   document.getElementById('dash-name').textContent = member.name;
   document.getElementById('dash-stamps').textContent = stamps;
   document.getElementById('dash-total-orders').textContent = totalOrders;
   document.getElementById('dash-free-earned').textContent = freeEarned;
   document.getElementById('dash-next-free').textContent = toNext;
-
   var pct = Math.min((stamps/10)*100,100);
   document.getElementById('loy-progress').style.width=pct+'%';
   document.getElementById('loy-progress-label').textContent=stamps+' of 10 stamps · '+toNext+' more to free wings';
-
   var rewardBox = document.getElementById('loy-reward-box');
   if(stamps===0 && freeEarned>0 && member.history && member.history.length>0){
     var code='SAUCY-'+member.phone.slice(-4);
@@ -1653,7 +1425,6 @@ function renderDashboard(member){
   } else {
     rewardBox.style.display='none';
   }
-
   var topGrid=document.getElementById('stamps-grid-top');
   var botGrid=document.getElementById('stamps-grid-bot');
   topGrid.innerHTML='';botGrid.innerHTML='';
@@ -1665,7 +1436,6 @@ function renderDashboard(member){
     if(i<5)topGrid.appendChild(div);
     else botGrid.appendChild(div);
   }
-
   var histEl=document.getElementById('loy-history-list');
   var hist=member.history||[];
   if(!hist.length){
@@ -1676,7 +1446,6 @@ function renderDashboard(member){
     }).join('');
   }
 }
-
 function loyaltyLogout(){
   localStorage.removeItem(LOY_SESSION_KEY);
   document.getElementById('loy-name').value='';
@@ -1684,8 +1453,6 @@ function loyaltyLogout(){
   document.getElementById('loy-phone').value='';
   showLoyView('loy-signup');
 }
-
-// Auto-stamp — fires after confirmed order, server does the real work
 async function loyaltyAutoStamp(orderNum){
   var session = loyGetSession();
   if(!session) return;
@@ -1700,21 +1467,14 @@ async function loyaltyAutoStamp(orderNum){
   }catch(e){console.log('Auto-stamp failed silently');}
 }
 </script>
-<script src="https://checkout.clover.com/sdk.js"></script>
-
-<!-- ══ LOYALTY PROGRAM MODAL ══ -->
 <div class="loyalty-ov" id="loyalty-ov" onclick="if(event.target===this)closeLoyalty()">
 <div class="loyalty-modal">
-
   <div class="loy-head">
     <div class="loy-head-title">🍗 SAUCY STAMPS</div>
     <div class="loy-head-sub">Wing-O Loyalty Program · Collect 10 · Get 1 Free</div>
     <button class="loy-close" onclick="closeLoyalty()">✕</button>
   </div>
-
   <div class="loy-body">
-
-    <!-- VIEW: SIGNUP -->
     <div class="loy-view active" id="loy-signup">
       <div class="loy-form-title">JOIN THE FLOCK 🌾</div>
       <div class="loy-form-sub">Sign up for free. Every order earns a stamp. Collect 10 stamps and your next half order of wings is on us.</div>
@@ -1725,8 +1485,6 @@ async function loyaltyAutoStamp(orderNum){
       <button class="loy-btn" onclick="loyaltySignup()">CREATE MY STAMP CARD 🍗</button>
       <div class="loy-link">Already a member? <a onclick="showLoyView('loy-lookup')">Look up my card →</a></div>
     </div>
-
-    <!-- VIEW: LOOKUP -->
     <div class="loy-view" id="loy-lookup">
       <div class="loy-lookup-wrap">
         <div class="loy-lookup-icon">🔍</div>
@@ -1738,17 +1496,13 @@ async function loyaltyAutoStamp(orderNum){
       <button class="loy-btn" onclick="loyaltyLookup()">FIND MY STAMPS 🍗</button>
       <div class="loy-link"><a onclick="showLoyView('loy-signup')">← New here? Sign up free</a></div>
     </div>
-
-    <!-- VIEW: DASHBOARD -->
     <div class="loy-view" id="loy-dashboard">
-
       <div class="reward-box" id="loy-reward-box" style="display:none;">
         <div class="reward-title">🎉 FREE WINGS EARNED!</div>
         <div class="reward-sub">Show this to your server or mention it when ordering</div>
         <div class="reward-code" id="loy-reward-code">SAUCY10</div>
         <div style="font-family:var(--font-head);font-size:.7rem;color:rgba(255,255,255,.7);margin-top:.6rem;letter-spacing:1px;position:relative;">One free half order of wings · Any flavor 🌶️</div>
       </div>
-
       <div class="stamp-card">
         <div class="stamp-card-header">
           <div>
@@ -1772,24 +1526,19 @@ async function loyaltyAutoStamp(orderNum){
         </div>
         <div class="progress-label" id="loy-progress-label">0 of 10 stamps · 10 more to free wings</div>
       </div>
-
       <div class="loy-stats">
         <div class="loy-stat"><div class="loy-stat-num" id="dash-total-orders">0</div><div class="loy-stat-lbl">Total Orders</div></div>
         <div class="loy-stat"><div class="loy-stat-num" id="dash-free-earned">0</div><div class="loy-stat-lbl">Free Wings Earned</div></div>
         <div class="loy-stat"><div class="loy-stat-num" id="dash-next-free">10</div><div class="loy-stat-lbl">Stamps to Next Free</div></div>
       </div>
-
       <button class="loy-btn" onclick="showLoyView('loy-add-stamp')" style="margin-bottom:.6rem;">+ ADD A STAMP (After In-Store Order)</button>
       <button id="loy-notif-btn" class="loy-btn" style="background:transparent;color:var(--yellow);border:1.5px solid var(--yellow);margin-bottom:.6rem;" onclick="enableNotifications();document.getElementById('loy-notif-btn').style.display='none'">🔔 Enable Deal Notifications</button>
       <button class="loy-btn" style="background:transparent;color:var(--red);border:1.5px solid var(--red);margin-bottom:1rem;" onclick="loyaltyLogout()">Switch Account</button>
-
       <div class="loy-history">
         <div class="loy-history-title">📋 Stamp History</div>
         <div id="loy-history-list"></div>
       </div>
     </div>
-
-    <!-- VIEW: ADD STAMP (for in-store orders) -->
     <div class="loy-view" id="loy-add-stamp">
       <div style="text-align:center;padding:.5rem 0 .75rem;">
         <div style="font-size:2.5rem;">🍗</div>
@@ -1804,8 +1553,6 @@ async function loyaltyAutoStamp(orderNum){
         Online orders get stamped automatically! Use this for in-store orders only. Each order number can only be used once.
       </div>
     </div>
-
-    <!-- VIEW: STAMP SUCCESS -->
     <div class="loy-view" id="loy-stamp-success">
       <div style="text-align:center;padding:1.5rem 0;">
         <div style="font-size:3.5rem;margin-bottom:.5rem;">🎉</div>
@@ -1814,12 +1561,9 @@ async function loyaltyAutoStamp(orderNum){
         <button class="loy-btn yellow" style="margin-top:1rem;" onclick="showLoyView('loy-dashboard');loyLoadMember(loyGetSession()&&loyGetSession().phone)">VIEW MY CARD →</button>
       </div>
     </div>
-
   </div>
 </div>
 </div>
-
-<!-- PWA Install Banner -->
 <div id="pwa-banner" style="display:none;position:fixed;bottom:5rem;left:50%;transform:translateX(-50%);z-index:99999;background:var(--black);border:2px solid var(--yellow);border-radius:8px;padding:.85rem 1.25rem;align-items:center;gap:1rem;box-shadow:0 8px 32px rgba(0,0,0,.5);max-width:90vw;width:360px;">
   <img src="images/logo.jpg" style="width:42px;height:42px;border-radius:6px;object-fit:cover;flex-shrink:0;">
   <div style="flex:1;min-width:0;">
@@ -1829,8 +1573,6 @@ async function loyaltyAutoStamp(orderNum){
   <button id="pwa-install-btn" style="background:var(--red);color:white;border:none;padding:.45rem .9rem;font-family:var(--font-head);font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;border-radius:4px;cursor:pointer;white-space:nowrap;">Install</button>
   <button onclick="document.getElementById('pwa-banner').style.display='none'" style="background:none;border:none;color:#555;font-size:1.1rem;cursor:pointer;padding:2px;flex-shrink:0;">✕</button>
 </div>
-
-<!-- Notification Permission Banner -->
 <div id="notif-banner" style="display:none;position:fixed;bottom:5rem;left:50%;transform:translateX(-50%);z-index:99998;background:var(--ink);border:2px solid var(--red);border-radius:8px;padding:.85rem 1.25rem;align-items:center;gap:1rem;box-shadow:0 8px 32px rgba(0,0,0,.5);max-width:90vw;width:360px;">
   <div style="font-size:1.6rem;flex-shrink:0;">🔔</div>
   <div style="flex:1;min-width:0;">
@@ -1840,11 +1582,8 @@ async function loyaltyAutoStamp(orderNum){
   <button onclick="enableNotifications()" style="background:var(--red);color:white;border:none;padding:.45rem .9rem;font-family:var(--font-head);font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;border-radius:4px;cursor:pointer;white-space:nowrap;">Enable</button>
   <button onclick="document.getElementById('notif-banner').style.display='none'" style="background:none;border:none;color:#555;font-size:1.1rem;cursor:pointer;padding:2px;flex-shrink:0;">✕</button>
 </div>
-
 <script>
-// ── SERVICE WORKER + PUSH NOTIFICATIONS ───────────────────────
 var VAPID_PUBLIC_KEY = 'BE-f0tIsYd6Rd2Q8HWi9LRCv3rlHG8n6KlZ9MC3FdIrKqaBDi9vQakjJdmO41iioFFaOwWebU8QC41JkHGmMJBA';
-
 function urlBase64ToUint8Array(base64String){
   var padding='='.repeat((4-base64String.length%4)%4);
   var base64=(base64String+padding).replace(/-/g,'+').replace(/_/g,'/');
@@ -1853,9 +1592,7 @@ function urlBase64ToUint8Array(base64String){
   for(var i=0;i<rawData.length;++i) outputArray[i]=rawData.charCodeAt(i);
   return outputArray;
 }
-
 var swRegistration=null;
-
 if('serviceWorker' in navigator){
   window.addEventListener('load',function(){
     navigator.serviceWorker.register('/service-worker.js')
@@ -1866,7 +1603,6 @@ if('serviceWorker' in navigator){
       .catch(function(err){console.log('[Wing-O] SW failed:',err);});
   });
 }
-
 async function requestPushPermission(){
   if(!swRegistration||!('PushManager' in window)) return;
   if(Notification.permission!=='default') return;
@@ -1875,7 +1611,6 @@ async function requestPushPermission(){
     if(permission==='granted') await subscribeToPush();
   }catch(e){console.log('Push permission error:',e);}
 }
-
 async function enableNotifications(){
   document.getElementById('notif-banner').style.display='none';
   try {
@@ -1884,12 +1619,10 @@ async function enableNotifications(){
     });
   } catch(e) { console.log('OneSignal error:', e); }
 }
-
 function showNotifBanner(){
   var banner = document.getElementById('notif-banner');
   if(banner) banner.style.display='flex';
 }
-
 async function subscribeToPush(){
   if(!swRegistration) return;
   try{
@@ -1908,18 +1641,14 @@ async function subscribeToPush(){
     toast('🔔 Notifications on! You\'ll hear about deals first 🍗');
   }catch(e){console.log('Push subscribe error:',e);}
 }
-
-// ── PWA INSTALL PROMPT ─────────────────────────────────────────
 var deferredPrompt=null;
 var installBanner=document.getElementById('pwa-banner');
 var installBtn=document.getElementById('pwa-install-btn');
-
 window.addEventListener('beforeinstallprompt',function(e){
   e.preventDefault();
   deferredPrompt=e;
   setTimeout(function(){if(deferredPrompt) installBanner.style.display='flex';},30000);
 });
-
 if(installBtn){
   installBtn.addEventListener('click',function(){
     if(!deferredPrompt) return;
@@ -1931,15 +1660,12 @@ if(installBtn){
     });
   });
 }
-
 window.addEventListener('appinstalled',function(){
   installBanner.style.display='none';
   deferredPrompt=null;
   toast('🍗 Wing-O app installed! Find it on your home screen.');
   setTimeout(requestPushPermission,3000);
 });
-
-// ── PUSH ADMIN PANEL ───────────────────────────────────────────
 function openPushAdmin(){
   document.getElementById('push-admin-ov').style.display='flex';
 }
@@ -1974,13 +1700,10 @@ async function pushAdminSend(){
   var body=document.getElementById('pa-body').value.trim();
   var url=document.getElementById('pa-url').value.trim()||'/';
   var statusEl=document.getElementById('pa-send-status');
-
   if(!title||!body){statusEl.textContent='Title and message required';statusEl.style.color='var(--red)';return;}
-
   var btn=document.getElementById('pa-send-btn');
   btn.textContent='Sending...';btn.disabled=true;
   statusEl.textContent='';
-
   try{
     var r=await fetch(API_BASE+'/api/push/send',{
       method:'POST',
@@ -2004,8 +1727,6 @@ async function pushAdminSend(){
   btn.textContent='SEND NOTIFICATION 🔔';btn.disabled=false;
 }
 </script>
-
-<!-- PUSH ADMIN MODAL -->
 <div id="push-admin-ov" style="display:none;position:fixed;inset:0;z-index:999999;background:rgba(0,0,0,.88);align-items:center;justify-content:center;padding:1rem;">
   <div style="background:var(--paper);border-radius:8px;width:min(480px,100%);overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5);">
     <div style="background:var(--ink);padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid var(--red);">
@@ -2013,16 +1734,12 @@ async function pushAdminSend(){
       <button onclick="closePushAdmin()" style="background:none;border:none;color:#888;font-size:1.3rem;cursor:pointer;">✕</button>
     </div>
     <div style="padding:1.5rem;">
-
-      <!-- Step 1: Password -->
       <div id="pa-step1">
         <div style="font-family:var(--font-head);font-size:.8rem;color:#7A6545;letter-spacing:1px;text-transform:uppercase;margin-bottom:.5rem;">Admin Password</div>
         <input id="pa-pw" type="password" placeholder="Enter password" style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.65rem .9rem;font-family:var(--font-body);font-size:.9rem;outline:none;margin-bottom:.75rem;" onkeydown="if(event.key==='Enter')pushAdminLogin()">
         <div id="pa-status" style="color:var(--red);font-size:.8rem;margin-bottom:.5rem;font-family:var(--font-head);letter-spacing:1px;"></div>
         <button id="pa-login-btn" onclick="pushAdminLogin()" style="width:100%;background:var(--red);color:white;border:none;padding:.85rem;font-family:var(--font-display);font-size:1rem;letter-spacing:2px;cursor:pointer;border-radius:4px;text-transform:uppercase;">LOGIN</button>
       </div>
-
-      <!-- Step 2: Send notification -->
       <div id="pa-step2" style="display:none;">
         <input id="pa-stored-pw" type="hidden">
         <div style="background:rgba(232,25,10,.07);border:1px solid rgba(232,25,10,.2);border-radius:6px;padding:.75rem 1rem;margin-bottom:1rem;text-align:center;">
@@ -2039,7 +1756,6 @@ async function pushAdminSend(){
         <button id="pa-send-btn" onclick="pushAdminSend()" style="width:100%;background:var(--red);color:white;border:none;padding:.85rem;font-family:var(--font-display);font-size:1rem;letter-spacing:2px;cursor:pointer;border-radius:4px;text-transform:uppercase;">SEND NOTIFICATION 🔔</button>
         <button onclick="document.getElementById('pa-step1').style.display='block';document.getElementById('pa-step2').style.display='none';document.getElementById('pa-pw').value='';" style="width:100%;background:none;border:none;color:#AAA;font-family:var(--font-head);font-size:.75rem;letter-spacing:1px;cursor:pointer;margin-top:.5rem;padding:.4rem;">← Back</button>
       </div>
-
     </div>
   </div>
 </div>
