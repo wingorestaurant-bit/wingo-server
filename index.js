@@ -43,6 +43,7 @@ async function connectDB() {
 connectDB();
 
 // ── LOCATION CONFIG ────────────────────────────────────────────
+// All locations now use PAY AT PICKUP / DELIVERY (no online card payments)
 const LOCATIONS = {
   "albert-st": {
     name: "Albert Street (Regina)",
@@ -51,7 +52,7 @@ const LOCATIONS = {
     address: "#3 - 155 Albert St N, Regina, SK",
     phone: "306-522-2111",
     hours: "Mon-Wed 11am-1am · Thu-Sun 11am-3am",
-    onlinePayments: true,
+    onlinePayments: false,
     cloverPrivateKey: process.env.CLOVER_PRIVATE_KEY_ALBERT
   },
   "rochdale": {
@@ -61,7 +62,7 @@ const LOCATIONS = {
     address: "3881 Rochdale Blvd, Regina, SK",
     phone: "306-522-2112",
     hours: "Mon-Wed 11am-1am · Thu-Sun 11am-3am",
-    onlinePayments: true,
+    onlinePayments: false,
     cloverPrivateKey: process.env.CLOVER_PRIVATE_KEY_ROCHDALE
   },
   "east-regina": {
@@ -71,7 +72,7 @@ const LOCATIONS = {
     address: "534 University Park Drive, Regina, SK",
     phone: "306-522-2114",
     hours: "Mon-Wed 11am-1am · Thu-Sun 11am-3am",
-    onlinePayments: true,
+    onlinePayments: false,
     cloverPrivateKey: process.env.CLOVER_PRIVATE_KEY_EAST
   },
   "moose-jaw": {
@@ -81,7 +82,7 @@ const LOCATIONS = {
     address: "622 Main St N, Moose Jaw, SK",
     phone: "306-692-2113",
     hours: "Mon-Wed 11am-1am · Thu-Sun 11am-3am",
-    onlinePayments: true,
+    onlinePayments: false,
     cloverPrivateKey: process.env.CLOVER_PRIVATE_KEY_MOOSEJAW
   }
 };
@@ -112,9 +113,8 @@ async function autoAddStamp(phone, orderNum, customerName) {
     if (!database) return null;
 
     const member = await database.collection('loyalty').findOne({ phone: cleanPhone });
-    if (!member) return null; // Not a loyalty member, skip silently
+    if (!member) return null;
 
-    // Prevent duplicate stamps for same order
     if (member.usedOrderNums && member.usedOrderNums.includes(orderNum)) {
       console.log(`⚠️ Stamp already given for order ${orderNum}`);
       return null;
@@ -146,7 +146,6 @@ async function autoAddStamp(phone, orderNum, customerName) {
 
     console.log(`🍗 AUTO-STAMP: ${member.name} — Order ${orderNum} — Stamp ${newTotalOrders} — Free: ${gotFree}`);
 
-    // Notify if free wings earned
     if (gotFree) {
       sendEmail({
         to: 'besaucy@wingorestaurants.com',
@@ -199,6 +198,7 @@ ${items.map(i => `  ${i.name}${i.flavor ? ' [' + i.flavor + ']' : ''} x${i.qty} 
   PST (6%): $${(Number(subtotal) * 0.06).toFixed(2)}
 ---------------------------------
 ${notes ? 'NOTES: ' + notes : ''}
+PAY AT ${orderType === 'delivery' ? 'DELIVERY' : 'PICKUP'}
 =================================`.trim();
 
   const createResp = await fetch(
@@ -240,7 +240,6 @@ ${notes ? 'NOTES: ' + notes : ''}
       const lineData = await lineResp.json();
       console.log(`  Line item: ${itemName} — ${lineResp.status} — id:${lineData.id||'?'}`);
 
-      // If qty > 1, add extra line items (Clover counts each separately)
       if (item.qty > 1) {
         for (let q = 1; q < item.qty; q++) {
           await fetch(
@@ -284,13 +283,7 @@ app.get('/sb-admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'push-admin.html'));
 });
 
-// ── SPA FALLBACK — serve index.html for non-API unmatched routes ──
-app.get('*', (req, res, next) => {
-  if (req.path.startsWith('/api/')) return next();
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-// ── PLACE ORDER → CLOVER (pickup/delivery, pay at store) ───────
+// ── PLACE ORDER → CLOVER (pay at pickup/delivery for ALL locations) ───
 app.post('/api/orders', async (req, res) => {
   const { locationId, orderType, customer, items, notes, subtotal, tax, total, preOrder, openTime } = req.body;
 
@@ -311,10 +304,8 @@ app.post('/api/orders', async (req, res) => {
     cloverSuccess = !!cloverId;
   } catch (e) { console.error('Clover error:', e.message); }
 
-  // ── AUTO STAMP: fires only on real confirmed order ──
   const stampResult = await autoAddStamp(customer.phone, orderNum, customer.firstName);
 
-  // Send email notification
   sendEmail({
     to: 'besaucy@wingorestaurants.com',
     subject: `${preOrder ? '⏰ PRE-ORDER' : '🍗 New Order'} ${orderNum} — ${loc.name} — $${Number(total).toFixed(2)}`,
@@ -330,6 +321,7 @@ app.post('/api/orders', async (req, res) => {
           <tr><td style="padding:6px 0;color:#888;font-size:13px;">Phone</td><td style="padding:6px 0;"><a href="tel:${customer.phone}" style="color:#E8190A;">${customer.phone}</a></td></tr>
           ${customer.email ? `<tr><td style="padding:6px 0;color:#888;font-size:13px;">Email</td><td>${customer.email}</td></tr>` : ''}
           ${orderType === 'delivery' ? `<tr><td style="padding:6px 0;color:#888;font-size:13px;">Address</td><td style="padding:6px 0;">${customer.address}</td></tr>` : ''}
+          <tr><td style="padding:6px 0;color:#888;font-size:13px;">Payment</td><td style="padding:6px 0;color:#F5A800;font-weight:bold;">💰 PAY AT ${orderType === 'delivery' ? 'DELIVERY' : 'PICKUP'}</td></tr>
           ${stampResult ? `<tr><td style="padding:6px 0;color:#888;font-size:13px;">Loyalty</td><td style="padding:6px 0;color:#F5A800;">🍗 Stamp #${stampResult.totalOrders} added${stampResult.gotFree ? ' — 🎉 FREE WINGS EARNED!' : ''}</td></tr>` : ''}
         </table>
         <hr style="border:1px solid #E8E0D0;margin:16px 0;">
@@ -338,7 +330,7 @@ app.post('/api/orders', async (req, res) => {
           <div style="display:flex;justify-content:space-between;padding:4px 0;color:#888;font-size:13px;"><span>Subtotal</span><span>$${Number(subtotal).toFixed(2)}</span></div>
           <div style="display:flex;justify-content:space-between;padding:4px 0;color:#888;font-size:13px;"><span>GST (5%)</span><span>$${(Number(subtotal)*0.05).toFixed(2)}</span></div>
           <div style="display:flex;justify-content:space-between;padding:4px 0;color:#888;font-size:13px;"><span>PST (6%)</span><span>$${(Number(subtotal)*0.06).toFixed(2)}</span></div>
-          <div style="display:flex;justify-content:space-between;padding:8px 0;font-weight:bold;font-size:18px;border-top:2px solid #0D0D0D;margin-top:8px;"><span>TOTAL</span><span style="color:#E8190A;">$${Number(total).toFixed(2)}</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;font-weight:bold;font-size:18px;border-top:2px solid #0D0D0D;margin-top:8px;"><span>TOTAL DUE AT ${orderType === 'delivery' ? 'DELIVERY' : 'PICKUP'}</span><span style="color:#E8190A;">$${Number(total).toFixed(2)}</span></div>
         </div>
         ${notes ? `<div style="background:#FFF8EE;border:1px solid #F5D98A;border-radius:6px;padding:10px;margin-top:12px;"><strong>Notes:</strong> ${notes}</div>` : ''}
       </div>
@@ -354,146 +346,6 @@ app.post('/api/orders', async (req, res) => {
     gotFreeWings: stampResult?.gotFree || false,
     loyaltyStamps: stampResult?.stamps
   });
-});
-
-// ── CLOVER CHARGE + CREATE ORDER (online payment) ──────────────
-app.post('/api/charge', async (req, res) => {
-  const { locationId, cardToken, amount, orderId, customer, items, subtotal, notes, orderType } = req.body;
-
-  if (!locationId || !cardToken || !amount) return res.json({ success: false, error: 'Missing fields' });
-
-  const loc = LOCATIONS[locationId];
-  if (!loc || !loc.onlinePayments || !loc.cloverPrivateKey) {
-    return res.json({ success: false, error: 'Location not configured for online payments' });
-  }
-
-  const timestamp = new Date().toLocaleString('en-CA', { timeZone: 'America/Regina' });
-
-  try {
-    // Step 1: Charge the card
-    const amountInCents = Math.round(amount * 100);
-    const chargeResponse = await fetch('https://scl.clover.com/v1/charges', {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${loc.cloverPrivateKey}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        amount: amountInCents,
-        currency: 'cad',
-        source: cardToken,
-        description: `WO ${orderId} | ${customer?.firstName||''} ${customer?.lastName||''} | ${items ? items.map(i=>`${i.name}${i.flavor?' ['+i.flavor+']':''} x${i.qty}`).join(', ') : ''} | ${(orderType||'pickup').toUpperCase()}`,
-        capture: true
-      })
-    });
-    const chargeData = await chargeResponse.json();
-
-    if (!chargeData.id || chargeData.status !== 'succeeded') {
-      const errMsg = chargeData.error?.message || chargeData.message || 'Payment failed';
-      console.error(`Payment failed — ${orderId} —`, errMsg);
-      return res.json({ success: false, error: errMsg });
-    }
-
-    console.log(`✅ Payment success — ${orderId} — $${amount} — Charge: ${chargeData.id}`);
-
-    // Step 2: Add proper line items to the ecommerce order + update note
-    let cloverId = chargeData.order?.id || null;
-    if (cloverId && loc.apiToken && items && items.length) {
-      try {
-        // First DELETE the auto-created "Item 1" line item from ecommerce charge
-        try {
-          const existingResp = await fetch(`https://api.clover.com/v3/merchants/${loc.merchantId}/orders/${cloverId}/line_items`, {
-            headers: { 'Authorization': `Bearer ${loc.apiToken}` }
-          });
-          const existingData = await existingResp.json();
-          if (existingData.elements) {
-            for (const li of existingData.elements) {
-              await fetch(`https://api.clover.com/v3/merchants/${loc.merchantId}/orders/${cloverId}/line_items/${li.id}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${loc.apiToken}` }
-              });
-            }
-            console.log(`✓ Deleted ${existingData.elements.length} default line items`);
-          }
-        } catch (e) { console.warn('Delete existing items error:', e.message); }
-
-        // Now add proper line items with real names
-        for (const item of items) {
-          const itemName = item.flavor ? `${item.name} [${item.flavor}]` : item.name;
-          const qty = item.qty || 1;
-          for (let q = 0; q < qty; q++) {
-            await fetch(`https://api.clover.com/v3/merchants/${loc.merchantId}/orders/${cloverId}/line_items`, {
-              method: 'POST',
-              headers: { 'Authorization': `Bearer ${loc.apiToken}`, 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                name: itemName,
-                price: Math.round(item.price * 100),
-                unitQty: 1000,
-                note: item.flavor || ''
-              })
-            });
-          }
-          console.log(`✓ Added line item: ${itemName} x${qty}`);
-        }
-
-        // Update order note + lock it
-        const itemSummary = items.map(i => `${i.name}${i.flavor ? ' ['+i.flavor+']' : ''} x${i.qty}`).join(', ');
-        const orderNote = `WING-O ONLINE ORDER
-ORDER #: ${orderId} | TIME: ${timestamp}
-TYPE: ${(orderType||'pickup').toUpperCase()} | LOCATION: ${loc.name}
-CUSTOMER: ${customer?.firstName||''} ${customer?.lastName||''} | PHONE: ${customer?.phone||''}
-${orderType==='delivery'?'DELIVER TO: '+(customer?.address||''):'PICKUP at store'}
-ITEMS: ${itemSummary}
-${notes ? 'NOTES: '+notes : ''}`.trim();
-
-        await fetch(`https://api.clover.com/v3/merchants/${loc.merchantId}/orders/${cloverId}`, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${loc.apiToken}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            title: `Online ${orderType||'pickup'} — ${customer?.firstName||'Customer'} ${customer?.lastName||''}`,
-            note: orderNote,
-            state: 'locked'
-          })
-        });
-        console.log(`✅ Clover order ${cloverId} updated with line items + details`);
-      } catch (e) { console.warn('Order update error:', e.message); }
-    }
-
-    // Step 3: AUTO STAMP — only fires after payment confirmed ✅
-    const stampResult = await autoAddStamp(customer?.phone, orderId, customer?.firstName);
-
-    // Step 4: Send email
-    sendEmail({
-      to: 'besaucy@wingorestaurants.com',
-      subject: `💳 PAID ${orderId} — ${loc.name} — $${amount}`,
-      html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">
-        <div style="background:#0D0D0D;padding:20px;text-align:center;"><h1 style="color:#E8190A;font-size:28px;margin:0;">WING-O</h1><p style="color:#48BB78;margin:4px 0 0;font-size:12px;letter-spacing:2px;">💳 PAYMENT RECEIVED</p></div>
-        <div style="background:#F5F0E8;padding:24px;">
-          <table style="width:100%;border-collapse:collapse;">
-            <tr><td style="padding:6px 0;color:#888;font-size:13px;">Order #</td><td style="padding:6px 0;font-weight:bold;font-size:16px;color:#E8190A;">${orderId}</td></tr>
-            <tr><td style="padding:6px 0;color:#888;font-size:13px;">Location</td><td style="padding:6px 0;font-weight:bold;">${loc.name}</td></tr>
-            <tr><td style="padding:6px 0;color:#888;font-size:13px;">Paid</td><td style="padding:6px 0;font-weight:bold;color:#276749;">$${amount} · Card ending ${chargeData.source?.last4 || '****'}</td></tr>
-            <tr><td style="padding:6px 0;color:#888;font-size:13px;">Customer</td><td style="padding:6px 0;">${customer?.firstName || ''} — ${customer?.phone || ''}</td></tr>
-            <tr><td style="padding:6px 0;color:#888;font-size:13px;">Time</td><td style="padding:6px 0;">${timestamp}</td></tr>
-            ${stampResult ? `<tr><td style="padding:6px 0;color:#888;font-size:13px;">Loyalty</td><td style="padding:6px 0;color:#F5A800;">🍗 Stamp #${stampResult.totalOrders} added${stampResult.gotFree ? ' — 🎉 FREE WINGS EARNED!' : ''}</td></tr>` : ''}
-          </table>
-          ${items ? '<hr style="border:1px solid #E8E0D0;margin:16px 0;">' + items.map(i => `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #E8E0D0;"><div><div style="font-weight:bold;font-size:14px;">${i.name} x${i.qty}</div>${i.flavor ? `<div style="color:#E8190A;font-size:12px;">${i.flavor}</div>` : ''}</div><div style="font-weight:bold;">$${(i.price * i.qty).toFixed(2)}</div></div>`).join('') : ''}
-        </div>
-      </div>`
-    });
-
-    return res.json({
-      success: true,
-      chargeId: chargeData.id,
-      cloverId: cloverId,
-      amount: chargeData.amount,
-      last4: chargeData.source?.last4 || '****',
-      stampAdded: !!stampResult,
-      gotFreeWings: stampResult?.gotFree || false,
-      loyaltyStamps: stampResult?.stamps
-    });
-
-  } catch (err) {
-    console.error('Charge error:', err);
-    return res.json({ success: false, error: 'Server error processing payment' });
-  }
 });
 
 // ── DONATION TRACKER ──────────────────────────────────────────
@@ -547,7 +399,6 @@ app.post('/api/franchise', async (req, res) => {
 
 // ── LOYALTY PROGRAM (MongoDB) ────────────────────────────────
 
-// SIGNUP
 app.post('/api/loyalty/signup', async (req, res) => {
   const { name, email, phone } = req.body;
   if (!name || !email || !phone) return res.json({ success: false, error: 'Missing fields' });
@@ -596,7 +447,6 @@ app.post('/api/loyalty/signup', async (req, res) => {
   }
 });
 
-// LOOKUP by phone or email
 app.get('/api/loyalty/lookup', async (req, res) => {
   const { q } = req.query;
   if (!q) return res.json({ success: false, error: 'Missing search' });
@@ -621,13 +471,11 @@ app.get('/api/loyalty/lookup', async (req, res) => {
   }
 });
 
-// ADD STAMP (manual — admin use only, requires password)
 app.post('/api/loyalty/stamp', async (req, res) => {
   const { phone, orderNum, password } = req.body;
   const cleanPhone = phone.replace(/\D/g, '');
   if (!cleanPhone || !orderNum) return res.json({ success: false, error: 'Missing fields' });
 
-  // Require admin password for manual stamp
   if (!password || password !== (process.env.ADMIN_PASSWORD || 'sauceboss2025')) {
     return res.status(401).json({ success: false, error: 'Unauthorized — admin password required' });
   }
@@ -697,7 +545,6 @@ app.post('/api/loyalty/stamp', async (req, res) => {
   }
 });
 
-// GET MEMBER
 app.get('/api/loyalty/member/:phone', async (req, res) => {
   const cleanPhone = req.params.phone.replace(/\D/g, '');
   try {
@@ -711,7 +558,6 @@ app.get('/api/loyalty/member/:phone', async (req, res) => {
   }
 });
 
-// ADMIN — view all members (password protected)
 app.get('/api/loyalty/admin/members', async (req, res) => {
   if (req.query.password !== (process.env.ADMIN_PASSWORD || 'sauceboss2025')) {
     return res.status(401).json({ error: 'Unauthorized' });
@@ -727,7 +573,6 @@ app.get('/api/loyalty/admin/members', async (req, res) => {
 
 // ── PUSH NOTIFICATIONS ────────────────────────────────────────
 
-// Save subscription when customer allows notifications
 app.post('/api/push/subscribe', async (req, res) => {
   const { subscription, info } = req.body;
   if (!subscription || !subscription.endpoint) return res.json({ success: false, error: 'Invalid subscription' });
@@ -736,7 +581,6 @@ app.post('/api/push/subscribe', async (req, res) => {
     const database = await connectDB();
     if (!database) return res.json({ success: false, error: 'Database unavailable' });
 
-    // Upsert — don't create duplicates
     await database.collection('push_subs').updateOne(
       { endpoint: subscription.endpoint },
       {
@@ -759,7 +603,6 @@ app.post('/api/push/subscribe', async (req, res) => {
   }
 });
 
-// Unsubscribe
 app.post('/api/push/unsubscribe', async (req, res) => {
   const { endpoint } = req.body;
   try {
@@ -771,7 +614,6 @@ app.post('/api/push/unsubscribe', async (req, res) => {
   }
 });
 
-// Get subscriber count (admin)
 app.get('/api/push/count', async (req, res) => {
   if (req.query.password !== (process.env.ADMIN_PASSWORD || 'sauceboss2025')) {
     return res.status(401).json({ error: 'Unauthorized' });
@@ -785,7 +627,6 @@ app.get('/api/push/count', async (req, res) => {
   }
 });
 
-// Send push notification to all subscribers (admin only)
 app.post('/api/push/send', async (req, res) => {
   const { password, title, body, url, icon } = req.body;
 
@@ -820,7 +661,6 @@ app.post('/api/push/send', async (req, res) => {
         sent++;
       } catch (e) {
         failed++;
-        // 410 Gone = subscription expired, remove it
         if (e.statusCode === 410 || e.statusCode === 404) {
           expired.push(sub.endpoint);
         }
@@ -828,7 +668,6 @@ app.post('/api/push/send', async (req, res) => {
       }
     }));
 
-    // Clean up expired subscriptions
     if (expired.length) {
       await database.collection('push_subs').deleteMany({ endpoint: { $in: expired } });
       console.log(`🧹 Removed ${expired.length} expired push subscriptions`);
@@ -841,6 +680,12 @@ app.post('/api/push/send', async (req, res) => {
     console.error('Push send error:', e.message);
     res.json({ success: false, error: e.message });
   }
+});
+
+// ── SPA FALLBACK — serve index.html for non-API unmatched routes ──
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api/')) return next();
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // ── START ─────────────────────────────────────────────────────
