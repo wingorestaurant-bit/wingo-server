@@ -1,5 +1,13 @@
 // Wing-O Service Worker — PWA offline support + Push Notifications
-const CACHE_NAME = 'wingo-v3';
+// ─────────────────────────────────────────────────────────────────
+// VERSION-BASED CACHING:
+// Bump CACHE_VERSION every time you push a meaningful site change.
+// This invalidates old caches and forces customers to fetch fresh files.
+// HTML files always check network first (so updates appear instantly).
+// Static assets (images/fonts) use cache-first (fast, rarely change).
+// ─────────────────────────────────────────────────────────────────
+const CACHE_VERSION = 'v4';
+const CACHE_NAME = `wingo-${CACHE_VERSION}`;
 
 // ── PUSH NOTIFICATION HANDLER ──────────────────────────────────
 self.addEventListener('push', event => {
@@ -76,62 +84,98 @@ const CORE_CACHE = [
   '/images/proudly-prairie.png'
 ];
 
-// Install — cache core files
+// Install — cache core files, take over immediately
 self.addEventListener('install', event => {
+  console.log(`[Wing-O SW] Installing ${CACHE_VERSION}`);
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
       console.log('[Wing-O SW] Caching core files');
       return cache.addAll(CORE_CACHE.map(url => new Request(url, { cache: 'reload' })))
         .catch(err => console.log('[Wing-O SW] Some files failed to cache:', err));
-    }).then(() => self.skipWaiting())
+    }).then(() => self.skipWaiting()) // Take over from old SW immediately
   );
 });
 
-// Activate — clean old caches
+// Activate — clean old caches, claim all clients
 self.addEventListener('activate', event => {
+  console.log(`[Wing-O SW] Activating ${CACHE_VERSION}`);
   event.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
-    ).then(() => self.clients.claim())
+      Promise.all(
+        keys.filter(k => k !== CACHE_NAME).map(k => {
+          console.log(`[Wing-O SW] Deleting old cache: ${k}`);
+          return caches.delete(k);
+        })
+      )
+    ).then(() => self.clients.claim()) // Take control of all open tabs immediately
   );
 });
+
+// Listen for skip-waiting messages (so frontend can trigger immediate update)
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
+// Helper: is this an HTML navigation request?
+function isHtmlRequest(request) {
+  return request.mode === 'navigate' ||
+    (request.method === 'GET' && request.headers.get('accept')?.includes('text/html'));
+}
 
 // Fetch handler
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
 
   // 1. Skip cross-origin requests entirely (Clover, OneSignal, Google Fonts, etc.)
-  //    Let the browser handle these directly — never intercept third-party calls
   if (url.origin !== self.location.origin) {
     return;
   }
 
-  // 2. API calls — always pass through to network, never cache, never fake offline response
+  // 2. API calls — always pass through to network, never cache
   if (url.pathname.startsWith('/api/')) {
-    return; // Let the browser handle it directly — frontend gets real errors if any
+    return;
   }
 
-  // 3. POST/PUT/DELETE — never cache, always pass through
+  // 3. POST/PUT/DELETE — never cache
   if (event.request.method !== 'GET') {
     return;
   }
 
-  // 4. For GET requests to our origin: cache first, fall back to network
+  // 4. HTML pages → NETWORK-FIRST (always try fresh, fall back to cache if offline)
+  //    This is what makes site updates appear instantly for returning customers.
+  if (isHtmlRequest(event.request)) {
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          // Got a fresh response — cache it for offline fallback
+          if (response.status === 200) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+          }
+          return response;
+        })
+        .catch(() => {
+          // Network failed (offline) — serve from cache
+          return caches.match(event.request).then(cached => {
+            return cached || caches.match('/index.html');
+          });
+        })
+    );
+    return;
+  }
+
+  // 5. Everything else (images, CSS, JS, fonts) → CACHE-FIRST (fast, rarely change)
   event.respondWith(
     caches.match(event.request).then(cached => {
       if (cached) return cached;
       return fetch(event.request).then(response => {
-        // Cache successful GET responses
         if (response.status === 200) {
           const copy = response.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
         }
         return response;
-      }).catch(() => {
-        // Offline fallback for HTML pages only
-        if (event.request.headers.get('accept')?.includes('text/html')) {
-          return caches.match('/index.html');
-        }
       });
     })
   );
