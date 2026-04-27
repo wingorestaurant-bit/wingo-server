@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const fetch = require('node-fetch');
 const path = require('path');
-const { MongoClient } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb');
 let webpush = null;
 try {
   webpush = require('web-push');
@@ -34,6 +34,9 @@ async function connectDB() {
     await db.collection('loyalty').createIndex({ phone: 1 }, { unique: true });
     await db.collection('loyalty').createIndex({ email: 1 });
     await db.collection('loyalty').createIndex({ usedOrderNums: 1 });
+    // Kitchen orders indexes
+    await db.collection('orders').createIndex({ locationId: 1, kitchenStatus: 1, createdAt: -1 });
+    await db.collection('orders').createIndex({ orderNum: 1 });
     return db;
   } catch (e) {
     console.error('❌ MongoDB connection failed:', e.message);
@@ -86,6 +89,21 @@ const LOCATIONS = {
     cloverPrivateKey: process.env.CLOVER_PRIVATE_KEY_MOOSEJAW
   }
 };
+
+// ── KITCHEN AUTH ──────────────────────────────────────────────
+function getKitchenPassword(loc) {
+  switch(loc) {
+    case 'albert-st':   return process.env.KITCHEN_PW_ALBERT;
+    case 'rochdale':    return process.env.KITCHEN_PW_ROCHDALE;
+    case 'east-regina': return process.env.KITCHEN_PW_EAST;
+    case 'moose-jaw':   return process.env.KITCHEN_PW_MOOSEJAW;
+    default: return null;
+  }
+}
+function checkKitchenAuth(loc, pw) {
+  const expected = getKitchenPassword(loc);
+  return !!expected && pw === expected;
+}
 
 // ── EMAIL (Resend) ─────────────────────────────────────────────
 async function sendEmail({ to, subject, html }) {
@@ -283,6 +301,14 @@ app.get('/sb-admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'push-admin.html'));
 });
 
+// ── KITCHEN DISPLAY ROUTE ──────────────────────────────────────
+app.get('/kitchen', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'kitchen.html'));
+});
+app.get('/kitchen.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'kitchen.html'));
+});
+
 // ── PLACE ORDER → CLOVER (pay at pickup/delivery for ALL locations) ───
 app.post('/api/orders', async (req, res) => {
   const { locationId, orderType, customer, items, notes, subtotal, tax, total, preOrder, openTime } = req.body;
@@ -303,6 +329,45 @@ app.post('/api/orders', async (req, res) => {
     cloverId = await createCloverOrder(loc, orderNum, orderType, customer, items, subtotal, notes, timestamp);
     cloverSuccess = !!cloverId;
   } catch (e) { console.error('Clover error:', e.message); }
+
+  // ── SAVE ORDER TO MONGO (so kitchen display can fetch it) ──
+  try {
+    const database = await connectDB();
+    if (database) {
+      await database.collection('orders').insertOne({
+        orderNum,
+        locationId,
+        locationName: loc.name,
+        orderType,
+        customer: {
+          firstName: customer.firstName,
+          lastName: customer.lastName || '',
+          phone: customer.phone,
+          email: customer.email || '',
+          address: customer.address || ''
+        },
+        items: items.map(i => ({
+          name: i.name,
+          flavor: i.flavor || '',
+          price: i.price,
+          qty: i.qty
+        })),
+        notes: notes || '',
+        subtotal: Number(subtotal),
+        tax: Number(tax),
+        total: Number(total),
+        preOrder: !!preOrder,
+        openTime: openTime || null,
+        cloverId,
+        cloverSuccess,
+        kitchenStatus: 'pending', // ← used by kitchen display
+        createdAt: new Date()
+      });
+      console.log(`✓ Order ${orderNum} saved to Mongo`);
+    }
+  } catch (e) {
+    console.warn('Order save to Mongo failed:', e.message);
+  }
 
   const stampResult = await autoAddStamp(customer.phone, orderNum, customer.firstName);
 
@@ -346,6 +411,96 @@ app.post('/api/orders', async (req, res) => {
     gotFreeWings: stampResult?.gotFree || false,
     loyaltyStamps: stampResult?.stamps
   });
+});
+
+// ── KITCHEN ALERT API ─────────────────────────────────────────
+
+// Login check (used by kitchen.html password gate)
+app.get('/api/kitchen/auth', (req, res) => {
+  const { loc, pw } = req.query;
+  if (checkKitchenAuth(loc, pw)) {
+    return res.json({ ok: true });
+  }
+  res.status(401).json({ ok: false });
+});
+
+// Fetch pending + in-progress orders for a location
+app.get('/api/kitchen/orders', async (req, res) => {
+  const { loc, pw } = req.query;
+  if (!checkKitchenAuth(loc, pw)) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+  try {
+    const database = await connectDB();
+    if (!database) return res.json({ pending: [], progress: [] });
+
+    const cutoff = new Date(Date.now() - 12 * 60 * 60 * 1000); // last 12 hrs
+    const orders = await database.collection('orders').find({
+      locationId: loc,
+      kitchenStatus: { $in: ['pending', 'progress'] },
+      createdAt: { $gte: cutoff }
+    }).sort({ createdAt: 1 }).toArray();
+
+    const now = Date.now();
+    const formatted = orders.map(o => ({
+      id: o._id.toString(),
+      orderNum: o.orderNum,
+      customer: [o.customer?.firstName, o.customer?.lastName].filter(Boolean).join(' ') || 'Customer',
+      phone: o.customer?.phone || '',
+      address: o.customer?.address || '',
+      orderType: o.orderType || 'pickup',
+      items: o.items || [],
+      notes: o.notes || '',
+      kitchenStatus: o.kitchenStatus || 'pending',
+      timeAgo: formatTimeAgo(now - new Date(o.createdAt).getTime())
+    }));
+
+    res.json({
+      pending:  formatted.filter(o => o.kitchenStatus === 'pending'),
+      progress: formatted.filter(o => o.kitchenStatus === 'progress')
+    });
+  } catch (e) {
+    console.error('[kitchen] fetch error', e.message);
+    res.status(500).json({ error: 'server error', pending: [], progress: [] });
+  }
+});
+
+function formatTimeAgo(ms) {
+  const mins = Math.floor(ms / 60000);
+  if (mins < 1) return 'Just now';
+  if (mins === 1) return '1 min ago';
+  if (mins < 60) return mins + ' mins ago';
+  const hrs = Math.floor(mins / 60);
+  return hrs + ' hr' + (hrs > 1 ? 's' : '') + ' ago';
+}
+
+// Update an order's kitchen status (acknowledge / complete)
+app.post('/api/kitchen/order/:id/status', async (req, res) => {
+  const { loc, pw, status } = req.body;
+  if (!checkKitchenAuth(loc, pw)) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+  if (!['pending', 'progress', 'complete'].includes(status)) {
+    return res.status(400).json({ error: 'bad status' });
+  }
+  try {
+    const database = await connectDB();
+    if (!database) return res.status(500).json({ error: 'db unavailable' });
+
+    const update = {
+      kitchenStatus: status,
+      [`kitchenStatus_${status}_at`]: new Date()
+    };
+    await database.collection('orders').updateOne(
+      { _id: new ObjectId(req.params.id), locationId: loc },
+      { $set: update }
+    );
+    console.log(`[kitchen] ${loc} → order ${req.params.id} → ${status}`);
+    res.json({ ok: true });
+  } catch (e) {
+    console.error('[kitchen] status update error', e.message);
+    res.status(500).json({ error: 'server error' });
+  }
 });
 
 // ── DONATION TRACKER ──────────────────────────────────────────
