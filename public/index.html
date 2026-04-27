@@ -1063,13 +1063,13 @@ async function checkAPI(){
   txt.textContent='reconnecting...';
   setTimeout(checkAPI, 30000);
 }
-var BASE={date:new Date('2026-04-14T00:00:00-06:00'),wings:1084400,orders:135550};
+var BASE={date:new Date('2026-04-27T00:00:00-06:00'),wings:1118873,orders:139859};
 function getLive(){
   var secs=(Date.now()-BASE.date)/1000;
-  var month=new Date().getMonth()+1;
-  var daily=month>=5&&month<=9?505:320;
+  var daily=520;
   var ops=daily/86400;
   return{wings:Math.floor(BASE.wings+ops*8*secs),orders:Math.floor(BASE.orders+ops*secs),spw:Math.round(86400/(daily*8))};
+}
 }
 function fmt(n){return n.toLocaleString('en-CA');}
 function animUp(el,target,dur){
