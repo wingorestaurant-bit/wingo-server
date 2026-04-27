@@ -346,6 +346,7 @@ var activeLocation = 'albert-st';
       <li><a href="#" onclick="showCat('burgers');return false;">Burgers</a></li>
       <li><a href="#" onclick="showCat('combos');return false;">Combos</a></li>
       <li><a href="#" onclick="showCat('sides');return false;">Sides</a></li>
+      <li><a href="#" onclick="showCat('loaded');return false;">🍟 Loaded</a></li>
       <li><a href="#" onclick="showCat('platters');return false;">Platters</a></li>
       <li><a href="#" onclick="showCat('midnight');return false;">Midnight 🌙</a></li>
     </ul>
@@ -422,9 +423,10 @@ var activeLocation = 'albert-st';
       <div class="cat-card" onclick="showCat('ribs')"><div class="cat-card-img"><img src="images/ribs.jpg" alt="Ribs"></div><div class="cat-card-body"><div class="cat-card-name">🔥 Ribs</div><div class="cat-card-sub">Saucy · 125+ Flavors · From $7.99</div></div></div>
       <div class="cat-card" onclick="showCat('boneless')"><div class="cat-card-img"><img src="images/boneless-wings.jpg" alt="Boneless"></div><div class="cat-card-body"><div class="cat-card-name">Boneless Wings</div><div class="cat-card-sub">Crispy · 125+ Flavors · From $7.99</div></div></div>
       <div class="cat-card" onclick="showCat('chickenfingers')"><div class="cat-card-img"><img src="images/boneless-sauce.jpg" alt="Chicken Fingers"></div><div class="cat-card-body"><div class="cat-card-name">Chicken Fingers</div><div class="cat-card-sub">Crispy · Choose Sauce · From $7.99</div></div></div>
-      <div class="cat-card" onclick="showCat('burgers')"><div class="cat-card-img"><img src="images/burger-tough-guy.jpg" alt="Burgers"></div><div class="cat-card-body"><div class="cat-card-name">Burgers</div><div class="cat-card-sub">Loaded · From $17.99</div></div></div>
-      <div class="cat-card" onclick="showCat('combos')"><div class="cat-card-img"><img src="images/combo1.jpg" alt="Combos"></div><div class="cat-card-body"><div class="cat-card-name">Combos</div><div class="cat-card-sub">Best Value · From $17.45</div></div></div>
-      <div class="cat-card" onclick="showCat('sides')"><div class="cat-card-img"><img src="images/poutine.jpg" alt="Sides"></div><div class="cat-card-body"><div class="cat-card-name">Sides</div><div class="cat-card-sub">Poutine, Fries & More</div></div></div>
+      <div class="cat-card" onclick="showCat('burgers')"><div class="cat-card-img"><img src="images/burger-tough-guy.jpg" alt="Burgers"></div><div class="cat-card-body"><div class="cat-card-name">Burgers</div><div class="cat-card-sub">Loaded · From $15.99</div></div></div>
+      <div class="cat-card" onclick="showCat('combos')"><div class="cat-card-img"><img src="images/combo1.jpg" alt="Combos"></div><div class="cat-card-body"><div class="cat-card-name">Combos</div><div class="cat-card-sub">Best Value · From $11.99</div></div></div>
+      <div class="cat-card" onclick="showCat('sides')"><div class="cat-card-img"><img src="images/curly-fries.jpg" alt="Sides"></div><div class="cat-card-body"><div class="cat-card-name">Sides</div><div class="cat-card-sub">Fries, Mozza Sticks & More</div></div></div>
+      <div class="cat-card" onclick="showCat('loaded')"><div class="cat-card-img"><img src="images/poutine.jpg" alt="Loaded Affairs"></div><div class="cat-card-body"><div class="cat-card-name">🍟 Loaded Affairs</div><div class="cat-card-sub">Poutines · Nachos · Loaded Taters</div></div></div>
       <div class="cat-card" onclick="showCat('salads')"><div class="cat-card-img"><img src="images/salad.jpg" alt="Salads"></div><div class="cat-card-body"><div class="cat-card-name">Salads</div><div class="cat-card-sub">Fresh · From $6.99</div></div></div>
       <div class="cat-card" onclick="showCat('platters')"><div class="cat-card-img"><img src="images/platter-bit-of.jpg" alt="Platters"></div><div class="cat-card-body"><div class="cat-card-name">Platters</div><div class="cat-card-sub">Share the Love · From $29.99</div></div></div>
       <div class="cat-card" onclick="showCat('midnight')"><div class="cat-card-img"><img src="images/oreo.jpg" alt="Midnight"></div><div class="cat-card-body"><div class="cat-card-name">Midnight Ecstasy 🌙</div><div class="cat-card-sub">Desserts · From $0.99</div></div></div>
@@ -512,7 +514,8 @@ var activeLocation = 'albert-st';
 <div class="menu-page" id="page-chickenfingers"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Crispy & Dippable</div><h2 class="sec-title" style="margin-bottom:1.5rem">CHICKEN FINGERS</h2><div class="mgrid" id="grid-chickenfingers"></div></div></div>
 <div class="menu-page" id="page-burgers"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Sloppy Seduction</div><h2 class="sec-title" style="margin-bottom:.5rem">BURGERS</h2><p style="font-size:.82rem;color:#888;margin-bottom:1.5rem;">All burgers served with fries and a drink. Upgrade available.</p><div class="mgrid" id="grid-burgers"></div></div></div>
 <div class="menu-page" id="page-combos"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Best Value</div><h2 class="sec-title" style="margin-bottom:.5rem">COMBOS</h2><p style="font-size:.82rem;color:#888;margin-bottom:1.5rem;">Choose wings, ribs, or chicken fingers. Upgrade fries available.</p><div class="mgrid" id="grid-combos"></div></div></div>
-<div class="menu-page" id="page-sides"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Kissable Kick-Offs & Loaded Affairs</div><h2 class="sec-title" style="margin-bottom:1.5rem">SIDES</h2><div class="mgrid" id="grid-sides"></div></div></div>
+<div class="menu-page" id="page-sides"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Kissable Kick-Offs</div><h2 class="sec-title" style="margin-bottom:1.5rem">SIDES</h2><div class="mgrid" id="grid-sides"></div></div></div>
+<div class="menu-page" id="page-loaded"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Loaded Affairs</div><h2 class="sec-title" style="margin-bottom:.5rem">🍟 LOADED AFFAIRS</h2><p style="font-size:.82rem;color:#888;margin-bottom:1.5rem;">Poutines, nachos, and loaded everything. Heavy-handed and proud.</p><div class="mgrid" id="grid-loaded"></div></div></div>
 <div class="menu-page" id="page-salads"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Fresh & Flirty</div><h2 class="sec-title" style="margin-bottom:1.5rem">SALADS</h2><div class="mgrid" id="grid-salads"></div></div></div>
 <div class="menu-page" id="page-platters"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Too Good to Share</div><h2 class="sec-title" style="margin-bottom:.5rem">PLATTERS</h2><div class="mgrid" id="grid-platters"></div></div></div>
 <div class="menu-page" id="page-midnight"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Sweet Endings</div><h2 class="sec-title" style="margin-bottom:1.5rem">MIDNIGHT ECSTASY 🌙</h2><div class="mgrid" id="grid-midnight"></div></div></div>
@@ -533,6 +536,7 @@ var activeLocation = 'albert-st';
         <li onclick="showCat('burgers')" style="cursor:pointer;">Burgers</li>
         <li onclick="showCat('combos')" style="cursor:pointer;">Combos</li>
         <li onclick="showCat('sides')" style="cursor:pointer;">Sides</li>
+        <li onclick="showCat('loaded')" style="cursor:pointer;">🍟 Loaded Affairs</li>
         <li onclick="showCat('midnight')" style="cursor:pointer;">Midnight Ecstasy</li>
       </ul></div>
       <div class="fc"><h4>Locations</h4><ul>
@@ -664,11 +668,11 @@ var MENU = {
     {id:'cf2',name:'Full Order — Chicken Fingers',desc:'Full order of crispy chicken fingers with your choice of dipping sauce.',price:13.99,img:'images/boneless-sauce.jpg',flavorCount:1,pop:true}
   ],
   burgers:[
-    {id:'bu1',name:'The Tough Guy',desc:'Crispy 6oz chicken breast, double-crunched and coated in our blazing Carolina Reaper sauce. Layered with pickles, tomatoes, red onions, romaine, and melted Swiss. Served with fries and a drink.',price:21.99,img:'images/burger-tough-guy.jpg',upgrades:true,pop:true},
-    {id:'bu2',name:'The Dillinator',desc:'Crispy 6oz double-crunched chicken, layered with honey dill sauce, crunchy pickle chips, fresh romaine, and melted Swiss. Served with fries and a drink.',price:21.99,img:'images/burger-dillinator.jpg',upgrades:true,pop:false},
-    {id:'bu3',name:'The Buffalo Stampede',desc:'Crispy 6oz chicken patty tossed in house-made buffalo sauce, stacked with creamy coleslaw, pickles, and melted mozzarella. Served with fries and a drink.',price:21.99,img:'images/burger.jpg',upgrades:true,pop:false},
-    {id:'bu4',name:'Korean Fried Chicken (KFC)',desc:'A 6oz hand-breaded chicken breast coated in scratch-made Korean BBQ sauce, topped with crunchy coleslaw and tangy pickles. Served with fries and a drink.',price:20.99,img:'images/burger.jpg',upgrades:true,pop:false},
-    {id:'bu5',name:'The Sunset Crunch',desc:'Crispy chicken with sweet heat habanero mango kick, creamy California ranch, and a soft toasted bun. Served with fries and a drink.',price:17.99,img:'images/burger.jpg',upgrades:true,pop:false}
+    {id:'bu1',name:'The Tough Guy',desc:'Crispy 6oz chicken breast, double-crunched and coated in our blazing Carolina Reaper sauce. Layered with pickles, tomatoes, red onions, romaine, and melted Swiss. Served with fries and a drink.',price:18.99,img:'images/burger-tough-guy.jpg',upgrades:true,pop:true},
+    {id:'bu2',name:'The Dillinator',desc:'Crispy 6oz double-crunched chicken, layered with honey dill sauce, crunchy pickle chips, fresh romaine, and melted Swiss. Served with fries and a drink.',price:18.99,img:'images/burger-dillinator.jpg',upgrades:true,pop:false},
+    {id:'bu3',name:'The Buffalo Stampede',desc:'Crispy 6oz chicken patty tossed in house-made buffalo sauce, stacked with creamy coleslaw, pickles, and melted mozzarella. Served with fries and a drink.',price:18.99,img:'images/burger.jpg',upgrades:true,pop:false},
+    {id:'bu4',name:'Korean Fried Chicken (KFC)',desc:'A 6oz hand-breaded chicken breast coated in scratch-made Korean BBQ sauce, topped with crunchy coleslaw and tangy pickles. Served with fries and a drink.',price:16.49,img:'images/burger.jpg',upgrades:true,pop:false},
+    {id:'bu5',name:'The Sunset Crunch',desc:'Crispy chicken with sweet heat habanero mango kick, creamy California ranch, and a soft toasted bun. Served with fries and a drink.',price:15.99,img:'images/burger.jpg',upgrades:true,pop:false}
   ],
   combos:[
     {id:'c1',name:'Combo for 1',desc:'Wings, ribs, or chicken fingers with fries and a can of pop. Choose your flavor!',price:17.45,img:'images/combo1.jpg',flavorCount:1,upgrades:true,pop:true},
@@ -691,25 +695,27 @@ var MENU = {
     {id:'s11',name:'Dumplings',desc:'Crispy fried dumplings.',price:10.49,img:'images/dumplings.jpg'},
     {id:'s12',name:'Corn Dog',desc:'Classic corn dog with dipping of your choice.',price:6.99,img:null},
     {id:'s13',name:'Cauliflower Wings',desc:'Crispy cauliflower wings tossed with sauce of your choice.',price:12.99,img:null,flavorCount:1},
-    {id:'s14',name:'Classic Poutine',desc:'Crispy golden fries topped with cheese curds and rich, savory gravy.',price:8.99,price2:13.99,img:'images/poutine.jpg',sizes:true,sizeLabels:['Small','Large']},
-    {id:'s15',name:'Chicken Poutine',desc:'Crispy fries loaded with juicy chicken, rich gravy, and sweet & spicy Thai sauce.',price:14.99,img:null},
-    {id:'s16',name:'Rib Poutine',desc:'Golden fries with cheese curds, tender dry ribs, and sweet & spicy Thai sauce.',price:15.99,img:null},
-    {id:'s17',name:'Beef Poutine',desc:'Crispy fries with tender grilled beef, sauteed veggies, and sweet & spicy Thai sauce.',price:14.99,img:null},
-    {id:'s18',name:'Perogy Poutine',desc:'Mini perogies smothered in creamy cheese sauce, sour cream, green onions, and bacon bits.',price:10.49,img:null},
-    {id:'s19',name:'Nacho Teaser',desc:'Curly fries loaded with warm cheese sauce, fresh salsa, sour cream, green onions, and jalapenos.',price:12.99,img:null},
-    {id:'s20',name:'Loaded Taters',desc:'Crispy tater tots with seasoned shredded beef, creamy cheese sauce, and fresh toppings.',price:13.99,img:null},
-    {id:'s21',name:'Gravy',desc:'Classic gravy.',price:0.99,price2:2.49,img:null,sizes:true,sizeLabels:['Small','Large']}
+    {id:'s14',name:'Gravy',desc:'Classic gravy.',price:0.99,price2:2.49,img:null,sizes:true,sizeLabels:['Small','Large']}
+  ],
+  loaded:[
+    {id:'la1',name:'Classic Poutine',desc:'Crispy golden fries topped with cheese curds and rich, savory gravy. Simple, comforting, and done right.',price:8.99,price2:13.99,img:null,sizes:true,sizeLabels:['Small','Large'],pop:true},
+    {id:'la2',name:'Chicken Poutine',desc:'Crispy fries loaded with juicy chicken, rich gravy, and our sweet & spicy Thai sauce for the perfect balance of comfort and heat.',price:14.99,img:null,pop:false},
+    {id:'la3',name:'Rib Poutine',desc:'Golden fries topped with cheese curds, tender dry ribs, and finished with our sweet & spicy Thai sauce for a bold, savory kick.',price:15.99,img:null,pop:false},
+    {id:'la4',name:'Beef Poutine',desc:'Crispy fries topped with tender grilled beef, sauteed veggies, and finished with our sweet & spicy Thai sauce for a bold, flavorful bite.',price:14.99,img:null,pop:false},
+    {id:'la5',name:'Perogy Poutine',desc:'Mini perogies smothered in creamy cheese sauce, topped with sour cream, green onions, and bacon bits for a rich, comforting bite.',price:10.49,img:null,pop:false},
+    {id:'la6',name:'Nacho Teaser',desc:'Crispy curly fries loaded with warm cheese sauce, fresh salsa, cool sour cream, green onions, and jalapenos for the perfect cheesy, zesty bite.',price:12.99,img:null,pop:false},
+    {id:'la7',name:'Loaded Taters',desc:'Crispy tater tots stacked with seasoned shredded beef, creamy cheese sauce, and fresh toppings for the perfect mix of crunch and comfort.',price:13.99,img:null,pop:false}
   ],
   salads:[
     {id:'sal1',name:'Caesar Salad',desc:'Classic caesar salad.',price:6.99,price2:7.99,price3:13.99,img:'images/salad.jpg',sizes3:true},
     {id:'sal2',name:'Chicken Caesar Salad',desc:'Caesar salad with crispy grilled chicken.',price:9.99,price2:12.99,price3:19.49,img:'images/salad.jpg',sizes3:true}
   ],
   platters:[
-    {id:'p1',name:'A Bit of Other Platter',desc:'1 lb Ribs, Pickle Spear, Large Curly Fries, Mini Perogies, Dumplings, Mozza Sticks. Upgrade ribs to wings +$4.00.',price:36.99,img:'images/platter-bit-of.jpg',flavorCount:1,pop:true},
-    {id:'p2',name:'Making Love Platter',desc:'Full Order Wings, Empanadas, Large Fries, Jalapeno Poppers, Mozza Sticks.',price:36.99,img:'images/platter-making-love.jpg',flavorCount:1,pop:false},
+    {id:'p1',name:'A Bit of Other Platter',desc:'1 lb Ribs, Pickle Spear, Large Curly Fries, Mini Perogies, Dumplings, Mozza Sticks. Upgrade ribs to wings +$4.00.',price:34.99,img:'images/platter-bit-of.jpg',flavorCount:1,pop:true},
+    {id:'p2',name:'Making Love Platter',desc:'Full Order Wings, Empanadas, Large Fries, Jalapeno Poppers, Mozza Sticks.',price:34.99,img:'images/platter-making-love.jpg',flavorCount:1,pop:false},
     {id:'p3',name:'Too Much Platter',desc:'4 Orders of Wings or Ribs, 2 Curly Fries.',price:56.99,img:null,flavorCount:4,pop:false},
     {id:'p4',name:'Tinseltown Nacho',desc:'3 lbs Curly Fries, Cheese Sauce, Chunky Salsa, Sour Cream, Jalapeno, Green Onions.',price:29.99,img:null},
-    {id:'p5',name:"Hot n Heavy",desc:'3 lbs Fries, 1 lb Cheese Curds, 1 lb Gravy. Drizzled with sauce of your choice.',price:29.99,img:null}
+    {id:'p5',name:"Hot 'n' Heavy",desc:'3 lbs Fries, 1 lb Cheese Curds, 1 lb Gravy. Drizzled with sauce of your choice.',price:29.99,img:null}
   ],
   midnight:[
     {id:'m1',name:'Tiramisu Cake',desc:'Homemade tiramisu cake slice.',price:8.99,img:null},
