@@ -837,74 +837,87 @@
     animation: slamIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
-  /* === FEATURE 3: ANIMATED SAUCE DRIPS === */
-  .sauce-drips {
+  /* === FEATURE 3: ANIMATED SAUCE DRIPS (SVG-based) === */
+  .sauce-drips-wrap {
     position: absolute;
-    top: -2px;
-    left: 0;
-    right: 0;
-    height: 0;
+    top: -1px;
+    left: -2px;
+    right: -2px;
+    height: 200px;
     pointer-events: none;
     z-index: 5;
+    overflow: visible;
   }
 
-  .drip {
+  .sauce-drips-svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    display: block;
+  }
+
+  /* Top sauce coating that "pools" along the edge */
+  .sauce-coating {
     position: absolute;
-    top: 0;
-    width: 16px;
-    background: linear-gradient(180deg, #c94a1d 0%, #a03515 70%, #7a2510 100%);
-    border-radius: 0 0 50% 50% / 0 0 30% 30%;
-    box-shadow: inset -3px 0 4px rgba(0,0,0,0.25), 1px 2px 3px rgba(0,0,0,0.2);
+    top: -1px;
+    left: -2px;
+    right: -2px;
+    height: 14px;
+    background: linear-gradient(180deg, #c94a1d 0%, #a03515 60%, transparent 100%);
+    z-index: 4;
+    transform-origin: top;
+    animation: coatingDrop 0.5s ease-out forwards;
+    box-shadow: 0 2px 0 rgba(122, 37, 16, 0.4);
+  }
+
+  @keyframes coatingDrop {
+    0% { transform: scaleY(0); opacity: 0; }
+    100% { transform: scaleY(1); opacity: 1; }
+  }
+
+  .drip-path {
+    fill: url(#dripGradient);
+    filter: drop-shadow(1px 2px 2px rgba(60, 20, 10, 0.4));
     transform-origin: top center;
-    height: 0;
-    animation: dripFall 2.4s cubic-bezier(0.55, 0.05, 0.4, 1) forwards;
+    animation: dripGrow 1.6s cubic-bezier(0.55, 0.05, 0.4, 1) forwards;
+    transform: scaleY(0);
   }
 
-  .drip::after {
-    content: '';
+  .drip-shine {
+    fill: rgba(255, 220, 200, 0.35);
+    transform-origin: top center;
+    animation: dripGrow 1.6s cubic-bezier(0.55, 0.05, 0.4, 1) forwards;
+    transform: scaleY(0);
+  }
+
+  @keyframes dripGrow {
+    0% { transform: scaleY(0); }
+    60% { transform: scaleY(1.05); }
+    100% { transform: scaleY(1); }
+  }
+
+  /* Falling droplet that detaches from drip tip */
+  .falling-droplet {
     position: absolute;
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%) scale(0);
-    width: 18px;
+    width: 14px;
     height: 18px;
-    background: radial-gradient(circle at 35% 30%, #d95828 0%, #c94a1d 50%, #8a2c10 100%);
-    border-radius: 50%;
-    box-shadow: 1px 2px 3px rgba(0,0,0,0.3);
-    animation: dripBlob 2.4s ease-out forwards;
+    pointer-events: none;
+    z-index: 4;
+    animation: dropletFall 1.8s cubic-bezier(0.5, 0.05, 0.85, 0.5) forwards;
+    opacity: 0;
   }
 
-  /* shine highlight on drip */
-  .drip::before {
-    content: '';
-    position: absolute;
-    top: 4px;
-    left: 3px;
-    width: 3px;
-    height: 60%;
-    background: rgba(255, 200, 170, 0.4);
-    border-radius: 2px;
-    animation: dripShine 2.4s ease-out forwards;
+  .falling-droplet svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    filter: drop-shadow(1px 2px 2px rgba(60, 20, 10, 0.5));
   }
 
-  @keyframes dripFall {
-    0% { height: 0; }
-    25% { height: 18px; }
-    55% { height: 38px; }
-    85% { height: 55px; }
-    100% { height: 62px; }
-  }
-
-  @keyframes dripBlob {
-    0%, 60% { transform: translateX(-50%) scale(0); opacity: 0; }
-    78% { transform: translateX(-50%) scale(1.15); opacity: 1; }
-    100% { transform: translateX(-50%) scale(1); opacity: 1; }
-  }
-
-  @keyframes dripShine {
-    0% { opacity: 0; }
-    40% { opacity: 0.5; }
-    100% { opacity: 0.3; }
+  @keyframes dropletFall {
+    0% { transform: translateY(0) scale(1); opacity: 0; }
+    10% { opacity: 1; }
+    100% { transform: translateY(180px) scale(0.85); opacity: 0; }
   }
 
   /* === FEATURE 2: ORDER NOW BUTTON === */
@@ -1126,7 +1139,24 @@
 
     <div class="card" style="position:relative; overflow:visible;">
       <!-- FEATURE 3: Sauce drips container -->
-      <div class="sauce-drips" id="sauce-drips"></div>
+      <div class="sauce-coating" id="sauce-coating"></div>
+      <div class="sauce-drips-wrap" id="sauce-drips-wrap">
+        <svg class="sauce-drips-svg" id="sauce-drips-svg" viewBox="0 0 480 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="dripGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#d95828"/>
+              <stop offset="40%" stop-color="#c94a1d"/>
+              <stop offset="80%" stop-color="#a03515"/>
+              <stop offset="100%" stop-color="#7a2510"/>
+            </linearGradient>
+            <radialGradient id="dropletGradient" cx="35%" cy="30%" r="70%">
+              <stop offset="0%" stop-color="#e8632e"/>
+              <stop offset="50%" stop-color="#c94a1d"/>
+              <stop offset="100%" stop-color="#7a2510"/>
+            </radialGradient>
+          </defs>
+        </svg>
+      </div>
 
       <div class="newspaper-masthead">
         <div class="masthead-top">~ The Saucy Gazette ~</div>
@@ -1343,7 +1373,7 @@
     sweetRebel: 0, dryGameLegend: 0, flirt: 0, comboKing: 0
   };
 
-  // === FEATURE 1: WEB AUDIO API DRUMROLL + STING ===
+  // === FEATURE 1: WEB AUDIO API — SIZZLE + BASS BOOM ===
   let audioCtx = null;
 
   function getAudioCtx() {
@@ -1360,195 +1390,312 @@
     return audioCtx;
   }
 
-  // Play a drumroll: rapid filtered noise bursts that crescendo
-  function playDrumroll(duration) {
+  // SIZZLE: pink-noise-ish bursts filtered to sound like food hitting a hot pan
+  // Builds in intensity, then drops into the boom
+  function playSizzle(duration) {
     const ctx = getAudioCtx();
     if (!ctx) return;
     const startTime = ctx.currentTime;
 
-    // Create noise buffer
-    const bufferSize = ctx.sampleRate * duration;
+    // Generate noise buffer with pan-sizzle character
+    const bufferSize = Math.floor(ctx.sampleRate * duration);
     const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
     const data = noiseBuffer.getChannelData(0);
 
-    // Generate drumroll: rapid amplitude modulation on noise
-    // ~16 hits per second, accelerating slightly
+    // Pink-ish noise for a more natural sizzle (not harsh white noise)
+    let b0 = 0, b1 = 0, b2 = 0;
     for (let i = 0; i < bufferSize; i++) {
+      const white = Math.random() * 2 - 1;
+      // Simple pink noise filter (Paul Kellet approximation, simplified)
+      b0 = 0.99765 * b0 + white * 0.0990460;
+      b1 = 0.96300 * b1 + white * 0.2965164;
+      b2 = 0.57000 * b2 + white * 1.0526913;
+      const pink = (b0 + b1 + b2 + white * 0.1848) * 0.18;
+
       const t = i / ctx.sampleRate;
       const progress = t / duration;
-      // Hit rate increases from 14 to 22 Hz across the roll
-      const hitRate = 14 + progress * 8;
-      const hitPhase = (t * hitRate) % 1;
-      // Sharp attack envelope per hit
-      const hitEnv = Math.exp(-hitPhase * 18);
-      // Overall crescendo
-      const crescendo = 0.3 + progress * 0.7;
-      // White noise
-      const noise = (Math.random() * 2 - 1);
-      data[i] = noise * hitEnv * crescendo * 0.5;
+
+      // Sizzle has irregular crackle bursts on top of the steady hiss
+      // Random pops simulate fat spitting in the pan
+      const burstNoise = Math.random() < 0.008 ? (Math.random() * 2 - 1) * 1.8 : 0;
+
+      // Overall envelope: builds slowly then ramps up before the boom
+      const envelope = Math.pow(progress, 0.6) * 0.8 + 0.2;
+
+      data[i] = (pink + burstNoise) * envelope;
     }
 
     const source = ctx.createBufferSource();
     source.buffer = noiseBuffer;
 
-    // Bandpass filter to make it sound like a snare/tom drumroll
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'bandpass';
-    filter.frequency.value = 800;
-    filter.Q.value = 1.2;
+    // Bandpass filter centered around 3-5kHz to make it sound like a hot pan
+    // (real sizzle has peak energy in the high-mid frequencies)
+    const filter1 = ctx.createBiquadFilter();
+    filter1.type = 'bandpass';
+    filter1.frequency.setValueAtTime(2800, startTime);
+    filter1.frequency.linearRampToValueAtTime(4500, startTime + duration);
+    filter1.Q.value = 1.5;
 
-    // Highpass to remove rumble
-    const hp = ctx.createBiquadFilter();
-    hp.type = 'highpass';
-    hp.frequency.value = 200;
+    // High shelf to add some sparkle
+    const filter2 = ctx.createBiquadFilter();
+    filter2.type = 'highshelf';
+    filter2.frequency.value = 6000;
+    filter2.gain.value = 4;
 
     const gain = ctx.createGain();
     gain.gain.setValueAtTime(0.0, startTime);
-    gain.gain.linearRampToValueAtTime(0.35, startTime + 0.05);
-    gain.gain.linearRampToValueAtTime(0.55, startTime + duration - 0.05);
+    gain.gain.linearRampToValueAtTime(0.18, startTime + 0.15);
+    gain.gain.linearRampToValueAtTime(0.32, startTime + duration * 0.7);
+    gain.gain.linearRampToValueAtTime(0.45, startTime + duration - 0.05);
     gain.gain.linearRampToValueAtTime(0.0, startTime + duration);
 
-    source.connect(filter);
-    filter.connect(hp);
-    hp.connect(gain);
+    source.connect(filter1);
+    filter1.connect(filter2);
+    filter2.connect(gain);
     gain.connect(ctx.destination);
 
     source.start(startTime);
     source.stop(startTime + duration);
   }
 
-  // Play the sting: a triumphant brass-like chord stab + cymbal crash
-  function playSting(startOffset) {
+  // BASS BOOM: deep sub kick that lands when the result reveals
+  function playBassBoom(startOffset) {
     const ctx = getAudioCtx();
     if (!ctx) return;
     const startTime = ctx.currentTime + startOffset;
 
-    // === Brass chord stab: C major triad (C5, E5, G5) ===
-    const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
+    // Sub-bass thump: sine wave sweeping from 90Hz to 35Hz
+    const sub = ctx.createOscillator();
+    sub.type = 'sine';
+    sub.frequency.setValueAtTime(95, startTime);
+    sub.frequency.exponentialRampToValueAtTime(38, startTime + 0.15);
+    sub.frequency.exponentialRampToValueAtTime(28, startTime + 0.6);
 
-    notes.forEach(freq => {
-      // Sawtooth + square mix for brassy tone
-      const osc1 = ctx.createOscillator();
-      osc1.type = 'sawtooth';
-      osc1.frequency.value = freq;
+    const subGain = ctx.createGain();
+    subGain.gain.setValueAtTime(0, startTime);
+    subGain.gain.linearRampToValueAtTime(0.85, startTime + 0.005);
+    subGain.gain.exponentialRampToValueAtTime(0.4, startTime + 0.25);
+    subGain.gain.exponentialRampToValueAtTime(0.001, startTime + 1.0);
 
-      const osc2 = ctx.createOscillator();
-      osc2.type = 'square';
-      osc2.frequency.value = freq;
+    sub.connect(subGain);
+    subGain.connect(ctx.destination);
+    sub.start(startTime);
+    sub.stop(startTime + 1.1);
 
-      const oscGain = ctx.createGain();
-      oscGain.gain.value = 0.18;
+    // Mid punch: triangle wave for some body in the kick
+    const punch = ctx.createOscillator();
+    punch.type = 'triangle';
+    punch.frequency.setValueAtTime(180, startTime);
+    punch.frequency.exponentialRampToValueAtTime(60, startTime + 0.08);
 
-      // Lowpass filter for warmer brass tone
-      const filter = ctx.createBiquadFilter();
-      filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(2400, startTime);
-      filter.frequency.exponentialRampToValueAtTime(900, startTime + 0.8);
-      filter.Q.value = 4;
+    const punchGain = ctx.createGain();
+    punchGain.gain.setValueAtTime(0, startTime);
+    punchGain.gain.linearRampToValueAtTime(0.4, startTime + 0.003);
+    punchGain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.25);
 
-      // Punchy envelope
-      const env = ctx.createGain();
-      env.gain.setValueAtTime(0, startTime);
-      env.gain.linearRampToValueAtTime(0.25, startTime + 0.02);
-      env.gain.exponentialRampToValueAtTime(0.12, startTime + 0.15);
-      env.gain.exponentialRampToValueAtTime(0.001, startTime + 1.2);
+    punch.connect(punchGain);
+    punchGain.connect(ctx.destination);
+    punch.start(startTime);
+    punch.stop(startTime + 0.3);
 
-      osc1.connect(oscGain);
-      osc2.connect(oscGain);
-      oscGain.connect(filter);
-      filter.connect(env);
-      env.connect(ctx.destination);
-
-      osc1.start(startTime);
-      osc2.start(startTime);
-      osc1.stop(startTime + 1.3);
-      osc2.stop(startTime + 1.3);
-    });
-
-    // === Cymbal crash: filtered noise with long decay ===
-    const crashDuration = 1.4;
-    const crashBuffer = ctx.createBuffer(1, ctx.sampleRate * crashDuration, ctx.sampleRate);
-    const crashData = crashBuffer.getChannelData(0);
-    for (let i = 0; i < crashData.length; i++) {
-      crashData[i] = (Math.random() * 2 - 1);
+    // Click transient: short noise burst for the initial attack
+    const clickBuffer = ctx.createBuffer(1, ctx.sampleRate * 0.05, ctx.sampleRate);
+    const clickData = clickBuffer.getChannelData(0);
+    for (let i = 0; i < clickData.length; i++) {
+      clickData[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.008));
     }
+    const click = ctx.createBufferSource();
+    click.buffer = clickBuffer;
 
-    const crashSource = ctx.createBufferSource();
-    crashSource.buffer = crashBuffer;
+    const clickFilter = ctx.createBiquadFilter();
+    clickFilter.type = 'lowpass';
+    clickFilter.frequency.value = 800;
 
-    const crashHP = ctx.createBiquadFilter();
-    crashHP.type = 'highpass';
-    crashHP.frequency.value = 4000;
+    const clickGain = ctx.createGain();
+    clickGain.gain.value = 0.3;
 
-    const crashGain = ctx.createGain();
-    crashGain.gain.setValueAtTime(0, startTime);
-    crashGain.gain.linearRampToValueAtTime(0.22, startTime + 0.01);
-    crashGain.gain.exponentialRampToValueAtTime(0.001, startTime + crashDuration);
+    click.connect(clickFilter);
+    clickFilter.connect(clickGain);
+    clickGain.connect(ctx.destination);
+    click.start(startTime);
 
-    crashSource.connect(crashHP);
-    crashHP.connect(crashGain);
-    crashGain.connect(ctx.destination);
+    // Distant thunder rumble for extra weight (filtered noise tail)
+    const rumbleBuffer = ctx.createBuffer(1, ctx.sampleRate * 1.2, ctx.sampleRate);
+    const rumbleData = rumbleBuffer.getChannelData(0);
+    for (let i = 0; i < rumbleData.length; i++) {
+      rumbleData[i] = Math.random() * 2 - 1;
+    }
+    const rumble = ctx.createBufferSource();
+    rumble.buffer = rumbleBuffer;
 
-    crashSource.start(startTime);
-    crashSource.stop(startTime + crashDuration);
+    const rumbleLP = ctx.createBiquadFilter();
+    rumbleLP.type = 'lowpass';
+    rumbleLP.frequency.setValueAtTime(120, startTime);
+    rumbleLP.frequency.exponentialRampToValueAtTime(50, startTime + 1.2);
+    rumbleLP.Q.value = 2;
 
-    // === Low boom for impact ===
-    const boom = ctx.createOscillator();
-    boom.type = 'sine';
-    boom.frequency.setValueAtTime(110, startTime);
-    boom.frequency.exponentialRampToValueAtTime(45, startTime + 0.4);
+    const rumbleGain = ctx.createGain();
+    rumbleGain.gain.setValueAtTime(0, startTime);
+    rumbleGain.gain.linearRampToValueAtTime(0.25, startTime + 0.05);
+    rumbleGain.gain.exponentialRampToValueAtTime(0.001, startTime + 1.2);
 
-    const boomGain = ctx.createGain();
-    boomGain.gain.setValueAtTime(0, startTime);
-    boomGain.gain.linearRampToValueAtTime(0.45, startTime + 0.01);
-    boomGain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.6);
-
-    boom.connect(boomGain);
-    boomGain.connect(ctx.destination);
-
-    boom.start(startTime);
-    boom.stop(startTime + 0.7);
+    rumble.connect(rumbleLP);
+    rumbleLP.connect(rumbleGain);
+    rumbleGain.connect(ctx.destination);
+    rumble.start(startTime);
+    rumble.stop(startTime + 1.2);
   }
 
   function playRevealSound() {
-    const drumrollDuration = 1.4;
-    playDrumroll(drumrollDuration);
-    playSting(drumrollDuration); // sting hits right when drumroll ends
+    const sizzleDuration = 1.1;
+    playSizzle(sizzleDuration);
+    playBassBoom(sizzleDuration); // boom hits exactly when sizzle peaks
   }
 
-  // === FEATURE 3: SAUCE DRIPS GENERATOR ===
+  // === FEATURE 3: SAUCE DRIPS GENERATOR (SVG-based, MAXIMUM drama) ===
   function generateSauceDrips() {
-    const container = document.getElementById('sauce-drips');
-    container.innerHTML = '';
+    const svg = document.getElementById('sauce-drips-svg');
+    const wrap = document.getElementById('sauce-drips-wrap');
+    const coating = document.getElementById('sauce-coating');
 
-    // Random drip positions across the top of the card
-    const dripCount = 7;
-    const positions = [];
-    const minGap = 8; // % gap between drips
+    // Reset coating animation
+    coating.style.animation = 'none';
+    void coating.offsetWidth;
+    coating.style.animation = '';
 
-    while (positions.length < dripCount) {
-      const candidate = 4 + Math.random() * 92;
-      if (positions.every(p => Math.abs(p - candidate) > minGap)) {
-        positions.push(candidate);
-      }
-      if (positions.length === dripCount) break;
-      // safety break
-      if (positions.length > 20) break;
+    // Clear old drips, keep <defs>
+    const defs = svg.querySelector('defs');
+    svg.innerHTML = '';
+    svg.appendChild(defs);
+
+    // Clear old falling droplets
+    wrap.querySelectorAll('.falling-droplet').forEach(d => d.remove());
+
+    const svgWidth = 480;
+    const svgNS = 'http://www.w3.org/2000/svg';
+
+    // 14 drips of varying sizes scattered across the top edge
+    const dripCount = 14;
+    const drips = [];
+
+    // Distribute drips with some randomness but reasonable spacing
+    for (let i = 0; i < dripCount; i++) {
+      const baseX = (i / dripCount) * svgWidth + (Math.random() * 25 - 12);
+      const length = 25 + Math.random() * 75; // 25 to 100px long
+      const width = 7 + Math.random() * 9; // 7 to 16px wide
+      const delay = Math.random() * 0.6; // staggered start
+      drips.push({ x: baseX, length, width, delay });
     }
 
-    positions.forEach((leftPct, i) => {
-      const drip = document.createElement('div');
-      drip.className = 'drip';
-      drip.style.left = leftPct + '%';
-      // Vary widths slightly for organic feel
-      const width = 12 + Math.random() * 8;
-      drip.style.width = width + 'px';
-      // Stagger each drip's animation start slightly
-      drip.style.animationDelay = (i * 0.08 + Math.random() * 0.15) + 's';
-      // Vary final length via animation duration
-      drip.style.animationDuration = (2.0 + Math.random() * 0.8) + 's';
-      container.appendChild(drip);
+    drips.forEach((d, i) => {
+      const cx = d.x;
+      const w = d.width;
+      const len = d.length;
+      const halfW = w / 2;
+
+      // Build a teardrop path: starts wide at top edge, narrows, ends in a bulb
+      // M = start at top-left of drip
+      // Curves down both sides, with the bulb at the bottom
+      const tipBulbR = halfW * 1.2;
+      const neckY = len - tipBulbR * 1.6;
+      const bulbCenterY = len - tipBulbR * 0.4;
+
+      const path = `
+        M ${cx - halfW} 0
+        C ${cx - halfW * 0.95} ${len * 0.3},
+          ${cx - halfW * 0.55} ${neckY * 0.7},
+          ${cx - halfW * 0.45} ${neckY}
+        C ${cx - halfW * 0.55} ${neckY + tipBulbR * 0.4},
+          ${cx - tipBulbR} ${bulbCenterY - tipBulbR * 0.3},
+          ${cx - tipBulbR} ${bulbCenterY}
+        C ${cx - tipBulbR} ${bulbCenterY + tipBulbR},
+          ${cx + tipBulbR} ${bulbCenterY + tipBulbR},
+          ${cx + tipBulbR} ${bulbCenterY}
+        C ${cx + tipBulbR} ${bulbCenterY - tipBulbR * 0.3},
+          ${cx + halfW * 0.55} ${neckY + tipBulbR * 0.4},
+          ${cx + halfW * 0.45} ${neckY}
+        C ${cx + halfW * 0.55} ${neckY * 0.7},
+          ${cx + halfW * 0.95} ${len * 0.3},
+          ${cx + halfW} 0
+        Z
+      `;
+
+      const dripEl = document.createElementNS(svgNS, 'path');
+      dripEl.setAttribute('d', path);
+      dripEl.setAttribute('class', 'drip-path');
+      dripEl.style.animationDelay = d.delay + 's';
+      svg.appendChild(dripEl);
+
+      // Add a shine highlight along the left side of each drip
+      const shineW = Math.max(1.5, w * 0.18);
+      const shinePath = `
+        M ${cx - halfW * 0.6} ${len * 0.15}
+        C ${cx - halfW * 0.55} ${len * 0.4},
+          ${cx - halfW * 0.4} ${len * 0.55},
+          ${cx - halfW * 0.35} ${len * 0.65}
+        L ${cx - halfW * 0.35 + shineW} ${len * 0.65}
+        C ${cx - halfW * 0.4 + shineW} ${len * 0.55},
+          ${cx - halfW * 0.55 + shineW} ${len * 0.4},
+          ${cx - halfW * 0.6 + shineW} ${len * 0.15}
+        Z
+      `;
+      const shineEl = document.createElementNS(svgNS, 'path');
+      shineEl.setAttribute('d', shinePath);
+      shineEl.setAttribute('class', 'drip-shine');
+      shineEl.style.animationDelay = d.delay + 's';
+      svg.appendChild(shineEl);
+
+      // For longer drips, schedule a falling droplet to detach from the tip
+      if (len > 55 && Math.random() > 0.4) {
+        setTimeout(() => {
+          spawnFallingDroplet(wrap, (cx / svgWidth) * 100, len);
+        }, (d.delay + 1.4) * 1000);
+      }
     });
+
+    // Add some smaller "satellite" splatter droplets that fall independently
+    for (let i = 0; i < 6; i++) {
+      const x = Math.random() * 100;
+      const delay = 200 + Math.random() * 1500;
+      setTimeout(() => {
+        spawnFallingDroplet(wrap, x, 10 + Math.random() * 30, true);
+      }, delay);
+    }
+  }
+
+  function spawnFallingDroplet(wrap, leftPct, startY, small) {
+    const droplet = document.createElement('div');
+    droplet.className = 'falling-droplet';
+    droplet.style.left = 'calc(' + leftPct + '% - 7px)';
+    droplet.style.top = startY + 'px';
+    if (small) {
+      const scale = 0.4 + Math.random() * 0.4;
+      droplet.style.transform = 'scale(' + scale + ')';
+      droplet.style.animationDuration = (1.2 + Math.random() * 0.6) + 's';
+    } else {
+      droplet.style.animationDuration = (1.6 + Math.random() * 0.6) + 's';
+    }
+    droplet.innerHTML =
+      '<svg viewBox="0 0 14 18" xmlns="http://www.w3.org/2000/svg">' +
+        '<path d="M 7 0 C 4 4, 1 9, 1 12 C 1 15.5, 4 17, 7 17 C 10 17, 13 15.5, 13 12 C 13 9, 10 4, 7 0 Z" fill="url(#dropletGrad' + Math.random().toString(36).slice(2,7) + ')"/>' +
+        '<defs>' +
+          '<radialGradient id="dropletGrad' + Math.random().toString(36).slice(2,7) + '" cx="35%" cy="30%" r="70%">' +
+            '<stop offset="0%" stop-color="#e8632e"/>' +
+            '<stop offset="50%" stop-color="#c94a1d"/>' +
+            '<stop offset="100%" stop-color="#7a2510"/>' +
+          '</radialGradient>' +
+        '</defs>' +
+      '</svg>';
+    // Simpler: use solid fill since dynamic gradient IDs are tricky
+    droplet.innerHTML =
+      '<svg viewBox="0 0 14 18" xmlns="http://www.w3.org/2000/svg">' +
+        '<path d="M 7 0 C 4 4, 1 9, 1 12 C 1 15.5, 4 17, 7 17 C 10 17, 13 15.5, 13 12 C 13 9, 10 4, 7 0 Z" fill="#c94a1d"/>' +
+        '<ellipse cx="5" cy="10" rx="1.2" ry="2.5" fill="rgba(255,220,200,0.4)"/>' +
+      '</svg>';
+    wrap.appendChild(droplet);
+
+    // Clean up after animation
+    setTimeout(() => droplet.remove(), 2500);
   }
 
   function startQuiz() {
