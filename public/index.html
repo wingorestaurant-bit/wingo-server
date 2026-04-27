@@ -1070,7 +1070,6 @@ function getLive(){
   var ops=daily/86400;
   return{wings:Math.floor(BASE.wings+ops*8*secs),orders:Math.floor(BASE.orders+ops*secs),spw:Math.round(86400/(daily*8))};
 }
-}
 function fmt(n){return n.toLocaleString('en-CA');}
 function animUp(el,target,dur){
   if(!el)return;
