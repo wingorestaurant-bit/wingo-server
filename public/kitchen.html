@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Wing-O Kitchen — Order Alert</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+:root{
+  --black:#0D0D0D;
+  --ink:#1A1208;
+  --paper:#F4EBD7;
+  --red:#E8190A;
+  --red-deep:#A80F00;
+  --yellow:#F5A800;
+  --green:#48BB78;
+  --gray:#666;
+  --font-display:'Bebas Neue',sans-serif;
+  --font-head:'Oswald',sans-serif;
+  --font-body:'Inter',sans-serif;
+}
+html,body{height:100%;font-family:var(--font-body);background:var(--black);color:white;overflow:hidden}
+body{display:flex;flex-direction:column;height:100vh}
+
+/* ========== GATE / LOGIN SCREEN ========== */
+.gate{position:fixed;inset:0;background:var(--black);z-index:1000;display:flex;align-items:center;justify-content:center;padding:2rem}
+.gate-inner{background:var(--ink);border:2px solid var(--yellow);border-radius:8px;padding:3rem 2.5rem;max-width:440px;width:100%;text-align:center}
+.gate-logo{font-family:var(--font-display);font-size:3rem;color:white;letter-spacing:4px;line-height:1}
+.gate-logo span{color:var(--red)}
+.gate-sub{font-family:var(--font-head);font-size:.85rem;color:var(--yellow);letter-spacing:3px;text-transform:uppercase;margin:.5rem 0 2rem}
+.gate label{font-family:var(--font-head);font-size:.75rem;color:#888;letter-spacing:2px;text-transform:uppercase;display:block;text-align:left;margin-bottom:.4rem}
+.gate input{width:100%;padding:.85rem 1rem;font-family:var(--font-body);font-size:1rem;background:var(--black);border:2px solid #333;color:white;border-radius:4px;outline:none;margin-bottom:1rem}
+.gate input:focus{border-color:var(--yellow)}
+.gate button{width:100%;padding:1rem;background:var(--red);color:white;font-family:var(--font-display);font-size:1.3rem;letter-spacing:3px;border:none;border-radius:4px;cursor:pointer;text-transform:uppercase;margin-top:.5rem}
+.gate button:hover{background:var(--red-deep)}
+.gate-err{color:var(--red);font-size:.85rem;font-family:var(--font-head);letter-spacing:1px;margin-top:.5rem;display:none;text-transform:uppercase}
+.gate-err.show{display:block}
+
+/* ========== HEADER ========== */
+header{background:var(--ink);border-bottom:3px solid var(--yellow);padding:.85rem 1.5rem;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.h-left{display:flex;align-items:baseline;gap:1rem}
+.h-logo{font-family:var(--font-display);font-size:1.6rem;color:white;letter-spacing:3px;line-height:1}
+.h-logo span{color:var(--red)}
+.h-loc{font-family:var(--font-head);font-size:.85rem;color:var(--yellow);letter-spacing:2px;text-transform:uppercase}
+.h-right{display:flex;align-items:center;gap:1.25rem}
+.h-time{font-family:var(--font-display);font-size:1.3rem;color:white;letter-spacing:2px;line-height:1}
+.h-status{display:flex;align-items:center;gap:6px;font-family:var(--font-head);font-size:.7rem;color:#888;letter-spacing:1.5px;text-transform:uppercase}
+.h-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+.h-dot.err{background:var(--red);animation:none}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.h-test{background:transparent;border:1.5px solid #444;color:#888;font-family:var(--font-head);font-size:.7rem;padding:.45rem .8rem;border-radius:4px;cursor:pointer;letter-spacing:1.5px;text-transform:uppercase}
+.h-test:hover{border-color:var(--yellow);color:var(--yellow)}
+
+/* ========== MAIN GRID ========== */
+main{flex:1;display:grid;grid-template-rows:1fr auto;overflow:hidden}
+.lanes{display:grid;grid-template-columns:1.4fr 1fr;gap:0;height:100%;overflow:hidden}
+.lane{display:flex;flex-direction:column;overflow:hidden}
+.lane.pending{background:#1a0a08;border-right:2px solid var(--yellow)}
+.lane.progress{background:#0f0f0f}
+.lane-hd{padding:.85rem 1.5rem;font-family:var(--font-display);font-size:1.15rem;letter-spacing:3px;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.1);display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.lane.pending .lane-hd{color:var(--red);background:rgba(232,25,10,.08)}
+.lane.progress .lane-hd{color:var(--yellow);background:rgba(245,168,0,.05)}
+.lane-count{background:rgba(255,255,255,.08);font-family:var(--font-display);padding:.15rem .75rem;border-radius:50px;font-size:1rem;letter-spacing:1px;color:white}
+.lane-body{flex:1;overflow-y:auto;padding:1rem 1.25rem;display:flex;flex-direction:column;gap:.85rem}
+.lane-body::-webkit-scrollbar{width:6px}
+.lane-body::-webkit-scrollbar-thumb{background:#333;border-radius:3px}
+
+/* ========== ORDER CARDS ========== */
+.empty{flex:1;display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-size:1rem;color:#444;letter-spacing:2px;text-transform:uppercase;padding:2rem}
+
+.order{background:white;color:var(--black);border-radius:6px;padding:1rem 1.15rem;box-shadow:0 4px 12px rgba(0,0,0,.4);position:relative}
+.order.pending{border-left:6px solid var(--red);animation:newOrder .6s ease-out}
+.order.progress{background:#FFF8EE;border-left:6px solid var(--yellow);opacity:.92}
+@keyframes newOrder{from{transform:translateY(-12px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+.o-row1{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem}
+.o-num{font-family:var(--font-display);font-size:1.6rem;color:var(--red);letter-spacing:2px;line-height:1}
+.o-type{font-family:var(--font-head);font-size:.7rem;letter-spacing:2px;text-transform:uppercase;background:var(--black);color:white;padding:.25rem .6rem;border-radius:3px;font-weight:600}
+.o-type.delivery{background:var(--yellow);color:var(--black)}
+
+.o-cust{font-family:var(--font-head);font-size:1.1rem;font-weight:700;color:var(--black);letter-spacing:.5px;margin-bottom:.15rem}
+.o-meta{font-family:var(--font-head);font-size:.78rem;color:#666;letter-spacing:.5px;margin-bottom:.7rem;text-transform:uppercase}
+
+.o-items{border-top:1px dashed #ccc;padding-top:.65rem;margin-bottom:.7rem}
+.o-item{display:flex;justify-content:space-between;align-items:flex-start;padding:.3rem 0;font-family:var(--font-body);gap:.5rem}
+.o-item-name{font-size:.95rem;font-weight:600;color:var(--black);line-height:1.3;flex:1}
+.o-item-qty{font-family:var(--font-display);font-size:1.2rem;color:var(--red);letter-spacing:1px;flex-shrink:0;line-height:1}
+.o-item-flv{font-size:.78rem;color:#555;font-weight:500;font-style:italic;display:block;margin-top:2px}
+.o-item-note{font-size:.78rem;color:var(--red);font-weight:600;display:block;margin-top:2px}
+
+.o-customer-note{background:#FFF8E8;border-left:3px solid var(--yellow);padding:.5rem .7rem;font-size:.82rem;color:#7B3F00;font-weight:500;margin-bottom:.7rem;font-style:italic}
+
+.o-btns{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.o-btns.single{grid-template-columns:1fr}
+.btn{padding:.85rem;border:none;font-family:var(--font-display);font-size:1.05rem;letter-spacing:2px;cursor:pointer;border-radius:4px;text-transform:uppercase;transition:transform .1s}
+.btn:active{transform:scale(.97)}
+.btn-ack{background:var(--red);color:white}
+.btn-ack:hover{background:var(--red-deep)}
+.btn-ready{background:var(--yellow);color:var(--black)}
+.btn-ready:hover{background:#c28200;color:white}
+.btn-done{background:var(--green);color:white}
+.btn-done:hover{background:#2d7a4f}
+
+/* ========== PERSISTENT ALERT BAR ========== */
+.alert-bar{display:none;background:var(--red);color:white;padding:1rem 1.5rem;text-align:center;font-family:var(--font-display);font-size:1.6rem;letter-spacing:4px;text-transform:uppercase;animation:flash 1.2s ease-in-out infinite;flex-shrink:0;cursor:pointer;border-top:3px solid white}
+.alert-bar.show{display:block}
+@keyframes flash{0%,100%{background:var(--red)}50%{background:var(--red-deep)}}
+.alert-bar small{display:block;font-family:var(--font-head);font-size:.8rem;letter-spacing:2px;margin-top:.25rem;opacity:.85;font-weight:400}
+
+/* ========== ENABLE SOUND OVERLAY ========== */
+.sound-gate{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:900;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1.5rem;padding:2rem;text-align:center}
+.sound-gate.hide{display:none}
+.sound-gate-icon{font-size:5rem}
+.sound-gate-title{font-family:var(--font-display);font-size:2.5rem;color:var(--yellow);letter-spacing:4px;line-height:1}
+.sound-gate-sub{font-family:var(--font-head);font-size:1rem;color:white;letter-spacing:2px;max-width:480px;line-height:1.5}
+.sound-gate-btn{padding:1.25rem 3rem;background:var(--red);color:white;font-family:var(--font-display);font-size:1.6rem;letter-spacing:3px;border:none;border-radius:6px;cursor:pointer;text-transform:uppercase;margin-top:1rem;animation:btnPulse 1.5s ease-in-out infinite}
+@keyframes btnPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+
+/* ========== TABLET MODE ========== */
+@media (max-width:1024px){
+  .lanes{grid-template-columns:1fr}
+  .lane.pending{border-right:none;border-bottom:2px solid var(--yellow)}
+}
+</style>
+</head>
+<body>
+
+<!-- ========== PASSWORD GATE ========== -->
+<div class="gate" id="gate">
+  <div class="gate-inner">
+    <div class="gate-logo">WING<span>-O</span></div>
+    <div class="gate-sub">Kitchen Display · Staff Only</div>
+    <label>Location</label>
+    <select id="gate-loc" style="width:100%;padding:.85rem 1rem;font-family:var(--font-body);font-size:1rem;background:var(--black);border:2px solid #333;color:white;border-radius:4px;outline:none;margin-bottom:1rem">
+      <option value="albert-st">Albert Street — Regina</option>
+      <option value="rochdale">Rochdale — Regina</option>
+      <option value="east-regina">East Regina</option>
+      <option value="moose-jaw">Moose Jaw</option>
+    </select>
+    <label>Kitchen Password</label>
+    <input type="password" id="gate-pw" placeholder="Enter password" autocomplete="current-password">
+    <button onclick="tryLogin()">Open Kitchen Display 🔥</button>
+    <div class="gate-err" id="gate-err">Wrong password</div>
+  </div>
+</div>
+
+<!-- ========== ENABLE SOUND OVERLAY ========== -->
+<div class="sound-gate hide" id="sound-gate">
+  <div class="sound-gate-icon">🔔</div>
+  <div class="sound-gate-title">Enable Order Alerts</div>
+  <div class="sound-gate-sub">Browsers block sound until you tap once. Tap below to start receiving order chimes.</div>
+  <button class="sound-gate-btn" onclick="enableSound()">Tap to Start</button>
+</div>
+
+<!-- ========== HEADER ========== -->
+<header>
+  <div class="h-left">
+    <div class="h-logo">WING<span>-O</span></div>
+    <div class="h-loc" id="loc-label">—</div>
+  </div>
+  <div class="h-right">
+    <button class="h-test" onclick="testSound()">🔔 Test</button>
+    <div class="h-status">
+      <div class="h-dot" id="conn-dot"></div>
+      <span id="conn-txt">Connecting…</span>
+    </div>
+    <div class="h-time" id="clock">—</div>
+  </div>
+</header>
+
+<!-- ========== MAIN ========== -->
+<main>
+  <div class="lanes">
+    <section class="lane pending">
+      <div class="lane-hd">
+        <span>🔥 New Orders</span>
+        <span class="lane-count" id="pending-count">0</span>
+      </div>
+      <div class="lane-body" id="pending-body">
+        <div class="empty">No new orders. Wait for the chime.</div>
+      </div>
+    </section>
+    <section class="lane progress">
+      <div class="lane-hd">
+        <span>🍗 In Progress</span>
+        <span class="lane-count" id="progress-count">0</span>
+      </div>
+      <div class="lane-body" id="progress-body">
+        <div class="empty">No orders in progress</div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Persistent flashing bar shown while alert is ringing -->
+  <div class="alert-bar" id="alert-bar" onclick="acknowledgeFirst()">
+    🔔 New Order — Tap any order to acknowledge
+    <small>The bell will keep ringing until you do</small>
+  </div>
+</main>
+
+<script>
+// ============================================================
+// CONFIGURATION
+// ============================================================
+var API_BASE = ''; // same origin as wingo-server
+var POLL_MS = 5000; // poll every 5 seconds
+var LOCATION = '';
+var PASSWORD = '';
+var soundEnabled = false;
+var pendingOrders = [];
+var progressOrders = [];
+var seenIds = new Set(); // track order IDs we've already shown
+var bellInterval = null;
+
+// ============================================================
+// PASSWORD GATE
+// ============================================================
+function tryLogin(){
+  var loc = document.getElementById('gate-loc').value;
+  var pw = document.getElementById('gate-pw').value.trim();
+  if(!pw){
+    document.getElementById('gate-err').textContent='Enter password';
+    document.getElementById('gate-err').classList.add('show');
+    return;
+  }
+  // Verify password by hitting backend
+  fetch(API_BASE + '/api/kitchen/auth?loc=' + loc + '&pw=' + encodeURIComponent(pw))
+    .then(function(r){return r.json()})
+    .then(function(d){
+      if(d.ok){
+        LOCATION = loc;
+        PASSWORD = pw;
+        sessionStorage.setItem('wingo_kitchen_loc', loc);
+        sessionStorage.setItem('wingo_kitchen_pw', pw);
+        document.getElementById('gate').style.display='none';
+        document.getElementById('sound-gate').classList.remove('hide');
+        var locNames = {
+          'albert-st':'Albert Street','rochdale':'Rochdale',
+          'east-regina':'East Regina','moose-jaw':'Moose Jaw'
+        };
+        document.getElementById('loc-label').textContent = locNames[loc] || loc;
+      } else {
+        document.getElementById('gate-err').textContent = 'Wrong password';
+        document.getElementById('gate-err').classList.add('show');
+      }
+    })
+    .catch(function(){
+      document.getElementById('gate-err').textContent = 'Connection error';
+      document.getElementById('gate-err').classList.add('show');
+    });
+}
+
+document.getElementById('gate-pw').addEventListener('keydown', function(e){
+  if(e.key === 'Enter') tryLogin();
+});
+
+// Auto-restore session if exists (so refresh doesn't re-prompt)
+window.addEventListener('load', function(){
+  var sLoc = sessionStorage.getItem('wingo_kitchen_loc');
+  var sPw = sessionStorage.getItem('wingo_kitchen_pw');
+  if(sLoc && sPw){
+    document.getElementById('gate-loc').value = sLoc;
+    document.getElementById('gate-pw').value = sPw;
+    tryLogin();
+  }
+});
+
+// ============================================================
+// SOUND - Web Audio API bell chime
+// ============================================================
+var audioCtx = null;
+
+function enableSound(){
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  // Play a tiny silent note to "unlock" autoplay on iOS/mobile
+  var o = audioCtx.createOscillator();
+  var g = audioCtx.createGain();
+  g.gain.value = 0;
+  o.connect(g); g.connect(audioCtx.destination);
+  o.start(); o.stop(audioCtx.currentTime + 0.01);
+  soundEnabled = true;
+  document.getElementById('sound-gate').classList.add('hide');
+  startPolling();
+}
+
+function playBell(){
+  if(!soundEnabled || !audioCtx) return;
+  // Two-tone bell: high then low, with quick decay
+  var now = audioCtx.currentTime;
+  [880, 1320].forEach(function(freq, i){
+    var o = audioCtx.createOscillator();
+    var g = audioCtx.createGain();
+    o.type = 'sine';
+    o.frequency.value = freq;
+    o.connect(g); g.connect(audioCtx.destination);
+    var t0 = now + i * 0.15;
+    g.gain.setValueAtTime(0, t0);
+    g.gain.linearRampToValueAtTime(0.4, t0 + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.001, t0 + 0.8);
+    o.start(t0);
+    o.stop(t0 + 0.85);
+  });
+}
+
+function testSound(){
+  if(!soundEnabled){ enableSound(); return; }
+  playBell();
+}
+
+function startBellLoop(){
+  if(bellInterval) return;
+  playBell();
+  bellInterval = setInterval(playBell, 2200);
+  document.getElementById('alert-bar').classList.add('show');
+}
+
+function stopBellLoop(){
+  if(bellInterval){
+    clearInterval(bellInterval);
+    bellInterval = null;
+  }
+  document.getElementById('alert-bar').classList.remove('show');
+}
+
+// ============================================================
+// CLOCK
+// ============================================================
+function tickClock(){
+  var d = new Date();
+  var h = d.getHours();
+  var m = d.getMinutes();
+  var ampm = h >= 12 ? 'PM' : 'AM';
+  h = h % 12 || 12;
+  document.getElementById('clock').textContent =
+    h + ':' + (m < 10 ? '0' : '') + m + ' ' + ampm;
+}
+setInterval(tickClock, 1000);
+tickClock();
+
+// ============================================================
+// POLLING & RENDERING
+// ============================================================
+function startPolling(){
+  fetchOrders();
+  setInterval(fetchOrders, POLL_MS);
+}
+
+async function fetchOrders(){
+  try{
+    var r = await fetch(API_BASE + '/api/kitchen/orders?loc=' + LOCATION + '&pw=' + encodeURIComponent(PASSWORD));
+    if(!r.ok) throw new Error('bad response');
+    var data = await r.json();
+    setStatus(true);
+    var prevPendingCount = pendingOrders.length;
+    pendingOrders = (data.pending || []);
+    progressOrders = (data.progress || []);
+    // Detect new orders
+    var newCount = 0;
+    pendingOrders.forEach(function(o){
+      if(!seenIds.has(o.id)){
+        seenIds.add(o.id);
+        newCount++;
+      }
+    });
+    if(newCount > 0 && pendingOrders.length > 0){
+      startBellLoop();
+    }
+    if(pendingOrders.length === 0){
+      stopBellLoop();
+    }
+    render();
+  } catch(e){
+    setStatus(false);
+  }
+}
+
+function setStatus(ok){
+  var dot = document.getElementById('conn-dot');
+  var txt = document.getElementById('conn-txt');
+  if(ok){
+    dot.classList.remove('err');
+    txt.textContent = 'Connected';
+  } else {
+    dot.classList.add('err');
+    txt.textContent = 'Reconnecting…';
+  }
+}
+
+function escapeHtml(s){
+  if(!s) return '';
+  return String(s).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+
+function renderOrder(o, lane){
+  var typeBadge = o.orderType === 'delivery'
+    ? '<span class="o-type delivery">🛵 Delivery</span>'
+    : '<span class="o-type">🏃 Pickup</span>';
+  var itemsHtml = (o.items || []).map(function(it){
+    var flv = it.flavor ? '<span class="o-item-flv">' + escapeHtml(it.flavor) + '</span>' : '';
+    return '<div class="o-item">'+
+      '<div class="o-item-name">' + escapeHtml(it.name) + flv + '</div>'+
+      '<div class="o-item-qty">×' + (it.qty || 1) + '</div>'+
+    '</div>';
+  }).join('');
+  var custNote = o.notes && o.notes.trim()
+    ? '<div class="o-customer-note">📝 ' + escapeHtml(o.notes) + '</div>'
+    : '';
+  var addr = o.orderType === 'delivery' && o.address
+    ? ' · ' + escapeHtml(o.address)
+    : '';
+  var phone = o.phone ? ' · ' + escapeHtml(o.phone) : '';
+  var btns;
+  if(lane === 'pending'){
+    btns = '<div class="o-btns">'+
+      '<button class="btn btn-ack" onclick="moveToProgress(\''+o.id+'\')">✓ Acknowledge</button>'+
+      '<button class="btn btn-ready" onclick="markReady(\''+o.id+'\')">🔥 Ready</button>'+
+    '</div>';
+  } else {
+    btns = '<div class="o-btns single">'+
+      '<button class="btn btn-done" onclick="completeOrder(\''+o.id+'\')">✓ Complete & Hand Off</button>'+
+    '</div>';
+  }
+  return '<div class="order ' + lane + '" data-id="' + o.id + '">'+
+    '<div class="o-row1"><div class="o-num">' + escapeHtml(o.orderNum) + '</div>' + typeBadge + '</div>'+
+    '<div class="o-cust">' + escapeHtml(o.customer || 'Customer') + '</div>'+
+    '<div class="o-meta">' + (o.timeAgo || 'Just now') + phone + addr + '</div>'+
+    custNote +
+    '<div class="o-items">' + itemsHtml + '</div>' +
+    btns +
+  '</div>';
+}
+
+function render(){
+  var pendingBody = document.getElementById('pending-body');
+  var progressBody = document.getElementById('progress-body');
+  document.getElementById('pending-count').textContent = pendingOrders.length;
+  document.getElementById('progress-count').textContent = progressOrders.length;
+  if(pendingOrders.length === 0){
+    pendingBody.innerHTML = '<div class="empty">No new orders. Wait for the chime.</div>';
+  } else {
+    pendingBody.innerHTML = pendingOrders.map(function(o){return renderOrder(o, 'pending');}).join('');
+  }
+  if(progressOrders.length === 0){
+    progressBody.innerHTML = '<div class="empty">No orders in progress</div>';
+  } else {
+    progressBody.innerHTML = progressOrders.map(function(o){return renderOrder(o, 'progress');}).join('');
+  }
+}
+
+// ============================================================
+// ORDER ACTIONS
+// ============================================================
+async function moveToProgress(id){
+  stopBellLoop();
+  await fetch(API_BASE + '/api/kitchen/order/' + id + '/status', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({status:'progress', loc:LOCATION, pw:PASSWORD})
+  });
+  fetchOrders();
+}
+
+async function markReady(id){
+  stopBellLoop();
+  await fetch(API_BASE + '/api/kitchen/order/' + id + '/status', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({status:'progress', loc:LOCATION, pw:PASSWORD})
+  });
+  fetchOrders();
+}
+
+async function completeOrder(id){
+  await fetch(API_BASE + '/api/kitchen/order/' + id + '/status', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({status:'complete', loc:LOCATION, pw:PASSWORD})
+  });
+  fetchOrders();
+}
+
+function acknowledgeFirst(){
+  if(pendingOrders.length > 0){
+    moveToProgress(pendingOrders[0].id);
+  } else {
+    stopBellLoop();
+  }
+}
+
+// Wake-lock to keep tablet screen from sleeping (best-effort, may not work on all browsers)
+async function keepAwake(){
+  try{
+    if('wakeLock' in navigator){
+      await navigator.wakeLock.request('screen');
+    }
+  }catch(e){}
+}
+document.addEventListener('visibilitychange', function(){
+  if(!document.hidden) keepAwake();
+});
+keepAwake();
+</script>
+</body>
+</html>
