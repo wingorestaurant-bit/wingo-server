@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Which Sauce Boss Pick Are You?</title>
 <style>
@@ -27,44 +28,13 @@
     position: relative;
   }
 
-  /* ===== SCROLL BANNER HEADER (like the poster) ===== */
+  /* SCROLL BANNER HEADER */
   .scroll-banner {
     position: relative;
     background: #3a2817;
     padding: 12px 8px 16px;
     margin: 0 -8px 0;
     border-radius: 4px 4px 0 0;
-  }
-
-  .scroll-banner::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image:
-      radial-gradient(circle at 10% 30%, rgba(201, 74, 29, 0.15) 2px, transparent 3px),
-      radial-gradient(circle at 30% 60%, rgba(232, 168, 120, 0.2) 2px, transparent 3px),
-      radial-gradient(circle at 60% 20%, rgba(201, 74, 29, 0.12) 2px, transparent 3px),
-      radial-gradient(circle at 80% 70%, rgba(232, 168, 120, 0.15) 2px, transparent 3px),
-      radial-gradient(circle at 50% 85%, rgba(201, 74, 29, 0.1) 2px, transparent 3px);
-    opacity: 0.8;
-    pointer-events: none;
-  }
-
-  .banner-icons {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    opacity: 0.25;
-    pointer-events: none;
-    overflow: hidden;
-  }
-
-  .banner-icons span {
-    font-size: 18px;
-    color: #e8a878;
-    transform: rotate(-15deg);
   }
 
   .banner-content {
@@ -149,14 +119,13 @@
     flex-shrink: 0;
   }
 
-  /* ===== AGED PAPER CARD ===== */
+  /* AGED PAPER CARD */
   .card {
     background: #ede0c4;
     background-image:
       radial-gradient(ellipse at 10% 10%, rgba(101, 67, 33, 0.08) 0%, transparent 30%),
       radial-gradient(ellipse at 90% 90%, rgba(101, 67, 33, 0.08) 0%, transparent 30%),
-      radial-gradient(ellipse at 50% 50%, rgba(139, 90, 60, 0.04) 0%, transparent 60%),
-      repeating-linear-gradient(45deg, transparent 0, transparent 10px, rgba(101, 67, 33, 0.02) 10px, rgba(101, 67, 33, 0.02) 11px);
+      radial-gradient(ellipse at 50% 50%, rgba(139, 90, 60, 0.04) 0%, transparent 60%);
     border: 2px solid #3a2817;
     border-top: none;
     padding: 20px 18px 24px;
@@ -164,19 +133,7 @@
     box-shadow: 0 8px 20px rgba(60, 40, 20, 0.3);
   }
 
-  /* Paper curl corners */
-  .card::before, .card::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    width: 30px; height: 20px;
-    background: linear-gradient(135deg, transparent 40%, #c4b890 45%, #d4c8a0 55%, transparent 60%);
-    pointer-events: none;
-  }
-  .card::before { left: 0; transform: scaleX(-1); }
-  .card::after { right: 0; }
-
-  /* ===== INTRO SCREEN ===== */
+  /* INTRO SCREEN */
   .hero-avatar-wrap {
     text-align: center;
     position: relative;
@@ -282,7 +239,7 @@
     background: #5a4a3a;
   }
 
-  /* ===== BUTTONS ===== */
+  /* BUTTONS */
   .btn {
     display: block;
     width: 100%;
@@ -322,11 +279,7 @@
     transition: transform 0.2s;
   }
 
-  .btn:hover .arrow {
-    transform: translateX(4px);
-  }
-
-  /* ===== JOURNEY ROAD PROGRESS ===== */
+  /* JOURNEY ROAD */
   .journey-header {
     display: flex;
     align-items: center;
@@ -407,7 +360,7 @@
     z-index: 1;
   }
 
-  /* ===== QUESTION CARD ===== */
+  /* QUESTION CARD */
   .chapter-mark {
     text-align: center;
     font-family: 'Special Elite', monospace;
@@ -417,16 +370,6 @@
     text-transform: uppercase;
     margin-bottom: 4px;
     position: relative;
-  }
-
-  .chapter-mark::before, .chapter-mark::after {
-    content: '';
-    display: inline-block;
-    width: 30px;
-    height: 1px;
-    background: #8a7a5a;
-    vertical-align: middle;
-    margin: 0 8px;
   }
 
   .question-text {
@@ -454,17 +397,6 @@
     line-height: 1.5;
     color: #5a4a3a;
     font-style: italic;
-  }
-
-  .result-boss-avatar {
-    width: 60px;
-    height: 70px;
-    flex-shrink: 0;
-    background: #fff5e0;
-    border-radius: 4px;
-    padding: 3px;
-    border: 2px solid #c94a1d;
-    object-fit: contain;
   }
 
   .sauce-boss-mini {
@@ -528,7 +460,7 @@
     border: 2px solid #2a2520;
   }
 
-  /* ===== RESULT SCREEN (newspaper front page) ===== */
+  /* RESULT SCREEN */
   .newspaper-masthead {
     text-align: center;
     border-top: 4px double #2a2520;
@@ -610,6 +542,17 @@
     align-items: flex-start;
   }
 
+  .result-boss-avatar {
+    width: 60px;
+    height: 70px;
+    flex-shrink: 0;
+    background: #fff5e0;
+    border-radius: 4px;
+    padding: 3px;
+    border: 2px solid #c94a1d;
+    object-fit: contain;
+  }
+
   .result-boss-text {
     font-family: 'Special Elite', monospace;
     font-size: 12px;
@@ -627,40 +570,73 @@
     margin-bottom: 4px;
   }
 
-  .result-item-box {
+  /* SAUCE FAMILY BOX */
+  .sauce-family-box {
     background: #fff5e0;
     border: 2px solid #2a2520;
-    padding: 10px 12px;
+    padding: 14px;
     text-align: center;
     margin-bottom: 14px;
+    box-shadow: 3px 3px 0 rgba(0,0,0,0.1);
   }
 
-  .result-item-label {
+  .sauce-family-label {
     font-family: 'Special Elite', monospace;
     font-size: 9px;
     letter-spacing: 2px;
     color: #5a4a3a;
     text-transform: uppercase;
-    margin-bottom: 3px;
+    margin-bottom: 4px;
   }
 
-  .result-item {
+  .sauce-family-name {
     font-family: 'Anton', sans-serif;
-    font-size: 18px;
-    letter-spacing: 1px;
-    color: #2a2520;
-    line-height: 1.1;
+    font-size: 22px;
+    letter-spacing: 2px;
+    color: #c94a1d;
+    line-height: 1;
+    margin-bottom: 10px;
   }
 
-  .result-item-price {
-    display: inline-block;
+  .sauce-family-divider {
+    width: 40px;
+    height: 2px;
     background: #c94a1d;
-    color: #fff5e0;
-    padding: 2px 8px;
+    margin: 0 auto 10px;
+  }
+
+  .sauce-list-title {
     font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: #5a4a3a;
+    margin-bottom: 8px;
+  }
+
+  .sauce-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .sauce-list li {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 600;
     font-size: 14px;
-    letter-spacing: 1px;
-    margin-top: 4px;
+    color: #2a2520;
+    padding: 6px 8px;
+    background: #f5ecd0;
+    border: 1px solid #c4b890;
+    margin-bottom: 4px;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .sauce-flame {
+    color: #c94a1d;
+    font-size: 12px;
   }
 
   .result-desc {
@@ -683,7 +659,6 @@
     color: #c94a1d;
   }
 
-  /* Match strength meter */
   .match-meter {
     margin-bottom: 14px;
   }
@@ -781,33 +756,14 @@
     margin-top: 6px;
   }
 
-  /* ===== PRAIRIE FOOTER ===== */
-  .prairie-scene {
-    position: relative;
-    height: 60px;
-    margin: 14px -4px 0;
-    background: #ede0c4;
-    border-top: 1.5px solid #8a7a5a;
-    overflow: hidden;
-  }
-
-  .prairie-ground {
-    position: absolute;
-    bottom: 0;
-    left: 0; right: 0;
-    height: 14px;
-    background-image: repeating-linear-gradient(90deg, #8a7a5a 0, #8a7a5a 2px, transparent 2px, transparent 6px);
-    opacity: 0.4;
-  }
-
-  /* Ticker tape */
+  /* TICKER */
   .ticker {
     background: #2a2520;
     color: #e8a878;
     padding: 8px 0;
     overflow: hidden;
     position: relative;
-    margin: 0 -4px;
+    margin: 14px -4px 0;
     border-top: 2px solid #c94a1d;
     border-bottom: 2px solid #c94a1d;
   }
@@ -815,7 +771,7 @@
   .ticker-content {
     display: flex;
     gap: 28px;
-    animation: ticker 28s linear infinite;
+    animation: ticker 30s linear infinite;
     white-space: nowrap;
     font-family: 'Bebas Neue', sans-serif;
     font-size: 13px;
@@ -829,7 +785,7 @@
   }
 
   .ticker-content span::after {
-    content: 'â';
+    content: '*';
     color: #c94a1d;
     margin-left: 22px;
   }
@@ -852,7 +808,7 @@
     border-top: 1px solid #8a7a5a;
   }
 
-  /* ===== ANIMATIONS ===== */
+  /* ANIMATIONS */
   .screen {
     animation: fadeIn 0.4s ease;
   }
@@ -881,6 +837,137 @@
     animation: slamIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
+  /* === FEATURE 3: ANIMATED SAUCE DRIPS === */
+  .sauce-drips {
+    position: absolute;
+    top: -2px;
+    left: 0;
+    right: 0;
+    height: 0;
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  .drip {
+    position: absolute;
+    top: 0;
+    width: 16px;
+    background: linear-gradient(180deg, #c94a1d 0%, #a03515 70%, #7a2510 100%);
+    border-radius: 0 0 50% 50% / 0 0 30% 30%;
+    box-shadow: inset -3px 0 4px rgba(0,0,0,0.25), 1px 2px 3px rgba(0,0,0,0.2);
+    transform-origin: top center;
+    height: 0;
+    animation: dripFall 2.4s cubic-bezier(0.55, 0.05, 0.4, 1) forwards;
+  }
+
+  .drip::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%) scale(0);
+    width: 18px;
+    height: 18px;
+    background: radial-gradient(circle at 35% 30%, #d95828 0%, #c94a1d 50%, #8a2c10 100%);
+    border-radius: 50%;
+    box-shadow: 1px 2px 3px rgba(0,0,0,0.3);
+    animation: dripBlob 2.4s ease-out forwards;
+  }
+
+  /* shine highlight on drip */
+  .drip::before {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 3px;
+    width: 3px;
+    height: 60%;
+    background: rgba(255, 200, 170, 0.4);
+    border-radius: 2px;
+    animation: dripShine 2.4s ease-out forwards;
+  }
+
+  @keyframes dripFall {
+    0% { height: 0; }
+    25% { height: 18px; }
+    55% { height: 38px; }
+    85% { height: 55px; }
+    100% { height: 62px; }
+  }
+
+  @keyframes dripBlob {
+    0%, 60% { transform: translateX(-50%) scale(0); opacity: 0; }
+    78% { transform: translateX(-50%) scale(1.15); opacity: 1; }
+    100% { transform: translateX(-50%) scale(1); opacity: 1; }
+  }
+
+  @keyframes dripShine {
+    0% { opacity: 0; }
+    40% { opacity: 0.5; }
+    100% { opacity: 0.3; }
+  }
+
+  /* === FEATURE 2: ORDER NOW BUTTON === */
+  .btn-order {
+    background: #2a2520;
+    color: #fff5e0;
+    border: 2px solid #c94a1d;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 3px;
+    padding: 14px;
+    cursor: pointer;
+    text-transform: uppercase;
+    box-shadow: 4px 4px 0 #c94a1d;
+    transition: all 0.12s;
+    margin-bottom: 10px;
+    width: 100%;
+    display: block;
+    text-decoration: none;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-order::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(232, 168, 120, 0.3), transparent);
+    transition: left 0.6s;
+  }
+
+  .btn-order:hover::before {
+    left: 100%;
+  }
+
+  .btn-order:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 #c94a1d;
+    background: #3a2817;
+  }
+
+  .btn-order:active {
+    transform: translate(4px, 4px);
+    box-shadow: 0 0 0 #c94a1d;
+  }
+
+  .btn-order .order-icon {
+    display: inline-block;
+    margin-right: 6px;
+    color: #c94a1d;
+    font-size: 18px;
+  }
+
+  .btn-order .sauce-name {
+    color: #e8a878;
+    font-style: italic;
+    letter-spacing: 1px;
+  }
+
   .hidden { display: none; }
 
   @media (max-width: 380px) {
@@ -888,53 +975,37 @@
     .intro-title em { font-size: 34px; }
     .hero-avatar { width: 150px; }
     .question-text { font-size: 20px; }
-    .result-title { font-size: 32px; }
+    .result-title { font-size: 30px; }
     .logo-title { font-size: 24px; }
     .masthead-title { font-size: 22px; }
+    .sauce-family-name { font-size: 18px; }
   }
 </style>
 </head>
 <body>
 
-<!-- REUSABLE SAUCE BOSS AVATAR - uses uploaded PNG -->
-<!-- NOTE: For production deployment, host sauce-boss.png on wingorestaurants.com and replace the src below with https://wingorestaurants.com/sauce-boss.png -->
+<!-- Rooster SVG -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
-    <symbol id="sauce-boss-avatar" viewBox="0 0 200 220">
-      <!-- Fallback SVG silhouette used only if image fails to load -->
-      <rect width="200" height="220" fill="#1a1510"/>
-      <text x="100" y="115" text-anchor="middle" font-family="Anton, sans-serif" font-size="24" font-weight="900" fill="#c94a1d">SAUCE</text>
-      <text x="100" y="140" text-anchor="middle" font-family="Anton, sans-serif" font-size="24" font-weight="900" fill="#c94a1d">BOSS</text>
-    </symbol>
-
-    <!-- Rooster silhouette -->
     <symbol id="rooster" viewBox="0 0 100 100">
-      <path d="M 50 85 L 48 75 Q 45 68 48 60 L 42 55 Q 35 52 32 45 Q 30 38 35 32 Q 32 28 34 24 Q 38 20 42 22 L 45 18 Q 50 14 55 18 Q 58 14 62 18 L 60 22 Q 65 24 65 28 L 62 30 Q 60 34 58 36 L 60 42 Q 65 48 68 55 Q 72 62 70 70 L 75 72 Q 80 74 82 78 L 78 80 L 75 82 L 70 80 L 65 82 L 60 80 L 55 85 Z"
-            fill="#2a2520"/>
+      <path d="M 50 85 L 48 75 Q 45 68 48 60 L 42 55 Q 35 52 32 45 Q 30 38 35 32 Q 32 28 34 24 Q 38 20 42 22 L 45 18 Q 50 14 55 18 Q 58 14 62 18 L 60 22 Q 65 24 65 28 L 62 30 Q 60 34 58 36 L 60 42 Q 65 48 68 55 Q 72 62 70 70 L 75 72 Q 80 74 82 78 L 78 80 L 75 82 L 70 80 L 65 82 L 60 80 L 55 85 Z" fill="#2a2520"/>
       <path d="M 42 22 Q 38 15 42 10 Q 45 15 48 18" fill="#c94a1d"/>
       <circle cx="50" cy="26" r="1.5" fill="#fff5e0"/>
-      <path d="M 55 32 L 58 36 L 54 38 Z" fill="#c94a1d"/>
-      <path d="M 70 70 L 78 74 L 82 80 L 85 78 L 88 82 L 82 85 L 76 82 L 72 78 Z" fill="#2a2520"/>
-      <path d="M 50 85 L 48 92 L 52 92 Z M 55 85 L 58 92 L 54 92 Z" fill="#2a2520"/>
     </symbol>
   </defs>
 </svg>
 
 <div class="app">
 
-  <!-- ===== INTRO SCREEN ===== -->
+  <!-- INTRO SCREEN -->
   <div id="screen-intro" class="screen">
-    <!-- Scroll banner header -->
     <div class="scroll-banner">
-      <div class="banner-icons">
-        <span>ð¶</span><span>ð</span><span>ð¶</span><span>ð</span><span>ð¶</span><span>ð</span><span>ð¶</span>
-      </div>
       <div class="banner-content">
         <img class="corner-avatar" src="https://wingorestaurants.com/images/sauce-boss.png" alt="Sauce Boss" onerror="this.style.display='none'">
         <div class="banner-scroll">
-          <div class="logo-title">WING-O<span class="flame">ð¥</span></div>
-          <div class="logo-sub">- More Than Wings -</div>
-          <div class="logo-main">THE QUIZ</div>
+          <div class="logo-title">WING-O <span class="flame">&#x1F525;</span></div>
+          <div class="logo-sub">~ More Than Wings ~</div>
+          <div class="logo-main">THE FLAVOUR QUIZ</div>
         </div>
         <svg class="corner-rooster" viewBox="0 0 100 100"><use href="#rooster"/></svg>
       </div>
@@ -946,22 +1017,22 @@
       </div>
 
       <div class="speech-bubble">
-        "Every sauce tells a story, friend.<br>
-        Pull up a stool â let's find out which one is <strong>yours</strong>."<br>
-        <span style="font-size:10px; color:#c94a1d; letter-spacing:1px;">â THE SAUCE BOSS</span>
+        "125 sauces. 7 personalities.<br>
+        Pull up a stool, friend ~ let's find out which flavour family you really belong to."<br>
+        <span style="font-size:10px; color:#c94a1d; letter-spacing:1px;">~ THE SAUCE BOSS</span>
       </div>
 
       <div class="intro-title">WHICH<em>SAUCE BOSS PICK</em>ARE YOU?</div>
 
       <div class="intro-sub">
-        Six questions. One flavor destiny.<br>
+        Six questions. One flavour destiny.<br>
         Straight from the prairie to your plate.
       </div>
 
       <div class="intro-stats">
         <div class="stat">
           <div class="stat-num">125+</div>
-          <div class="stat-label">Flavors</div>
+          <div class="stat-label">Flavours</div>
         </div>
         <div class="stat-divider"></div>
         <div class="stat">
@@ -970,35 +1041,35 @@
         </div>
         <div class="stat-divider"></div>
         <div class="stat">
-          <div class="stat-num">6</div>
-          <div class="stat-label">Picks</div>
+          <div class="stat-num">7</div>
+          <div class="stat-label">Sauce Tribes</div>
         </div>
       </div>
 
-      <button class="btn" onclick="startQuiz()">Begin The Journey <span class="arrow">â</span></button>
+      <button class="btn" onclick="startQuiz()">Begin The Journey <span class="arrow">&rarr;</span></button>
 
       <div style="text-align:center; font-family:'Special Elite',monospace; font-size:10px; letter-spacing:2px; color:#5a4a3a; margin-top:6px;">
-        Â· TAKES 60 SECONDS Â· REGINA MADE Â·
+        ~ TAKES 60 SECONDS ~ REGINA MADE ~
       </div>
     </div>
 
     <div class="ticker">
       <div class="ticker-content">
-        <span>EST. 2024</span><span>125+ FLAVORS</span><span>REGINA MADE</span><span>SAUCE BOSS APPROVED</span>
-        <span>EST. 2024</span><span>125+ FLAVORS</span><span>REGINA MADE</span><span>SAUCE BOSS APPROVED</span>
+        <span>EST. 2024</span><span>125+ FLAVOURS</span><span>REGINA MADE</span><span>SAUCE BOSS APPROVED</span>
+        <span>EST. 2024</span><span>125+ FLAVOURS</span><span>REGINA MADE</span><span>SAUCE BOSS APPROVED</span>
       </div>
     </div>
-    <div class="footer-credit">WINGORESTAURANTS.COM Â· ALBERT ST Â· ROCHDALE Â· EAST REGINA Â· MOOSE JAW Â· REGINA BEACH</div>
+    <div class="footer-credit">WINGORESTAURANTS.COM ~ ALBERT ST ~ ROCHDALE ~ EAST REGINA ~ MOOSE JAW ~ REGINA BEACH</div>
   </div>
 
-  <!-- ===== QUIZ SCREEN ===== -->
+  <!-- QUIZ SCREEN -->
   <div id="screen-quiz" class="screen hidden">
     <div class="scroll-banner">
       <div class="banner-content">
         <img class="corner-avatar" src="https://wingorestaurants.com/images/sauce-boss.png" alt="Sauce Boss" onerror="this.style.display='none'">
         <div class="banner-scroll">
           <div class="logo-title" style="font-size:22px;">SAUCE BOSS</div>
-          <div class="logo-sub">- On The Road -</div>
+          <div class="logo-sub">~ On The Road ~</div>
           <div class="logo-main" style="font-size:14px;">THE JOURNEY</div>
         </div>
         <svg class="corner-rooster" viewBox="0 0 100 100"><use href="#rooster"/></svg>
@@ -1013,13 +1084,13 @@
 
       <div class="road-wrap">
         <div class="road"></div>
-        <div class="road-flag">â</div>
+        <div class="road-flag">&#x2691;</div>
         <div class="road-traveler" id="road-traveler" style="left:8%">
           <span id="traveler-num">1</span>
         </div>
       </div>
 
-      <div class="chapter-mark" id="chapter-mark">CHAPTER ONE</div>
+      <div class="chapter-mark" id="chapter-mark">~ CHAPTER ONE ~</div>
       <div class="question-text" id="question-text"></div>
 
       <div class="sauce-boss-quote">
@@ -1032,41 +1103,44 @@
 
     <div class="ticker">
       <div class="ticker-content">
-        <span>STAY SAUCY</span><span>REGINA STRONG</span><span>125+ FLAVORS</span><span>WINGO FOREVER</span>
-        <span>STAY SAUCY</span><span>REGINA STRONG</span><span>125+ FLAVORS</span><span>WINGO FOREVER</span>
+        <span>STAY SAUCY</span><span>REGINA STRONG</span><span>125+ FLAVOURS</span><span>WINGO FOREVER</span>
+        <span>STAY SAUCY</span><span>REGINA STRONG</span><span>125+ FLAVOURS</span><span>WINGO FOREVER</span>
       </div>
     </div>
-    <div class="footer-credit">Â· THE SAUCE BOSS IS WATCHING Â·</div>
+    <div class="footer-credit">~ THE SAUCE BOSS IS WATCHING ~</div>
   </div>
 
-  <!-- ===== RESULT SCREEN ===== -->
+  <!-- RESULT SCREEN -->
   <div id="screen-result" class="screen hidden">
     <div class="scroll-banner">
       <div class="banner-content">
         <img class="corner-avatar" src="https://wingorestaurants.com/images/sauce-boss.png" alt="Sauce Boss" onerror="this.style.display='none'">
         <div class="banner-scroll">
           <div class="logo-title" style="font-size:22px;">VERDICT IN</div>
-          <div class="logo-sub">- Special Edition -</div>
+          <div class="logo-sub">~ Special Edition ~</div>
           <div class="logo-main" style="font-size:14px;">THE GAZETTE</div>
         </div>
         <svg class="corner-rooster" viewBox="0 0 100 100"><use href="#rooster"/></svg>
       </div>
     </div>
 
-    <div class="card">
+    <div class="card" style="position:relative; overflow:visible;">
+      <!-- FEATURE 3: Sauce drips container -->
+      <div class="sauce-drips" id="sauce-drips"></div>
+
       <div class="newspaper-masthead">
-        <div class="masthead-top">Â· The Saucy Gazette Â·</div>
-        <div class="masthead-title">YOUR MATCH</div>
+        <div class="masthead-top">~ The Saucy Gazette ~</div>
+        <div class="masthead-title">YOUR FLAVOUR TRIBE</div>
         <div class="masthead-bottom">
           <span>Vol. 1, No. 1</span>
-          <span id="result-date">REGINA Â· TODAY</span>
-          <span>25Â¢</span>
+          <span>REGINA ~ TODAY</span>
+          <span>25 cents</span>
         </div>
       </div>
 
-      <div class="result-headline-kicker">â EXCLUSIVE REPORT â</div>
+      <div class="result-headline-kicker">* EXCLUSIVE REPORT *</div>
       <div class="result-title slam-in" id="result-title"></div>
-      <div class="result-byline" id="result-byline">AS DECLARED BY THE SAUCE BOSS HIMSELF</div>
+      <div class="result-byline">AS DECLARED BY THE SAUCE BOSS HIMSELF</div>
 
       <div class="result-boss-quote">
         <img class="result-boss-avatar" src="https://wingorestaurants.com/images/sauce-boss.png" alt="Sauce Boss" onerror="this.style.display='none'">
@@ -1076,17 +1150,19 @@
         </div>
       </div>
 
-      <div class="result-item-box">
-        <div class="result-item-label">Â· Your Order Â·</div>
-        <div class="result-item" id="result-item-name"></div>
-        <div class="result-item-price" id="result-item-price"></div>
+      <div class="sauce-family-box">
+        <div class="sauce-family-label">~ Your Sauce Family ~</div>
+        <div class="sauce-family-name" id="sauce-family-name"></div>
+        <div class="sauce-family-divider"></div>
+        <div class="sauce-list-title">SIGNATURE SAUCES TO TRY</div>
+        <ul class="sauce-list" id="sauce-list"></ul>
       </div>
 
       <div class="result-desc" id="result-desc"></div>
 
       <div class="match-meter">
         <div class="match-meter-label">
-          <span>MATCH STRENGTH</span>
+          <span>FLAVOUR MATCH STRENGTH</span>
           <span id="match-percent">0%</span>
         </div>
         <div class="match-meter-bar">
@@ -1095,7 +1171,7 @@
       </div>
 
       <div class="traits">
-        <div class="traits-title">Â· YOUR FLAVOR PROFILE Â·</div>
+        <div class="traits-title">~ YOUR PERSONALITY PROFILE ~</div>
         <div class="traits-list" id="result-traits"></div>
       </div>
 
@@ -1103,81 +1179,93 @@
         <div class="share-box-title">SPREAD THE SAUCE</div>
         <div class="share-box-text">
           Screenshot this page. Post it. Tag us.<br>
-          Show Regina who you really are.
+          Order your match at WingO and we will repost!
         </div>
-        <div class="share-box-tag">@WINGORESTAURANTS Â· #SAUCEBOSSPICK</div>
+        <div class="share-box-tag">@WINGORESTAURANTS ~ #SAUCEBOSSPICK</div>
       </div>
 
-      <button class="btn" onclick="shareResult()">Share My Verdict <span class="arrow">â</span></button>
-      <button class="btn btn-secondary" onclick="restart()">Take It Again â»</button>
+      <!-- FEATURE 2: Order this sauce now button -->
+      <a class="btn-order" id="order-btn" href="#" target="_blank" rel="noopener">
+        <span class="order-icon">&#x1F525;</span>ORDER <span class="sauce-name" id="order-sauce-name">YOURS</span> NOW
+      </a>
+
+      <button class="btn" onclick="shareResult()">Share My Verdict</button>
+      <button class="btn btn-secondary" onclick="restart()">Take It Again</button>
 
       <div style="text-align:center; font-family:'Special Elite',monospace; font-size:10px; letter-spacing:2px; color:#5a4a3a; margin-top:10px;">
-        Â· ORDER YOURS AT WINGORESTAURANTS.COM Â·
+        ~ ORDER YOURS AT WINGORESTAURANTS.COM ~
       </div>
     </div>
 
     <div class="ticker">
       <div class="ticker-content">
-        <span>â SAUCE BOSS APPROVED â</span><span>REGINA Â· MOOSE JAW Â· REGINA BEACH Â· WINNIPEG SOON</span><span>COMMUNITY FIRST</span>
-        <span>â SAUCE BOSS APPROVED â</span><span>REGINA Â· MOOSE JAW Â· REGINA BEACH Â· WINNIPEG SOON</span><span>COMMUNITY FIRST</span>
+        <span>* SAUCE BOSS APPROVED *</span><span>REGINA ~ MOOSE JAW ~ REGINA BEACH ~ WINNIPEG SOON</span><span>COMMUNITY FIRST</span>
+        <span>* SAUCE BOSS APPROVED *</span><span>REGINA ~ MOOSE JAW ~ REGINA BEACH ~ WINNIPEG SOON</span><span>COMMUNITY FIRST</span>
       </div>
     </div>
-    <div class="footer-credit">WING-O Â· MORE THAN WINGS Â· EST. 2024</div>
+    <div class="footer-credit">WING-O ~ MORE THAN WINGS ~ EST. 2024</div>
   </div>
 
 </div>
 
 <script>
-  // ===== QUIZ DATA =====
-
-  const picks = {
-    toughGuy: {
+  // 7 SAUCE BOSS FLAVOUR TRIBES
+  const tribes = {
+    fireBreather: {
       title: "THE FIRE BREATHER",
-      itemName: "THE TOUGH GUY BURGER",
-      itemPrice: "$21.99",
-      desc: "You don't flinch. You don't water it down. You ordered the Carolina Reaper special and you're already asking what's hotter. The Sauce Boss salutes you â and maybe fears you a little.",
-      verdict: "This one's built different. Handed them the Reaper and they smiled. Respect.",
+      family: "HOT AS HELL",
+      sauces: ["Dead Angel", "Spicy Mammilla", "Tropical Temptation"],
+      desc: "You don't flinch. You don't water it down. The Carolina Reaper is your love language and you wear pain like cologne. The Sauce Boss salutes you ~ and maybe fears you a little.",
+      verdict: "Built different. Asks for hotter. Cries with a smile. Respect.",
       traits: ["Fearless", "Bold", "Unfiltered", "Pure Fire"]
     },
-    buffalo: {
-      title: "THE PRAIRIE REBEL",
-      itemName: "BUFFALO STAMPEDE BURGER",
-      itemPrice: "$21.99",
-      desc: "House buffalo, creamy slaw, a chicken patty with attitude. You're loud, loyal, and a little bit wild â the one holding it down at every Rider tailgate. Regina runs through you.",
-      verdict: "Loud, loyal, born of the prairie. You don't follow trends â trends follow you.",
-      traits: ["Loyal", "Loud", "Local", "All Heart"]
+    bbqBaron: {
+      title: "THE BBQ BARON",
+      family: "BBQ INTIMACY",
+      sauces: ["Forty Creek BBQ", "Sapphire Smoke", "Maple Meltdown"],
+      desc: "Smoky, classic, deep. You don't chase trends ~ you ARE the trend. Backyard king, summer royalty, the one who owns the grill at every cookout. Substance over flash, every time.",
+      verdict: "Old soul, deep flavour. You taught the rest of us what real BBQ tastes like.",
+      traits: ["Classic", "Deep", "Smoky", "Reliable"]
     },
-    chickenPoutine: {
-      title: "THE FLAVOR CHASER",
-      itemName: "CHICKEN POUTINE",
-      itemPrice: "$14.99",
-      desc: "Cheese curds, gravy, juicy chicken, and that sweet & spicy Thai kiss on top. You live for the plot twist. Comfort food is great â comfort food with a secret weapon is your love language.",
-      verdict: "You chase the twist, the surprise, the 'what-if.' That's how great flavors are born.",
-      traits: ["Curious", "Playful", "Adventurous", "Saucy"]
+    saucyRomantic: {
+      title: "THE SAUCY ROMANTIC",
+      family: "ILLEGAL SAUCES",
+      sauces: ["Honeyaki Harmony", "Tour of Italy", "Creamy Bliss"],
+      desc: "You don't pick one ~ you pick THREE and let them dance. Mixer, blender, flavour matchmaker. You see possibility where others see boundaries. Forbidden combos? You wrote the book.",
+      verdict: "You break every rule and somehow make it taste better. That's an art form.",
+      traits: ["Adventurous", "Creative", "Bold Mixer", "Romantic"]
     },
-    hotNHeavy: {
-      title: "THE RIDE OR DIE",
-      itemName: "HOT 'N' HEAVY",
-      itemPrice: "$29.99",
-      desc: "Three pounds of fries. A pound of curds. A pound of gravy. You don't do half-measures. When you show up, you SHOW UP â and you bring the whole crew with you.",
-      verdict: "You're the one everybody calls when it's time to eat. Big heart, bigger appetite.",
-      traits: ["Generous", "Committed", "Big Energy", "Crew Goals"]
+    sweetRebel: {
+      title: "THE SWEET REBEL",
+      family: "SWEET MELODIOUS",
+      sauces: ["Apricot Honey", "Sweet & Spicy Thai", "Raspberry Pepper"],
+      desc: "Sweet on top, fire underneath. You charm everyone in the room then drop the heat when they least expect it. Velvet glove, iron fist. The kind of flavour that haunts you for days.",
+      verdict: "Sweet smile, dangerous heat. You're the plot twist in everyone's day.",
+      traits: ["Charming", "Sneaky", "Layered", "Unforgettable"]
     },
-    dillinator: {
-      title: "THE SMOOTH OPERATOR",
-      itemName: "THE DILLINATOR BURGER",
-      itemPrice: "$21.99",
-      desc: "Honey dill, crunchy pickle, melted Swiss. You're the one everyone trusts â calm, magnetic, and way more interesting than people realize. The Sauce Boss calls you a classic in the making.",
-      verdict: "Quiet fire. You don't need to shout â your flavor does the talking.",
-      traits: ["Charming", "Reliable", "Effortless", "Quiet Legend"]
+    dryGameLegend: {
+      title: "THE DRY GAME LEGEND",
+      family: "RUB IT",
+      sauces: ["Montreal Style", "Salt & Pepper", "Hot & Honey Dry"],
+      desc: "No mess. No drip. All flavour. You're the purist ~ the one who knows that real wing skill lives in the rub, not the sauce. Old school, sharp dressed, judges everyone else's wing technique silently.",
+      verdict: "You don't need sauce to make a statement. Pure flavour. Pure focus.",
+      traits: ["Pure", "Sharp", "No-Nonsense", "Old School"]
     },
-    kfc: {
-      title: "THE TRENDSETTER",
-      itemName: "KOREAN FRIED CHICKEN",
-      itemPrice: "$20.99",
-      desc: "Korean BBQ glaze, tangy pickles, crisp slaw on a toasted bun. You're two steps ahead of everyone else. You knew about it first, you told your friends, and now they owe you.",
-      verdict: "Always two steps ahead. By the time the rest catch up, you're already on the next thing.",
-      traits: ["Stylish", "Forward", "Cool", "Ahead Of Curve"]
+    flirt: {
+      title: "THE FLIRT",
+      family: "FLIRTY ONES",
+      sauces: ["Honey Garlic", "Buffalo Ranch", "Creamy Dill Pickle"],
+      desc: "Crowd pleaser. Heart winner. The one everyone's friends agree on. You bring people together ~ your favourite flavour is the one that ends arguments. Easy charm, wide appeal, secretly the smartest one in the room.",
+      verdict: "You're the friend everyone calls first. Easy on the heart, big on the flavour.",
+      traits: ["Charming", "Universal", "Smooth", "Magnetic"]
+    },
+    comboKing: {
+      title: "THE COMBO KING",
+      family: "SECOND ROUND",
+      sauces: ["Tangy Thai", "Cali Thai", "Sweet Grenade"],
+      desc: "One flavour? Amateur hour. You stack, you layer, you double up. The order is always 'extra' and the answer is always 'and also.' You don't choose ~ you collect. Maximum flavour, minimum compromise.",
+      verdict: "Why pick one? You taught us that more is more, and somehow, it works.",
+      traits: ["Maximalist", "Bold", "Stacked", "Curious"]
     }
   };
 
@@ -1190,71 +1278,288 @@
     "Last stop. Make it count."
   ];
 
+  // 6 QUESTIONS - each answer scores 2 to primary tribe, 1 to secondary
   const questions = [
     {
       q: "It's Friday night in Regina. What's the move?",
       answers: [
-        { text: "Bar crawl downtown â loud, late, zero regrets", primary: "buffalo", secondary: "hotNHeavy" },
-        { text: "House party with the whole crew â I'm bringing the snacks", primary: "hotNHeavy", secondary: "chickenPoutine" },
-        { text: "New restaurant opening â gotta check it first", primary: "kfc", secondary: "chickenPoutine" },
-        { text: "Quiet night in with my person. Candles optional.", primary: "dillinator", secondary: "toughGuy" }
+        { text: "Bar crawl downtown ~ loud, late, zero regrets", primary: "fireBreather", secondary: "comboKing" },
+        { text: "Backyard cookout with the whole crew", primary: "bbqBaron", secondary: "flirt" },
+        { text: "New restaurant opening ~ gotta try it first", primary: "saucyRomantic", secondary: "comboKing" },
+        { text: "Quiet patio night with my person, sun setting", primary: "sweetRebel", secondary: "flirt" }
       ]
     },
     {
       q: "Pick your sauce personality",
       answers: [
-        { text: "Reaper-level â if it doesn't hurt, it's wrong", primary: "toughGuy", secondary: "buffalo" },
-        { text: "Sweet & spicy Thai â keep 'em guessing", primary: "chickenPoutine", secondary: "kfc" },
-        { text: "Honey dill â creamy, calm, secretly the best", primary: "dillinator", secondary: "hotNHeavy" },
-        { text: "Buffalo classic â don't fix what ain't broken", primary: "buffalo", secondary: "toughGuy" }
+        { text: "Reaper-level ~ if it doesn't hurt, it's wrong", primary: "fireBreather", secondary: "saucyRomantic" },
+        { text: "Sweet & spicy Thai ~ keep them guessing", primary: "sweetRebel", secondary: "comboKing" },
+        { text: "Honey garlic ~ classic, magnetic, never wrong", primary: "flirt", secondary: "bbqBaron" },
+        { text: "Dry rub all day ~ no sauce, all skill", primary: "dryGameLegend", secondary: "bbqBaron" }
       ]
     },
     {
       q: "Someone asks what makes you you. You say...",
       answers: [
-        { text: "I go hard. All in, every time.", primary: "toughGuy", secondary: "hotNHeavy" },
-        { text: "I keep it real. No fakes, no filters.", primary: "buffalo", secondary: "dillinator" },
-        { text: "I'm always ahead of the trend", primary: "kfc", secondary: "chickenPoutine" },
-        { text: "I'm the one everybody calls", primary: "hotNHeavy", secondary: "buffalo" }
+        { text: "I go hard. All in, every time.", primary: "fireBreather", secondary: "comboKing" },
+        { text: "I keep it real. No fakes, no filters.", primary: "dryGameLegend", secondary: "bbqBaron" },
+        { text: "I'm always two steps ahead", primary: "saucyRomantic", secondary: "sweetRebel" },
+        { text: "I'm the one everybody calls", primary: "flirt", secondary: "bbqBaron" }
       ]
     },
     {
       q: "Your WingO order vibe?",
       answers: [
-        { text: "Solo mission. Me, a burger, peace.", primary: "dillinator", secondary: "toughGuy" },
-        { text: "Feeding the squad â platters only", primary: "hotNHeavy", secondary: "buffalo" },
-        { text: "Mixing it up â sauces I haven't tried yet", primary: "chickenPoutine", secondary: "kfc" },
-        { text: "Dare me with the hottest thing on the menu", primary: "toughGuy", secondary: "chickenPoutine" }
+        { text: "Solo mission. Just me and the wings.", primary: "dryGameLegend", secondary: "fireBreather" },
+        { text: "Feeding the whole squad ~ stack the platters", primary: "comboKing", secondary: "flirt" },
+        { text: "Mixing flavours I haven't tried yet", primary: "saucyRomantic", secondary: "sweetRebel" },
+        { text: "Dare me with the hottest thing on the menu", primary: "fireBreather", secondary: "saucyRomantic" }
       ]
     },
     {
       q: "Pick a Prairie power move",
       answers: [
-        { text: "Riders home game, face paint, all the way", primary: "buffalo", secondary: "hotNHeavy" },
-        { text: "Winter road trip, six friends, one playlist", primary: "hotNHeavy", secondary: "chickenPoutine" },
-        { text: "Summer patio hang, sunset, slow sipping", primary: "dillinator", secondary: "kfc" },
-        { text: "Finding the new spot before it blows up", primary: "kfc", secondary: "toughGuy" }
+        { text: "Riders home game, face paint, full sends", primary: "fireBreather", secondary: "flirt" },
+        { text: "Winter road trip with six friends, one playlist", primary: "comboKing", secondary: "flirt" },
+        { text: "Summer sunset patio, slow sipping", primary: "sweetRebel", secondary: "bbqBaron" },
+        { text: "Finding the new spot before it blows up", primary: "saucyRomantic", secondary: "sweetRebel" }
       ]
     },
     {
-      q: "Real talk â your heat tolerance?",
+      q: "Real talk ~ your heat tolerance?",
       answers: [
-        { text: "Bring it. I laugh at Carolina Reaper.", primary: "toughGuy", secondary: "buffalo" },
-        { text: "Medium-hot sweet spot. I live there.", primary: "chickenPoutine", secondary: "kfc" },
-        { text: "Gimme flavor first, heat second", primary: "dillinator", secondary: "kfc" },
-        { text: "Whatever my crew is having", primary: "hotNHeavy", secondary: "buffalo" }
+        { text: "Bring it. I laugh at Carolina Reaper.", primary: "fireBreather", secondary: "saucyRomantic" },
+        { text: "Medium-hot sweet spot. I live there.", primary: "sweetRebel", secondary: "flirt" },
+        { text: "Give me flavour first, heat second", primary: "bbqBaron", secondary: "dryGameLegend" },
+        { text: "Whatever the crew is having", primary: "flirt", secondary: "comboKing" }
       ]
     }
   ];
 
-  // ===== STATE =====
+  // STATE
   let currentQ = 0;
-  let scores = { toughGuy: 0, buffalo: 0, chickenPoutine: 0, hotNHeavy: 0, dillinator: 0, kfc: 0 };
+  let scores = {
+    fireBreather: 0, bbqBaron: 0, saucyRomantic: 0,
+    sweetRebel: 0, dryGameLegend: 0, flirt: 0, comboKing: 0
+  };
 
-  // ===== FUNCTIONS =====
+  // === FEATURE 1: WEB AUDIO API DRUMROLL + STING ===
+  let audioCtx = null;
+
+  function getAudioCtx() {
+    if (!audioCtx) {
+      try {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      } catch (e) {
+        return null;
+      }
+    }
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+    return audioCtx;
+  }
+
+  // Play a drumroll: rapid filtered noise bursts that crescendo
+  function playDrumroll(duration) {
+    const ctx = getAudioCtx();
+    if (!ctx) return;
+    const startTime = ctx.currentTime;
+
+    // Create noise buffer
+    const bufferSize = ctx.sampleRate * duration;
+    const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = noiseBuffer.getChannelData(0);
+
+    // Generate drumroll: rapid amplitude modulation on noise
+    // ~16 hits per second, accelerating slightly
+    for (let i = 0; i < bufferSize; i++) {
+      const t = i / ctx.sampleRate;
+      const progress = t / duration;
+      // Hit rate increases from 14 to 22 Hz across the roll
+      const hitRate = 14 + progress * 8;
+      const hitPhase = (t * hitRate) % 1;
+      // Sharp attack envelope per hit
+      const hitEnv = Math.exp(-hitPhase * 18);
+      // Overall crescendo
+      const crescendo = 0.3 + progress * 0.7;
+      // White noise
+      const noise = (Math.random() * 2 - 1);
+      data[i] = noise * hitEnv * crescendo * 0.5;
+    }
+
+    const source = ctx.createBufferSource();
+    source.buffer = noiseBuffer;
+
+    // Bandpass filter to make it sound like a snare/tom drumroll
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = 800;
+    filter.Q.value = 1.2;
+
+    // Highpass to remove rumble
+    const hp = ctx.createBiquadFilter();
+    hp.type = 'highpass';
+    hp.frequency.value = 200;
+
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.0, startTime);
+    gain.gain.linearRampToValueAtTime(0.35, startTime + 0.05);
+    gain.gain.linearRampToValueAtTime(0.55, startTime + duration - 0.05);
+    gain.gain.linearRampToValueAtTime(0.0, startTime + duration);
+
+    source.connect(filter);
+    filter.connect(hp);
+    hp.connect(gain);
+    gain.connect(ctx.destination);
+
+    source.start(startTime);
+    source.stop(startTime + duration);
+  }
+
+  // Play the sting: a triumphant brass-like chord stab + cymbal crash
+  function playSting(startOffset) {
+    const ctx = getAudioCtx();
+    if (!ctx) return;
+    const startTime = ctx.currentTime + startOffset;
+
+    // === Brass chord stab: C major triad (C5, E5, G5) ===
+    const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
+
+    notes.forEach(freq => {
+      // Sawtooth + square mix for brassy tone
+      const osc1 = ctx.createOscillator();
+      osc1.type = 'sawtooth';
+      osc1.frequency.value = freq;
+
+      const osc2 = ctx.createOscillator();
+      osc2.type = 'square';
+      osc2.frequency.value = freq;
+
+      const oscGain = ctx.createGain();
+      oscGain.gain.value = 0.18;
+
+      // Lowpass filter for warmer brass tone
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(2400, startTime);
+      filter.frequency.exponentialRampToValueAtTime(900, startTime + 0.8);
+      filter.Q.value = 4;
+
+      // Punchy envelope
+      const env = ctx.createGain();
+      env.gain.setValueAtTime(0, startTime);
+      env.gain.linearRampToValueAtTime(0.25, startTime + 0.02);
+      env.gain.exponentialRampToValueAtTime(0.12, startTime + 0.15);
+      env.gain.exponentialRampToValueAtTime(0.001, startTime + 1.2);
+
+      osc1.connect(oscGain);
+      osc2.connect(oscGain);
+      oscGain.connect(filter);
+      filter.connect(env);
+      env.connect(ctx.destination);
+
+      osc1.start(startTime);
+      osc2.start(startTime);
+      osc1.stop(startTime + 1.3);
+      osc2.stop(startTime + 1.3);
+    });
+
+    // === Cymbal crash: filtered noise with long decay ===
+    const crashDuration = 1.4;
+    const crashBuffer = ctx.createBuffer(1, ctx.sampleRate * crashDuration, ctx.sampleRate);
+    const crashData = crashBuffer.getChannelData(0);
+    for (let i = 0; i < crashData.length; i++) {
+      crashData[i] = (Math.random() * 2 - 1);
+    }
+
+    const crashSource = ctx.createBufferSource();
+    crashSource.buffer = crashBuffer;
+
+    const crashHP = ctx.createBiquadFilter();
+    crashHP.type = 'highpass';
+    crashHP.frequency.value = 4000;
+
+    const crashGain = ctx.createGain();
+    crashGain.gain.setValueAtTime(0, startTime);
+    crashGain.gain.linearRampToValueAtTime(0.22, startTime + 0.01);
+    crashGain.gain.exponentialRampToValueAtTime(0.001, startTime + crashDuration);
+
+    crashSource.connect(crashHP);
+    crashHP.connect(crashGain);
+    crashGain.connect(ctx.destination);
+
+    crashSource.start(startTime);
+    crashSource.stop(startTime + crashDuration);
+
+    // === Low boom for impact ===
+    const boom = ctx.createOscillator();
+    boom.type = 'sine';
+    boom.frequency.setValueAtTime(110, startTime);
+    boom.frequency.exponentialRampToValueAtTime(45, startTime + 0.4);
+
+    const boomGain = ctx.createGain();
+    boomGain.gain.setValueAtTime(0, startTime);
+    boomGain.gain.linearRampToValueAtTime(0.45, startTime + 0.01);
+    boomGain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.6);
+
+    boom.connect(boomGain);
+    boomGain.connect(ctx.destination);
+
+    boom.start(startTime);
+    boom.stop(startTime + 0.7);
+  }
+
+  function playRevealSound() {
+    const drumrollDuration = 1.4;
+    playDrumroll(drumrollDuration);
+    playSting(drumrollDuration); // sting hits right when drumroll ends
+  }
+
+  // === FEATURE 3: SAUCE DRIPS GENERATOR ===
+  function generateSauceDrips() {
+    const container = document.getElementById('sauce-drips');
+    container.innerHTML = '';
+
+    // Random drip positions across the top of the card
+    const dripCount = 7;
+    const positions = [];
+    const minGap = 8; // % gap between drips
+
+    while (positions.length < dripCount) {
+      const candidate = 4 + Math.random() * 92;
+      if (positions.every(p => Math.abs(p - candidate) > minGap)) {
+        positions.push(candidate);
+      }
+      if (positions.length === dripCount) break;
+      // safety break
+      if (positions.length > 20) break;
+    }
+
+    positions.forEach((leftPct, i) => {
+      const drip = document.createElement('div');
+      drip.className = 'drip';
+      drip.style.left = leftPct + '%';
+      // Vary widths slightly for organic feel
+      const width = 12 + Math.random() * 8;
+      drip.style.width = width + 'px';
+      // Stagger each drip's animation start slightly
+      drip.style.animationDelay = (i * 0.08 + Math.random() * 0.15) + 's';
+      // Vary final length via animation duration
+      drip.style.animationDuration = (2.0 + Math.random() * 0.8) + 's';
+      container.appendChild(drip);
+    });
+  }
+
   function startQuiz() {
+    // Prime audio context on user interaction (required by browsers)
+    getAudioCtx();
+
     currentQ = 0;
-    scores = { toughGuy: 0, buffalo: 0, chickenPoutine: 0, hotNHeavy: 0, dillinator: 0, kfc: 0 };
+    scores = {
+      fireBreather: 0, bbqBaron: 0, saucyRomantic: 0,
+      sweetRebel: 0, dryGameLegend: 0, flirt: 0, comboKing: 0
+    };
     document.getElementById('screen-intro').classList.add('hidden');
     document.getElementById('screen-result').classList.add('hidden');
     document.getElementById('screen-quiz').classList.remove('hidden');
@@ -1270,27 +1575,27 @@
     const percent = Math.round(((currentQ + 1) / questions.length) * 100);
     const travelPos = 8 + ((currentQ) / (questions.length - 1)) * 82;
 
-    document.getElementById('journey-label').textContent = `MILE MARKER ${currentQ + 1} OF ${questions.length}`;
-    document.getElementById('journey-mile').textContent = `${percent}% IN`;
+    document.getElementById('journey-label').textContent = 'MILE MARKER ' + (currentQ + 1) + ' OF ' + questions.length;
+    document.getElementById('journey-mile').textContent = percent + '% IN';
     document.getElementById('traveler-num').textContent = currentQ + 1;
 
     const traveler = document.getElementById('road-traveler');
-    traveler.style.left = `${travelPos}%`;
+    traveler.style.left = travelPos + '%';
     traveler.classList.remove('traveler-bounce');
     void traveler.offsetWidth;
     traveler.classList.add('traveler-bounce');
 
-    document.getElementById('chapter-mark').textContent = `â CHAPTER ${numWords[currentQ]} â`;
+    document.getElementById('chapter-mark').textContent = '~ CHAPTER ' + numWords[currentQ] + ' ~';
     document.getElementById('question-text').textContent = q.q;
     document.getElementById('boss-hint').textContent = bossHints[currentQ];
 
     const answersEl = document.getElementById('answers');
     answersEl.innerHTML = '';
-    q.answers.forEach((ans, i) => {
+    q.answers.forEach(function(ans, i) {
       const btn = document.createElement('button');
       btn.className = 'answer';
-      btn.innerHTML = `<span class="answer-letter">${letters[i]}</span><span>${ans.text}</span>`;
-      btn.onclick = () => selectAnswer(ans);
+      btn.innerHTML = '<span class="answer-letter">' + letters[i] + '</span><span>' + ans.text + '</span>';
+      btn.onclick = function() { selectAnswer(ans); };
       answersEl.appendChild(btn);
     });
   }
@@ -1305,7 +1610,7 @@
     } else {
       const screen = document.getElementById('screen-quiz');
       screen.style.opacity = '0';
-      setTimeout(() => {
+      setTimeout(function() {
         renderQuestion();
         screen.style.opacity = '1';
       }, 180);
@@ -1313,45 +1618,62 @@
   }
 
   function showResult() {
-    let winner = 'chickenPoutine';
+    let winner = 'flirt';
     let maxScore = -1;
-    let totalScore = 0;
     for (const key in scores) {
-      totalScore += scores[key];
       if (scores[key] > maxScore) {
         maxScore = scores[key];
         winner = key;
       }
     }
 
-    // Calculate match strength (how dominant the winner was)
-    const maxPossible = questions.length * 2; // if every answer was primary
+    const maxPossible = questions.length * 2;
     const matchPct = Math.min(100, Math.round((maxScore / maxPossible) * 100));
 
-    const pick = picks[winner];
-    document.getElementById('result-title').textContent = pick.title;
-    document.getElementById('result-item-name').textContent = pick.itemName;
-    document.getElementById('result-item-price').textContent = pick.itemPrice;
-    document.getElementById('result-desc').textContent = pick.desc;
-    document.getElementById('boss-verdict').textContent = `"${pick.verdict}"`;
-    document.getElementById('match-percent').textContent = `${matchPct}%`;
+    const tribe = tribes[winner];
+    document.getElementById('result-title').textContent = tribe.title;
+    document.getElementById('sauce-family-name').textContent = tribe.family;
+    document.getElementById('result-desc').textContent = tribe.desc;
+    document.getElementById('boss-verdict').textContent = '"' + tribe.verdict + '"';
+    document.getElementById('match-percent').textContent = matchPct + '%';
+
+    const sauceListEl = document.getElementById('sauce-list');
+    sauceListEl.innerHTML = '';
+    tribe.sauces.forEach(function(sauce) {
+      const li = document.createElement('li');
+      li.innerHTML = '<span class="sauce-flame">&#x1F525;</span> ' + sauce + ' <span class="sauce-flame">&#x1F525;</span>';
+      sauceListEl.appendChild(li);
+    });
 
     const traitsEl = document.getElementById('result-traits');
     traitsEl.innerHTML = '';
-    pick.traits.forEach(t => {
+    tribe.traits.forEach(function(t) {
       const span = document.createElement('span');
       span.className = 'trait';
       span.textContent = t;
       traitsEl.appendChild(span);
     });
 
+    // FEATURE 2: Wire up order button with top sauce as query param
+    const topSauce = tribe.sauces[0];
+    const orderBtn = document.getElementById('order-btn');
+    const sauceParam = encodeURIComponent(topSauce);
+    const tribeParam = encodeURIComponent(tribe.family);
+    orderBtn.href = 'https://wingorestaurants.com/?sauce=' + sauceParam + '&tribe=' + tribeParam + '&utm_source=quiz&utm_medium=result&utm_campaign=sauce_boss_pick';
+    document.getElementById('order-sauce-name').textContent = topSauce.toUpperCase();
+
     document.getElementById('screen-quiz').classList.add('hidden');
     document.getElementById('screen-result').classList.remove('hidden');
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    // Animate match meter after display
-    setTimeout(() => {
-      document.getElementById('match-fill').style.width = `${matchPct}%`;
+    // FEATURE 1: Play drumroll + sting on reveal
+    playRevealSound();
+
+    // FEATURE 3: Trigger sauce drips animation
+    generateSauceDrips();
+
+    setTimeout(function() {
+      document.getElementById('match-fill').style.width = matchPct + '%';
     }, 400);
   }
 
@@ -1361,18 +1683,19 @@
 
   function shareResult() {
     const title = document.getElementById('result-title').textContent;
-    const text = `I'm ${title} ð¥ Take the WingO Sauce Boss quiz and find your flavor destiny â wingorestaurants.com`;
+    const family = document.getElementById('sauce-family-name').textContent;
+    const text = "I'm " + title + " - my sauce tribe is " + family + "! Take the WingO Sauce Boss quiz and find your flavour family at wingorestaurants.com";
 
     if (navigator.share) {
       navigator.share({
         title: 'My WingO Sauce Boss Pick',
         text: text,
         url: 'https://wingorestaurants.com'
-      }).catch(() => {});
+      }).catch(function() {});
     } else {
-      navigator.clipboard.writeText(text).then(() => {
+      navigator.clipboard.writeText(text).then(function() {
         alert('Result copied! Paste it anywhere and tag @wingorestaurants');
-      }).catch(() => {
+      }).catch(function() {
         alert('Screenshot this page and tag @wingorestaurants!');
       });
     }
