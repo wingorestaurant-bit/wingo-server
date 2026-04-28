@@ -55,10 +55,6 @@ body > *{position:relative;z-index:2;}
 .announce span{color:#FFD700;font-weight:700;margin:0 .25rem;}
 nav{background:var(--black);position:sticky;top:0;z-index:999;border-bottom:3px double var(--yellow);}
 .nav-inner{max-width:1300px;margin:0 auto;padding:.6rem 1.5rem;display:flex;justify-content:space-between;align-items:center;gap:1rem;}
-.logo-stack{display:flex;align-items:baseline;gap:.5rem;}
-.logo-main{font-family:var(--font-display);font-size:1.65rem;color:white;letter-spacing:3px;line-height:1;}
-.logo-main span{color:var(--red);}
-.logo-sub{font-family:var(--font-head);font-size:.6rem;color:#888;letter-spacing:3px;text-transform:uppercase;}
 .nav-links{display:flex;gap:1.4rem;list-style:none;align-items:center;flex-wrap:wrap;}
 .nav-links a{color:#aaa;text-decoration:none;font-family:var(--font-head);font-size:.8rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;transition:color .15s;cursor:pointer;}
 .nav-links a:hover{color:var(--yellow);}
@@ -376,7 +372,7 @@ var activeLocation = 'albert-st';
     <div class="hero-stats">
       <div class="stat"><div class="n">125+</div><div class="l">Flavors</div></div>
       <div class="stat"><div class="n">5</div><div class="l">SK Locations</div></div>
-      <div class="stat"><div class="n">$7.99</div><div class="l">Wings From</div></div>
+      <div class="stat"><div class="n">$7.00</div><div class="l">Wings From</div></div>
       <div class="stat"><div class="n">YQR</div><div class="l">Rooted</div></div>
     </div>
   </div>
@@ -419,16 +415,16 @@ var activeLocation = 'albert-st';
     <div class="eyebrow">Fresh Made to Order</div>
     <h2 class="sec-title" style="color:var(--ink);">WHAT ARE YOU FEELING?</h2>
     <div class="cat-grid">
-      <div class="cat-card" onclick="showCat('wings')"><div class="cat-card-img"><img src="images/wings-hero.jpg" alt="Wings"></div><div class="cat-card-body"><div class="cat-card-name">🍗 Wings</div><div class="cat-card-sub">Bone-In · 125+ Flavors · From $7.99</div></div></div>
-      <div class="cat-card" onclick="showCat('ribs')"><div class="cat-card-img"><img src="images/ribs.jpg" alt="Ribs"></div><div class="cat-card-body"><div class="cat-card-name">🔥 Ribs</div><div class="cat-card-sub">Saucy · 125+ Flavors · From $7.99</div></div></div>
-      <div class="cat-card" onclick="showCat('boneless')"><div class="cat-card-img"><img src="images/boneless-wings.jpg" alt="Boneless"></div><div class="cat-card-body"><div class="cat-card-name">Boneless Wings</div><div class="cat-card-sub">Crispy · 125+ Flavors · From $7.99</div></div></div>
-      <div class="cat-card" onclick="showCat('chickenfingers')"><div class="cat-card-img"><img src="images/boneless-sauce.jpg" alt="Chicken Fingers"></div><div class="cat-card-body"><div class="cat-card-name">Chicken Fingers</div><div class="cat-card-sub">Crispy · Choose Sauce · From $7.99</div></div></div>
+      <div class="cat-card" onclick="showCat('wings')"><div class="cat-card-img"><img src="images/wings-hero.jpg" alt="Wings"></div><div class="cat-card-body"><div class="cat-card-name">🍗 Wings</div><div class="cat-card-sub">Bone-In · 125+ Flavors · From $7.00</div></div></div>
+      <div class="cat-card" onclick="showCat('ribs')"><div class="cat-card-img"><img src="images/ribs.jpg" alt="Ribs"></div><div class="cat-card-body"><div class="cat-card-name">🔥 Ribs</div><div class="cat-card-sub">Saucy · 125+ Flavors · From $7.00</div></div></div>
+      <div class="cat-card" onclick="showCat('boneless')"><div class="cat-card-img"><img src="images/boneless-wings.jpg" alt="Boneless"></div><div class="cat-card-body"><div class="cat-card-name">Boneless Wings</div><div class="cat-card-sub">Crispy · 125+ Flavors · From $7.00</div></div></div>
+      <div class="cat-card" onclick="showCat('chickenfingers')"><div class="cat-card-img"><img src="images/boneless-sauce.jpg" alt="Chicken Fingers"></div><div class="cat-card-body"><div class="cat-card-name">Chicken Fingers</div><div class="cat-card-sub">Crispy · Choose Sauce · From $7.00</div></div></div>
       <div class="cat-card" onclick="showCat('burgers')"><div class="cat-card-img"><img src="images/burger-tough-guy.jpg" alt="Burgers"></div><div class="cat-card-body"><div class="cat-card-name">Burgers</div><div class="cat-card-sub">Loaded · From $15.99</div></div></div>
-      <div class="cat-card" onclick="showCat('combos')"><div class="cat-card-img"><img src="images/combo1.jpg" alt="Combos"></div><div class="cat-card-body"><div class="cat-card-name">Combos</div><div class="cat-card-sub">Best Value · From $11.99</div></div></div>
-      <div class="cat-card" onclick="showCat('sides')"><div class="cat-card-img"><img src="images/curly-fries.jpg" alt="Sides"></div><div class="cat-card-body"><div class="cat-card-name">Sides</div><div class="cat-card-sub">Fries, Mozza Sticks & More</div></div></div>
+      <div class="cat-card" onclick="showCat('combos')"><div class="cat-card-img"><img src="images/combo1.jpg" alt="Combos"></div><div class="cat-card-body"><div class="cat-card-name">Combos</div><div class="cat-card-sub">Best Value · From $15.99</div></div></div>
+      <div class="cat-card" onclick="showCat('sides')"><div class="cat-card-img"><img src="images/curly-fries.jpg" alt="Sides"></div><div class="cat-card-body"><div class="cat-card-name">Sides</div><div class="cat-card-sub">Fries, Mozza Sticks &amp; More</div></div></div>
       <div class="cat-card" onclick="showCat('loaded')"><div class="cat-card-img"><img src="images/poutine.jpg" alt="Loaded Affairs"></div><div class="cat-card-body"><div class="cat-card-name">🍟 Loaded Affairs</div><div class="cat-card-sub">Poutines · Nachos · Loaded Taters</div></div></div>
-      <div class="cat-card" onclick="showCat('salads')"><div class="cat-card-img"><img src="images/salad.jpg" alt="Salads"></div><div class="cat-card-body"><div class="cat-card-name">Salads</div><div class="cat-card-sub">Fresh · From $6.99</div></div></div>
-      <div class="cat-card" onclick="showCat('platters')"><div class="cat-card-img"><img src="images/platter-bit-of.jpg" alt="Platters"></div><div class="cat-card-body"><div class="cat-card-name">Platters</div><div class="cat-card-sub">Share the Love · From $29.99</div></div></div>
+      <div class="cat-card" onclick="showCat('salads')"><div class="cat-card-img"><img src="images/salad.jpg" alt="Salads"></div><div class="cat-card-body"><div class="cat-card-name">Salads</div><div class="cat-card-sub">Fresh · From $5.99</div></div></div>
+      <div class="cat-card" onclick="showCat('platters')"><div class="cat-card-img"><img src="images/platter-bit-of.jpg" alt="Platters"></div><div class="cat-card-body"><div class="cat-card-name">Platters</div><div class="cat-card-sub">Share the Love · From $26.99</div></div></div>
       <div class="cat-card" onclick="showCat('midnight')"><div class="cat-card-img"><img src="images/oreo.jpg" alt="Midnight"></div><div class="cat-card-body"><div class="cat-card-name">Midnight Ecstasy 🌙</div><div class="cat-card-sub">Desserts · From $0.99</div></div></div>
     </div>
   </div>
@@ -510,13 +506,13 @@ var activeLocation = 'albert-st';
 <div id="menu-pages" style="display:none;">
 <div class="menu-page" id="page-wings"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">125+ Flavors</div><h2 class="sec-title" style="margin-bottom:1.5rem">🍗 WINGS</h2><p style="font-size:.88rem;color:#888;margin-bottom:1.5rem;">Choose 1 flavor per order. Mix and match across orders!</p><div class="mgrid" id="grid-wings"></div></div></div>
 <div class="menu-page" id="page-ribs"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">125+ Flavors</div><h2 class="sec-title" style="margin-bottom:1.5rem">🔥 RIBS</h2><div class="mgrid" id="grid-ribs"></div></div></div>
-<div class="menu-page" id="page-boneless"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Crispy & Sauced</div><h2 class="sec-title" style="margin-bottom:1.5rem">BONELESS WINGS</h2><div class="mgrid" id="grid-boneless"></div></div></div>
-<div class="menu-page" id="page-chickenfingers"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Crispy & Dippable</div><h2 class="sec-title" style="margin-bottom:1.5rem">CHICKEN FINGERS</h2><div class="mgrid" id="grid-chickenfingers"></div></div></div>
+<div class="menu-page" id="page-boneless"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Crispy &amp; Sauced</div><h2 class="sec-title" style="margin-bottom:1.5rem">BONELESS WINGS</h2><div class="mgrid" id="grid-boneless"></div></div></div>
+<div class="menu-page" id="page-chickenfingers"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Crispy &amp; Dippable</div><h2 class="sec-title" style="margin-bottom:1.5rem">CHICKEN FINGERS</h2><div class="mgrid" id="grid-chickenfingers"></div></div></div>
 <div class="menu-page" id="page-burgers"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Sloppy Seduction</div><h2 class="sec-title" style="margin-bottom:.5rem">BURGERS</h2><p style="font-size:.82rem;color:#888;margin-bottom:1.5rem;">All burgers served with fries and a drink. Upgrade available.</p><div class="mgrid" id="grid-burgers"></div></div></div>
 <div class="menu-page" id="page-combos"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Best Value</div><h2 class="sec-title" style="margin-bottom:.5rem">COMBOS</h2><p style="font-size:.82rem;color:#888;margin-bottom:1.5rem;">Choose wings, ribs, or chicken fingers. Upgrade fries available.</p><div class="mgrid" id="grid-combos"></div></div></div>
 <div class="menu-page" id="page-sides"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Kissable Kick-Offs</div><h2 class="sec-title" style="margin-bottom:1.5rem">SIDES</h2><div class="mgrid" id="grid-sides"></div></div></div>
 <div class="menu-page" id="page-loaded"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Loaded Affairs</div><h2 class="sec-title" style="margin-bottom:.5rem">🍟 LOADED AFFAIRS</h2><p style="font-size:.82rem;color:#888;margin-bottom:1.5rem;">Poutines, nachos, and loaded everything. Heavy-handed and proud.</p><div class="mgrid" id="grid-loaded"></div></div></div>
-<div class="menu-page" id="page-salads"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Fresh & Flirty</div><h2 class="sec-title" style="margin-bottom:1.5rem">SALADS</h2><div class="mgrid" id="grid-salads"></div></div></div>
+<div class="menu-page" id="page-salads"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Fresh &amp; Flirty</div><h2 class="sec-title" style="margin-bottom:1.5rem">SALADS</h2><div class="mgrid" id="grid-salads"></div></div></div>
 <div class="menu-page" id="page-platters"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Too Good to Share</div><h2 class="sec-title" style="margin-bottom:.5rem">PLATTERS</h2><div class="mgrid" id="grid-platters"></div></div></div>
 <div class="menu-page" id="page-midnight"><div class="menu-page-inner"><button class="back-btn" onclick="goBack()">← Back to Menu</button><div class="eyebrow">Sweet Endings</div><h2 class="sec-title" style="margin-bottom:1.5rem">MIDNIGHT ECSTASY 🌙</h2><div class="mgrid" id="grid-midnight"></div></div></div>
 </div>
@@ -598,7 +594,7 @@ var activeLocation = 'albert-st';
     <div style="padding:1.75rem;">
       <div style="background:rgba(232,25,10,.05);border:1px solid rgba(232,25,10,.15);border-radius:8px;padding:1rem 1.25rem;margin-bottom:1.5rem;">
         <div style="font-family:var(--font-display);font-size:1.1rem;color:var(--red);letter-spacing:1px;margin-bottom:.35rem;">Why Wing-O?</div>
-        <div style="font-size:.83rem;color:#666;line-height:1.7;">125+ handcrafted flavors · Proven brand · 5 SK locations · Strong community following · Low startup costs · Full training & support from the Sauce Boss himself.</div>
+        <div style="font-size:.83rem;color:#666;line-height:1.7;">125+ handcrafted flavors · Proven brand · 5 SK locations · Strong community following · Low startup costs · Full training &amp; support from the Sauce Boss himself.</div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.85rem;margin-bottom:.85rem;">
         <div><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">First Name *</label><input type="text" id="fr-fn" placeholder="First name"></div>
@@ -643,29 +639,29 @@ var BURGER_UPGRADES = [{name:'Upgrade to Curly Fries',price:1.00},{name:'Upgrade
 var COMBO_UPGRADES = [{name:'Upgrade Fries to Curly Fries',price:1.00},{name:'Upgrade Fries to Poutine',price:2.00},{name:'Upgrade Fries to Onion Rings',price:1.49}];
 var MENU = {
   wings:[
-    {id:'w1',name:'Half Order — Wings',desc:'Half order of crispy bone-in wings. Choose your sauce or rub from 125+ flavors.',price:7.99,img:'images/wings-half.jpg',flavorCount:1,pop:false},
-    {id:'w2',name:'One Order — Wings',desc:'Full order of crispy bone-in wings. Choose your sauce or rub from 125+ flavors.',price:13.99,img:'images/wings-hero.jpg',flavorCount:1,pop:true},
-    {id:'w3',name:'Two Orders — Wings',desc:'Two orders. Mix and match — choose a different flavor for each!',price:25.99,img:'images/wings-hero.jpg',flavorCount:2,pop:false},
-    {id:'w4',name:'Three Orders — Wings',desc:'Three orders. Mix and match — choose a different flavor for each!',price:37.99,img:'images/wings-hero.jpg',flavorCount:3,pop:false},
-    {id:'w5',name:'Four Orders — Wings',desc:'Four orders. Mix and match — choose a different flavor for each!',price:49.99,img:'images/wings-hero.jpg',flavorCount:4,pop:false},
-    {id:'w6',name:'Five Orders — Wings',desc:'Five orders — the ultimate party pack! Choose a flavor for each.',price:58.99,img:'images/wings-hero.jpg',flavorCount:5,pop:false}
+    {id:'w1',name:'Half Order — Wings',desc:'Half order of crispy bone-in wings. Choose your sauce or rub from 125+ flavors.',price:7.00,img:'images/wings-half.jpg',flavorCount:1,pop:false},
+    {id:'w2',name:'One Order — Wings',desc:'Full order of crispy bone-in wings. Choose your sauce or rub from 125+ flavors.',price:11.99,img:'images/wings-hero.jpg',flavorCount:1,pop:true},
+    {id:'w3',name:'Two Orders — Wings',desc:'Two orders. Mix and match — choose a different flavor for each!',price:23.98,img:'images/wings-hero.jpg',flavorCount:2,pop:false},
+    {id:'w4',name:'Three Orders — Wings',desc:'Three orders. Mix and match — choose a different flavor for each!',price:34.99,img:'images/wings-hero.jpg',flavorCount:3,pop:false},
+    {id:'w5',name:'Four Orders — Wings',desc:'Four orders. Mix and match — choose a different flavor for each!',price:45.99,img:'images/wings-hero.jpg',flavorCount:4,pop:false},
+    {id:'w6',name:'Five Orders — Wings',desc:'Five orders — the ultimate party pack! Choose a flavor for each.',price:55.00,img:'images/wings-hero.jpg',flavorCount:5,pop:false}
   ],
   ribs:[
-    {id:'r1',name:'Half Order — Ribs',desc:'Half order of saucy bone-in ribs. Choose your sauce from 125+ flavors.',price:7.99,img:'images/ribs.jpg',flavorCount:1,pop:false},
-    {id:'r2',name:'One Order — Ribs',desc:'Full order of saucy bone-in ribs. Choose your sauce from 125+ flavors.',price:13.99,img:'images/ribs.jpg',flavorCount:1,pop:true},
-    {id:'r3',name:'Two Orders — Ribs',desc:'Two orders of ribs. Mix and match flavors!',price:25.99,img:'images/ribs.jpg',flavorCount:2,pop:false},
-    {id:'r4',name:'Three Orders — Ribs',desc:'Three orders of ribs. Mix and match flavors!',price:37.99,img:'images/ribs.jpg',flavorCount:3,pop:false},
-    {id:'r5',name:'Four Orders — Ribs',desc:'Four orders of ribs. Mix and match flavors!',price:49.99,img:'images/ribs.jpg',flavorCount:4,pop:false},
-    {id:'r6',name:'Five Orders — Ribs',desc:'Five orders — the ultimate party pack!',price:58.99,img:'images/ribs.jpg',flavorCount:5,pop:false}
+    {id:'r1',name:'Half Order — Ribs',desc:'Half order of saucy bone-in ribs. Choose your sauce from 125+ flavors.',price:7.00,img:'images/ribs.jpg',flavorCount:1,pop:false},
+    {id:'r2',name:'One Order — Ribs',desc:'Full order of saucy bone-in ribs. Choose your sauce from 125+ flavors.',price:11.99,img:'images/ribs.jpg',flavorCount:1,pop:true},
+    {id:'r3',name:'Two Orders — Ribs',desc:'Two orders of ribs. Mix and match flavors!',price:23.98,img:'images/ribs.jpg',flavorCount:2,pop:false},
+    {id:'r4',name:'Three Orders — Ribs',desc:'Three orders of ribs. Mix and match flavors!',price:34.99,img:'images/ribs.jpg',flavorCount:3,pop:false},
+    {id:'r5',name:'Four Orders — Ribs',desc:'Four orders of ribs. Mix and match flavors!',price:45.99,img:'images/ribs.jpg',flavorCount:4,pop:false},
+    {id:'r6',name:'Five Orders — Ribs',desc:'Five orders — the ultimate party pack!',price:55.00,img:'images/ribs.jpg',flavorCount:5,pop:false}
   ],
   boneless:[
-    {id:'b1',name:'Half Order — Boneless Wings',desc:'Half order of crispy boneless wings tossed in your choice of sauce.',price:7.99,img:'images/boneless-wings.jpg',flavorCount:1,pop:false},
-    {id:'b2',name:'Full Order — Boneless Wings',desc:'Full order of crispy boneless wings tossed in your choice of sauce.',price:13.99,img:'images/boneless-wings.jpg',flavorCount:1,pop:true},
-    {id:'b3',name:'Cauliflower Wings',desc:'Crispy cauliflower wings tossed with sauce of your choice.',price:12.99,img:null,flavorCount:1,pop:false}
+    {id:'b1',name:'Half Order — Boneless Wings',desc:'Half order of crispy boneless wings tossed in your choice of sauce.',price:7.00,img:'images/boneless-wings.jpg',flavorCount:1,pop:false},
+    {id:'b2',name:'Full Order — Boneless Wings',desc:'Full order of crispy boneless wings tossed in your choice of sauce.',price:11.99,img:'images/boneless-wings.jpg',flavorCount:1,pop:true},
+    {id:'b3',name:'Cauliflower Wings',desc:'Crispy cauliflower wings tossed with sauce of your choice.',price:11.99,img:null,flavorCount:1,pop:false}
   ],
   chickenfingers:[
-    {id:'cf1',name:'Half Order — Chicken Fingers',desc:'Half order of crispy chicken fingers with your choice of dipping sauce.',price:7.99,img:'images/boneless-sauce.jpg',flavorCount:1,pop:false},
-    {id:'cf2',name:'Full Order — Chicken Fingers',desc:'Full order of crispy chicken fingers with your choice of dipping sauce.',price:13.99,img:'images/boneless-sauce.jpg',flavorCount:1,pop:true}
+    {id:'cf1',name:'Half Order — Chicken Fingers',desc:'Half order of crispy chicken fingers with your choice of dipping sauce.',price:7.00,img:'images/boneless-sauce.jpg',flavorCount:1,pop:false},
+    {id:'cf2',name:'Full Order — Chicken Fingers',desc:'Full order of crispy chicken fingers with your choice of dipping sauce.',price:11.99,img:'images/boneless-sauce.jpg',flavorCount:1,pop:true}
   ],
   burgers:[
     {id:'bu1',name:'The Tough Guy',desc:'Crispy 6oz chicken breast, double-crunched and coated in our blazing Carolina Reaper sauce. Layered with pickles, tomatoes, red onions, romaine, and melted Swiss. Served with fries and a drink.',price:18.99,img:'images/burger-tough-guy.jpg',upgrades:true,pop:true},
@@ -675,53 +671,53 @@ var MENU = {
     {id:'bu5',name:'The Sunset Crunch',desc:'Crispy chicken with sweet heat habanero mango kick, creamy California ranch, and a soft toasted bun. Served with fries and a drink.',price:15.99,img:'images/burger.jpg',upgrades:true,pop:false}
   ],
   combos:[
-    {id:'c1',name:'Combo for 1',desc:'Wings, ribs, or chicken fingers with fries and a can of pop. Choose your flavor!',price:17.45,img:'images/combo1.jpg',flavorCount:1,upgrades:true,pop:true},
-    {id:'c2',name:'Combo for 2',desc:'Wings, ribs, or chicken fingers with large fries, deep-fried pickles, and two cans of pop.',price:39.99,img:null,flavorCount:2,upgrades:true,pop:false},
-    {id:'c3',name:'Combo for 3',desc:'Wings, ribs, or chicken fingers with large fries, Caesar salad, and a 2L pop.',price:57.49,img:null,flavorCount:3,upgrades:true,pop:false},
-    {id:'c4',name:'Combo for 4',desc:'Wings, ribs, or chicken fingers with large fries, gravy, Caesar salad, and a 2L pop.',price:67.99,img:null,flavorCount:4,upgrades:true,pop:false},
-    {id:'c5',name:'Corn Dog Combo',desc:'Corn dog served with fries, a can of pop, and dipping of your choice.',price:11.99,img:null,upgrades:true,pop:false}
+    {id:'c1',name:'Combo for 1',desc:'Wings, ribs, or chicken fingers with fries and a can of pop. Choose your flavor!',price:15.99,img:'images/combo1.jpg',flavorCount:1,upgrades:true,pop:true},
+    {id:'c2',name:'Combo for 2',desc:'Wings, ribs, or chicken fingers with large fries, deep-fried pickles, and two cans of pop.',price:35.99,img:null,flavorCount:2,upgrades:true,pop:false},
+    {id:'c3',name:'Combo for 3',desc:'Wings, ribs, or chicken fingers with large fries, Caesar salad, and a 2L pop.',price:50.99,img:null,flavorCount:3,upgrades:true,pop:false},
+    {id:'c4',name:'Combo for 4',desc:'Wings, ribs, or chicken fingers with large fries, gravy, Caesar salad, and a 2L pop.',price:60.99,img:null,flavorCount:4,upgrades:true,pop:false},
+    {id:'c5',name:'Corn Dog Combo',desc:'Corn dog served with fries, a can of pop, and dipping of your choice.',price:7.00,img:null,upgrades:true,pop:false}
   ],
   sides:[
     {id:'s1',name:'Fries',desc:'Golden crispy fries.',price:4.99,price2:8.99,img:null,sizes:true},
     {id:'s2',name:'Curly Fries',desc:'Seasoned curly fries.',price:5.99,price2:9.99,img:'images/curly-fries.jpg',sizes:true},
-    {id:'s3',name:'Onion Rings',desc:'Golden crispy onion rings.',price:7.99,img:null},
-    {id:'s4',name:'Pickle Spears',desc:'Deep fried pickle spears.',price:8.99,img:'images/pickle-spears.jpg'},
-    {id:'s5',name:'Empanadas',desc:'Crispy empanadas with dipping sauce.',price:9.99,price2:12.99,img:'images/empanadas.jpg',sizes:true,sizeLabels:['6 pc','12 pc']},
-    {id:'s6',name:'Jalapeno Poppers',desc:'Crispy jalapeno poppers.',price:10.49,img:'images/jalapeno-poppers.jpg'},
+    {id:'s3',name:'Onion Rings',desc:'Golden crispy onion rings.',price:6.99,img:null},
+    {id:'s4',name:'Pickle Spears',desc:'Deep fried pickle spears.',price:6.99,img:'images/pickle-spears.jpg'},
+    {id:'s5',name:'Empanadas',desc:'Crispy empanadas with dipping sauce.',price:5.99,price2:9.99,img:'images/empanadas.jpg',sizes:true,sizeLabels:['6 pc','12 pc']},
+    {id:'s6',name:'Jalapeno Poppers',desc:'Crispy jalapeno poppers.',price:9.99,img:'images/jalapeno-poppers.jpg'},
     {id:'s7',name:'Deep Fried Mac & Cheese Bites',desc:'Crispy deep fried mac and cheese bites.',price:10.49,img:null},
-    {id:'s8',name:'Mini Perogies',desc:'Golden mini perogies.',price:8.99,img:'images/mini-perogies.jpg'},
-    {id:'s9',name:'Mozza Sticks',desc:'Classic mozzarella sticks with dipping sauce.',price:10.49,img:'images/mozza-sticks.jpg'},
-    {id:'s10',name:'Spring Rolls',desc:'Crispy spring rolls.',price:10.49,img:null},
-    {id:'s11',name:'Dumplings',desc:'Crispy fried dumplings.',price:10.49,img:'images/dumplings.jpg'},
-    {id:'s12',name:'Corn Dog',desc:'Classic corn dog with dipping of your choice.',price:6.99,img:null},
-    {id:'s13',name:'Cauliflower Wings',desc:'Crispy cauliflower wings tossed with sauce of your choice.',price:12.99,img:null,flavorCount:1},
+    {id:'s8',name:'Mini Perogies',desc:'Golden mini perogies.',price:6.99,img:'images/mini-perogies.jpg'},
+    {id:'s9',name:'Mozza Sticks',desc:'Classic mozzarella sticks with dipping sauce.',price:9.99,img:'images/mozza-sticks.jpg'},
+    {id:'s10',name:'Spring Rolls',desc:'Crispy spring rolls.',price:9.99,img:null},
+    {id:'s11',name:'Dumplings',desc:'Crispy fried dumplings.',price:6.99,img:'images/dumplings.jpg'},
+    {id:'s12',name:'Corn Dog',desc:'Classic corn dog with dipping of your choice.',price:4.00,img:null},
+    {id:'s13',name:'Cauliflower Wings',desc:'Crispy cauliflower wings tossed with sauce of your choice.',price:11.99,img:null,flavorCount:1},
     {id:'s14',name:'Gravy',desc:'Classic gravy.',price:0.99,price2:2.49,img:null,sizes:true,sizeLabels:['Small','Large']}
   ],
   loaded:[
-    {id:'la1',name:'Classic Poutine',desc:'Crispy golden fries topped with cheese curds and rich, savory gravy. Simple, comforting, and done right.',price:8.99,price2:13.99,img:null,sizes:true,sizeLabels:['Small','Large'],pop:true},
-    {id:'la2',name:'Chicken Poutine',desc:'Crispy fries loaded with juicy chicken, rich gravy, and our sweet & spicy Thai sauce for the perfect balance of comfort and heat.',price:14.99,img:null,pop:false},
-    {id:'la3',name:'Rib Poutine',desc:'Golden fries topped with cheese curds, tender dry ribs, and finished with our sweet & spicy Thai sauce for a bold, savory kick.',price:15.99,img:null,pop:false},
-    {id:'la4',name:'Beef Poutine',desc:'Crispy fries topped with tender grilled beef, sauteed veggies, and finished with our sweet & spicy Thai sauce for a bold, flavorful bite.',price:14.99,img:null,pop:false},
-    {id:'la5',name:'Perogy Poutine',desc:'Mini perogies smothered in creamy cheese sauce, topped with sour cream, green onions, and bacon bits for a rich, comforting bite.',price:10.49,img:null,pop:false},
-    {id:'la6',name:'Nacho Teaser',desc:'Crispy curly fries loaded with warm cheese sauce, fresh salsa, cool sour cream, green onions, and jalapenos for the perfect cheesy, zesty bite.',price:12.99,img:null,pop:false},
-    {id:'la7',name:'Loaded Taters',desc:'Crispy tater tots stacked with seasoned shredded beef, creamy cheese sauce, and fresh toppings for the perfect mix of crunch and comfort.',price:13.99,img:null,pop:false}
+    {id:'la1',name:'Classic Poutine',desc:'Crispy golden fries topped with cheese curds and rich, savory gravy. Simple, comforting, and done right.',price:7.99,price2:12.99,img:null,sizes:true,sizeLabels:['Small','Large'],pop:true},
+    {id:'la2',name:'Chicken Poutine',desc:'Crispy fries loaded with juicy chicken, rich gravy, and our sweet & spicy Thai sauce for the perfect balance of comfort and heat.',price:10.99,img:null,pop:false},
+    {id:'la3',name:'Rib Poutine',desc:'Golden fries topped with cheese curds, tender dry ribs, and finished with our sweet & spicy Thai sauce for a bold, savory kick.',price:14.99,img:null,pop:false},
+    {id:'la4',name:'Beef Poutine',desc:'Crispy fries topped with tender grilled beef, sauteed veggies, and finished with our sweet & spicy Thai sauce for a bold, flavorful bite.',price:10.99,img:null,pop:false},
+    {id:'la5',name:'Perogy Poutine',desc:'Mini perogies smothered in creamy cheese sauce, topped with sour cream, green onions, and bacon bits for a rich, comforting bite.',price:8.99,img:null,pop:false},
+    {id:'la6',name:'Nacho Teaser',desc:'Crispy curly fries loaded with warm cheese sauce, fresh salsa, cool sour cream, green onions, and jalapenos for the perfect cheesy, zesty bite.',price:9.99,img:null,pop:false},
+    {id:'la7',name:'Loaded Taters',desc:'Crispy tater tots stacked with seasoned shredded beef, creamy cheese sauce, and fresh toppings for the perfect mix of crunch and comfort.',price:9.99,img:null,pop:false}
   ],
   salads:[
-    {id:'sal1',name:'Caesar Salad',desc:'Classic caesar salad.',price:6.99,price2:7.99,price3:13.99,img:'images/salad.jpg',sizes3:true},
-    {id:'sal2',name:'Chicken Caesar Salad',desc:'Caesar salad with crispy grilled chicken.',price:9.99,price2:12.99,price3:19.49,img:'images/salad.jpg',sizes3:true}
+    {id:'sal1',name:'Caesar Salad',desc:'Classic caesar salad.',price:5.99,price2:7.99,price3:10.99,img:'images/salad.jpg',sizes3:true},
+    {id:'sal2',name:'Chicken Caesar Salad',desc:'Caesar salad with crispy grilled chicken.',price:8.99,price2:10.99,price3:18.99,img:'images/salad.jpg',sizes3:true}
   ],
   platters:[
-    {id:'p1',name:'A Bit of Other Platter',desc:'1 lb Ribs, Pickle Spear, Large Curly Fries, Mini Perogies, Dumplings, Mozza Sticks. Upgrade ribs to wings +$4.00.',price:34.99,img:'images/platter-bit-of.jpg',flavorCount:1,pop:true},
-    {id:'p2',name:'Making Love Platter',desc:'Full Order Wings, Empanadas, Large Fries, Jalapeno Poppers, Mozza Sticks.',price:34.99,img:'images/platter-making-love.jpg',flavorCount:1,pop:false},
+    {id:'p1',name:'A Bit of Other Platter',desc:'1 lb Ribs, Pickle Spear, Large Curly Fries, Mini Perogies, Dumplings, Mozza Sticks. Upgrade ribs to wings +$4.00.',price:30.99,img:'images/platter-bit-of.jpg',flavorCount:1,pop:true},
+    {id:'p2',name:'Making Love Platter',desc:'Full Order Wings, Empanadas, Large Fries, Jalapeno Poppers, Mozza Sticks.',price:30.99,img:'images/platter-making-love.jpg',flavorCount:1,pop:false},
     {id:'p3',name:'Too Much Platter',desc:'4 Orders of Wings or Ribs, 2 Curly Fries.',price:56.99,img:null,flavorCount:4,pop:false},
-    {id:'p4',name:'Tinseltown Nacho',desc:'3 lbs Curly Fries, Cheese Sauce, Chunky Salsa, Sour Cream, Jalapeno, Green Onions.',price:29.99,img:null},
-    {id:'p5',name:"Hot 'n' Heavy",desc:'3 lbs Fries, 1 lb Cheese Curds, 1 lb Gravy. Drizzled with sauce of your choice.',price:29.99,img:null}
+    {id:'p4',name:'Tinseltown Nacho',desc:'3 lbs Curly Fries, Cheese Sauce, Chunky Salsa, Sour Cream, Jalapeno, Green Onions.',price:26.99,img:null},
+    {id:'p5',name:"Hot 'n' Heavy",desc:'3 lbs Fries, 1 lb Cheese Curds, 1 lb Gravy. Drizzled with sauce of your choice.',price:26.99,img:null}
   ],
   midnight:[
-    {id:'m1',name:'Tiramisu Cake',desc:'Homemade tiramisu cake slice.',price:8.99,img:null},
-    {id:'m2',name:'Deep Fried Cookie Dough',desc:'Choose your flavor: Peanut Butter, Double Chocolate, or Monster.',price:3.50,img:'images/cookie-dough.jpg',cookieFlavors:true},
-    {id:'m3',name:'Deep Fried Oreos',desc:'Crispy deep fried Oreos dusted with powdered sugar.',price:0.99,price2:5.99,price3:10.49,img:'images/oreo.jpg',sizes3:true,sizeLabels3:['1 pc','6 pc','12 pc']},
-    {id:'m4',name:'Deep Fried Mars Bars',desc:'Indulgent deep fried Mars bars dusted with powdered sugar.',price:2.99,price2:4.99,price3:12.99,img:'images/mars-1pc.jpg',sizes3:true,sizeLabels3:['1 pc','2 pc','6 pc']}
+    {id:'m1',name:'Tiramisu Cake',desc:'Homemade tiramisu cake slice.',price:6.99,img:null},
+    {id:'m2',name:'Deep Fried Cookie Dough',desc:'Choose your flavor: Peanut Butter, Double Chocolate, or Monster.',price:2.50,img:'images/cookie-dough.jpg',cookieFlavors:true},
+    {id:'m3',name:'Deep Fried Oreos',desc:'Crispy deep fried Oreos dusted with powdered sugar.',price:0.99,price2:5.49,price3:9.99,img:'images/oreo.jpg',sizes3:true,sizeLabels3:['1 pc','6 pc','12 pc']},
+    {id:'m4',name:'Deep Fried Mars Bars',desc:'Indulgent deep fried Mars bars dusted with powdered sugar.',price:2.49,price2:4.50,price3:12.50,img:'images/mars-1pc.jpg',sizes3:true,sizeLabels3:['1 pc','2 pc','6 pc']}
   ]
 };
 var toastT;
@@ -1470,10 +1466,7 @@ var swRegistration=null;
 if('serviceWorker' in navigator){
   window.addEventListener('load',function(){
     navigator.serviceWorker.register('/service-worker.js')
-      .then(function(reg){
-        console.log('[Wing-O] SW registered:',reg.scope);
-        swRegistration=reg;
-      })
+      .then(function(reg){swRegistration=reg;})
       .catch(function(err){console.log('[Wing-O] SW failed:',err);});
   });
 }
@@ -1513,13 +1506,8 @@ window.addEventListener('appinstalled',function(){
   deferredPrompt=null;
   toast('🍗 Wing-O app installed! Find it on your home screen.');
 });
-function openPushAdmin(){
-  document.getElementById('push-admin-ov').style.display='flex';
-}
-function closePushAdmin(){
-  document.getElementById('push-admin-ov').style.display='none';
-  document.getElementById('pa-status').textContent='';
-}
+function openPushAdmin(){document.getElementById('push-admin-ov').style.display='flex';}
+function closePushAdmin(){document.getElementById('push-admin-ov').style.display='none';document.getElementById('pa-status').textContent='';}
 async function pushAdminLogin(){
   var pw=document.getElementById('pa-pw').value.trim();
   if(!pw){document.getElementById('pa-status').textContent='Enter password';return;}
@@ -1528,17 +1516,12 @@ async function pushAdminLogin(){
   try{
     var r=await fetch(API_BASE+'/api/push/count?password='+encodeURIComponent(pw));
     var d=await r.json();
-    if(!d.success){
-      document.getElementById('pa-status').textContent='Wrong password';
-      btn.textContent='Login';btn.disabled=false;return;
-    }
+    if(!d.success){document.getElementById('pa-status').textContent='Wrong password';btn.textContent='Login';btn.disabled=false;return;}
     document.getElementById('pa-step1').style.display='none';
     document.getElementById('pa-step2').style.display='block';
     document.getElementById('pa-count').textContent=d.count;
     document.getElementById('pa-stored-pw').value=pw;
-  }catch(e){
-    document.getElementById('pa-status').textContent='Connection error';
-  }
+  }catch(e){document.getElementById('pa-status').textContent='Connection error';}
   btn.textContent='Login';btn.disabled=false;
 }
 async function pushAdminSend(){
@@ -1549,28 +1532,13 @@ async function pushAdminSend(){
   var statusEl=document.getElementById('pa-send-status');
   if(!title||!body){statusEl.textContent='Title and message required';statusEl.style.color='var(--red)';return;}
   var btn=document.getElementById('pa-send-btn');
-  btn.textContent='Sending...';btn.disabled=true;
-  statusEl.textContent='';
+  btn.textContent='Sending...';btn.disabled=true;statusEl.textContent='';
   try{
-    var r=await fetch(API_BASE+'/api/push/send',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({password:pw,title:title,body:body,url:url})
-    });
+    var r=await fetch(API_BASE+'/api/push/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pw,title:title,body:body,url:url})});
     var d=await r.json();
-    if(d.success){
-      statusEl.style.color='#48BB78';
-      statusEl.textContent='✅ Sent to '+d.sent+' subscribers!';
-      document.getElementById('pa-title').value='';
-      document.getElementById('pa-body').value='';
-    } else {
-      statusEl.style.color='var(--red)';
-      statusEl.textContent='Error: '+(d.error||'Unknown');
-    }
-  }catch(e){
-    statusEl.style.color='var(--red)';
-    statusEl.textContent='Connection error';
-  }
+    if(d.success){statusEl.style.color='#48BB78';statusEl.textContent='✅ Sent to '+d.sent+' subscribers!';document.getElementById('pa-title').value='';document.getElementById('pa-body').value='';}
+    else{statusEl.style.color='var(--red)';statusEl.textContent='Error: '+(d.error||'Unknown');}
+  }catch(e){statusEl.style.color='var(--red)';statusEl.textContent='Connection error';}
   btn.textContent='SEND NOTIFICATION 🔔';btn.disabled=false;
 }
 </script>
