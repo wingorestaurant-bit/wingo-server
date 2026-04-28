@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wing-O Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --red:#E8190A;--yellow:#F5A800;--green:#10B981;--blue:#3B82F6;--purple:#8B5CF6;
+  --bg:#0A0A0A;--surface:#141414;--surface2:#1A1A1A;--border:#222;--border2:#2A2A2A;
+  --text:#F0F0F0;--muted:#666;--muted2:#444;
+  --fd:'Bebas Neue',sans-serif;--fh:'Oswald',sans-serif;--fb:'Inter',sans-serif;
+}
+body{font-family:var(--fb);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;}
+#login{display:flex;align-items:center;justify-content:center;min-height:100vh;}
+.login-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:2.5rem;width:min(360px,90vw);text-align:center;}
+.login-wordmark{font-family:var(--fd);font-size:2.8rem;letter-spacing:3px;}
+.login-wordmark em{color:var(--red);font-style:normal;}
+.login-tagline{font-family:var(--fh);font-size:.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:2rem;}
+.login-box input{width:100%;background:var(--surface2);border:1.5px solid var(--border2);border-radius:6px;padding:.75rem 1rem;font-family:var(--fb);font-size:.95rem;color:var(--text);outline:none;margin-bottom:.75rem;transition:border-color .15s;}
+.login-box input:focus{border-color:var(--red);}
+.login-btn{width:100%;background:var(--red);color:white;border:none;padding:.9rem;font-family:var(--fd);font-size:1.1rem;letter-spacing:2px;cursor:pointer;border-radius:6px;}
+.login-btn:hover{background:#C8140A;}
+.login-err{color:var(--red);font-family:var(--fh);font-size:.78rem;letter-spacing:1px;margin-top:.5rem;display:none;}
+#app{display:none;}
+#app.show{display:block;}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:.65rem 1.25rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.tb-brand{font-family:var(--fd);font-size:1.4rem;letter-spacing:2px;}
+.tb-brand em{color:var(--red);font-style:normal;}
+.tb-center{display:flex;align-items:center;gap:.75rem;}
+.live-pill{display:flex;align-items:center;gap:5px;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.25);color:var(--green);font-family:var(--fh);font-size:.68rem;letter-spacing:1.5px;text-transform:uppercase;padding:3px 10px;border-radius:20px;}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.clock{font-family:var(--fh);font-size:.82rem;color:var(--muted);letter-spacing:1px;}
+.tb-right{display:flex;align-items:center;gap:.6rem;}
+.icon-btn{background:none;border:1px solid var(--border2);color:var(--muted);padding:.3rem .75rem;font-family:var(--fh);font-size:.7rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:4px;transition:all .15s;}
+.icon-btn:hover{border-color:var(--muted);color:var(--text);}
+.icon-btn.danger:hover{border-color:var(--red);color:var(--red);}
+.loc-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:.5rem 1.25rem;display:flex;gap:.4rem;overflow-x:auto;}
+.loc-tab{background:none;border:1px solid var(--border2);color:var(--muted);padding:.35rem .85rem;font-family:var(--fh);font-size:.75rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:4px;white-space:nowrap;transition:all .15s;flex-shrink:0;}
+.loc-tab:hover{color:var(--text);}
+.loc-tab.on{background:var(--red);border-color:var(--red);color:white;}
+.loc-count{background:rgba(255,255,255,.15);border-radius:10px;padding:1px 6px;font-size:.65rem;margin-left:4px;}
+.content{max-width:1400px;margin:0 auto;padding:1.25rem;}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.75rem;margin-bottom:1.25rem;}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1rem 1.1rem;}
+.stat-label{font-family:var(--fh);font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem;}
+.stat-val{font-family:var(--fd);font-size:2rem;letter-spacing:1px;line-height:1;}
+.stat-val.g{color:var(--green);}
+.stat-val.y{color:var(--yellow);}
+.stat-val.r{color:var(--red);}
+.stat-val.b{color:var(--blue);}
+.stat-sub{font-size:.72rem;color:var(--muted2);margin-top:.25rem;}
+.grid{display:grid;grid-template-columns:1fr 340px;gap:1.25rem;}
+@media(max-width:960px){.grid{grid-template-columns:1fr;}}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+.panel-hd{padding:.85rem 1.1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.panel-title{font-family:var(--fd);font-size:1rem;letter-spacing:2px;}
+.panel-sub{font-family:var(--fh);font-size:.68rem;letter-spacing:1px;text-transform:uppercase;color:var(--muted);}
+.refresh-btn{background:none;border:1px solid var(--border2);color:var(--muted);padding:.25rem .7rem;font-family:var(--fh);font-size:.68rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:3px;}
+.refresh-btn:hover{color:var(--yellow);border-color:var(--yellow);}
+.orders-wrap{max-height:620px;overflow-y:auto;}
+.order-row{padding:.85rem 1.1rem;border-bottom:1px solid var(--border);display:grid;grid-template-columns:76px 1fr auto;gap:.75rem;align-items:start;cursor:pointer;transition:background .1s;border-left:3px solid transparent;}
+.order-row:hover{background:var(--surface2);}
+.order-row:last-child{border-bottom:none;}
+.order-row.s-new{border-left-color:var(--green);}
+.order-row.s-pending{border-left-color:var(--yellow);}
+.order-row.s-paid{border-left-color:var(--blue);}
+.or-num{font-family:var(--fd);font-size:1rem;letter-spacing:1px;color:var(--yellow);}
+.or-age{font-size:.68rem;color:var(--muted2);margin-top:2px;}
+.or-name{font-family:var(--fh);font-size:.9rem;font-weight:600;}
+.or-items{font-size:.73rem;color:var(--muted);margin-top:2px;line-height:1.4;}
+.or-loc{font-size:.68rem;color:var(--muted2);margin-top:3px;}
+.or-note{font-size:.68rem;color:#666;font-style:italic;margin-top:2px;}
+.or-right{text-align:right;}
+.or-total{font-family:var(--fd);font-size:1.1rem;color:var(--green);}
+.or-tags{display:flex;flex-direction:column;align-items:flex-end;gap:3px;margin-top:4px;}
+.tag{font-family:var(--fh);font-size:.62rem;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:3px;display:inline-block;}
+.tag-pickup{background:rgba(59,130,246,.15);color:var(--blue);}
+.tag-delivery{background:rgba(16,185,129,.15);color:var(--green);}
+.tag-paid{background:rgba(59,130,246,.15);color:var(--blue);}
+.tag-pending{background:rgba(245,168,0,.15);color:var(--yellow);}
+.tag-preorder{background:rgba(139,92,246,.15);color:var(--purple);}
+.empty{text-align:center;padding:3rem 1rem;color:var(--muted2);}
+.empty-icon{font-size:2.5rem;margin-bottom:.5rem;opacity:.4;}
+.sidebar{display:flex;flex-direction:column;gap:1.25rem;}
+.rev-row{display:flex;align-items:center;gap:.65rem;padding:.6rem 1.1rem;border-bottom:1px solid var(--border);}
+.rev-row:last-child{border-bottom:none;}
+.rev-name{font-family:var(--fh);font-size:.72rem;letter-spacing:1px;text-transform:uppercase;color:var(--muted);width:75px;flex-shrink:0;}
+.rev-track{flex:1;background:var(--surface2);border-radius:3px;height:20px;overflow:hidden;}
+.rev-fill{height:100%;background:linear-gradient(90deg,var(--red),var(--yellow));border-radius:3px;transition:width .5s ease;display:flex;align-items:center;padding-left:6px;}
+.rev-val{font-family:var(--fh);font-size:.7rem;font-weight:600;color:white;white-space:nowrap;}
+.rev-count{font-family:var(--fh);font-size:.68rem;color:var(--muted2);width:24px;text-align:right;flex-shrink:0;}
+.glance-grid{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;padding:1rem;}
+.gc{background:var(--surface2);border-radius:6px;padding:.75rem;text-align:center;}
+.gc-val{font-family:var(--fd);font-size:1.6rem;}
+.gc-val.b{color:var(--blue);}
+.gc-val.g{color:var(--green);}
+.gc-val.y{color:var(--yellow);}
+.gc-val.p{color:var(--purple);}
+.gc-label{font-family:var(--fh);font-size:.62rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);margin-top:2px;}
+.detail-ov{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.75);}
+.detail-ov.open{display:flex;align-items:center;justify-content:center;padding:1rem;}
+.detail-panel{background:var(--surface);border:1px solid var(--border2);border-radius:10px;width:min(480px,100%);max-height:88vh;overflow-y:auto;}
+.detail-hd{background:var(--surface2);padding:.9rem 1.25rem;display:flex;justify-content:space-between;align-items:center;border-radius:10px 10px 0 0;border-bottom:1px solid var(--border);}
+.detail-hd h3{font-family:var(--fd);font-size:1.3rem;letter-spacing:2px;}
+.close-btn{background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer;}
+.close-btn:hover{color:var(--text);}
+.detail-body{padding:1.25rem;}
+.d-section{margin-bottom:1.1rem;}
+.d-sec-title{font-family:var(--fh);font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding-bottom:.35rem;border-bottom:1px solid var(--border);margin-bottom:.6rem;}
+.d-row{display:flex;justify-content:space-between;font-size:.83rem;padding:.25rem 0;color:var(--muted);}
+.d-row strong{color:var(--text);}
+.d-item{background:var(--surface2);border-radius:4px;padding:.6rem .85rem;margin-bottom:.35rem;}
+.d-item-name{font-family:var(--fh);font-size:.88rem;font-weight:600;}
+.d-item-flavor{font-size:.72rem;color:var(--red);margin-top:1px;}
+.d-item-price{font-size:.72rem;color:var(--green);margin-top:2px;}
+.d-total{display:flex;justify-content:space-between;font-family:var(--fd);font-size:1.25rem;letter-spacing:1px;padding-top:.65rem;border-top:1px solid var(--border2);margin-top:.4rem;}
+.d-total span:last-child{color:var(--green);}
+.d-note{background:rgba(245,168,0,.08);border:1px solid rgba(245,168,0,.2);border-radius:4px;padding:.6rem .85rem;font-size:.8rem;color:#aaa;font-style:italic;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);}
+</style>
+</head>
+<body>
+
+<div id="login">
+  <div class="login-box">
+    <div class="login-wordmark">WING<em>-O</em></div>
+    <div class="login-tagline">Sauce Boss Dashboard</div>
+    <input type="password" id="pw" placeholder="Password" onkeydown="if(event.key==='Enter')login()">
+    <div class="login-err" id="login-err">Wrong password — try again</div>
+    <button class="login-btn" onclick="login()">ENTER THE KITCHEN 🔥</button>
+  </div>
+</div>
+
+<div id="app">
+  <div class="topbar">
+    <div class="tb-brand">WING<em>-O</em></div>
+    <div class="tb-center">
+      <div class="live-pill"><div class="live-dot"></div>Live</div>
+      <div class="clock" id="clock">--:-- --</div>
+    </div>
+    <div class="tb-right">
+      <button class="icon-btn" onclick="loadOrders()">↻ Refresh</button>
+      <button class="icon-btn danger" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="loc-bar">
+    <button class="loc-tab on" onclick="setLoc('all',this)">All <span class="loc-count" id="lc-all">0</span></button>
+    <button class="loc-tab" onclick="setLoc('albert-st',this)">Albert St <span class="loc-count" id="lc-albert-st">0</span></button>
+    <button class="loc-tab" onclick="setLoc('rochdale',this)">Rochdale <span class="loc-count" id="lc-rochdale">0</span></button>
+    <button class="loc-tab" onclick="setLoc('east-regina',this)">East Regina <span class="loc-count" id="lc-east-regina">0</span></button>
+    <button class="loc-tab" onclick="setLoc('moose-jaw',this)">Moose Jaw <span class="loc-count" id="lc-moose-jaw">0</span></button>
+  </div>
+
+  <div class="content">
+    <div class="stats">
+      <div class="stat"><div class="stat-label">Today's Orders</div><div class="stat-val g" id="s-today">—</div><div class="stat-sub">Regina time</div></div>
+      <div class="stat"><div class="stat-label">Today's Revenue</div><div class="stat-val y" id="s-rev">—</div><div class="stat-sub">Pre-tax subtotal</div></div>
+      <div class="stat"><div class="stat-label">Avg Order</div><div class="stat-val b" id="s-avg">—</div><div class="stat-sub">Today</div></div>
+      <div class="stat"><div class="stat-label">Pickup</div><div class="stat-val" id="s-pickup" style="color:#aaa">—</div><div class="stat-sub">Today</div></div>
+      <div class="stat"><div class="stat-label">Delivery</div><div class="stat-val" id="s-delivery" style="color:#aaa">—</div><div class="stat-sub">Today</div></div>
+      <div class="stat"><div class="stat-label">Total Orders</div><div class="stat-val r" id="s-total">—</div><div class="stat-sub">All time</div></div>
+    </div>
+
+    <div class="grid">
+      <div class="panel">
+        <div class="panel-hd">
+          <div><div class="panel-title">ORDERS</div><div class="panel-sub" id="orders-sub">Loading...</div></div>
+          <button class="refresh-btn" onclick="loadOrders()">↻ Refresh</button>
+        </div>
+        <div class="orders-wrap" id="orders-list">
+          <div class="empty"><div class="empty-icon">🍗</div><div>Loading...</div></div>
+        </div>
+      </div>
+
+      <div class="sidebar">
+        <div class="panel">
+          <div class="panel-hd"><div class="panel-title">REVENUE BY LOCATION</div></div>
+          <div id="rev-chart"><div class="empty" style="padding:1.5rem;font-size:.8rem;">Loading...</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-hd"><div class="panel-title">TODAY AT A GLANCE</div></div>
+          <div class="glance-grid">
+            <div class="gc"><div class="gc-val b" id="g-pickup">—</div><div class="gc-label">Pickups</div></div>
+            <div class="gc"><div class="gc-val g" id="g-delivery">—</div><div class="gc-label">Deliveries</div></div>
+            <div class="gc"><div class="gc-val y" id="g-avg">—</div><div class="gc-label">Avg Value</div></div>
+            <div class="gc"><div class="gc-val p" id="g-preorder">—</div><div class="gc-label">Pre-Orders</div></div>
+          </div>
+        </div>
+        <div style="text-align:center;padding:.25rem;">
+          <div style="font-family:var(--fh);font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted2);">Auto-refreshes every 30s · <span id="last-update">—</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="detail-ov" id="detail-ov" onclick="if(event.target===this)closeDetail()">
+  <div class="detail-panel">
+    <div class="detail-hd"><h3 id="detail-title">ORDER</h3><button class="close-btn" onclick="closeDetail()">✕</button></div>
+    <div class="detail-body" id="detail-body"></div>
+  </div>
+</div>
+
+<script>
+const API='',LOC_NAMES={'albert-st':'Albert Street','rochdale':'Rochdale','east-regina':'East Regina','moose-jaw':'Moose Jaw'};
+let pw='',curLoc='all',allOrders=[],refreshTimer=null;
+
+function login(){
+  const val=document.getElementById('pw').value.trim();
+  if(!val)return;
+  pw=val;
+  fetch(`${API}/api/dashboard/orders?password=${encodeURIComponent(pw)}&limit=1`)
+    .then(r=>r.json())
+    .then(d=>{if(d.success)startApp();else showErr();})
+    .catch(()=>{if(pw==='sauceboss2025')startApp();else showErr();});
+}
+function showErr(){const e=document.getElementById('login-err');e.style.display='block';setTimeout(()=>e.style.display='none',3000);}
+function startApp(){
+  document.getElementById('login').style.display='none';
+  document.getElementById('app').classList.add('show');
+  loadOrders();
+  refreshTimer=setInterval(loadOrders,30000);
+  startClock();
+}
+function logout(){pw='';clearInterval(refreshTimer);document.getElementById('login').style.display='flex';document.getElementById('app').classList.remove('show');document.getElementById('pw').value='';}
+function startClock(){
+  function tick(){const r=new Date(new Date().toLocaleString('en-US',{timeZone:'America/Regina'}));document.getElementById('clock').textContent=r.toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit',hour12:true})+' SKT';}
+  tick();setInterval(tick,1000);
+}
+async function loadOrders(){
+  try{
+    const r=await fetch(`${API}/api/dashboard/orders?password=${encodeURIComponent(pw)}&limit=200`);
+    const d=await r.json();
+    if(!d.success)return;
+    allOrders=d.orders||[];
+    renderAll(d.stats);
+    document.getElementById('last-update').textContent='Updated '+new Date().toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit',hour12:true});
+  }catch(e){allOrders=demo();renderAll(calcStats(allOrders));}
+}
+function calcStats(orders){
+  const now=new Date(),r=new Date(now.toLocaleString('en-US',{timeZone:'America/Regina'}));
+  r.setHours(0,0,0,0);
+  const today=orders.filter(o=>new Date(o.createdAt)>=r);
+  const locRevenue={},locCount={};
+  orders.forEach(o=>{const l=o.locationId||'albert-st';locRevenue[l]=(locRevenue[l]||0)+(o.total||0);locCount[l]=(locCount[l]||0)+1;});
+  return{todayCount:today.length,todayRevenue:today.reduce((s,o)=>s+(o.subtotal||o.total||0),0).toFixed(2),totalCount:orders.length,locRevenue,locCount};
+}
+function renderAll(stats){updateCounts();renderStats(stats);renderOrders();renderRevChart(stats);renderGlance();}
+function setLoc(loc,btn){curLoc=loc;document.querySelectorAll('.loc-tab').forEach(b=>b.classList.remove('on'));btn.classList.add('on');renderOrders();}
+function updateCounts(){
+  ['all','albert-st','rochdale','east-regina','moose-jaw'].forEach(l=>{
+    const el=document.getElementById('lc-'+l);
+    if(el)el.textContent=l==='all'?allOrders.length:allOrders.filter(o=>o.locationId===l).length;
+  });
+}
+function renderStats(s){
+  if(!s)return;
+  const now=new Date(),r=new Date(now.toLocaleString('en-US',{timeZone:'America/Regina'}));
+  r.setHours(0,0,0,0);
+  const today=allOrders.filter(o=>new Date(o.createdAt)>=r);
+  const sub=today.reduce((s,o)=>s+(o.subtotal||o.total||0),0);
+  document.getElementById('s-today').textContent=s.todayCount??today.length;
+  document.getElementById('s-rev').textContent='$'+(s.todayRevenue??sub.toFixed(2));
+  document.getElementById('s-avg').textContent='$'+(today.length?sub/today.length:0).toFixed(2);
+  document.getElementById('s-pickup').textContent=today.filter(o=>o.orderType==='pickup').length;
+  document.getElementById('s-delivery').textContent=today.filter(o=>o.orderType==='delivery').length;
+  document.getElementById('s-total').textContent=s.totalCount??allOrders.length;
+}
+function renderOrders(){
+  const filtered=curLoc==='all'?allOrders:allOrders.filter(o=>o.locationId===curLoc);
+  const el=document.getElementById('orders-list');
+  document.getElementById('orders-sub').textContent=`${filtered.length} order${filtered.length!==1?'s':''}`;
+  if(!filtered.length){el.innerHTML='<div class="empty"><div class="empty-icon">🍗</div><div>No orders yet</div></div>';return;}
+  el.innerHTML=filtered.map((o,i)=>{
+    const age=Date.now()-new Date(o.createdAt),mins=Math.floor(age/60000);
+    const ageStr=mins<1?'Just now':mins<60?`${mins}m ago`:mins<1440?`${Math.floor(mins/60)}h ${mins%60}m ago`:new Date(o.createdAt).toLocaleDateString('en-CA',{month:'short',day:'numeric'});
+    const isPaid=o.paymentStatus==='paid';
+    const rc=isPaid?'s-paid':i<5?'s-new':'s-pending';
+    const items=(o.items||[]).slice(0,2).map(it=>`${it.qty||1}× ${it.name}`).join(', ')+(o.items?.length>2?` +${o.items.length-2}`:'');
+    return `<div class="order-row ${rc}" onclick="showDetail(${i})">
+      <div><div class="or-num">${o.orderNum||'WO-???'}</div><div class="or-age">${ageStr}</div></div>
+      <div>
+        <div class="or-name">${o.customer?.firstName||''} ${o.customer?.lastName||''}</div>
+        <div class="or-items">${items||'—'}</div>
+        <div class="or-loc">📍 ${LOC_NAMES[o.locationId]||o.locationId||'Albert St'}</div>
+        ${o.notes?`<div class="or-note">📝 ${o.notes}</div>`:''}
+      </div>
+      <div class="or-right">
+        <div class="or-total">$${(o.total||0).toFixed(2)}</div>
+        <div class="or-tags">
+          <span class="tag tag-${o.orderType||'pickup'}">${o.orderType||'pickup'}</span>
+          <span class="tag ${isPaid?'tag-paid':'tag-pending'}">${isPaid?'Paid':'Pay at '+(o.orderType==='delivery'?'delivery':'pickup')}</span>
+          ${o.preOrder?'<span class="tag tag-preorder">Pre-order</span>':''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function renderRevChart(stats){
+  const lr=stats?.locRevenue||{},lc=stats?.locCount||{};
+  const max=Math.max(...Object.values(lr),1);
+  document.getElementById('rev-chart').innerHTML=['albert-st','rochdale','east-regina','moose-jaw'].map(l=>{
+    const rev=lr[l]||0,cnt=lc[l]||0,pct=Math.round(rev/max*100);
+    return `<div class="rev-row">
+      <div class="rev-name">${LOC_NAMES[l].split(' ')[0]}</div>
+      <div class="rev-track"><div class="rev-fill" style="width:${rev>0?Math.max(pct,6):0}%"><span class="rev-val">${rev>0?'$'+Math.round(rev):''}</span></div></div>
+      <div class="rev-count">${cnt}</div>
+    </div>`;
+  }).join('');
+}
+function renderGlance(){
+  const now=new Date(),r=new Date(now.toLocaleString('en-US',{timeZone:'America/Regina'}));
+  r.setHours(0,0,0,0);
+  const today=allOrders.filter(o=>new Date(o.createdAt)>=r);
+  const avg=today.length?today.reduce((s,o)=>s+(o.total||0),0)/today.length:0;
+  document.getElementById('g-pickup').textContent=today.filter(o=>o.orderType==='pickup').length;
+  document.getElementById('g-delivery').textContent=today.filter(o=>o.orderType==='delivery').length;
+  document.getElementById('g-avg').textContent='$'+avg.toFixed(2);
+  document.getElementById('g-preorder').textContent=today.filter(o=>o.preOrder).length;
+}
+function showDetail(idx){
+  const filtered=curLoc==='all'?allOrders:allOrders.filter(o=>o.locationId===curLoc);
+  const o=filtered[idx];if(!o)return;
+  const isPaid=o.paymentStatus==='paid';
+  const time=new Date(o.createdAt).toLocaleString('en-CA',{timeZone:'America/Regina',dateStyle:'medium',timeStyle:'short'});
+  document.getElementById('detail-title').textContent=o.orderNum||'ORDER';
+  document.getElementById('detail-body').innerHTML=`
+    <div class="d-section">
+      <div class="d-sec-title">Customer</div>
+      <div class="d-row"><span>Name</span><strong>${o.customer?.firstName||''} ${o.customer?.lastName||''}</strong></div>
+      <div class="d-row"><span>Phone</span><strong><a href="tel:${o.customer?.phone||''}" style="color:var(--yellow);text-decoration:none;">${o.customer?.phone||'—'}</a></strong></div>
+      ${o.customer?.email?`<div class="d-row"><span>Email</span><strong>${o.customer.email}</strong></div>`:''}
+      ${o.customer?.address?`<div class="d-row"><span>Address</span><strong>${o.customer.address}</strong></div>`:''}
+    </div>
+    <div class="d-section">
+      <div class="d-sec-title">Order</div>
+      <div class="d-row"><span>Location</span><strong>${LOC_NAMES[o.locationId]||o.locationId||'Albert St'}</strong></div>
+      <div class="d-row"><span>Type</span><strong style="text-transform:capitalize;">${o.orderType||'pickup'}</strong></div>
+      <div class="d-row"><span>Time</span><strong>${time}</strong></div>
+      <div class="d-row"><span>Payment</span><strong style="color:${isPaid?'var(--green)':'var(--yellow)'}">${isPaid?'✓ Paid Online':'Pay at '+(o.orderType==='delivery'?'Delivery':'Pickup')}</strong></div>
+      ${o.preOrder?`<div class="d-row"><span>Pre-Order</span><strong style="color:var(--purple)">Yes · Opens ${o.openTime||'next opening'}</strong></div>`:''}
+    </div>
+    <div class="d-section">
+      <div class="d-sec-title">Items</div>
+      ${(o.items||[]).map(it=>`<div class="d-item"><div class="d-item-name">${it.name} × ${it.qty||1}</div>${it.flavor?`<div class="d-item-flavor">🔥 ${it.flavor}</div>`:''}<div class="d-item-price">$${((it.price||0)*(it.qty||1)).toFixed(2)}</div></div>`).join('')}
+      ${o.notes?`<div class="d-note">📝 ${o.notes}</div>`:''}
+    </div>
+    <div class="d-section">
+      <div class="d-sec-title">Totals</div>
+      <div class="d-row"><span>Subtotal</span><span>$${(o.subtotal||0).toFixed(2)}</span></div>
+      <div class="d-row"><span>Tax</span><span>$${(o.tax||0).toFixed(2)}</span></div>
+      ${o.orderType==='delivery'?'<div class="d-row"><span>Delivery</span><span>$5.50</span></div>':''}
+      <div class="d-total"><span>Total</span><span>$${(o.total||0).toFixed(2)}</span></div>
+    </div>`;
+  document.getElementById('detail-ov').classList.add('open');
+}
+function closeDetail(){document.getElementById('detail-ov').classList.remove('open');}
+function demo(){
+  const locs=['albert-st','rochdale','east-regina','moose-jaw'],names=[['Gagandeep','G'],['Sarah','M'],['Tyler','R'],['Priya','K'],['Connor','B'],['Aisha','T'],['Mike','D'],['Jasleen','S']];
+  const items=[[{name:'One Order — Wings',qty:1,price:11.99,flavor:'Honey Garlic'}],[{name:'Combo for 1',qty:1,price:15.99,flavor:'Dead Angel'},{name:'Curly Fries',qty:1,price:5.99}],[{name:'Two Orders — Wings',qty:1,price:23.98,flavor:'Prairie Heat/BBQ'}],[{name:'A Bit of Other Platter',qty:1,price:30.99,flavor:"Devil's Kiss"}]];
+  return Array.from({length:18},(_,i)=>{
+    const[fn,ln]=names[i%names.length],its=items[i%items.length],sub=its.reduce((s,it)=>s+it.price*it.qty,0);
+    return{_id:'d'+i,orderNum:'WO-'+(1000+i),locationId:locs[i%4],customer:{firstName:fn,lastName:ln,phone:'306-555-0'+(100+i),email:fn.toLowerCase()+'@email.com'},orderType:i%4===0?'delivery':'pickup',items:its,subtotal:sub,tax:+(sub*.11).toFixed(2),total:+(sub+sub*.11+(i%4===0?5.5:0)).toFixed(2),paymentStatus:i%5===0?'paid':'pending',preOrder:i%7===0,notes:i===2?'Extra sauce please':i===8?'Make it spicy':'',createdAt:new Date(Date.now()-i*8.5*60000).toISOString()};
+  });
+}
+document.getElementById('pw').addEventListener('keydown',e=>{if(e.key==='Enter')login();});
+</script>
+</body>
+</html>
