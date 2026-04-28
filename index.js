@@ -269,6 +269,10 @@ app.get('/sb-admin', (req, res) => { res.sendFile(path.join(__dirname, 'public',
 app.get('/kitchen', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'kitchen.html')); });
 app.get('/kitchen.html', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'kitchen.html')); });
 
+// ── SAUCE BOSS DASHBOARD ROUTE ─────────────────────────────────
+app.get('/dashboard', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'dashboard.html')); });
+app.get('/dashboard.html', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'dashboard.html')); });
+
 // ── PLACE ORDER ────────────────────────────────────────────────
 app.post('/api/orders', async (req, res) => {
   const { locationId, orderType, customer, items, notes, subtotal, tax, total, preOrder, openTime } = req.body;
