@@ -34,7 +34,6 @@ async function connectDB() {
     await db.collection('loyalty').createIndex({ phone: 1 }, { unique: true });
     await db.collection('loyalty').createIndex({ email: 1 });
     await db.collection('loyalty').createIndex({ usedOrderNums: 1 });
-    // Kitchen orders indexes
     await db.collection('orders').createIndex({ locationId: 1, kitchenStatus: 1, createdAt: -1 });
     await db.collection('orders').createIndex({ orderNum: 1 });
     return db;
@@ -46,7 +45,6 @@ async function connectDB() {
 connectDB();
 
 // ── LOCATION CONFIG ────────────────────────────────────────────
-// All locations now use PAY AT PICKUP / DELIVERY (no online card payments)
 const LOCATIONS = {
   "albert-st": {
     name: "Albert Street (Regina)",
@@ -121,23 +119,19 @@ async function sendEmail({ to, subject, html }) {
   } catch (e) { console.warn('Email failed:', e.message); }
 }
 
-// ── AUTO STAMP (called internally after confirmed order) ───────
+// ── AUTO STAMP ────────────────────────────────────────────────
 async function autoAddStamp(phone, orderNum, customerName) {
   if (!phone || !orderNum) return null;
   const cleanPhone = phone.replace(/\D/g, '');
-
   try {
     const database = await connectDB();
     if (!database) return null;
-
     const member = await database.collection('loyalty').findOne({ phone: cleanPhone });
     if (!member) return null;
-
     if (member.usedOrderNums && member.usedOrderNums.includes(orderNum)) {
       console.log(`⚠️ Stamp already given for order ${orderNum}`);
       return null;
     }
-
     const newStamps = (member.stamps || 0) + 1;
     const newTotalOrders = (member.totalOrders || 0) + 1;
     const gotFree = newStamps >= 10;
@@ -147,23 +141,14 @@ async function autoAddStamp(phone, orderNum, customerName) {
       { orderNum, date: new Date().toLocaleDateString('en-CA'), stamp: newTotalOrders, auto: true },
       ...(member.history || [])
     ].slice(0, 50);
-
     await database.collection('loyalty').updateOne(
       { phone: cleanPhone },
       {
-        $set: {
-          stamps: finalStamps,
-          totalOrders: newTotalOrders,
-          freeEarned: newFreeEarned,
-          history: newHistory,
-          updatedAt: new Date()
-        },
+        $set: { stamps: finalStamps, totalOrders: newTotalOrders, freeEarned: newFreeEarned, history: newHistory, updatedAt: new Date() },
         $push: { usedOrderNums: orderNum }
       }
     );
-
     console.log(`🍗 AUTO-STAMP: ${member.name} — Order ${orderNum} — Stamp ${newTotalOrders} — Free: ${gotFree}`);
-
     if (gotFree) {
       sendEmail({
         to: 'besaucy@wingorestaurants.com',
@@ -183,7 +168,6 @@ async function autoAddStamp(phone, orderNum, customerName) {
         </div>`
       });
     }
-
     return { gotFree, stamps: finalStamps, totalOrders: newTotalOrders, memberName: member.name };
   } catch (e) {
     console.error('Auto-stamp error:', e.message);
@@ -191,7 +175,7 @@ async function autoAddStamp(phone, orderNum, customerName) {
   }
 }
 
-// ── CREATE CLOVER ORDER WITH LINE ITEMS ────────────────────────
+// ── CREATE CLOVER ORDER ────────────────────────────────────────
 async function createCloverOrder(loc, orderNum, orderType, customer, items, subtotal, notes, timestamp) {
   const orderNote = `
 =================================
@@ -247,17 +231,11 @@ PAY AT ${orderType === 'delivery' ? 'DELIVERY' : 'PICKUP'}
         {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${loc.apiToken}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name: itemName,
-            price: Math.round(item.price * 100),
-            unitQty: 1000,
-            note: item.flavor || ''
-          })
+          body: JSON.stringify({ name: itemName, price: Math.round(item.price * 100), unitQty: 1000, note: item.flavor || '' })
         }
       );
       const lineData = await lineResp.json();
       console.log(`  Line item: ${itemName} — ${lineResp.status} — id:${lineData.id||'?'}`);
-
       if (item.qty > 1) {
         for (let q = 1; q < item.qty; q++) {
           await fetch(
@@ -265,19 +243,13 @@ PAY AT ${orderType === 'delivery' ? 'DELIVERY' : 'PICKUP'}
             {
               method: 'POST',
               headers: { 'Authorization': `Bearer ${loc.apiToken}`, 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                name: itemName,
-                price: Math.round(item.price * 100),
-                unitQty: 1000,
-                note: item.flavor || ''
-              })
+              body: JSON.stringify({ name: itemName, price: Math.round(item.price * 100), unitQty: 1000, note: item.flavor || '' })
             }
           );
         }
       }
     } catch (e) { console.warn('Line item error:', e.message); }
   }
-
   console.log(`✓ Line items added to ${cloverId}`);
   return cloverId;
 }
@@ -288,31 +260,18 @@ app.get('/api/health', (req, res) => {
 });
 
 // ── PUSH ADMIN PANEL ───────────────────────────────────────────
-app.get('/push-admin', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'push-admin.html'));
-});
-app.get('/push-admin.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'push-admin.html'));
-});
-app.get('/sauce-boss-admin', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'push-admin.html'));
-});
-app.get('/sb-admin', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'push-admin.html'));
-});
+app.get('/push-admin', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'push-admin.html')); });
+app.get('/push-admin.html', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'push-admin.html')); });
+app.get('/sauce-boss-admin', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'push-admin.html')); });
+app.get('/sb-admin', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'push-admin.html')); });
 
-// ── KITCHEN DISPLAY ROUTE ──────────────────────────────────────
-app.get('/kitchen', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'kitchen.html'));
-});
-app.get('/kitchen.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'kitchen.html'));
-});
+// ── KITCHEN DISPLAY ────────────────────────────────────────────
+app.get('/kitchen', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'kitchen.html')); });
+app.get('/kitchen.html', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'kitchen.html')); });
 
-// ── PLACE ORDER → CLOVER (pay at pickup/delivery for ALL locations) ───
+// ── PLACE ORDER ────────────────────────────────────────────────
 app.post('/api/orders', async (req, res) => {
   const { locationId, orderType, customer, items, notes, subtotal, tax, total, preOrder, openTime } = req.body;
-
   if (!locationId || !LOCATIONS[locationId]) return res.status(400).json({ error: 'Invalid location' });
   if (!customer?.firstName || !customer?.phone) return res.status(400).json({ error: 'Missing customer info' });
   if (!items || !items.length) return res.status(400).json({ error: 'No items' });
@@ -320,54 +279,31 @@ app.post('/api/orders', async (req, res) => {
   const loc = LOCATIONS[locationId];
   const orderNum = 'WO-' + String(Math.floor(1000 + Math.random() * 9000));
   const timestamp = new Date().toLocaleString('en-CA', { timeZone: 'America/Regina' });
-
   console.log(`\n[${timestamp}] Order ${orderNum} for ${customer.firstName} at ${loc.name}`);
 
-  let cloverId = null;
-  let cloverSuccess = false;
+  let cloverId = null, cloverSuccess = false;
   try {
     cloverId = await createCloverOrder(loc, orderNum, orderType, customer, items, subtotal, notes, timestamp);
     cloverSuccess = !!cloverId;
   } catch (e) { console.error('Clover error:', e.message); }
 
-  // ── SAVE ORDER TO MONGO (so kitchen display can fetch it) ──
   try {
     const database = await connectDB();
     if (database) {
       await database.collection('orders').insertOne({
-        orderNum,
-        locationId,
-        locationName: loc.name,
-        orderType,
+        orderNum, locationId, locationName: loc.name, orderType,
         customer: {
-          firstName: customer.firstName,
-          lastName: customer.lastName || '',
-          phone: customer.phone,
-          email: customer.email || '',
-          address: customer.address || ''
+          firstName: customer.firstName, lastName: customer.lastName || '',
+          phone: customer.phone, email: customer.email || '', address: customer.address || ''
         },
-        items: items.map(i => ({
-          name: i.name,
-          flavor: i.flavor || '',
-          price: i.price,
-          qty: i.qty
-        })),
-        notes: notes || '',
-        subtotal: Number(subtotal),
-        tax: Number(tax),
-        total: Number(total),
-        preOrder: !!preOrder,
-        openTime: openTime || null,
-        cloverId,
-        cloverSuccess,
-        kitchenStatus: 'pending', // ← used by kitchen display
-        createdAt: new Date()
+        items: items.map(i => ({ name: i.name, flavor: i.flavor || '', price: i.price, qty: i.qty })),
+        notes: notes || '', subtotal: Number(subtotal), tax: Number(tax), total: Number(total),
+        preOrder: !!preOrder, openTime: openTime || null, cloverId, cloverSuccess,
+        kitchenStatus: 'pending', createdAt: new Date()
       });
       console.log(`✓ Order ${orderNum} saved to Mongo`);
     }
-  } catch (e) {
-    console.warn('Order save to Mongo failed:', e.message);
-  }
+  } catch (e) { console.warn('Order save to Mongo failed:', e.message); }
 
   const stampResult = await autoAddStamp(customer.phone, orderNum, customer.firstName);
 
@@ -407,54 +343,38 @@ app.post('/api/orders', async (req, res) => {
     message: cloverSuccess ? `Order sent to ${loc.name} kitchen!` : 'Order recorded!',
     customer: customer.firstName, total: Number(total).toFixed(2),
     phone: customer.phone, orderType, location: loc.name,
-    stampAdded: !!stampResult,
-    gotFreeWings: stampResult?.gotFree || false,
-    loyaltyStamps: stampResult?.stamps
+    stampAdded: !!stampResult, gotFreeWings: stampResult?.gotFree || false, loyaltyStamps: stampResult?.stamps
   });
 });
 
-// ── KITCHEN ALERT API ─────────────────────────────────────────
-
-// Login check (used by kitchen.html password gate)
+// ── KITCHEN API ────────────────────────────────────────────────
 app.get('/api/kitchen/auth', (req, res) => {
   const { loc, pw } = req.query;
-  if (checkKitchenAuth(loc, pw)) {
-    return res.json({ ok: true });
-  }
+  if (checkKitchenAuth(loc, pw)) return res.json({ ok: true });
   res.status(401).json({ ok: false });
 });
 
-// Fetch pending + in-progress orders for a location
 app.get('/api/kitchen/orders', async (req, res) => {
   const { loc, pw } = req.query;
-  if (!checkKitchenAuth(loc, pw)) {
-    return res.status(401).json({ error: 'unauthorized' });
-  }
+  if (!checkKitchenAuth(loc, pw)) return res.status(401).json({ error: 'unauthorized' });
   try {
     const database = await connectDB();
     if (!database) return res.json({ pending: [], progress: [] });
-
-    const cutoff = new Date(Date.now() - 12 * 60 * 60 * 1000); // last 12 hrs
+    const cutoff = new Date(Date.now() - 12 * 60 * 60 * 1000);
     const orders = await database.collection('orders').find({
       locationId: loc,
       kitchenStatus: { $in: ['pending', 'progress'] },
       createdAt: { $gte: cutoff }
     }).sort({ createdAt: 1 }).toArray();
-
     const now = Date.now();
     const formatted = orders.map(o => ({
-      id: o._id.toString(),
-      orderNum: o.orderNum,
+      id: o._id.toString(), orderNum: o.orderNum,
       customer: [o.customer?.firstName, o.customer?.lastName].filter(Boolean).join(' ') || 'Customer',
-      phone: o.customer?.phone || '',
-      address: o.customer?.address || '',
-      orderType: o.orderType || 'pickup',
-      items: o.items || [],
-      notes: o.notes || '',
+      phone: o.customer?.phone || '', address: o.customer?.address || '',
+      orderType: o.orderType || 'pickup', items: o.items || [], notes: o.notes || '',
       kitchenStatus: o.kitchenStatus || 'pending',
       timeAgo: formatTimeAgo(now - new Date(o.createdAt).getTime())
     }));
-
     res.json({
       pending:  formatted.filter(o => o.kitchenStatus === 'pending'),
       progress: formatted.filter(o => o.kitchenStatus === 'progress')
@@ -474,26 +394,16 @@ function formatTimeAgo(ms) {
   return hrs + ' hr' + (hrs > 1 ? 's' : '') + ' ago';
 }
 
-// Update an order's kitchen status (acknowledge / complete)
 app.post('/api/kitchen/order/:id/status', async (req, res) => {
   const { loc, pw, status } = req.body;
-  if (!checkKitchenAuth(loc, pw)) {
-    return res.status(401).json({ error: 'unauthorized' });
-  }
-  if (!['pending', 'progress', 'complete'].includes(status)) {
-    return res.status(400).json({ error: 'bad status' });
-  }
+  if (!checkKitchenAuth(loc, pw)) return res.status(401).json({ error: 'unauthorized' });
+  if (!['pending', 'progress', 'complete'].includes(status)) return res.status(400).json({ error: 'bad status' });
   try {
     const database = await connectDB();
     if (!database) return res.status(500).json({ error: 'db unavailable' });
-
-    const update = {
-      kitchenStatus: status,
-      [`kitchenStatus_${status}_at`]: new Date()
-    };
     await database.collection('orders').updateOne(
       { _id: new ObjectId(req.params.id), locationId: loc },
-      { $set: update }
+      { $set: { kitchenStatus: status, [`kitchenStatus_${status}_at`]: new Date() } }
     );
     console.log(`[kitchen] ${loc} → order ${req.params.id} → ${status}`);
     res.json({ ok: true });
@@ -505,7 +415,6 @@ app.post('/api/kitchen/order/:id/status', async (req, res) => {
 
 // ── DONATION TRACKER ──────────────────────────────────────────
 let donationAmount = 27000;
-
 app.get('/api/donation', (req, res) => {
   res.json({ amount: donationAmount, updatedAt: new Date().toISOString() });
 });
@@ -517,7 +426,7 @@ app.post('/api/donation', (req, res) => {
   res.json({ success: true, amount: donationAmount });
 });
 
-// ── GET LOCATIONS ─────────────────────────────────────────────
+// ── LOCATIONS ─────────────────────────────────────────────────
 app.get('/api/locations', (req, res) => {
   const safe = Object.entries(LOCATIONS).map(([id, loc]) => ({
     id, name: loc.name, address: loc.address, phone: loc.phone, hours: loc.hours
@@ -530,7 +439,6 @@ app.post('/api/franchise', async (req, res) => {
   const { firstName, lastName, email, phone, city, budget, message } = req.body;
   const timestamp = new Date().toLocaleString('en-CA', { timeZone: 'America/Regina' });
   console.log(`\n🚀 FRANCHISE: ${firstName} ${lastName} — ${city} — ${timestamp}`);
-
   sendEmail({
     to: 'besaucy@wingorestaurants.com',
     subject: `🚀 Franchise Inquiry — ${firstName} ${lastName} (${city})`,
@@ -552,35 +460,22 @@ app.post('/api/franchise', async (req, res) => {
   res.json({ success: true });
 });
 
-// ── LOYALTY PROGRAM (MongoDB) ────────────────────────────────
-
+// ── LOYALTY ───────────────────────────────────────────────────
 app.post('/api/loyalty/signup', async (req, res) => {
   const { name, email, phone } = req.body;
   if (!name || !email || !phone) return res.json({ success: false, error: 'Missing fields' });
   const cleanPhone = phone.replace(/\D/g, '');
-
   try {
     const database = await connectDB();
     if (!database) return res.json({ success: false, error: 'Database unavailable' });
-
     const existing = await database.collection('loyalty').findOne({ phone: cleanPhone });
     if (existing) return res.json({ success: false, error: 'Phone already registered' });
-
     const member = {
-      name, email,
-      phone: cleanPhone,
-      stamps: 0,
-      totalOrders: 0,
-      freeEarned: 0,
-      usedOrderNums: [],
-      history: [],
-      joinDate: new Date().toISOString(),
-      createdAt: new Date()
+      name, email, phone: cleanPhone, stamps: 0, totalOrders: 0, freeEarned: 0,
+      usedOrderNums: [], history: [], joinDate: new Date().toISOString(), createdAt: new Date()
     };
-
     await database.collection('loyalty').insertOne(member);
     console.log(`🍗 New loyalty member: ${name} — ${cleanPhone}`);
-
     sendEmail({
       to: 'besaucy@wingorestaurants.com',
       subject: `🍗 New Saucy Stamps Member — ${name}`,
@@ -594,7 +489,6 @@ app.post('/api/loyalty/signup', async (req, res) => {
         </table>
       </div>`
     });
-
     res.json({ success: true, member });
   } catch (e) {
     console.error('Loyalty signup error:', e.message);
@@ -606,18 +500,12 @@ app.get('/api/loyalty/lookup', async (req, res) => {
   const { q } = req.query;
   if (!q) return res.json({ success: false, error: 'Missing search' });
   const cleanPhone = q.replace(/\D/g, '');
-
   try {
     const database = await connectDB();
     if (!database) return res.json({ success: false, error: 'Database unavailable' });
-
     const member = await database.collection('loyalty').findOne({
-      $or: [
-        { phone: cleanPhone },
-        { email: q.toLowerCase().trim() }
-      ]
+      $or: [{ phone: cleanPhone }, { email: q.toLowerCase().trim() }]
     });
-
     if (!member) return res.json({ success: false, error: 'Member not found' });
     res.json({ success: true, member });
   } catch (e) {
@@ -630,22 +518,17 @@ app.post('/api/loyalty/stamp', async (req, res) => {
   const { phone, orderNum, password } = req.body;
   const cleanPhone = phone.replace(/\D/g, '');
   if (!cleanPhone || !orderNum) return res.json({ success: false, error: 'Missing fields' });
-
   if (!password || password !== (process.env.ADMIN_PASSWORD || 'sauceboss2025')) {
     return res.status(401).json({ success: false, error: 'Unauthorized — admin password required' });
   }
-
   try {
     const database = await connectDB();
     if (!database) return res.json({ success: false, error: 'Database unavailable' });
-
     const member = await database.collection('loyalty').findOne({ phone: cleanPhone });
     if (!member) return res.json({ success: false, error: 'Member not found' });
-
     if (member.usedOrderNums && member.usedOrderNums.includes(orderNum)) {
       return res.json({ success: false, error: 'Order number already used' });
     }
-
     const newStamps = (member.stamps || 0) + 1;
     const newTotalOrders = (member.totalOrders || 0) + 1;
     const gotFree = newStamps >= 10;
@@ -655,44 +538,30 @@ app.post('/api/loyalty/stamp', async (req, res) => {
       { orderNum, date: new Date().toLocaleDateString('en-CA'), stamp: newTotalOrders, manual: true },
       ...(member.history || [])
     ].slice(0, 50);
-
     await database.collection('loyalty').updateOne(
       { phone: cleanPhone },
       {
-        $set: {
-          stamps: finalStamps,
-          totalOrders: newTotalOrders,
-          freeEarned: newFreeEarned,
-          history: newHistory,
-          updatedAt: new Date()
-        },
+        $set: { stamps: finalStamps, totalOrders: newTotalOrders, freeEarned: newFreeEarned, history: newHistory, updatedAt: new Date() },
         $push: { usedOrderNums: orderNum }
       }
     );
-
     const updated = await database.collection('loyalty').findOne({ phone: cleanPhone });
     console.log(`🍗 MANUAL STAMP: ${member.name} — ${orderNum} — Total: ${newTotalOrders} — Free: ${gotFree}`);
-
     if (gotFree) {
       sendEmail({
         to: 'besaucy@wingorestaurants.com',
         subject: `🎉 FREE WINGS EARNED — ${member.name}`,
         html: `<div style="font-family:Arial;max-width:500px;margin:0 auto;background:#0D0D0D;padding:24px;border-radius:8px;">
           <h2 style="color:#E8190A;margin:0 0 16px;">🎉 Free Wings Earned!</h2>
-          <p style="color:#CCC;font-size:15px;margin-bottom:12px;"><strong style="color:white;">${member.name}</strong> just collected their 10th stamp!</p>
           <table style="width:100%;color:#CCC;font-size:14px;">
-            <tr><td style="padding:6px 0;color:#888;">Phone</td><td>${cleanPhone}</td></tr>
+            <tr><td style="padding:6px 0;color:#888;">Member</td><td>${member.name}</td></tr>
             <tr><td style="padding:6px 0;color:#888;">Order</td><td>${orderNum}</td></tr>
-            <tr><td style="padding:6px 0;color:#888;">Total Orders</td><td>${newTotalOrders}</td></tr>
             <tr><td style="padding:6px 0;color:#888;">Free Wings #</td><td style="color:#F5A800;font-weight:bold;">${newFreeEarned}</td></tr>
           </table>
-          <div style="background:#E8190A;border-radius:6px;padding:12px;margin-top:16px;text-align:center;">
-            <div style="color:white;font-size:13px;letter-spacing:1px;">REDEEM: Give customer one FREE half order of wings 🍗</div>
-          </div>
+          <div style="background:#E8190A;border-radius:6px;padding:12px;margin-top:16px;text-align:center;color:white;font-size:13px;letter-spacing:1px;">REDEEM: Give customer one FREE half order of wings 🍗</div>
         </div>`
       });
     }
-
     res.json({ success: true, member: updated, gotFree, stamps: finalStamps, totalOrders: newTotalOrders });
   } catch (e) {
     console.error('Loyalty stamp error:', e.message);
@@ -708,9 +577,7 @@ app.get('/api/loyalty/member/:phone', async (req, res) => {
     const member = await database.collection('loyalty').findOne({ phone: cleanPhone });
     if (!member) return res.json({ success: false, error: 'Member not found' });
     res.json({ success: true, member });
-  } catch (e) {
-    res.json({ success: false, error: 'Lookup failed' });
-  }
+  } catch (e) { res.json({ success: false, error: 'Lookup failed' }); }
 });
 
 app.get('/api/loyalty/admin/members', async (req, res) => {
@@ -721,41 +588,27 @@ app.get('/api/loyalty/admin/members', async (req, res) => {
     const database = await connectDB();
     const members = await database.collection('loyalty').find({}).sort({ createdAt: -1 }).toArray();
     res.json({ success: true, count: members.length, members });
-  } catch (e) {
-    res.json({ success: false, error: e.message });
-  }
+  } catch (e) { res.json({ success: false, error: e.message }); }
 });
 
 // ── PUSH NOTIFICATIONS ────────────────────────────────────────
-
 app.post('/api/push/subscribe', async (req, res) => {
   const { subscription, info } = req.body;
   if (!subscription || !subscription.endpoint) return res.json({ success: false, error: 'Invalid subscription' });
-
   try {
     const database = await connectDB();
     if (!database) return res.json({ success: false, error: 'Database unavailable' });
-
     await database.collection('push_subs').updateOne(
       { endpoint: subscription.endpoint },
       {
-        $set: {
-          subscription,
-          updatedAt: new Date(),
-          userAgent: info?.userAgent || '',
-          location: info?.location || ''
-        },
+        $set: { subscription, updatedAt: new Date(), userAgent: info?.userAgent || '', location: info?.location || '' },
         $setOnInsert: { createdAt: new Date() }
       },
       { upsert: true }
     );
-
     console.log(`🔔 Push subscriber saved: ${subscription.endpoint.slice(-30)}`);
     res.json({ success: true });
-  } catch (e) {
-    console.error('Push subscribe error:', e.message);
-    res.json({ success: false, error: e.message });
-  }
+  } catch (e) { console.error('Push subscribe error:', e.message); res.json({ success: false, error: e.message }); }
 });
 
 app.post('/api/push/unsubscribe', async (req, res) => {
@@ -764,9 +617,7 @@ app.post('/api/push/unsubscribe', async (req, res) => {
     const database = await connectDB();
     if (database) await database.collection('push_subs').deleteOne({ endpoint });
     res.json({ success: true });
-  } catch (e) {
-    res.json({ success: false });
-  }
+  } catch (e) { res.json({ success: false }); }
 });
 
 app.get('/api/push/count', async (req, res) => {
@@ -777,67 +628,84 @@ app.get('/api/push/count', async (req, res) => {
     const database = await connectDB();
     const count = await database.collection('push_subs').countDocuments();
     res.json({ success: true, count });
-  } catch (e) {
-    res.json({ success: false, count: 0 });
-  }
+  } catch (e) { res.json({ success: false, count: 0 }); }
 });
 
 app.post('/api/push/send', async (req, res) => {
   const { password, title, body, url, icon } = req.body;
-
-  if (password !== (process.env.ADMIN_PASSWORD || 'sauceboss2025')) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
+  if (password !== (process.env.ADMIN_PASSWORD || 'sauceboss2025')) return res.status(401).json({ error: 'Unauthorized' });
   if (!title || !body) return res.json({ success: false, error: 'Title and body required' });
-
   try {
     const database = await connectDB();
     if (!database) return res.json({ success: false, error: 'Database unavailable' });
-
     const subs = await database.collection('push_subs').find({}).toArray();
     if (!subs.length) return res.json({ success: true, sent: 0, message: 'No subscribers yet' });
-
-    if (!webpush) return res.json({ success: false, error: 'Push notifications not available — web-push not installed' });
-
+    if (!webpush) return res.json({ success: false, error: 'web-push not installed' });
     const payload = JSON.stringify({
-      title: title || 'Wing-O 🍗',
-      body,
-      icon: icon || '/images/logo.jpg',
-      badge: '/images/logo.jpg',
-      url: url || '/',
-      timestamp: Date.now()
+      title: title || 'Wing-O 🍗', body,
+      icon: icon || '/images/logo.jpg', badge: '/images/logo.jpg',
+      url: url || '/', timestamp: Date.now()
     });
-
     let sent = 0, failed = 0, expired = [];
-
     await Promise.all(subs.map(async (sub) => {
-      try {
-        await webpush.sendNotification(sub.subscription, payload);
-        sent++;
-      } catch (e) {
+      try { await webpush.sendNotification(sub.subscription, payload); sent++; }
+      catch (e) {
         failed++;
-        if (e.statusCode === 410 || e.statusCode === 404) {
-          expired.push(sub.endpoint);
-        }
+        if (e.statusCode === 410 || e.statusCode === 404) expired.push(sub.endpoint);
         console.warn(`Push failed for ${sub.endpoint.slice(-20)}: ${e.message}`);
       }
     }));
-
     if (expired.length) {
       await database.collection('push_subs').deleteMany({ endpoint: { $in: expired } });
       console.log(`🧹 Removed ${expired.length} expired push subscriptions`);
     }
-
     console.log(`🔔 Push sent: ${sent} success, ${failed} failed`);
     res.json({ success: true, sent, failed, total: subs.length });
+  } catch (e) { console.error('Push send error:', e.message); res.json({ success: false, error: e.message }); }
+});
 
-  } catch (e) {
-    console.error('Push send error:', e.message);
-    res.json({ success: false, error: e.message });
+// ── SAUCE BOSS DASHBOARD ───────────────────────────────────────
+app.get('/api/dashboard/orders', async (req, res) => {
+  const { password, location, limit = 200 } = req.query;
+  if (password !== (process.env.ADMIN_PASSWORD || 'sauceboss2025')) {
+    return res.status(401).json({ success: false, error: 'Unauthorized' });
+  }
+  try {
+    const database = await connectDB();
+    if (!database) return res.json({ success: true, orders: [], stats: {} });
+    const query = {};
+    if (location && location !== 'all') query.locationId = location;
+    const orders = await database.collection('orders')
+      .find(query).sort({ createdAt: -1 }).limit(parseInt(limit)).toArray();
+    const now = new Date();
+    const regina = new Date(now.toLocaleString('en-US', { timeZone: 'America/Regina' }));
+    regina.setHours(0, 0, 0, 0);
+    const today = orders.filter(o => new Date(o.createdAt) >= regina);
+    const todayRevenue = today.reduce((s, o) => s + (o.total || 0), 0);
+    const locRevenue = {}, locCount = {};
+    orders.forEach(o => {
+      const l = o.locationId || 'albert-st';
+      locRevenue[l] = (locRevenue[l] || 0) + (o.total || 0);
+      locCount[l] = (locCount[l] || 0) + 1;
+    });
+    res.json({
+      success: true,
+      orders,
+      stats: {
+        todayCount: today.length,
+        todayRevenue: todayRevenue.toFixed(2),
+        totalCount: orders.length,
+        locRevenue,
+        locCount
+      }
+    });
+  } catch (err) {
+    console.error('[Dashboard] Error:', err.message);
+    res.json({ success: false, error: err.message });
   }
 });
 
-// ── SPA FALLBACK — serve index.html for non-API unmatched routes ──
+// ── SPA FALLBACK ───────────────────────────────────────────────
 app.get('*', (req, res, next) => {
   if (req.path.startsWith('/api/')) return next();
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
