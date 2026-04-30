@@ -198,6 +198,7 @@ ${items.map(i => `  ${i.name}${i.flavor ? ' [' + i.flavor + ']' : ''} x${i.qty} 
   Subtotal: $${Number(subtotal).toFixed(2)}
   GST (5%): $${(Number(subtotal) * 0.05).toFixed(2)}
   PST (6%): $${(Number(subtotal) * 0.06).toFixed(2)}
+${orderType === 'delivery' ? `  Delivery: $5.50` : ''}
 ---------------------------------
 ${notes ? 'NOTES: ' + notes : ''}
 PAY AT ${orderType === 'delivery' ? 'DELIVERY' : 'PICKUP'}
@@ -250,7 +251,43 @@ PAY AT ${orderType === 'delivery' ? 'DELIVERY' : 'PICKUP'}
       }
     } catch (e) { console.warn('Line item error:', e.message); }
   }
-  console.log(`✓ Line items added to ${cloverId}`);
+
+  // ── Add tax + delivery fee as line items so receipt total is correct ──
+  const subtotalNum = Number(subtotal);
+  const gst = Math.round(subtotalNum * 0.05 * 100); // cents
+  const pst = Math.round(subtotalNum * 0.06 * 100); // cents
+
+  const extras = [
+    { name: 'GST (5%)', price: gst },
+    { name: 'PST (6%)', price: pst }
+  ];
+
+  if (orderType === 'delivery') {
+    extras.push({ name: 'Delivery Fee', price: 550 }); // $5.50 in cents
+  }
+
+  for (const extra of extras) {
+    if (extra.price <= 0) continue;
+    try {
+      await fetch(
+        `https://api.clover.com/v3/merchants/${loc.merchantId}/orders/${cloverId}/line_items`,
+        {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${loc.apiToken}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: extra.name,
+            price: extra.price,
+            unitQty: 1000
+          })
+        }
+      );
+      console.log(`  Added extra: ${extra.name} — $${(extra.price/100).toFixed(2)}`);
+    } catch(e) {
+      console.warn(`Failed to add ${extra.name}:`, e.message);
+    }
+  }
+
+  console.log(`✓ Line items + extras added to ${cloverId}`);
   return cloverId;
 }
 
