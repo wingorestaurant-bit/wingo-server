@@ -1587,5 +1587,92 @@ async function pushAdminSend(){
     </div>
   </div>
 </div>
+  <div class="lunch-modal-ov" id="lunch-modal-ov" onclick="if(event.target===this)closeLunchDeal()">
+  <div class="lunch-modal">
+    <div class="lunch-modal-hd">
+      <h2>🍗 LUNCH DEAL · $10</h2>
+      <button class="xcb" onclick="closeLunchDeal()" style="color:#888;background:none;border:none;font-size:1.4rem;cursor:pointer;">✕</button>
+    </div>
+    <div style="padding:1.5rem;" id="lunch-modal-bd"></div>
+  </div>
+</div>
+
+<script>
+var LUNCH_DEAL_PRICE = 10.00;
+var isLunchDealMode = false;
+var lunchSelectedFlavor = '';
+
+function isLunchHours(){
+  var now = new Date();
+  var regina = new Date(now.toLocaleString('en-US',{timeZone:'America/Regina'}));
+  var minutes = regina.getHours()*60 + regina.getMinutes();
+  return minutes >= 11*60 && minutes < 15*60+30;
+}
+
+function openLunchDeal(){
+  lunchSelectedFlavor = '';
+  var bd = document.getElementById('lunch-modal-bd');
+  var hoursWarn = isLunchHours() ? '' :
+    '<div class="lunch-window-warn"><strong>Lunch Deal hours:</strong> 11:00 AM — 3:30 PM<br>You can still <strong>pre-order</strong> — we\'ll prep it during lunch.</div>';
+  var opts = '<option value="">— Pick your wing flavor —</option>';
+  Object.keys(FLAVORS).forEach(function(grp){
+    opts += '<optgroup label="'+grp+'">';
+    FLAVORS[grp].forEach(function(f){opts += '<option value="'+f+'">'+f+'</option>';});
+    opts += '</optgroup>';
+  });
+  bd.innerHTML =
+    hoursWarn +
+    '<div class="lunch-banner-deal"><div class="lunch-banner-deal-price">$10</div><div style="font-family:var(--font-head);font-size:.78rem;letter-spacing:2px;text-transform:uppercase;font-weight:600;margin-top:.2rem;">Wings + Small Fries</div></div>' +
+    '<div class="lunch-pickup-only">🏃 Pickup Only · No Delivery</div>' +
+    '<div class="lunch-includes">' +
+      '<div style="font-family:var(--font-head);font-size:.7rem;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:.4rem;">What you get</div>' +
+      '<div class="lunch-includes-row">🍗 <span><strong>One Order — Wings</strong> · Choose your flavor</span></div>' +
+      '<div class="lunch-includes-row">🍟 <span><strong>Small Fries</strong> · Golden &amp; crispy</span></div>' +
+      '<div class="lunch-includes-row" style="color:#7A6545;font-size:.78rem;border-top:1px dashed var(--paper-line);padding-top:6px;margin-top:4px;">💰 Save vs separately ($16.98 value)</div>' +
+    '</div>' +
+    '<label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.4rem;">🔥 Choose Your Wing Flavor</label>' +
+    '<select id="lunch-flavor" style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.55rem .85rem;font-size:.9rem;background:white;outline:none;margin-bottom:1rem;">' + opts + '</select>' +
+    '<label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.35rem;">Special Instructions</label>' +
+    '<textarea id="lunch-notes" placeholder="Extra sauce, well done..." style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.5rem .75rem;font-size:.83rem;resize:vertical;min-height:55px;outline:none;margin-bottom:1rem;"></textarea>' +
+    '<button class="btn-place" onclick="proceedLunchCheckout()">CHECKOUT — $10 PICKUP →</button>' +
+    '<button onclick="closeLunchDeal()" style="width:100%;background:none;border:1.5px solid var(--paper-line);color:#888;padding:.65rem;font-family:var(--font-head);font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:4px;margin-top:.5rem;">✕ Cancel</button>';
+  document.getElementById('lunch-modal-ov').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function closeLunchDeal(){
+  document.getElementById('lunch-modal-ov').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+function proceedLunchCheckout(){
+  var flavor = document.getElementById('lunch-flavor').value;
+  if(!flavor){toast('Please pick a wing flavor!');return;}
+  var notes = document.getElementById('lunch-notes').value.trim();
+  cart = cart.filter(function(it){return !it.lunchDeal;});
+  var details = [flavor, 'Includes: 1 Order Wings + Small Fries'];
+  if(notes) details.push('Note: '+notes);
+  cart.push({
+    id:'lunch-deal', key:'LUNCH-DEAL|'+flavor+'|'+notes, qty:1,
+    name:'🍗 LUNCH DEAL — Wings + Small Fries',
+    price:LUNCH_DEAL_PRICE,
+    details:details.join(' · '),
+    notes:notes, flavors:[flavor],
+    cookieFl:'', sizeName:'', upgradeName:'', upgradePrice:0,
+    lunchDeal:true
+  });
+  isLunchDealMode = true;
+  orderType = 'pickup';
+  updateCart();
+  closeLunchDeal();
+  closeCart();
+  renderCheckoutForm();
+  document.getElementById('modal-ov').classList.add('open');
+  setTimeout(function(){
+    var dBtn = document.getElementById('ot-d');
+    if(dBtn){dBtn.style.opacity='.4';dBtn.style.cursor='not-allowed';dBtn.onclick=function(){toast('Lunch Deal is pickup only 🏃');};}
+  },100);
+}
+</script>
 </body>
 </html>
