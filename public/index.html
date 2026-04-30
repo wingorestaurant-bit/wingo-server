@@ -402,6 +402,12 @@ var activeLocation = 'albert-st';
     <div class="pc"><div class="day">THU</div><div class="deal">Buy One, 2nd Order 50% Off</div></div>
     <div class="pc"><div class="day">SAT</div><div class="deal">2 for $20 Burgers</div></div>
     <div class="pc"><div class="day">LUNCH</div><div class="deal">Wings + Fries $10 · Daily till 3:30pm</div></div>
+    <div class="pc" id="wing-night-promo" style="display:none;cursor:pointer;border:2px solid var(--red);background:linear-gradient(135deg,#1A1208,#0D0D0D);" onclick="openWingNight()">
+      <div class="wing-night-flame">🔥</div>
+      <div class="day" style="color:var(--yellow);">🌶️ WING NIGHT</div>
+      <div class="deal" style="color:white;">Buy 1 Order · 2nd 50% Off</div>
+      <div class="savings">Tap to Order — Tonight Only</div>
+    </div>
   </div>
 </div>
 <div class="marquee"><div class="mtrack">
@@ -1679,6 +1685,119 @@ function proceedLunchCheckout(){
     var dBtn = document.getElementById('ot-d');
     if(dBtn){dBtn.style.opacity='.4';dBtn.style.cursor='not-allowed';dBtn.onclick=function(){toast('Lunch Deal is pickup only 🏃');};}
   },100);
+}
+</script>
+  <!-- ===== WING NIGHT THURSDAY MODAL ===== -->
+<div class="lunch-modal-ov" id="wing-night-ov" onclick="if(event.target===this)closeWingNight()">
+  <div class="lunch-modal">
+    <div class="lunch-modal-hd" style="border-bottom-color:var(--red);">
+      <h2 style="color:var(--red);">🌶️ WING NIGHT</h2>
+      <button onclick="closeWingNight()" style="color:#888;background:none;border:none;font-size:1.4rem;cursor:pointer;">✕</button>
+    </div>
+    <div style="padding:1.5rem;" id="wing-night-bd"></div>
+  </div>
+</div>
+
+<script>
+var WING_NIGHT_FULL = 11.99;          // One Order Wings price
+var WING_NIGHT_DISCOUNT = WING_NIGHT_FULL / 2; // 50% off second order
+var isWingNightMode = false;
+
+function isThursday(){
+  var now = new Date();
+  var regina = new Date(now.toLocaleString('en-US',{timeZone:'America/Regina'}));
+  return regina.getDay() === 4; // 4 = Thursday
+}
+
+function showWingNightPromo(){
+  var card = document.getElementById('wing-night-promo');
+  if(card) card.style.display = isThursday() ? 'block' : 'none';
+}
+showWingNightPromo();
+setInterval(showWingNightPromo, 60000); // re-check every minute (handles midnight rollover)
+
+function openWingNight(){
+  if(!isThursday()){ toast('Wing Night is Thursdays only 🌶️'); return; }
+  var bd = document.getElementById('wing-night-bd');
+  var opts = '<option value="">— Pick a flavor —</option>';
+  Object.keys(FLAVORS).forEach(function(grp){
+    opts += '<optgroup label="'+grp+'">';
+    FLAVORS[grp].forEach(function(f){opts += '<option value="'+f+'">'+f+'</option>';});
+    opts += '</optgroup>';
+  });
+  var totalFull = (WING_NIGHT_FULL * 2).toFixed(2);
+  var totalDeal = (WING_NIGHT_FULL + WING_NIGHT_DISCOUNT).toFixed(2);
+  var save = (WING_NIGHT_FULL - WING_NIGHT_DISCOUNT).toFixed(2);
+
+  bd.innerHTML =
+    '<div style="background:linear-gradient(135deg,#E8190A,#A80F00);border-radius:6px;padding:1rem;text-align:center;color:white;margin-bottom:1.25rem;border:2px solid var(--ink);">' +
+      '<div style="font-family:var(--font-display);font-size:2.2rem;letter-spacing:2px;line-height:1;">BUY 1 · GET 2ND 50% OFF</div>' +
+      '<div style="font-family:var(--font-head);font-size:.78rem;letter-spacing:2px;text-transform:uppercase;margin-top:.4rem;">2 Orders of Wings · Pick Any 2 Flavors</div>' +
+    '</div>' +
+    '<div style="background:rgba(72,187,120,.1);border:1.5px solid #48BB78;color:#276749;padding:.6rem .85rem;border-radius:4px;font-family:var(--font-head);font-size:.8rem;letter-spacing:1px;margin-bottom:1rem;text-align:center;font-weight:700;">' +
+      '💰 You save $'+save+' tonight only' +
+    '</div>' +
+    '<div class="lunch-includes">' +
+      '<div style="font-family:var(--font-head);font-size:.7rem;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:.4rem;">What you get</div>' +
+      '<div class="lunch-includes-row">🍗 <span><strong>Order #1 — Full Price</strong> · $'+WING_NIGHT_FULL.toFixed(2)+'</span></div>' +
+      '<div class="lunch-includes-row">🍗 <span><strong>Order #2 — 50% Off</strong> · $'+WING_NIGHT_DISCOUNT.toFixed(2)+'</span></div>' +
+      '<div class="lunch-includes-row" style="color:#7A6545;font-size:.78rem;border-top:1px dashed var(--paper-line);padding-top:6px;margin-top:4px;">Was $'+totalFull+' · Tonight $'+totalDeal+'</div>' +
+    '</div>' +
+    '<label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.4rem;">🔥 Order #1 Flavor</label>' +
+    '<select id="wn-flavor-1" style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.55rem .85rem;font-size:.9rem;background:white;outline:none;margin-bottom:.85rem;">' + opts + '</select>' +
+    '<label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.4rem;">🔥 Order #2 Flavor (50% off)</label>' +
+    '<select id="wn-flavor-2" style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.55rem .85rem;font-size:.9rem;background:white;outline:none;margin-bottom:1rem;">' + opts + '</select>' +
+    '<label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.35rem;">Special Instructions</label>' +
+    '<textarea id="wn-notes" placeholder="Extra sauce, well done..." style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.5rem .75rem;font-size:.83rem;resize:vertical;min-height:55px;outline:none;margin-bottom:1rem;"></textarea>' +
+    '<button class="btn-place" onclick="proceedWingNightCheckout()" style="background:var(--red);">CHECKOUT — $'+totalDeal+' →</button>' +
+    '<button onclick="closeWingNight()" style="width:100%;background:none;border:1.5px solid var(--paper-line);color:#888;padding:.65rem;font-family:var(--font-head);font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:4px;margin-top:.5rem;">✕ Cancel</button>';
+
+  document.getElementById('wing-night-ov').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function closeWingNight(){
+  document.getElementById('wing-night-ov').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+function proceedWingNightCheckout(){
+  var f1 = document.getElementById('wn-flavor-1').value;
+  var f2 = document.getElementById('wn-flavor-2').value;
+  if(!f1 || !f2){ toast('Pick a flavor for both orders!'); return; }
+  var notes = document.getElementById('wn-notes').value.trim();
+
+  // Clear previous wing-night entries to avoid stacking
+  cart = cart.filter(function(it){ return !it.wingNight; });
+
+  // Order #1 — full price
+  cart.push({
+    id:'wing-night-1', key:'WN1|'+f1+'|'+notes, qty:1,
+    name:'🌶️ WING NIGHT — Order #1',
+    price: WING_NIGHT_FULL,
+    details: f1 + ' · Full price',
+    notes:notes, flavors:[f1],
+    cookieFl:'', sizeName:'', upgradeName:'', upgradePrice:0,
+    wingNight:true
+  });
+
+  // Order #2 — 50% off
+  cart.push({
+    id:'wing-night-2', key:'WN2|'+f2+'|'+notes, qty:1,
+    name:'🌶️ WING NIGHT — Order #2 (50% OFF)',
+    price: WING_NIGHT_DISCOUNT,
+    details: f2 + ' · 50% off Thursday special',
+    notes:'', flavors:[f2],
+    cookieFl:'', sizeName:'', upgradeName:'', upgradePrice:0,
+    wingNight:true
+  });
+
+  isWingNightMode = true;
+  updateCart();
+  closeWingNight();
+  closeCart();
+  renderCheckoutForm();
+  document.getElementById('modal-ov').classList.add('open');
 }
 </script>
 </body>
