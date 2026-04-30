@@ -1742,6 +1742,7 @@ function openWingNight(){
       '<div class="lunch-includes-row">🍗 <span><strong>Order #1 — Full Price</strong> · $'+WING_NIGHT_FULL.toFixed(2)+'</span></div>' +
       '<div class="lunch-includes-row">🍗 <span><strong>Order #2 — 50% Off</strong> · $'+WING_NIGHT_DISCOUNT.toFixed(2)+'</span></div>' +
       '<div class="lunch-includes-row" style="color:#7A6545;font-size:.78rem;border-top:1px dashed var(--paper-line);padding-top:6px;margin-top:4px;">Was $'+totalFull+' · Tonight $'+totalDeal+'</div>' +
+    '<div class="lunch-pickup-only">🏃 Pickup Only · No Delivery</div>' +
     '</div>' +
     '<label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.4rem;">🔥 Order #1 Flavor</label>' +
     '<select id="wn-flavor-1" style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.55rem .85rem;font-size:.9rem;background:white;outline:none;margin-bottom:.85rem;">' + opts + '</select>' +
@@ -1767,10 +1768,8 @@ function proceedWingNightCheckout(){
   if(!f1 || !f2){ toast('Pick a flavor for both orders!'); return; }
   var notes = document.getElementById('wn-notes').value.trim();
 
-  // Clear previous wing-night entries to avoid stacking
   cart = cart.filter(function(it){ return !it.wingNight; });
 
-  // Order #1 — full price
   cart.push({
     id:'wing-night-1', key:'WN1|'+f1+'|'+notes, qty:1,
     name:'🌶️ WING NIGHT — Order #1',
@@ -1781,7 +1780,6 @@ function proceedWingNightCheckout(){
     wingNight:true
   });
 
-  // Order #2 — 50% off
   cart.push({
     id:'wing-night-2', key:'WN2|'+f2+'|'+notes, qty:1,
     name:'🌶️ WING NIGHT — Order #2 (50% OFF)',
@@ -1793,11 +1791,20 @@ function proceedWingNightCheckout(){
   });
 
   isWingNightMode = true;
+  orderType = 'pickup';                    // ← lock to pickup
   updateCart();
   closeWingNight();
   closeCart();
   renderCheckoutForm();
   document.getElementById('modal-ov').classList.add('open');
+  setTimeout(function(){                   // ← disable delivery button at checkout
+    var dBtn = document.getElementById('ot-d');
+    if(dBtn){
+      dBtn.style.opacity='.4';
+      dBtn.style.cursor='not-allowed';
+      dBtn.onclick=function(){toast('Wing Night is pickup only 🌶️');};
+    }
+  },100);
 }
 </script>
 </body>
