@@ -336,6 +336,86 @@ footer{background:var(--black);color:#888;padding:3rem 1.5rem 2rem;}
 .wing-night-card .savings{font-family:var(--font-head);font-size:.65rem;color:var(--yellow);letter-spacing:2px;margin-top:4px;text-transform:uppercase;}
 .wing-night-flame{position:absolute;top:-10px;right:-10px;font-size:3rem;opacity:.15;transform:rotate(15deg);}
 .wn-savings-row{color:#276749 !important;font-weight:700;}
+  /* ===== 3D EFFECTS ===== */
+@keyframes float3d {
+  0%,100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(5deg); }
+}
+@keyframes float3d-slow {
+  0%,100% { transform: translateY(0) translateX(0) rotate(0deg); }
+  50% { transform: translateY(-25px) translateX(10px) rotate(-8deg); }
+}
+@keyframes pulse-glow {
+  0%,100% { opacity: .3; transform: scale(1); }
+  50% { opacity: .6; transform: scale(1.1); }
+}
+
+/* Floating background elements in hero */
+.hero-3d-bg { position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
+.float-emoji { position:absolute; font-size:3rem; opacity:.08; animation:float3d 6s ease-in-out infinite; }
+.float-emoji.slow { animation: float3d-slow 9s ease-in-out infinite; }
+.float-emoji.f1 { top:15%; left:8%; animation-delay:0s; }
+.float-emoji.f2 { top:25%; right:12%; animation-delay:1.5s; font-size:2.5rem; }
+.float-emoji.f3 { bottom:20%; left:15%; animation-delay:3s; font-size:3.5rem; }
+.float-emoji.f4 { bottom:30%; right:8%; animation-delay:2s; }
+.float-emoji.f5 { top:50%; left:5%; animation-delay:4s; font-size:2rem; }
+.float-emoji.f6 { top:60%; right:5%; animation-delay:1s; font-size:2.8rem; }
+
+/* Glow orbs in hero */
+.glow-orb { position:absolute; border-radius:50%; filter:blur(60px); pointer-events:none; animation: pulse-glow 4s ease-in-out infinite; }
+.glow-orb.red { background:rgba(232,25,10,.4); width:300px; height:300px; top:-50px; left:-50px; }
+.glow-orb.yellow { background:rgba(245,168,0,.3); width:250px; height:250px; bottom:-50px; right:-50px; animation-delay:2s; }
+
+/* Hero logo float */
+.hero-content img { animation: float3d 5s ease-in-out infinite; transition: transform .3s; }
+
+/* 3D tilt on category cards */
+.cat-card { transform-style: preserve-3d; perspective: 1000px; transition: transform .4s cubic-bezier(.2,.8,.2,1), box-shadow .4s, border-color .3s; will-change: transform; }
+.cat-card:hover { transform: translateY(-8px) rotateX(4deg) rotateY(-3deg) scale(1.02); box-shadow: 0 20px 40px rgba(0,0,0,.25), 0 8px 16px rgba(232,25,10,.15); }
+.cat-card-img img { transition: transform .5s cubic-bezier(.2,.8,.2,1); }
+.cat-card:hover .cat-card-img img { transform: scale(1.15) rotate(-2deg); }
+
+/* 3D promo cards */
+.pc { transition: transform .3s cubic-bezier(.2,.8,.2,1), box-shadow .3s; transform-style: preserve-3d; }
+.pc:hover { transform: translateY(-4px) scale(1.03); box-shadow: 0 12px 24px rgba(0,0,0,.15); }
+
+/* 3D location cards */
+.lcard { transition: transform .4s cubic-bezier(.2,.8,.2,1), box-shadow .4s, border-color .3s; }
+.lcard:hover { transform: translateY(-6px) rotateX(2deg); box-shadow: 0 16px 32px rgba(0,0,0,.2); }
+
+/* 3D buttons — feel physical */
+.btn-red, .btn-ghost { transition: transform .15s cubic-bezier(.2,.8,.2,1), box-shadow .2s; transform-style: preserve-3d; position:relative; }
+.btn-red { box-shadow: 0 4px 0 var(--red-deep), 0 6px 16px rgba(232,25,10,.3); }
+.btn-red:hover { transform: translateY(-2px); box-shadow: 0 6px 0 var(--red-deep), 0 10px 24px rgba(232,25,10,.4); }
+.btn-red:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--red-deep), 0 3px 8px rgba(232,25,10,.3); }
+.btn-ghost { box-shadow: 0 4px 0 rgba(255,255,255,.2); }
+.btn-ghost:hover { transform: translateY(-2px); box-shadow: 0 6px 0 rgba(255,255,255,.3); }
+.btn-ghost:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(255,255,255,.2); }
+
+/* 3D menu cards */
+.mc { transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s, border-color .3s; transform-style: preserve-3d; }
+.mc:hover { transform: translateY(-5px) rotateX(3deg); box-shadow: 0 14px 28px rgba(0,0,0,.15), 0 5px 10px rgba(232,25,10,.1); }
+
+/* Stat numbers — 3D depth */
+.stat .n, .ic-num { text-shadow: 2px 2px 0 rgba(232,25,10,.2), 4px 4px 0 rgba(0,0,0,.3); transition: transform .3s; display:inline-block; }
+.stat:hover .n { transform: translateZ(20px) scale(1.1); }
+
+/* Lunch price 3D */
+.lunch-price { text-shadow: 3px 3px 0 var(--red-deep), 6px 6px 20px rgba(232,25,10,.4); animation: float3d 6s ease-in-out infinite; display:inline-block; }
+
+/* Disable on mobile for performance */
+@media (max-width: 768px) {
+  .cat-card:hover { transform: translateY(-3px); }
+  .lcard:hover, .mc:hover, .pc:hover { transform: translateY(-2px); }
+  .float-emoji { display:none; }
+  .glow-orb { display:none; }
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .float-emoji, .glow-orb, .hero-content img, .lunch-price { animation: none; }
+  .cat-card:hover, .lcard:hover, .mc:hover, .pc:hover { transform: none; }
+}
 </style>
 </head>
 <body>
@@ -379,7 +459,17 @@ var activeLocation = 'albert-st';
 </div>
 <div id="home-page">
 <section class="hero">
-  <div class="hero-overlay"></div>
+ <div class="hero-overlay"></div>
+<div class="hero-3d-bg">
+  <div class="glow-orb red"></div>
+  <div class="glow-orb yellow"></div>
+  <span class="float-emoji f1">🍗</span>
+  <span class="float-emoji f2 slow">🔥</span>
+  <span class="float-emoji f3">🍗</span>
+  <span class="float-emoji f4 slow">🌶️</span>
+  <span class="float-emoji f5">🍟</span>
+  <span class="float-emoji f6 slow">🔥</span>
+</div>
   <div class="hero-content">
     <div class="hero-tag">🌾 Proudly Prairie · Regina's Original · More Than Wings</div>
     <img src="images/neon-logo.jpg" alt="Wing-O" style="width:auto;max-height:190px;max-width:min(360px,70vw);margin:0 auto 1rem;display:block;mix-blend-mode:screen;filter:contrast(1.2) brightness(1.1);">
@@ -1806,6 +1896,42 @@ function proceedWingNightCheckout(){
     }
   },100);
 }
+/* ===== Mouse-tracked 3D tilt for cards ===== */
+(function(){
+  if(window.matchMedia('(hover: none)').matches) return; // skip on touch devices
+  var cards = document.querySelectorAll('.cat-card, .mc, .lcard');
+  cards.forEach(function(card){
+    card.addEventListener('mousemove', function(e){
+      var rect = card.getBoundingClientRect();
+      var x = e.clientX - rect.left;
+      var y = e.clientY - rect.top;
+      var cx = rect.width / 2;
+      var cy = rect.height / 2;
+      var rotX = ((y - cy) / cy) * -6;
+      var rotY = ((x - cx) / cx) * 6;
+      card.style.transform = 'translateY(-8px) rotateX('+rotX+'deg) rotateY('+rotY+'deg) scale(1.02)';
+    });
+    card.addEventListener('mouseleave', function(){
+      card.style.transform = '';
+    });
+  });
+})();
+
+/* ===== Hero parallax on scroll ===== */
+(function(){
+  var heroLogo = document.querySelector('.hero-content img');
+  var orbs = document.querySelectorAll('.glow-orb');
+  if(!heroLogo) return;
+  window.addEventListener('scroll', function(){
+    var scrolled = window.pageYOffset;
+    if(scrolled < 800){
+      heroLogo.style.transform = 'translateY(' + (scrolled * 0.3) + 'px)';
+      orbs.forEach(function(o, i){
+        o.style.transform = 'translateY(' + (scrolled * (i === 0 ? 0.15 : -0.1)) + 'px)';
+      });
+    }
+  }, { passive: true });
+})();
 </script>
 </body>
 </html>
