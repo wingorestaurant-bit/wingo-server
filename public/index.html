@@ -329,93 +329,60 @@ footer{background:var(--black);color:#888;padding:3rem 1.5rem 2rem;}
 .lunch-window-warn{background:#FFF8EE;border:1.5px solid #F5D98A;color:#7B3F00;padding:.6rem .85rem;border-radius:4px;font-size:.8rem;margin-bottom:1rem;text-align:center;font-family:var(--font-head);}
 .lunch-includes{background:white;border:1.5px solid var(--paper-line);border-radius:5px;padding:.85rem 1rem;margin-bottom:1rem;}
 .lunch-includes-row{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:.88rem;color:var(--ink);}
-.wing-night-card{background:linear-gradient(135deg,#1A1208,#0D0D0D);border:2px solid var(--red);border-radius:6px;padding:1rem;text-align:center;color:white;cursor:pointer;transition:transform .2s;position:relative;overflow:hidden;}
-.wing-night-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(232,25,10,.4);}
-.wing-night-card .day{font-family:var(--font-display);font-size:1.4rem;color:var(--yellow);letter-spacing:2px;}
-.wing-night-card .deal{font-family:var(--font-head);font-size:.78rem;color:white;letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-top:3px;}
-.wing-night-card .savings{font-family:var(--font-head);font-size:.65rem;color:var(--yellow);letter-spacing:2px;margin-top:4px;text-transform:uppercase;}
-.wing-night-flame{position:absolute;top:-10px;right:-10px;font-size:3rem;opacity:.15;transform:rotate(15deg);}
 .wn-savings-row{color:#276749 !important;font-weight:700;}
-  /* ===== 3D EFFECTS ===== */
-@keyframes float3d {
-  0%,100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-15px) rotate(5deg); }
-}
-@keyframes float3d-slow {
-  0%,100% { transform: translateY(0) translateX(0) rotate(0deg); }
-  50% { transform: translateY(-25px) translateX(10px) rotate(-8deg); }
-}
-@keyframes pulse-glow {
-  0%,100% { opacity: .3; transform: scale(1); }
-  50% { opacity: .6; transform: scale(1.1); }
-}
-
-/* Floating background elements in hero */
-.hero-3d-bg { position:absolute; inset:0; pointer-events:none; overflow:hidden; z-index:0; }
-.float-emoji { position:absolute; font-size:3rem; opacity:.08; animation:float3d 6s ease-in-out infinite; }
-.float-emoji.slow { animation: float3d-slow 9s ease-in-out infinite; }
-.float-emoji.f1 { top:15%; left:8%; animation-delay:0s; }
-.float-emoji.f2 { top:25%; right:12%; animation-delay:1.5s; font-size:2.5rem; }
-.float-emoji.f3 { bottom:20%; left:15%; animation-delay:3s; font-size:3.5rem; }
-.float-emoji.f4 { bottom:30%; right:8%; animation-delay:2s; }
-.float-emoji.f5 { top:50%; left:5%; animation-delay:4s; font-size:2rem; }
-.float-emoji.f6 { top:60%; right:5%; animation-delay:1s; font-size:2.8rem; }
-
-/* Glow orbs in hero */
-.glow-orb { position:absolute; border-radius:50%; filter:blur(60px); pointer-events:none; animation: pulse-glow 4s ease-in-out infinite; }
-.glow-orb.red { background:rgba(232,25,10,.4); width:300px; height:300px; top:-50px; left:-50px; }
-.glow-orb.yellow { background:rgba(245,168,0,.3); width:250px; height:250px; bottom:-50px; right:-50px; animation-delay:2s; }
-
-/* Hero logo float */
-.hero-content img { animation: float3d 5s ease-in-out infinite; transition: transform .3s; }
-
-/* 3D tilt on category cards */
-.cat-card { transform-style: preserve-3d; perspective: 1000px; transition: transform .4s cubic-bezier(.2,.8,.2,1), box-shadow .4s, border-color .3s; will-change: transform; }
-.cat-card:hover { transform: translateY(-8px) rotateX(4deg) rotateY(-3deg) scale(1.02); box-shadow: 0 20px 40px rgba(0,0,0,.25), 0 8px 16px rgba(232,25,10,.15); }
-.cat-card-img img { transition: transform .5s cubic-bezier(.2,.8,.2,1); }
-.cat-card:hover .cat-card-img img { transform: scale(1.15) rotate(-2deg); }
-
-/* 3D promo cards */
-.pc { transition: transform .3s cubic-bezier(.2,.8,.2,1), box-shadow .3s; transform-style: preserve-3d; }
-.pc:hover { transform: translateY(-4px) scale(1.03); box-shadow: 0 12px 24px rgba(0,0,0,.15); }
-
-/* 3D location cards */
-.lcard { transition: transform .4s cubic-bezier(.2,.8,.2,1), box-shadow .4s, border-color .3s; }
-.lcard:hover { transform: translateY(-6px) rotateX(2deg); box-shadow: 0 16px 32px rgba(0,0,0,.2); }
-
-/* 3D buttons — feel physical */
-.btn-red, .btn-ghost { transition: transform .15s cubic-bezier(.2,.8,.2,1), box-shadow .2s; transform-style: preserve-3d; position:relative; }
-.btn-red { box-shadow: 0 4px 0 var(--red-deep), 0 6px 16px rgba(232,25,10,.3); }
-.btn-red:hover { transform: translateY(-2px); box-shadow: 0 6px 0 var(--red-deep), 0 10px 24px rgba(232,25,10,.4); }
-.btn-red:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--red-deep), 0 3px 8px rgba(232,25,10,.3); }
-.btn-ghost { box-shadow: 0 4px 0 rgba(255,255,255,.2); }
-.btn-ghost:hover { transform: translateY(-2px); box-shadow: 0 6px 0 rgba(255,255,255,.3); }
-.btn-ghost:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(255,255,255,.2); }
-
-/* 3D menu cards */
-.mc { transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s, border-color .3s; transform-style: preserve-3d; }
-.mc:hover { transform: translateY(-5px) rotateX(3deg); box-shadow: 0 14px 28px rgba(0,0,0,.15), 0 5px 10px rgba(232,25,10,.1); }
-
-/* Stat numbers — 3D depth */
-.stat .n, .ic-num { text-shadow: 2px 2px 0 rgba(232,25,10,.2), 4px 4px 0 rgba(0,0,0,.3); transition: transform .3s; display:inline-block; }
-.stat:hover .n { transform: translateZ(20px) scale(1.1); }
-
-/* Lunch price 3D */
-.lunch-price { text-shadow: 3px 3px 0 var(--red-deep), 6px 6px 20px rgba(232,25,10,.4); animation: float3d 6s ease-in-out infinite; display:inline-block; }
-
-/* Disable on mobile for performance */
-@media (max-width: 768px) {
-  .cat-card:hover { transform: translateY(-3px); }
-  .lcard:hover, .mc:hover, .pc:hover { transform: translateY(-2px); }
-  .float-emoji { display:none; }
-  .glow-orb { display:none; }
-}
-
-/* Respect reduced motion preference */
-@media (prefers-reduced-motion: reduce) {
-  .float-emoji, .glow-orb, .hero-content img, .lunch-price { animation: none; }
-  .cat-card:hover, .lcard:hover, .mc:hover, .pc:hover { transform: none; }
-}
+/* ===== 3D EFFECTS ===== */
+@keyframes float3d {0%,100%{transform:translateY(0) rotate(0deg);}50%{transform:translateY(-15px) rotate(5deg);}}
+@keyframes float3d-slow {0%,100%{transform:translateY(0) translateX(0) rotate(0deg);}50%{transform:translateY(-25px) translateX(10px) rotate(-8deg);}}
+@keyframes pulse-glow {0%,100%{opacity:.3;transform:scale(1);}50%{opacity:.6;transform:scale(1.1);}}
+.hero-3d-bg{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0;}
+.float-emoji{position:absolute;font-size:3rem;opacity:.08;animation:float3d 6s ease-in-out infinite;}
+.float-emoji.slow{animation:float3d-slow 9s ease-in-out infinite;}
+.float-emoji.f1{top:15%;left:8%;animation-delay:0s;}
+.float-emoji.f2{top:25%;right:12%;animation-delay:1.5s;font-size:2.5rem;}
+.float-emoji.f3{bottom:20%;left:15%;animation-delay:3s;font-size:3.5rem;}
+.float-emoji.f4{bottom:30%;right:8%;animation-delay:2s;}
+.float-emoji.f5{top:50%;left:5%;animation-delay:4s;font-size:2rem;}
+.float-emoji.f6{top:60%;right:5%;animation-delay:1s;font-size:2.8rem;}
+.glow-orb{position:absolute;border-radius:50%;filter:blur(60px);pointer-events:none;animation:pulse-glow 4s ease-in-out infinite;}
+.glow-orb.red{background:rgba(232,25,10,.4);width:300px;height:300px;top:-50px;left:-50px;}
+.glow-orb.yellow{background:rgba(245,168,0,.3);width:250px;height:250px;bottom:-50px;right:-50px;animation-delay:2s;}
+.hero-content img{animation:float3d 5s ease-in-out infinite;transition:transform .3s;}
+.cat-card{transform-style:preserve-3d;perspective:1000px;transition:transform .4s cubic-bezier(.2,.8,.2,1),box-shadow .4s,border-color .3s;will-change:transform;}
+.cat-card:hover{transform:translateY(-8px) rotateX(4deg) rotateY(-3deg) scale(1.02);box-shadow:0 20px 40px rgba(0,0,0,.25),0 8px 16px rgba(232,25,10,.15);}
+.cat-card-img img{transition:transform .5s cubic-bezier(.2,.8,.2,1);}
+.cat-card:hover .cat-card-img img{transform:scale(1.15) rotate(-2deg);}
+.pc{transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s;transform-style:preserve-3d;}
+.pc:hover{transform:translateY(-4px) scale(1.03);box-shadow:0 12px 24px rgba(0,0,0,.15);}
+.lcard{transition:transform .4s cubic-bezier(.2,.8,.2,1),box-shadow .4s,border-color .3s;}
+.lcard:hover{transform:translateY(-6px) rotateX(2deg);box-shadow:0 16px 32px rgba(0,0,0,.2);}
+.btn-red,.btn-ghost{transition:transform .15s cubic-bezier(.2,.8,.2,1),box-shadow .2s;transform-style:preserve-3d;position:relative;}
+.btn-red{box-shadow:0 4px 0 var(--red-deep),0 6px 16px rgba(232,25,10,.3);}
+.btn-red:hover{transform:translateY(-2px);box-shadow:0 6px 0 var(--red-deep),0 10px 24px rgba(232,25,10,.4);}
+.btn-red:active{transform:translateY(2px);box-shadow:0 2px 0 var(--red-deep),0 3px 8px rgba(232,25,10,.3);}
+.btn-ghost{box-shadow:0 4px 0 rgba(255,255,255,.2);}
+.btn-ghost:hover{transform:translateY(-2px);box-shadow:0 6px 0 rgba(255,255,255,.3);}
+.btn-ghost:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(255,255,255,.2);}
+.mc{transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s,border-color .3s;transform-style:preserve-3d;}
+.mc:hover{transform:translateY(-5px) rotateX(3deg);box-shadow:0 14px 28px rgba(0,0,0,.15),0 5px 10px rgba(232,25,10,.1);}
+.stat .n,.ic-num{text-shadow:2px 2px 0 rgba(232,25,10,.2),4px 4px 0 rgba(0,0,0,.3);transition:transform .3s;display:inline-block;}
+.stat:hover .n{transform:translateZ(20px) scale(1.1);}
+.lunch-price{text-shadow:3px 3px 0 var(--red-deep),6px 6px 20px rgba(232,25,10,.4);animation:float3d 6s ease-in-out infinite;display:inline-block;}
+@media (max-width:768px){.cat-card:hover{transform:translateY(-3px);}.lcard:hover,.mc:hover,.pc:hover{transform:translateY(-2px);}.float-emoji{display:none;}.glow-orb{display:none;}}
+@media (prefers-reduced-motion:reduce){.float-emoji,.glow-orb,.hero-content img,.lunch-price{animation:none;}.cat-card:hover,.lcard:hover,.mc:hover,.pc:hover{transform:none;}}
+/* ===== DAILY SPECIALS ENGINE ===== */
+.todays-strip{background:linear-gradient(135deg,#0D0D0D,#1A1208);border-bottom:3px double var(--yellow);padding:1.25rem 1.5rem;text-align:center;color:white;cursor:pointer;position:relative;overflow:hidden;}
+.todays-strip::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(232,25,10,.15) 0%,transparent 70%);pointer-events:none;animation:pulse-glow 3s ease-in-out infinite;}
+.ts-inner{position:relative;z-index:1;max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:1.5rem;flex-wrap:wrap;}
+.ts-badge{background:var(--red);color:white;padding:.4rem 1rem;font-family:var(--font-head);font-size:.7rem;letter-spacing:3px;text-transform:uppercase;border-radius:3px;font-weight:700;}
+.ts-title{font-family:var(--font-display);font-size:clamp(1.4rem,3vw,2.2rem);letter-spacing:2px;color:var(--yellow);}
+.ts-deal{font-family:var(--font-head);font-size:.95rem;letter-spacing:1px;color:white;font-weight:600;text-transform:uppercase;}
+.ts-cta{background:var(--red);color:white;padding:.6rem 1.4rem;font-family:var(--font-head);font-size:.8rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;border:none;border-radius:4px;cursor:pointer;box-shadow:0 4px 0 var(--red-deep);}
+.ts-cta:hover{transform:translateY(-2px);box-shadow:0 6px 0 var(--red-deep);}
+.pc.today-active{border:2px solid var(--red)!important;background:linear-gradient(135deg,rgba(232,25,10,.05),rgba(245,168,0,.05))!important;animation:pulse-glow 3s ease-in-out infinite;cursor:pointer;position:relative;}
+.pc.today-active::after{content:'TODAY';position:absolute;top:-8px;right:-8px;background:var(--red);color:white;padding:2px 8px;border-radius:3px;font-family:var(--font-head);font-size:.6rem;letter-spacing:1.5px;font-weight:700;}
+.pc.today-dimmed{opacity:.55;}
+.ayce-portions{background:rgba(245,168,0,.12);border:1.5px solid var(--yellow);color:#7B5500;padding:.55rem .85rem;border-radius:4px;font-family:var(--font-head);font-size:.78rem;letter-spacing:1px;margin-bottom:1rem;text-align:center;font-weight:600;line-height:1.5;}
+@media(max-width:600px){.ts-inner{flex-direction:column;gap:.75rem;}.ts-title{font-size:1.5rem;}}
 </style>
 </head>
 <body>
@@ -427,7 +394,7 @@ var activeLocation = 'albert-st';
   <p><span class="preorder-badge">Pre-Order</span> We are closed right now — but you can <strong>pre-order for when we open!</strong> Your order will be ready at our next opening time.</p>
 </div>
 <div style="background:var(--paper-dark);text-align:center;padding:3px 1rem;font-family:var(--font-head);font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--ink-light);border-bottom:1px solid var(--paper-line);">The Wing-O Post · Regina, Saskatchewan · Est. 2024 · 125+ Flavors · More Than Wings</div>
-<div class="announce">🔥 Tuesday — All You Can Eat Wings <span>$28.99</span> &nbsp;·&nbsp; Thursday — 50% Off 2nd Order &nbsp;·&nbsp; Saturday — 2 for $20 Burgers</div>
+<div class="announce">🔥 Mon BOGO Boneless · Tue AYCE <span>$28.99</span> · Wed BOGO Ribs · Thu BOGO Wings · Fri 3-for-$30 · Sat 2-for-$20 Burgers · Sun 89¢ Wings</div>
 <nav>
   <div class="nav-inner">
     <a href="#" onclick="showHome();return false;" style="display:flex;align-items:center;text-decoration:none;">
@@ -487,17 +454,15 @@ var activeLocation = 'albert-st';
   </div>
 </section>
 <div class="promo-bar">
-  <div class="promo-bar-inner">
-    <div class="pc"><div class="day">TUE</div><div class="deal">All You Can Eat Wings — $28.99</div></div>
-    <div class="pc"><div class="day">THU</div><div class="deal">Buy One, 2nd Order 50% Off</div></div>
-    <div class="pc"><div class="day">SAT</div><div class="deal">2 for $20 Burgers</div></div>
-    <div class="pc"><div class="day">LUNCH</div><div class="deal">Wings + Fries $10 · Daily till 3:30pm</div></div>
-    <div class="pc" id="wing-night-promo" style="display:none;cursor:pointer;border:2px solid var(--red);background:linear-gradient(135deg,#1A1208,#0D0D0D);" onclick="openWingNight()">
-      <div class="wing-night-flame">🔥</div>
-      <div class="day" style="color:var(--yellow);">🌶️ WING NIGHT</div>
-      <div class="deal" style="color:white;">Buy 1 Order · 2nd 50% Off</div>
-      <div class="savings">Tap to Order — Tonight Only</div>
-    </div>
+  <div class="promo-bar-inner" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));">
+    <div class="pc" id="pc-sun" onclick="if(isToday(0))openSunWings()" style="cursor:pointer;"><div class="day">SUN</div><div class="deal">89¢/Wing · Min 10</div></div>
+    <div class="pc" id="pc-mon" onclick="if(isToday(1))openMonBoneless()" style="cursor:pointer;"><div class="day">MON</div><div class="deal">Boneless · Buy 1, 2nd 50% Off</div></div>
+    <div class="pc" id="pc-tue" onclick="if(isToday(2))openAYCE()" style="cursor:pointer;"><div class="day">TUE</div><div class="deal">All You Can Eat — $28.99</div></div>
+    <div class="pc" id="pc-wed" onclick="if(isToday(3))openWedRibs()" style="cursor:pointer;"><div class="day">WED</div><div class="deal">Ribs · Buy 1, 2nd 50% Off</div></div>
+    <div class="pc" id="pc-thu" onclick="if(isToday(4))openWingNight()" style="cursor:pointer;"><div class="day">THU</div><div class="deal">Wings · Buy 1, 2nd 50% Off</div></div>
+    <div class="pc" id="pc-fri" onclick="if(isToday(5))openFri330()" style="cursor:pointer;"><div class="day">FRI</div><div class="deal">3 Wings for $30</div></div>
+    <div class="pc" id="pc-sat" onclick="if(isToday(6))openSatBurgers()" style="cursor:pointer;"><div class="day">SAT</div><div class="deal">2 for $20 Burgers</div></div>
+    <div class="pc" id="pc-lunch" style="cursor:pointer;border-color:var(--red);" onclick="openLunchDeal()"><div class="day">LUNCH</div><div class="deal" style="color:var(--red);">Wings + Fries $10 · Tap →</div></div>
   </div>
 </div>
 <div class="marquee"><div class="mtrack">
@@ -838,434 +803,52 @@ var MENU = {
 };
 var toastT;
 function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('show');},2600);}
-function showHome(){
-  document.getElementById('home-page').style.display='block';
-  document.getElementById('menu-pages').style.display='none';
-  document.querySelectorAll('.menu-page').forEach(function(p){p.classList.remove('active');});
-  currentPage='home';
-  window.scrollTo({top:0,behavior:'smooth'});
-  history.pushState({page:'home'},'');
-}
-function showCat(cat){
-  document.getElementById('home-page').style.display='none';
-  document.getElementById('menu-pages').style.display='block';
-  document.querySelectorAll('.menu-page').forEach(function(p){p.classList.remove('active');});
-  var pg = document.getElementById('page-'+cat);
-  if(pg) pg.classList.add('active');
-  currentPage=cat;
-  window.scrollTo({top:0,behavior:'smooth'});
-  renderGrid(cat);
-  history.pushState({page:cat},'');
-}
-function goBack(){
-  if(window.history.length>1){window.history.back();}
-  else{showHome();}
-}
-window.addEventListener('popstate',function(e){
-  if(e.state&&e.state.page){
-    if(e.state.page==='home'){
-      document.getElementById('home-page').style.display='block';
-      document.getElementById('menu-pages').style.display='none';
-      document.querySelectorAll('.menu-page').forEach(function(p){p.classList.remove('active');});
-    } else {
-      document.getElementById('home-page').style.display='none';
-      document.getElementById('menu-pages').style.display='block';
-      document.querySelectorAll('.menu-page').forEach(function(p){p.classList.remove('active');});
-      var pg=document.getElementById('page-'+e.state.page);
-      if(pg){pg.classList.add('active');renderGrid(e.state.page);}
-    }
-  }
-});
-function renderGrid(cat){
-  var items=MENU[cat]||[];
-  var el=document.getElementById('grid-'+cat);
-  if(!el)return;
-  el.innerHTML=items.map(function(item){return renderCard(item,cat);}).join('');
-}
-function renderCard(item,cat){
-  var img=item.img?'<img src="'+item.img+'" alt="'+item.name+'" loading="lazy">':'';
-  var pop=item.pop?'<div class="pop-flag">🔥 Popular</div>':'';
-  var priceHtml='$'+item.price.toFixed(2);
-  if(item.sizes&&item.price2){
-    var labs=item.sizeLabels||['Small','Large'];
-    priceHtml='<span style="font-size:.8rem;color:#888;">'+labs[0]+'</span> $'+item.price.toFixed(2)+' &nbsp;·&nbsp; <span style="font-size:.8rem;color:#888;">'+labs[1]+'</span> $'+item.price2.toFixed(2);
-  }
-  if(item.sizes3){
-    var labs3=item.sizeLabels3||['Sm','Med','Lg'];
-    priceHtml='<span style="font-size:.78rem;color:#888;">'+labs3[0]+'</span> $'+item.price.toFixed(2)+' · <span style="font-size:.78rem;color:#888;">'+labs3[1]+'</span> $'+item.price2.toFixed(2)+' · <span style="font-size:.78rem;color:#888;">'+labs3[2]+'</span> $'+item.price3.toFixed(2);
-  }
-  return '<div class="mc" onclick="openItemModal(\''+item.id+'\',\''+cat+'\')"><div class="mc-img">'+img+'</div><div class="mc-body">'+pop+'<div class="mc-name">'+item.name+'</div><div class="mc-desc">'+item.desc+'</div><div class="mc-foot"><div class="mc-price" style="font-size:'+(item.sizes||item.sizes3?'.85rem':'1.2rem')+'">'+priceHtml+'</div><button class="btn-add" onclick="event.stopPropagation();openItemModal(\''+item.id+'\',\''+cat+'\')">+</button></div></div></div>';
-}
-function openItemModal(id,cat){
-  var items=MENU[cat]||[];
-  var item=null;
-  for(var i=0;i<items.length;i++){if(items[i].id===id){item=items[i];break;}}
-  if(!item)return;
-  currentItem=item;
-  currentCat=cat;
-  selectedSizeIndex=0;
-  selectedSizePrice=0;
-  var img=item.img?'<div class="im-img"><img src="'+item.img+'" alt="'+item.name+'" loading="lazy"></div>':'';
-  var body=img+'<div class="im-body"><div class="im-name">'+item.name+'</div><div class="im-desc">'+item.desc+'</div>';
-  if(item.sizes&&item.price2){
-    var labs=item.sizeLabels||['Small','Large'];
-    body+='<div style="margin-bottom:.85rem;"><div style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:.5rem;">SIZE</div><div style="display:flex;gap:.5rem;"><button class="size-btn" id="sz-0" onclick="selectSize(0,'+item.price+',this)" style="flex:1;border:2px solid var(--red);background:rgba(232,25,10,.05);padding:.5rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.82rem;">'+labs[0]+' — $'+item.price.toFixed(2)+'</button><button class="size-btn" id="sz-1" onclick="selectSize(1,'+item.price2+',this)" style="flex:1;border:2px solid #E8E0D0;background:white;padding:.5rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.82rem;">'+labs[1]+' — $'+item.price2.toFixed(2)+'</button></div></div>';
-  }
-  if(item.sizes3){
-    var labs3=item.sizeLabels3||['Sm','Med','Lg'];
-    body+='<div style="margin-bottom:.85rem;"><div style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:.5rem;">SIZE</div><div style="display:flex;gap:.4rem;"><button class="size-btn" id="sz-0" onclick="selectSize(0,'+item.price+',this)" style="flex:1;border:2px solid var(--red);background:rgba(232,25,10,.05);padding:.45rem .3rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.75rem;">'+labs3[0]+'<br>$'+item.price.toFixed(2)+'</button><button class="size-btn" id="sz-1" onclick="selectSize(1,'+item.price2+',this)" style="flex:1;border:2px solid #E8E0D0;background:white;padding:.45rem .3rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.75rem;">'+labs3[1]+'<br>$'+item.price2.toFixed(2)+'</button><button class="size-btn" id="sz-2" onclick="selectSize(2,'+item.price3+',this)" style="flex:1;border:2px solid #E8E0D0;background:white;padding:.45rem .3rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.75rem;">'+labs3[2]+'<br>$'+item.price3.toFixed(2)+'</button></div></div>';
-  }
-  if(item.flavorCount){
-    body+='<div style="background:#FFF;border:1px solid #E8E0D0;border-radius:6px;padding:.85rem;margin-bottom:.85rem;"><div style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:.6rem;">🔥 '+(item.flavorCount>1?'Choose a Flavor for Each Order':'Choose Your Flavor')+'</div>';
-    for(var fi=0;fi<item.flavorCount;fi++){
-      var opts='<option value="">— Pick a flavor —</option>';
-      Object.keys(FLAVORS).forEach(function(grp){
-        opts+='<optgroup label="'+grp+'">';
-        FLAVORS[grp].forEach(function(f){opts+='<option value="'+f+'">'+f+'</option>';});
-        opts+='</optgroup>';
-      });
-      body+='<div style="margin-bottom:.5rem;">'+(item.flavorCount>1?'<div style="font-family:var(--font-head);font-size:.75rem;color:#888;margin-bottom:.3rem;">Order '+(fi+1)+':</div>':'')+' <select id="flavor-'+fi+'" style="width:100%;border:1.5px solid #E8E0D0;border-radius:4px;padding:.45rem .7rem;font-family:var(--font-body);font-size:.83rem;color:var(--black);outline:none;background:white;">'+opts+'</select></div>';
-    }
-    body+='</div>';
-  }
-  if(item.cookieFlavors){
-    body+='<div style="margin-bottom:.85rem;"><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.4rem;">Cookie Dough Flavor</label><select id="cookie-flavor" style="width:100%;border:1.5px solid #E8E0D0;border-radius:4px;padding:.45rem .7rem;font-family:var(--font-body);font-size:.83rem;outline:none;background:white;margin-bottom:.7rem;"><option value="Peanut Butter">Peanut Butter</option><option value="Double Chocolate">Double Chocolate</option><option value="Monster">Monster</option></select></div>';
-  }
-  if(item.upgrades&&cat==='burgers'){
-    body+='<div style="background:#FFF8EE;border:1px solid #F5D98A;border-radius:6px;padding:.75rem;margin-bottom:.85rem;"><div style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#7B3F00;margin-bottom:.5rem;">Upgrade (Optional)</div>';
-    BURGER_UPGRADES.forEach(function(u,i){
-      body+='<div style="display:flex;align-items:center;justify-content:space-between;padding:.3rem 0;border-bottom:'+(i<BURGER_UPGRADES.length-1?'1px solid #F0E0C0':'none')+'"><label style="font-family:var(--font-head);font-size:.8rem;color:#555;cursor:pointer;display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;"><input type="radio" name="burger-upgrade" value="'+u.price+'" data-name="'+u.name+'" style="width:auto;border:none;padding:0;"> '+u.name+'</label><span style="font-family:var(--font-display);font-size:.85rem;color:var(--red);">+$'+u.price.toFixed(2)+'</span></div>';
-    });
-    body+='</div>';
-  }
-  if(item.upgrades&&cat==='combos'){
-    body+='<div style="background:#FFF8EE;border:1px solid #F5D98A;border-radius:6px;padding:.75rem;margin-bottom:.85rem;"><div style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#7B3F00;margin-bottom:.5rem;">Upgrade Fries (Optional)</div>';
-    COMBO_UPGRADES.forEach(function(u,i){
-      body+='<div style="display:flex;align-items:center;justify-content:space-between;padding:.3rem 0;border-bottom:'+(i<COMBO_UPGRADES.length-1?'1px solid #F0E0C0':'none')+'"><label style="font-family:var(--font-head);font-size:.8rem;color:#555;cursor:pointer;display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;"><input type="radio" name="combo-upgrade" value="'+u.price+'" data-name="'+u.name+'" style="width:auto;border:none;padding:0;"> '+u.name+'</label><span style="font-family:var(--font-display);font-size:.85rem;color:var(--red);">+$'+u.price.toFixed(2)+'</span></div>';
-    });
-    body+='</div>';
-  }
-  body+='<div style="margin-bottom:1rem;"><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.35rem;">Special Instructions (Optional)</label><textarea id="item-notes" placeholder="Extra sauce, no pickles, extra spicy..." style="width:100%;border:1.5px solid #E8E0D0;border-radius:4px;padding:.5rem .75rem;font-family:var(--font-body);font-size:.83rem;color:var(--black);resize:vertical;min-height:55px;outline:none;"></textarea></div>';
-  body+='<div style="font-family:var(--font-display);font-size:1.8rem;color:var(--black);margin-bottom:1rem;" id="modal-price">$'+item.price.toFixed(2)+'</div>';
-  body+='<button class="btn-place" onclick="addFromModal()">ADD TO ORDER 🍗</button>';
-  body+='<button onclick="closeItemModal()" style="width:100%;background:none;border:1.5px solid #E8E0D0;color:#888;padding:.7rem;font-family:var(--font-head);font-size:.82rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:4px;margin-top:.5rem;">✕ Cancel</button>';
-  body+='</div>';
-  document.getElementById('im-content').innerHTML=body;
-  document.getElementById('item-modal-ov').classList.add('open');
-}
-function selectSize(idx,price,el){
-  selectedSizeIndex=idx;selectedSizePrice=price;
-  document.querySelectorAll('.size-btn').forEach(function(b){b.style.borderColor='#E8E0D0';b.style.background='white';});
-  el.style.borderColor='var(--red)';el.style.background='rgba(232,25,10,.05)';
-  document.getElementById('modal-price').textContent='$'+price.toFixed(2);
-}
-function closeItemModal(){
-  document.getElementById('item-modal-ov').classList.remove('open');
-  selectedSizeIndex=0;selectedSizePrice=0;currentItem=null;currentCat=null;
-}
-function addFromModal(){
-  var item=currentItem,cat=currentCat;
-  if(!item)return;
-  var flavors=[];
-  if(item.flavorCount){
-    for(var fi=0;fi<item.flavorCount;fi++){
-      var sel=document.getElementById('flavor-'+fi);
-      flavors.push(sel&&sel.value?sel.value:'');
-    }
-    if(flavors.some(function(f){return !f;})){toast('Please pick a flavor for each order!');return;}
-  }
-  var cookieFl='';
-  if(item.cookieFlavors){var cs=document.getElementById('cookie-flavor');cookieFl=cs?cs.value:'Peanut Butter';}
-  var upgradePrice=0,upgradeName='';
-  if(item.upgrades){
-    var uname=cat==='burgers'?'burger-upgrade':'combo-upgrade';
-    var checked=document.querySelector('input[name="'+uname+'"]:checked');
-    if(checked){upgradePrice=parseFloat(checked.value);upgradeName=checked.dataset.name;}
-  }
-  var finalPrice=item.price,sizeName='';
-  if((item.sizes||item.sizes3)&&selectedSizePrice>0){
-    finalPrice=selectedSizePrice;
-    var labs=item.sizeLabels3||item.sizeLabels||['Small','Large'];
-    sizeName=labs[selectedSizeIndex];
-  }
-  var notes=document.getElementById('item-notes')?document.getElementById('item-notes').value.trim():'';
-  var totalPrice=finalPrice+upgradePrice;
-  var key=item.id+'|'+flavors.join(',')+cookieFl+sizeName+upgradeName;
-  var ex=null;
-  for(var ci=0;ci<cart.length;ci++){if(cart[ci].key===key&&cart[ci].notes===notes){ex=cart[ci];break;}}
-  if(ex){ex.qty++;}
-  else{
-    var details=[];
-    if(flavors.length===1&&flavors[0])details.push(flavors[0]);
-    if(flavors.length>1)flavors.forEach(function(f,i){details.push('Order '+(i+1)+': '+f);});
-    if(cookieFl)details.push(cookieFl);
-    if(sizeName)details.push(sizeName);
-    if(upgradeName)details.push(upgradeName+' +$'+upgradePrice.toFixed(2));
-    if(notes)details.push('Note: '+notes);
-    cart.push({id:item.id,key:key,qty:1,name:item.name,price:totalPrice,details:details.join(' · '),notes:notes,flavors:flavors,cookieFl:cookieFl,sizeName:sizeName,upgradeName:upgradeName,upgradePrice:upgradePrice});
-  }
-  updateCart();toast('Added: '+item.name);closeItemModal();
-}
-function updateCart(){
-  var cnt=cart.reduce(function(s,i){return s+i.qty;},0);
-  document.getElementById('cart-count').textContent=cnt;
-  var bd=document.getElementById('cart-bd'),ft=document.getElementById('cart-ft');
-  if(!cart.length){
-    bd.innerHTML='<div class="cart-empty"><div style="font-size:2.8rem;opacity:.35;margin-bottom:.75rem">🍗</div><div style="font-family:var(--font-head);font-size:.85rem;letter-spacing:1px;text-transform:uppercase;color:#888">Cart is empty</div></div>';
-    ft.style.display='none';return;
-  }
-  ft.style.display='block';
-  bd.innerHTML=cart.map(function(item){
-    return '<div class="ci"><div class="ci-icon">🍗</div><div class="ci-info"><div class="ci-name">'+item.name+'</div>'+(item.details?'<div class="ci-details">'+item.details+'</div>':'')+'<div class="ci-pr">$'+item.price.toFixed(2)+' each</div></div><div class="ci-ctrl"><button class="qb" onclick="chgQty(\''+item.key+'\',-1)">−</button><span class="qn">'+item.qty+'</span><button class="qb" onclick="chgQty(\''+item.key+'\',1)">+</button></div></div>';
-  }).join('');
-  var sub=cart.reduce(function(s,i){return s+i.price*i.qty;},0);
-  var gst=sub*0.05,pst=sub*0.06,del=orderType==='delivery'?5.50:0,total=sub+gst+pst+del;
-  document.getElementById('csub').textContent='$'+sub.toFixed(2);
-  document.getElementById('cgst').textContent='$'+gst.toFixed(2);
-  document.getElementById('cpst').textContent='$'+pst.toFixed(2);
-  document.getElementById('ctot').textContent='$'+total.toFixed(2);
-  var dr=document.getElementById('cdel-row');
-  if(dr)dr.style.display=orderType==='delivery'?'flex':'none';
-}
-function chgQty(key,d){
-  for(var i=0;i<cart.length;i++){if(cart[i].key===key){cart[i].qty+=d;if(cart[i].qty<=0)cart.splice(i,1);break;}}
-  updateCart();
-}
+function showHome(){document.getElementById('home-page').style.display='block';document.getElementById('menu-pages').style.display='none';document.querySelectorAll('.menu-page').forEach(function(p){p.classList.remove('active');});currentPage='home';window.scrollTo({top:0,behavior:'smooth'});history.pushState({page:'home'},'');}
+function showCat(cat){document.getElementById('home-page').style.display='none';document.getElementById('menu-pages').style.display='block';document.querySelectorAll('.menu-page').forEach(function(p){p.classList.remove('active');});var pg=document.getElementById('page-'+cat);if(pg)pg.classList.add('active');currentPage=cat;window.scrollTo({top:0,behavior:'smooth'});renderGrid(cat);history.pushState({page:cat},'');}
+function goBack(){if(window.history.length>1){window.history.back();}else{showHome();}}
+window.addEventListener('popstate',function(e){if(e.state&&e.state.page){if(e.state.page==='home'){document.getElementById('home-page').style.display='block';document.getElementById('menu-pages').style.display='none';document.querySelectorAll('.menu-page').forEach(function(p){p.classList.remove('active');});}else{document.getElementById('home-page').style.display='none';document.getElementById('menu-pages').style.display='block';document.querySelectorAll('.menu-page').forEach(function(p){p.classList.remove('active');});var pg=document.getElementById('page-'+e.state.page);if(pg){pg.classList.add('active');renderGrid(e.state.page);}}}});
+function renderGrid(cat){var items=MENU[cat]||[];var el=document.getElementById('grid-'+cat);if(!el)return;el.innerHTML=items.map(function(item){return renderCard(item,cat);}).join('');}
+function renderCard(item,cat){var img=item.img?'<img src="'+item.img+'" alt="'+item.name+'" loading="lazy">':'';var pop=item.pop?'<div class="pop-flag">🔥 Popular</div>':'';var priceHtml='$'+item.price.toFixed(2);if(item.sizes&&item.price2){var labs=item.sizeLabels||['Small','Large'];priceHtml='<span style="font-size:.8rem;color:#888;">'+labs[0]+'</span> $'+item.price.toFixed(2)+' &nbsp;·&nbsp; <span style="font-size:.8rem;color:#888;">'+labs[1]+'</span> $'+item.price2.toFixed(2);}if(item.sizes3){var labs3=item.sizeLabels3||['Sm','Med','Lg'];priceHtml='<span style="font-size:.78rem;color:#888;">'+labs3[0]+'</span> $'+item.price.toFixed(2)+' · <span style="font-size:.78rem;color:#888;">'+labs3[1]+'</span> $'+item.price2.toFixed(2)+' · <span style="font-size:.78rem;color:#888;">'+labs3[2]+'</span> $'+item.price3.toFixed(2);}return '<div class="mc" onclick="openItemModal(\''+item.id+'\',\''+cat+'\')"><div class="mc-img">'+img+'</div><div class="mc-body">'+pop+'<div class="mc-name">'+item.name+'</div><div class="mc-desc">'+item.desc+'</div><div class="mc-foot"><div class="mc-price" style="font-size:'+(item.sizes||item.sizes3?'.85rem':'1.2rem')+'">'+priceHtml+'</div><button class="btn-add" onclick="event.stopPropagation();openItemModal(\''+item.id+'\',\''+cat+'\')">+</button></div></div></div>';}
+function openItemModal(id,cat){var items=MENU[cat]||[];var item=null;for(var i=0;i<items.length;i++){if(items[i].id===id){item=items[i];break;}}if(!item)return;currentItem=item;currentCat=cat;selectedSizeIndex=0;selectedSizePrice=0;var img=item.img?'<div class="im-img"><img src="'+item.img+'" alt="'+item.name+'" loading="lazy"></div>':'';var body=img+'<div class="im-body"><div class="im-name">'+item.name+'</div><div class="im-desc">'+item.desc+'</div>';if(item.sizes&&item.price2){var labs=item.sizeLabels||['Small','Large'];body+='<div style="margin-bottom:.85rem;"><div style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:.5rem;">SIZE</div><div style="display:flex;gap:.5rem;"><button class="size-btn" id="sz-0" onclick="selectSize(0,'+item.price+',this)" style="flex:1;border:2px solid var(--red);background:rgba(232,25,10,.05);padding:.5rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.82rem;">'+labs[0]+' — $'+item.price.toFixed(2)+'</button><button class="size-btn" id="sz-1" onclick="selectSize(1,'+item.price2+',this)" style="flex:1;border:2px solid #E8E0D0;background:white;padding:.5rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.82rem;">'+labs[1]+' — $'+item.price2.toFixed(2)+'</button></div></div>';}if(item.sizes3){var labs3=item.sizeLabels3||['Sm','Med','Lg'];body+='<div style="margin-bottom:.85rem;"><div style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:.5rem;">SIZE</div><div style="display:flex;gap:.4rem;"><button class="size-btn" id="sz-0" onclick="selectSize(0,'+item.price+',this)" style="flex:1;border:2px solid var(--red);background:rgba(232,25,10,.05);padding:.45rem .3rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.75rem;">'+labs3[0]+'<br>$'+item.price.toFixed(2)+'</button><button class="size-btn" id="sz-1" onclick="selectSize(1,'+item.price2+',this)" style="flex:1;border:2px solid #E8E0D0;background:white;padding:.45rem .3rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.75rem;">'+labs3[1]+'<br>$'+item.price2.toFixed(2)+'</button><button class="size-btn" id="sz-2" onclick="selectSize(2,'+item.price3+',this)" style="flex:1;border:2px solid #E8E0D0;background:white;padding:.45rem .3rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.75rem;">'+labs3[2]+'<br>$'+item.price3.toFixed(2)+'</button></div></div>';}if(item.flavorCount){body+='<div style="background:#FFF;border:1px solid #E8E0D0;border-radius:6px;padding:.85rem;margin-bottom:.85rem;"><div style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;margin-bottom:.6rem;">🔥 '+(item.flavorCount>1?'Choose a Flavor for Each Order':'Choose Your Flavor')+'</div>';for(var fi=0;fi<item.flavorCount;fi++){var opts='<option value="">— Pick a flavor —</option>';Object.keys(FLAVORS).forEach(function(grp){opts+='<optgroup label="'+grp+'">';FLAVORS[grp].forEach(function(f){opts+='<option value="'+f+'">'+f+'</option>';});opts+='</optgroup>';});body+='<div style="margin-bottom:.5rem;">'+(item.flavorCount>1?'<div style="font-family:var(--font-head);font-size:.75rem;color:#888;margin-bottom:.3rem;">Order '+(fi+1)+':</div>':'')+' <select id="flavor-'+fi+'" style="width:100%;border:1.5px solid #E8E0D0;border-radius:4px;padding:.45rem .7rem;font-family:var(--font-body);font-size:.83rem;color:var(--black);outline:none;background:white;">'+opts+'</select></div>';}body+='</div>';}if(item.cookieFlavors){body+='<div style="margin-bottom:.85rem;"><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.4rem;">Cookie Dough Flavor</label><select id="cookie-flavor" style="width:100%;border:1.5px solid #E8E0D0;border-radius:4px;padding:.45rem .7rem;font-family:var(--font-body);font-size:.83rem;outline:none;background:white;margin-bottom:.7rem;"><option value="Peanut Butter">Peanut Butter</option><option value="Double Chocolate">Double Chocolate</option><option value="Monster">Monster</option></select></div>';}if(item.upgrades&&cat==='burgers'){body+='<div style="background:#FFF8EE;border:1px solid #F5D98A;border-radius:6px;padding:.75rem;margin-bottom:.85rem;"><div style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#7B3F00;margin-bottom:.5rem;">Upgrade (Optional)</div>';BURGER_UPGRADES.forEach(function(u,i){body+='<div style="display:flex;align-items:center;justify-content:space-between;padding:.3rem 0;border-bottom:'+(i<BURGER_UPGRADES.length-1?'1px solid #F0E0C0':'none')+'"><label style="font-family:var(--font-head);font-size:.8rem;color:#555;cursor:pointer;display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;"><input type="radio" name="burger-upgrade" value="'+u.price+'" data-name="'+u.name+'" style="width:auto;border:none;padding:0;"> '+u.name+'</label><span style="font-family:var(--font-display);font-size:.85rem;color:var(--red);">+$'+u.price.toFixed(2)+'</span></div>';});body+='</div>';}if(item.upgrades&&cat==='combos'){body+='<div style="background:#FFF8EE;border:1px solid #F5D98A;border-radius:6px;padding:.75rem;margin-bottom:.85rem;"><div style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#7B3F00;margin-bottom:.5rem;">Upgrade Fries (Optional)</div>';COMBO_UPGRADES.forEach(function(u,i){body+='<div style="display:flex;align-items:center;justify-content:space-between;padding:.3rem 0;border-bottom:'+(i<COMBO_UPGRADES.length-1?'1px solid #F0E0C0':'none')+'"><label style="font-family:var(--font-head);font-size:.8rem;color:#555;cursor:pointer;display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;"><input type="radio" name="combo-upgrade" value="'+u.price+'" data-name="'+u.name+'" style="width:auto;border:none;padding:0;"> '+u.name+'</label><span style="font-family:var(--font-display);font-size:.85rem;color:var(--red);">+$'+u.price.toFixed(2)+'</span></div>';});body+='</div>';}body+='<div style="margin-bottom:1rem;"><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.35rem;">Special Instructions (Optional)</label><textarea id="item-notes" placeholder="Extra sauce, no pickles, extra spicy..." style="width:100%;border:1.5px solid #E8E0D0;border-radius:4px;padding:.5rem .75rem;font-family:var(--font-body);font-size:.83rem;color:var(--black);resize:vertical;min-height:55px;outline:none;"></textarea></div>';body+='<div style="font-family:var(--font-display);font-size:1.8rem;color:var(--black);margin-bottom:1rem;" id="modal-price">$'+item.price.toFixed(2)+'</div>';body+='<button class="btn-place" onclick="addFromModal()">ADD TO ORDER 🍗</button>';body+='<button onclick="closeItemModal()" style="width:100%;background:none;border:1.5px solid #E8E0D0;color:#888;padding:.7rem;font-family:var(--font-head);font-size:.82rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:4px;margin-top:.5rem;">✕ Cancel</button>';body+='</div>';document.getElementById('im-content').innerHTML=body;document.getElementById('item-modal-ov').classList.add('open');}
+function selectSize(idx,price,el){selectedSizeIndex=idx;selectedSizePrice=price;document.querySelectorAll('.size-btn').forEach(function(b){b.style.borderColor='#E8E0D0';b.style.background='white';});el.style.borderColor='var(--red)';el.style.background='rgba(232,25,10,.05)';document.getElementById('modal-price').textContent='$'+price.toFixed(2);}
+function closeItemModal(){document.getElementById('item-modal-ov').classList.remove('open');selectedSizeIndex=0;selectedSizePrice=0;currentItem=null;currentCat=null;}
+function addFromModal(){var item=currentItem,cat=currentCat;if(!item)return;var flavors=[];if(item.flavorCount){for(var fi=0;fi<item.flavorCount;fi++){var sel=document.getElementById('flavor-'+fi);flavors.push(sel&&sel.value?sel.value:'');}if(flavors.some(function(f){return !f;})){toast('Please pick a flavor for each order!');return;}}var cookieFl='';if(item.cookieFlavors){var cs=document.getElementById('cookie-flavor');cookieFl=cs?cs.value:'Peanut Butter';}var upgradePrice=0,upgradeName='';if(item.upgrades){var uname=cat==='burgers'?'burger-upgrade':'combo-upgrade';var checked=document.querySelector('input[name="'+uname+'"]:checked');if(checked){upgradePrice=parseFloat(checked.value);upgradeName=checked.dataset.name;}}var finalPrice=item.price,sizeName='';if((item.sizes||item.sizes3)&&selectedSizePrice>0){finalPrice=selectedSizePrice;var labs=item.sizeLabels3||item.sizeLabels||['Small','Large'];sizeName=labs[selectedSizeIndex];}var notes=document.getElementById('item-notes')?document.getElementById('item-notes').value.trim():'';var totalPrice=finalPrice+upgradePrice;var key=item.id+'|'+flavors.join(',')+cookieFl+sizeName+upgradeName;var ex=null;for(var ci=0;ci<cart.length;ci++){if(cart[ci].key===key&&cart[ci].notes===notes){ex=cart[ci];break;}}if(ex){ex.qty++;}else{var details=[];if(flavors.length===1&&flavors[0])details.push(flavors[0]);if(flavors.length>1)flavors.forEach(function(f,i){details.push('Order '+(i+1)+': '+f);});if(cookieFl)details.push(cookieFl);if(sizeName)details.push(sizeName);if(upgradeName)details.push(upgradeName+' +$'+upgradePrice.toFixed(2));if(notes)details.push('Note: '+notes);cart.push({id:item.id,key:key,qty:1,name:item.name,price:totalPrice,details:details.join(' · '),notes:notes,flavors:flavors,cookieFl:cookieFl,sizeName:sizeName,upgradeName:upgradeName,upgradePrice:upgradePrice});}updateCart();toast('Added: '+item.name);closeItemModal();}
+function updateCart(){var cnt=cart.reduce(function(s,i){return s+i.qty;},0);document.getElementById('cart-count').textContent=cnt;var bd=document.getElementById('cart-bd'),ft=document.getElementById('cart-ft');if(!cart.length){bd.innerHTML='<div class="cart-empty"><div style="font-size:2.8rem;opacity:.35;margin-bottom:.75rem">🍗</div><div style="font-family:var(--font-head);font-size:.85rem;letter-spacing:1px;text-transform:uppercase;color:#888">Cart is empty</div></div>';ft.style.display='none';return;}ft.style.display='block';bd.innerHTML=cart.map(function(item){return '<div class="ci"><div class="ci-icon">🍗</div><div class="ci-info"><div class="ci-name">'+item.name+'</div>'+(item.details?'<div class="ci-details">'+item.details+'</div>':'')+'<div class="ci-pr">$'+item.price.toFixed(2)+' each</div></div><div class="ci-ctrl"><button class="qb" onclick="chgQty(\''+item.key+'\',-1)">−</button><span class="qn">'+item.qty+'</span><button class="qb" onclick="chgQty(\''+item.key+'\',1)">+</button></div></div>';}).join('');var sub=cart.reduce(function(s,i){return s+i.price*i.qty;},0);var gst=sub*0.05,pst=sub*0.06,del=orderType==='delivery'?5.50:0,total=sub+gst+pst+del;document.getElementById('csub').textContent='$'+sub.toFixed(2);document.getElementById('cgst').textContent='$'+gst.toFixed(2);document.getElementById('cpst').textContent='$'+pst.toFixed(2);document.getElementById('ctot').textContent='$'+total.toFixed(2);var dr=document.getElementById('cdel-row');if(dr)dr.style.display=orderType==='delivery'?'flex':'none';}
+function chgQty(key,d){for(var i=0;i<cart.length;i++){if(cart[i].key===key){cart[i].qty+=d;if(cart[i].qty<=0)cart.splice(i,1);break;}}updateCart();}
 function openCart(){document.getElementById('cart-ov').classList.add('open');}
 function closeCart(){document.getElementById('cart-ov').classList.remove('open');}
 function openCheckout(){closeCart();renderCheckoutForm();document.getElementById('modal-ov').classList.add('open');}
 function closeCheckout(){document.getElementById('modal-ov').classList.remove('open');}
-function setOT(t){
-  orderType=t;
-  document.getElementById('ot-p').classList.toggle('on',t==='pickup');
-  document.getElementById('ot-d').classList.toggle('on',t==='delivery');
-  document.getElementById('del-addr').classList.toggle('hidden',t==='pickup');
-  document.getElementById('del-note').classList.toggle('hidden',t==='pickup');
-  updateCart();
-  renderPaymentSection();
-}
-function renderCheckoutForm(){
-  var sub=cart.reduce(function(s,i){return s+i.price*i.qty;},0);
-  var gst=sub*0.05,pst=sub*0.06,del=orderType==='delivery'?5.50:0,total=sub+gst+pst+del;
-  var itemRows=cart.map(function(it){
-    return '<div class="os-row"><span>'+it.name+' x'+it.qty+'</span><span>$'+(it.price*it.qty).toFixed(2)+'</span></div>'+(it.details?'<div class="os-row sub-row"><span>'+it.details+'</span><span></span></div>':'');
-  }).join('');
-  var preNote='';
-  if(!isOpen()){preNote='<div class="preorder-note"><strong>Pre-Order</strong> — We are currently closed. Your order will be prepared when we open '+getNextOpenTime()+'. We will call you to confirm!</div>';}
-  document.getElementById('mbd').innerHTML=preNote+'<div class="otype-row"><div class="oc on" id="ot-p" onclick="setOT(\'pickup\')"><div class="oc-icon">🏃</div><div class="oc-lbl">Pickup</div><div class="oc-sub">Ready in ~20 min</div></div><div class="oc" id="ot-d" onclick="setOT(\'delivery\')"><div class="oc-icon">🛵</div><div class="oc-lbl">Delivery</div><div class="oc-sub">+$5.50 · Regina</div></div></div><div class="fg"><label>Location</label><select id="o-loc" onchange="setLocation(this.value)"><option value="albert-st">Albert Street — #3 155 Albert St N, Regina</option><option value="rochdale">Rochdale — 3881 Rochdale Blvd, Regina</option><option value="east-regina">East Regina — 534 University Park Drive</option><option value="moose-jaw">Moose Jaw — 622 Main St N, Moose Jaw</option></select></div><div id="del-addr" class="fg hidden"><label>Delivery Address</label><input type="text" id="o-addr" placeholder="123 Main St, Regina, SK"></div><div id="del-note" class="del-note hidden">Delivery available within Regina. Flat rate $5.50.</div><div class="msec">YOUR INFO</div><div class="frow"><div class="fg"><label>First Name</label><input type="text" id="o-fn" placeholder="First name"></div><div class="fg"><label>Last Name</label><input type="text" id="o-ln" placeholder="Last name"></div></div><div class="fg"><label>Phone</label><input type="tel" id="o-ph" placeholder="(306) 555-0123"></div><div class="fg"><label>Email</label><input type="email" id="o-em" placeholder="you@email.com"></div><div class="fg"><label>Order Notes</label><textarea id="o-notes" placeholder="Any special requests..."></textarea></div><div class="msec">ORDER SUMMARY</div><div class="os-box">'+itemRows+'<div class="os-row" style="color:#888"><span>GST (5%)</span><span>$'+gst.toFixed(2)+'</span></div><div class="os-row" style="color:#888"><span>PST (6%)</span><span>$'+pst.toFixed(2)+'</span></div>'+(del>0?'<div class="os-row" style="color:#888"><span>Delivery</span><span>$'+del.toFixed(2)+'</span></div>':'')+'<div class="os-total"><span>Total</span><span>$'+total.toFixed(2)+'</span></div></div><div id="payment-section"></div>';
-  detectAndSortLocations(true);
-  setTimeout(renderPaymentSection,200);
-}
-function renderPaymentSection(){
-  var sec=document.getElementById('payment-section');
-  if(!sec)return;
-  var btnTxt=isPreOrder()?'PRE-ORDER FOR '+getNextOpenTime().toUpperCase():'PLACE ORDER';
-  var btnStyle=isPreOrder()?'style="background:#F5A800;color:#0D0D0D;"':'';
-  sec.innerHTML='<div class="msec">PAYMENT</div><div class="clover-badge">💰 Pay At '+(orderType==='pickup'?'Pickup':'Delivery')+'</div><p class="pay-note"><strong>Pay '+(orderType==='pickup'?'when you pick up':'when your order arrives')+'.</strong> Cash or card accepted at the store.</p><button class="btn-place" id="pbtn" onclick="submitOrder()" '+btnStyle+'>'+btnTxt+' 🔥</button>';
-}
-function setLocation(v){
-  activeLocation=v;
-  var lbl=document.getElementById('cart-loc-label');
-  var names={'albert-st':'Albert Street','rochdale':'Rochdale','east-regina':'East Regina','moose-jaw':'Moose Jaw'};
-  if(lbl)lbl.textContent=(names[v]||'Albert Street')+' · Pickup or Delivery';
-}
-async function submitOrder(){
-  var fn=document.getElementById('o-fn')?document.getElementById('o-fn').value.trim():'';
-  var ln=document.getElementById('o-ln')?document.getElementById('o-ln').value.trim():'';
-  var ph=document.getElementById('o-ph')?document.getElementById('o-ph').value.trim():'';
-  var em=document.getElementById('o-em')?document.getElementById('o-em').value.trim():'';
-  var notes=document.getElementById('o-notes')?document.getElementById('o-notes').value.trim():'';
-  var addr=orderType==='delivery'&&document.getElementById('o-addr')?document.getElementById('o-addr').value.trim():'';
-  var locId=document.getElementById('o-loc')?document.getElementById('o-loc').value:activeLocation;
-  if(!fn||!ph){toast('Name and phone required');return;}
-  if(orderType==='delivery'&&!addr){toast('Please enter delivery address');return;}
-  var btn=document.getElementById('pbtn');
-  btn.disabled=true;
-  var sub=cart.reduce(function(s,i){return s+i.price*i.qty;},0);
-  var gst=sub*0.05,pst=sub*0.06,del=orderType==='delivery'?5.50:0;
-  var total=parseFloat((sub+gst+pst+del).toFixed(2));
-  btn.innerHTML='<span class="spinner"></span>Sending to Kitchen...';
-  var serverItems=cart.map(function(i){
-    var parts=[];
-    if(i.flavors&&i.flavors.length){
-      if(i.flavors.length===1)parts.push(i.flavors[0]);
-      else i.flavors.forEach(function(f,idx){parts.push('Order '+(idx+1)+': '+f);});
-    }
-    if(i.cookieFl)parts.push(i.cookieFl);
-    if(i.sizeName)parts.push(i.sizeName);
-    if(i.upgradeName)parts.push(i.upgradeName);
-    if(i.notes)parts.push('Note: '+i.notes);
-    return {name:i.name,flavor:parts.join(' · '),price:i.price,qty:i.qty};
-  });
-  var preOrderNote=isPreOrder()?'[PRE-ORDER — opens '+getNextOpenTime()+'] ':'';
-  try{
-    var resp=await fetch(API_BASE+'/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({locationId:locId,orderType:orderType,customer:{firstName:fn,lastName:ln,phone:ph,email:em,address:addr},items:serverItems,notes:preOrderNote+(notes||''),subtotal:sub,tax:gst+pst,total:total,preOrder:isPreOrder(),openTime:getNextOpenTime()})});
-    var data=await resp.json();
-    if(data.success){showSuccess(Object.assign({},data,{orderType:orderType}));cart=[];updateCart();}
-    else{toast('Error: '+(data.error||'Unknown'));btn.disabled=false;btn.innerHTML='PLACE ORDER 🔥';}
-  }catch(e){
-    var onum='WO-'+Math.floor(1000+Math.random()*9000);
-    showSuccess({success:true,orderNum:onum,cloverSuccess:false,customer:fn,total:total.toFixed(2),phone:ph,orderType:orderType,location:locId});
-    cart=[];updateCart();
-  }
-}
-function showSuccess(d){
-  if(d.orderNum) loyaltyAutoStamp(d.orderNum);
-  setTimeout(showNotifBanner, 3000);
-  var session = loyGetSession();
-  var locNames={'albert-st':'Albert Street','rochdale':'Rochdale','east-regina':'East Regina','moose-jaw':'Moose Jaw'};
-  var locName=d.location?(locNames[d.location]||d.location):'';
-  var stampBlock='';
-  if(session){
-    stampBlock='<div style="background:linear-gradient(135deg,#0D0D0D,#1A1208);border:2px solid #F5A800;border-radius:8px;padding:1rem 1.25rem;margin:1rem 0;text-align:center;"><div style="font-family:var(--font-display);font-size:1.1rem;color:#F5A800;letter-spacing:2px;margin-bottom:.25rem;">🍗 STAMP ADDED!</div><div style="font-family:var(--font-head);font-size:.75rem;color:#888;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:.7rem;">Saucy Stamps · '+session.name.split(' ')[0]+'\'s Card</div><button onclick="closeCheckout();openLoyalty();" style="background:transparent;border:1.5px solid #F5A800;color:#F5A800;font-family:var(--font-head);font-size:.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:.4rem 1.1rem;border-radius:3px;cursor:pointer;">VIEW MY CARD →</button></div>';
-  } else {
-    stampBlock='<div style="background:#F5F0E8;border:1.5px solid #C8B89A;border-radius:8px;padding:1rem 1.25rem;margin:1rem 0;text-align:center;"><div style="font-family:var(--font-display);font-size:1rem;color:#1A1208;letter-spacing:1px;margin-bottom:.25rem;">🌾 EARN FREE WINGS</div><div style="font-family:var(--font-head);font-size:.75rem;color:#7A6545;letter-spacing:1px;margin-bottom:.7rem;">This order could be Stamp #1. Join Saucy Stamps — it\'s free!</div><button onclick="closeCheckout();openLoyalty();" style="background:#E8190A;border:none;color:white;font-family:var(--font-head);font-size:.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:.45rem 1.2rem;border-radius:3px;cursor:pointer;">JOIN FREE 🍗</button></div>';
-  }
-  document.getElementById('mbd').innerHTML='<div class="success-view"><div class="sv-icon">🔥</div><h2>ORDER PLACED!</h2><p>You are locked in, '+d.customer+'!</p><div class="onum">'+d.orderNum+'</div><p style="background:#FFF8EE;border:1px solid #F5D98A;border-radius:6px;padding:.75rem;margin:.75rem 0;color:#7B3F00;font-weight:600;">💰 <strong>$'+d.total+'</strong> due at '+(d.orderType==='pickup'?'pickup':'delivery')+' · Cash or card accepted</p><p><strong>'+(d.orderType==='pickup'?'Pickup':'Delivery')+'</strong> · '+locName+'</p><p>We will call <strong>'+d.phone+'</strong> when it is ready.</p>'+stampBlock+'<p style="color:'+(d.cloverSuccess?'#276749':'#888')+';font-size:.8rem;margin-top:.4rem">'+(d.cloverSuccess?'✓ Order sent to Clover POS':'Order logged — kitchen notified')+'</p><a class="btn-red" href="#" onclick="closeCheckout();showHome()" style="display:inline-block;margin-top:1.25rem;font-size:.95rem;padding:.8rem 1.8rem">Order Again 🍗</a></div>';
-}
+function setOT(t){orderType=t;document.getElementById('ot-p').classList.toggle('on',t==='pickup');document.getElementById('ot-d').classList.toggle('on',t==='delivery');document.getElementById('del-addr').classList.toggle('hidden',t==='pickup');document.getElementById('del-note').classList.toggle('hidden',t==='pickup');updateCart();renderPaymentSection();}
+function renderCheckoutForm(){var sub=cart.reduce(function(s,i){return s+i.price*i.qty;},0);var gst=sub*0.05,pst=sub*0.06,del=orderType==='delivery'?5.50:0,total=sub+gst+pst+del;var itemRows=cart.map(function(it){return '<div class="os-row"><span>'+it.name+' x'+it.qty+'</span><span>$'+(it.price*it.qty).toFixed(2)+'</span></div>'+(it.details?'<div class="os-row sub-row"><span>'+it.details+'</span><span></span></div>':'');}).join('');var preNote='';if(!isOpen()){preNote='<div class="preorder-note"><strong>Pre-Order</strong> — We are currently closed. Your order will be prepared when we open '+getNextOpenTime()+'. We will call you to confirm!</div>';}document.getElementById('mbd').innerHTML=preNote+'<div class="otype-row"><div class="oc on" id="ot-p" onclick="setOT(\'pickup\')"><div class="oc-icon">🏃</div><div class="oc-lbl">Pickup</div><div class="oc-sub">Ready in ~20 min</div></div><div class="oc" id="ot-d" onclick="setOT(\'delivery\')"><div class="oc-icon">🛵</div><div class="oc-lbl">Delivery</div><div class="oc-sub">+$5.50 · Regina</div></div></div><div class="fg"><label>Location</label><select id="o-loc" onchange="setLocation(this.value)"><option value="albert-st">Albert Street — #3 155 Albert St N, Regina</option><option value="rochdale">Rochdale — 3881 Rochdale Blvd, Regina</option><option value="east-regina">East Regina — 534 University Park Drive</option><option value="moose-jaw">Moose Jaw — 622 Main St N, Moose Jaw</option></select></div><div id="del-addr" class="fg hidden"><label>Delivery Address</label><input type="text" id="o-addr" placeholder="123 Main St, Regina, SK"></div><div id="del-note" class="del-note hidden">Delivery available within Regina. Flat rate $5.50.</div><div class="msec">YOUR INFO</div><div class="frow"><div class="fg"><label>First Name</label><input type="text" id="o-fn" placeholder="First name"></div><div class="fg"><label>Last Name</label><input type="text" id="o-ln" placeholder="Last name"></div></div><div class="fg"><label>Phone</label><input type="tel" id="o-ph" placeholder="(306) 555-0123"></div><div class="fg"><label>Email</label><input type="email" id="o-em" placeholder="you@email.com"></div><div class="fg"><label>Order Notes</label><textarea id="o-notes" placeholder="Any special requests..."></textarea></div><div class="msec">ORDER SUMMARY</div><div class="os-box">'+itemRows+'<div class="os-row" style="color:#888"><span>GST (5%)</span><span>$'+gst.toFixed(2)+'</span></div><div class="os-row" style="color:#888"><span>PST (6%)</span><span>$'+pst.toFixed(2)+'</span></div>'+(del>0?'<div class="os-row" style="color:#888"><span>Delivery</span><span>$'+del.toFixed(2)+'</span></div>':'')+'<div class="os-total"><span>Total</span><span>$'+total.toFixed(2)+'</span></div></div><div id="payment-section"></div>';detectAndSortLocations(true);setTimeout(renderPaymentSection,200);}
+function renderPaymentSection(){var sec=document.getElementById('payment-section');if(!sec)return;var btnTxt=isPreOrder()?'PRE-ORDER FOR '+getNextOpenTime().toUpperCase():'PLACE ORDER';var btnStyle=isPreOrder()?'style="background:#F5A800;color:#0D0D0D;"':'';sec.innerHTML='<div class="msec">PAYMENT</div><div class="clover-badge">💰 Pay At '+(orderType==='pickup'?'Pickup':'Delivery')+'</div><p class="pay-note"><strong>Pay '+(orderType==='pickup'?'when you pick up':'when your order arrives')+'.</strong> Cash or card accepted at the store.</p><button class="btn-place" id="pbtn" onclick="submitOrder()" '+btnStyle+'>'+btnTxt+' 🔥</button>';}
+function setLocation(v){activeLocation=v;var lbl=document.getElementById('cart-loc-label');var names={'albert-st':'Albert Street','rochdale':'Rochdale','east-regina':'East Regina','moose-jaw':'Moose Jaw'};if(lbl)lbl.textContent=(names[v]||'Albert Street')+' · Pickup or Delivery';}
+async function submitOrder(){var fn=document.getElementById('o-fn')?document.getElementById('o-fn').value.trim():'';var ln=document.getElementById('o-ln')?document.getElementById('o-ln').value.trim():'';var ph=document.getElementById('o-ph')?document.getElementById('o-ph').value.trim():'';var em=document.getElementById('o-em')?document.getElementById('o-em').value.trim():'';var notes=document.getElementById('o-notes')?document.getElementById('o-notes').value.trim():'';var addr=orderType==='delivery'&&document.getElementById('o-addr')?document.getElementById('o-addr').value.trim():'';var locId=document.getElementById('o-loc')?document.getElementById('o-loc').value:activeLocation;if(!fn||!ph){toast('Name and phone required');return;}if(orderType==='delivery'&&!addr){toast('Please enter delivery address');return;}var btn=document.getElementById('pbtn');btn.disabled=true;var sub=cart.reduce(function(s,i){return s+i.price*i.qty;},0);var gst=sub*0.05,pst=sub*0.06,del=orderType==='delivery'?5.50:0;var total=parseFloat((sub+gst+pst+del).toFixed(2));btn.innerHTML='<span class="spinner"></span>Sending to Kitchen...';var serverItems=cart.map(function(i){var parts=[];if(i.flavors&&i.flavors.length){if(i.flavors.length===1)parts.push(i.flavors[0]);else i.flavors.forEach(function(f,idx){parts.push('Order '+(idx+1)+': '+f);});}if(i.cookieFl)parts.push(i.cookieFl);if(i.sizeName)parts.push(i.sizeName);if(i.upgradeName)parts.push(i.upgradeName);if(i.notes)parts.push('Note: '+i.notes);return {name:i.name,flavor:parts.join(' · '),price:i.price,qty:i.qty};});var preOrderNote=isPreOrder()?'[PRE-ORDER — opens '+getNextOpenTime()+'] ':'';try{var resp=await fetch(API_BASE+'/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({locationId:locId,orderType:orderType,customer:{firstName:fn,lastName:ln,phone:ph,email:em,address:addr},items:serverItems,notes:preOrderNote+(notes||''),subtotal:sub,tax:gst+pst,total:total,preOrder:isPreOrder(),openTime:getNextOpenTime()})});var data=await resp.json();if(data.success){showSuccess(Object.assign({},data,{orderType:orderType}));cart=[];updateCart();}else{toast('Error: '+(data.error||'Unknown'));btn.disabled=false;btn.innerHTML='PLACE ORDER 🔥';}}catch(e){var onum='WO-'+Math.floor(1000+Math.random()*9000);showSuccess({success:true,orderNum:onum,cloverSuccess:false,customer:fn,total:total.toFixed(2),phone:ph,orderType:orderType,location:locId});cart=[];updateCart();}}
+function showSuccess(d){if(d.orderNum) loyaltyAutoStamp(d.orderNum);setTimeout(showNotifBanner, 3000);var session = loyGetSession();var locNames={'albert-st':'Albert Street','rochdale':'Rochdale','east-regina':'East Regina','moose-jaw':'Moose Jaw'};var locName=d.location?(locNames[d.location]||d.location):'';var stampBlock='';if(session){stampBlock='<div style="background:linear-gradient(135deg,#0D0D0D,#1A1208);border:2px solid #F5A800;border-radius:8px;padding:1rem 1.25rem;margin:1rem 0;text-align:center;"><div style="font-family:var(--font-display);font-size:1.1rem;color:#F5A800;letter-spacing:2px;margin-bottom:.25rem;">🍗 STAMP ADDED!</div><div style="font-family:var(--font-head);font-size:.75rem;color:#888;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:.7rem;">Saucy Stamps · '+session.name.split(' ')[0]+'\'s Card</div><button onclick="closeCheckout();openLoyalty();" style="background:transparent;border:1.5px solid #F5A800;color:#F5A800;font-family:var(--font-head);font-size:.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:.4rem 1.1rem;border-radius:3px;cursor:pointer;">VIEW MY CARD →</button></div>';} else {stampBlock='<div style="background:#F5F0E8;border:1.5px solid #C8B89A;border-radius:8px;padding:1rem 1.25rem;margin:1rem 0;text-align:center;"><div style="font-family:var(--font-display);font-size:1rem;color:#1A1208;letter-spacing:1px;margin-bottom:.25rem;">🌾 EARN FREE WINGS</div><div style="font-family:var(--font-head);font-size:.75rem;color:#7A6545;letter-spacing:1px;margin-bottom:.7rem;">This order could be Stamp #1. Join Saucy Stamps — it\'s free!</div><button onclick="closeCheckout();openLoyalty();" style="background:#E8190A;border:none;color:white;font-family:var(--font-head);font-size:.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:.45rem 1.2rem;border-radius:3px;cursor:pointer;">JOIN FREE 🍗</button></div>';}document.getElementById('mbd').innerHTML='<div class="success-view"><div class="sv-icon">🔥</div><h2>ORDER PLACED!</h2><p>You are locked in, '+d.customer+'!</p><div class="onum">'+d.orderNum+'</div><p style="background:#FFF8EE;border:1px solid #F5D98A;border-radius:6px;padding:.75rem;margin:.75rem 0;color:#7B3F00;font-weight:600;">💰 <strong>$'+d.total+'</strong> due at '+(d.orderType==='pickup'?'pickup':'delivery')+' · Cash or card accepted</p><p><strong>'+(d.orderType==='pickup'?'Pickup':'Delivery')+'</strong> · '+locName+'</p><p>We will call <strong>'+d.phone+'</strong> when it is ready.</p>'+stampBlock+'<p style="color:'+(d.cloverSuccess?'#276749':'#888')+';font-size:.8rem;margin-top:.4rem">'+(d.cloverSuccess?'✓ Order sent to Clover POS':'Order logged — kitchen notified')+'</p><a class="btn-red" href="#" onclick="closeCheckout();showHome()" style="display:inline-block;margin-top:1.25rem;font-size:.95rem;padding:.8rem 1.8rem">Order Again 🍗</a></div>';}
 var LOCATIONS_GEO={'albert-st':{lat:50.4501,lng:-104.6178,name:'Albert Street',address:'#3 155 Albert St N, Regina'},'rochdale':{lat:50.4777,lng:-104.6494,name:'Rochdale',address:'3881 Rochdale Blvd, Regina'},'east-regina':{lat:50.4282,lng:-104.5768,name:'East Regina',address:'534 University Park Drive, Regina'},'moose-jaw':{lat:50.3934,lng:-105.5348,name:'Moose Jaw',address:'622 Main St N, Moose Jaw'}};
 function distKm(lat1,lon1,lat2,lon2){var R=6371,dL=Math.PI*(lat2-lat1)/180,dO=Math.PI*(lon2-lon1)/180;var a=Math.sin(dL/2)*Math.sin(dL/2)+Math.cos(Math.PI*lat1/180)*Math.cos(Math.PI*lat2/180)*Math.sin(dO/2)*Math.sin(dO/2);return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
-function detectAndSortLocations(fromCheckout){
-  if(!navigator.geolocation)return;
-  navigator.geolocation.getCurrentPosition(function(pos){
-    var ids=Object.keys(LOCATIONS_GEO);
-    ids.sort(function(a,b){return distKm(pos.coords.latitude,pos.coords.longitude,LOCATIONS_GEO[a].lat,LOCATIONS_GEO[a].lng)-distKm(pos.coords.latitude,pos.coords.longitude,LOCATIONS_GEO[b].lat,LOCATIONS_GEO[b].lng);});
-    activeLocation=ids[0];
-    var nb=document.getElementById('loc-banner'),nn=document.getElementById('loc-nearest-name');
-    if(nb)nb.style.display='block';
-    if(nn)nn.textContent=LOCATIONS_GEO[ids[0]].name+' · '+LOCATIONS_GEO[ids[0]].address;
-    if(fromCheckout){
-      var sel=document.getElementById('o-loc');
-      if(sel){
-        var opts={'albert-st':'Albert Street — #3 155 Albert St N, Regina','rochdale':'Rochdale — 3881 Rochdale Blvd, Regina','east-regina':'East Regina — 534 University Park Drive','moose-jaw':'Moose Jaw — 622 Main St N, Moose Jaw'};
-        sel.innerHTML='';
-        ids.forEach(function(id,i){var o=document.createElement('option');o.value=id;o.textContent=opts[id]+(i===0?' (Nearest)':'');sel.appendChild(o);});
-        sel.value=ids[0];setLocation(ids[0]);
-      }
-    }
-    if(!fromCheckout) setTimeout(function(){
-      if(deferredPrompt) installBanner.style.display='flex';
-    }, 2000);
-  },function(){});
-}
-function renderSauces(){
-  document.getElementById('sgrid').innerHTML=Object.keys(FLAVORS).map(function(cat){
-    return '<div class="sgroup"><div class="sg-title">'+cat+'</div><ul>'+FLAVORS[cat].map(function(f){return '<li>'+f+'</li>';}).join('')+'</ul></div>';
-  }).join('');
-}
-async function checkAPI(){
-  var dot=document.getElementById('api-dot'),txt=document.getElementById('api-txt');
-  for(var attempt=1; attempt<=3; attempt++){
-    try{
-      var r=await fetch(API_BASE+'/api/health?_='+Date.now(),{cache:'no-store'});
-      if(r.ok){
-        var data=await r.json();
-        if(data.status==='ok'){
-          dot.className='api-dot ok';
-          txt.textContent='server online';
-          return;
-        }
-      }
-    }catch(e){
-      console.log('[Wing-O] Health check attempt '+attempt+' failed:', e.message);
-    }
-    if(attempt<3) await new Promise(function(res){setTimeout(res, 1000*attempt);});
-  }
-  dot.className='api-dot err';
-  txt.textContent='reconnecting...';
-  setTimeout(checkAPI, 30000);
-}
+function detectAndSortLocations(fromCheckout){if(!navigator.geolocation)return;navigator.geolocation.getCurrentPosition(function(pos){var ids=Object.keys(LOCATIONS_GEO);ids.sort(function(a,b){return distKm(pos.coords.latitude,pos.coords.longitude,LOCATIONS_GEO[a].lat,LOCATIONS_GEO[a].lng)-distKm(pos.coords.latitude,pos.coords.longitude,LOCATIONS_GEO[b].lat,LOCATIONS_GEO[b].lng);});activeLocation=ids[0];var nb=document.getElementById('loc-banner'),nn=document.getElementById('loc-nearest-name');if(nb)nb.style.display='block';if(nn)nn.textContent=LOCATIONS_GEO[ids[0]].name+' · '+LOCATIONS_GEO[ids[0]].address;if(fromCheckout){var sel=document.getElementById('o-loc');if(sel){var opts={'albert-st':'Albert Street — #3 155 Albert St N, Regina','rochdale':'Rochdale — 3881 Rochdale Blvd, Regina','east-regina':'East Regina — 534 University Park Drive','moose-jaw':'Moose Jaw — 622 Main St N, Moose Jaw'};sel.innerHTML='';ids.forEach(function(id,i){var o=document.createElement('option');o.value=id;o.textContent=opts[id]+(i===0?' (Nearest)':'');sel.appendChild(o);});sel.value=ids[0];setLocation(ids[0]);}}if(!fromCheckout) setTimeout(function(){if(deferredPrompt) installBanner.style.display='flex';}, 2000);},function(){});}
+function renderSauces(){document.getElementById('sgrid').innerHTML=Object.keys(FLAVORS).map(function(cat){return '<div class="sgroup"><div class="sg-title">'+cat+'</div><ul>'+FLAVORS[cat].map(function(f){return '<li>'+f+'</li>';}).join('')+'</ul></div>';}).join('');}
+async function checkAPI(){var dot=document.getElementById('api-dot'),txt=document.getElementById('api-txt');for(var attempt=1; attempt<=3; attempt++){try{var r=await fetch(API_BASE+'/api/health?_='+Date.now(),{cache:'no-store'});if(r.ok){var data=await r.json();if(data.status==='ok'){dot.className='api-dot ok';txt.textContent='server online';return;}}}catch(e){console.log('[Wing-O] Health check attempt '+attempt+' failed:', e.message);}if(attempt<3) await new Promise(function(res){setTimeout(res, 1000*attempt);});}dot.className='api-dot err';txt.textContent='reconnecting...';setTimeout(checkAPI, 30000);}
 var BASE={date:new Date('2026-04-27T00:00:00-06:00'),wings:1118873,orders:139859};
-function getLive(){
-  var secs=(Date.now()-BASE.date)/1000;
-  var daily=520;
-  var ops=daily/86400;
-  return{wings:Math.floor(BASE.wings+ops*8*secs),orders:Math.floor(BASE.orders+ops*secs),spw:Math.round(86400/(daily*8))};
-}
+function getLive(){var secs=(Date.now()-BASE.date)/1000;var daily=520;var ops=daily/86400;return{wings:Math.floor(BASE.wings+ops*8*secs),orders:Math.floor(BASE.orders+ops*secs),spw:Math.round(86400/(daily*8))};}
 function fmt(n){return n.toLocaleString('en-CA');}
-function animUp(el,target,dur){
-  if(!el)return;
-  var start=performance.now();
-  function upd(now){
-    var p=Math.min((now-start)/dur,1);
-    var e=1-Math.pow(1-p,3);
-    el.textContent=fmt(Math.floor(e*target));
-    if(p<1)requestAnimationFrame(upd);
-  }
-  requestAnimationFrame(upd);
-}
-function updateCounters(){
-  var l=getLive();
-  var wc=document.getElementById('wings-counter'),oc=document.getElementById('orders-counter'),sw=document.getElementById('spw');
-  if(wc)wc.textContent=fmt(l.wings);
-  if(oc)oc.textContent=fmt(l.orders);
-  if(sw)sw.textContent=l.spw;
-}
-async function fetchDonation(){
-  try{
-    var r=await fetch(API_BASE+'/api/donation');
-    if(r.ok){var d=await r.json();var el=document.getElementById('donation-counter');if(el)el.textContent=fmt(d.amount||27000)+'+';}
-  }catch(e){}
-}
-setTimeout(function(){
-  var l=getLive();
-  animUp(document.getElementById('wings-counter'),l.wings,2500);
-  animUp(document.getElementById('orders-counter'),l.orders,2500);
-},800);
+function animUp(el,target,dur){if(!el)return;var start=performance.now();function upd(now){var p=Math.min((now-start)/dur,1);var e=1-Math.pow(1-p,3);el.textContent=fmt(Math.floor(e*target));if(p<1)requestAnimationFrame(upd);}requestAnimationFrame(upd);}
+function updateCounters(){var l=getLive();var wc=document.getElementById('wings-counter'),oc=document.getElementById('orders-counter'),sw=document.getElementById('spw');if(wc)wc.textContent=fmt(l.wings);if(oc)oc.textContent=fmt(l.orders);if(sw)sw.textContent=l.spw;}
+async function fetchDonation(){try{var r=await fetch(API_BASE+'/api/donation');if(r.ok){var d=await r.json();var el=document.getElementById('donation-counter');if(el)el.textContent=fmt(d.amount||27000)+'+';}}catch(e){}}
+setTimeout(function(){var l=getLive();animUp(document.getElementById('wings-counter'),l.wings,2500);animUp(document.getElementById('orders-counter'),l.orders,2500);},800);
 fetchDonation();
 setInterval(updateCounters,1000);
 setInterval(fetchDonation,60000);
 var HOURS={0:[11,27],1:[11,25],2:[11,25],3:[11,25],4:[11,27],5:[11,27],6:[11,27]};
-function isOpen(){
-  var now=new Date();
-  var regina=new Date(now.toLocaleString('en-US',{timeZone:'America/Regina'}));
-  var day=regina.getDay(),hour=regina.getHours()+regina.getMinutes()/60;
-  var h=HOURS[day];
-  if(hour>=h[0]){if(h[1]<=24&&hour<h[1])return true;if(h[1]>24&&hour>=h[0])return true;}
-  var yh=HOURS[(day+6)%7];
-  if(yh[1]>24&&hour<(yh[1]-24))return true;
-  return false;
-}
-function getNextOpenTime(){
-  var now=new Date();
-  var regina=new Date(now.toLocaleString('en-US',{timeZone:'America/Regina'}));
-  var day=regina.getDay(),hour=regina.getHours();
-  if(hour<11)return 'today at 11:00 AM';
-  var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  return days[(day+1)%7]+' at 11:00 AM';
-}
+function isOpen(){var now=new Date();var regina=new Date(now.toLocaleString('en-US',{timeZone:'America/Regina'}));var day=regina.getDay(),hour=regina.getHours()+regina.getMinutes()/60;var h=HOURS[day];if(hour>=h[0]){if(h[1]<=24&&hour<h[1])return true;if(h[1]>24&&hour>=h[0])return true;}var yh=HOURS[(day+6)%7];if(yh[1]>24&&hour<(yh[1]-24))return true;return false;}
+function getNextOpenTime(){var now=new Date();var regina=new Date(now.toLocaleString('en-US',{timeZone:'America/Regina'}));var day=regina.getDay(),hour=regina.getHours();if(hour<11)return 'today at 11:00 AM';var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];return days[(day+1)%7]+' at 11:00 AM';}
 function isPreOrder(){return !isOpen();}
-function updateHoursBanner(){
-  var banner=document.getElementById('preorder-banner');
-  if(!banner)return;
-  if(!isOpen()){
-    banner.classList.add('show');
-    banner.querySelector('p').innerHTML='<span class="preorder-badge">Pre-Order</span> We are closed right now — but you can <strong>pre-order for when we open!</strong> Opens '+getNextOpenTime()+'.';
-  } else {
-    banner.classList.remove('show');
-  }
-}
-function openFranchise(){
-  document.getElementById('franchise-ov').style.display='block';
-  document.body.style.overflow='hidden';
-}
-function closeFranchise(){
-  document.getElementById('franchise-ov').style.display='none';
-  document.body.style.overflow='';
-}
+function updateHoursBanner(){var banner=document.getElementById('preorder-banner');if(!banner)return;if(!isOpen()){banner.classList.add('show');banner.querySelector('p').innerHTML='<span class="preorder-badge">Pre-Order</span> We are closed right now — but you can <strong>pre-order for when we open!</strong> Opens '+getNextOpenTime()+'.';} else {banner.classList.remove('show');}}
+function openFranchise(){document.getElementById('franchise-ov').style.display='block';document.body.style.overflow='hidden';}
+function closeFranchise(){document.getElementById('franchise-ov').style.display='none';document.body.style.overflow='';}
 document.getElementById('franchise-ov').addEventListener('click',function(e){if(e.target===this)closeFranchise();});
-async function submitFranchise(){
-  var fn=document.getElementById('fr-fn').value.trim();
-  var em=document.getElementById('fr-em').value.trim();
-  var ph=document.getElementById('fr-ph').value.trim();
-  var city=document.getElementById('fr-city').value.trim();
-  if(!fn||!em||!ph||!city){toast('Please fill in all required fields');return;}
-  var btn=document.getElementById('fr-btn');
-  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Sending...';
-  try{await fetch(API_BASE+'/api/franchise',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({firstName:fn,lastName:document.getElementById('fr-ln').value.trim(),email:em,phone:ph,city:city,budget:document.getElementById('fr-budget').value,message:document.getElementById('fr-msg').value.trim()})});}catch(e){}
-  document.getElementById('fr-msg-box').innerHTML='<div style="background:#F0FFF4;border:1px solid #C6F6D5;border-radius:6px;padding:1rem;text-align:center;margin-bottom:1rem;"><div style="font-family:var(--font-display);font-size:1.2rem;color:#276749;letter-spacing:1px;">APPLICATION RECEIVED!</div><p style="font-size:.85rem;color:#555;margin-top:.4rem;">We will be in touch within 48 hours. The Sauce Boss is excited to connect!</p></div>';
-  btn.style.display='none';
-}
+async function submitFranchise(){var fn=document.getElementById('fr-fn').value.trim();var em=document.getElementById('fr-em').value.trim();var ph=document.getElementById('fr-ph').value.trim();var city=document.getElementById('fr-city').value.trim();if(!fn||!em||!ph||!city){toast('Please fill in all required fields');return;}var btn=document.getElementById('fr-btn');btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Sending...';try{await fetch(API_BASE+'/api/franchise',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({firstName:fn,lastName:document.getElementById('fr-ln').value.trim(),email:em,phone:ph,city:city,budget:document.getElementById('fr-budget').value,message:document.getElementById('fr-msg').value.trim()})});}catch(e){}document.getElementById('fr-msg-box').innerHTML='<div style="background:#F0FFF4;border:1px solid #C6F6D5;border-radius:6px;padding:1rem;text-align:center;margin-bottom:1rem;"><div style="font-family:var(--font-display);font-size:1.2rem;color:#276749;letter-spacing:1px;">APPLICATION RECEIVED!</div><p style="font-size:.85rem;color:#555;margin-top:.4rem;">We will be in touch within 48 hours. The Sauce Boss is excited to connect!</p></div>';btn.style.display='none';}
 history.replaceState({page:'home'},'');
 renderSauces();
 updateCart();
@@ -1275,197 +858,18 @@ detectAndSortLocations(false);
 checkAPI();
 setTimeout(showNotifBanner, 3000);
 var LOY_SESSION_KEY = 'wingo_loyalty_session';
-function loyGetSession(){
-  try{ return JSON.parse(localStorage.getItem(LOY_SESSION_KEY)||'null'); }
-  catch(e){ return null; }
-}
-function loySaveSession(member){
-  localStorage.setItem(LOY_SESSION_KEY, JSON.stringify({phone:member.phone,name:member.name,email:member.email}));
-}
-function openLoyalty(){
-  document.getElementById('loyalty-ov').classList.add('open');
-  document.body.style.overflow='hidden';
-  var session = loyGetSession();
-  if(session){
-    loyLoadMember(session.phone);
-  } else {
-    showLoyView('loy-signup');
-  }
-}
-function closeLoyalty(){
-  document.getElementById('loyalty-ov').classList.remove('open');
-  document.body.style.overflow='';
-}
-function showLoyView(id){
-  document.querySelectorAll('.loy-view').forEach(function(v){v.classList.remove('active');});
-  var el = document.getElementById(id);
-  if(el) el.classList.add('active');
-}
-async function loyLoadMember(phone){
-  try{
-    var r = await fetch(API_BASE+'/api/loyalty/member/'+phone.replace(/\D/g,''));
-    var d = await r.json();
-    if(d.success){
-      loySaveSession(d.member);
-      showLoyView('loy-dashboard');
-      renderDashboard(d.member);
-    } else {
-      localStorage.removeItem(LOY_SESSION_KEY);
-      showLoyView('loy-signup');
-    }
-  }catch(e){
-    showLoyView('loy-signup');
-  }
-}
-async function loyaltySignup(){
-  var name = document.getElementById('loy-name').value.trim();
-  var email = document.getElementById('loy-email').value.trim();
-  var phone = document.getElementById('loy-phone').value.trim();
-  var errEl = document.getElementById('loy-signup-error');
-  errEl.style.display='none';
-  if(!name||!email||!phone){errEl.textContent='Please fill in all fields.';errEl.style.display='block';return;}
-  if(!email.includes('@')){errEl.textContent='Please enter a valid email.';errEl.style.display='block';return;}
-  if(phone.replace(/\D/g,'').length < 10){errEl.textContent='Please enter a valid 10-digit phone number.';errEl.style.display='block';return;}
-  var btn = document.querySelector('#loy-signup .loy-btn');
-  btn.textContent='Creating your card...';btn.disabled=true;
-  try{
-    var r = await fetch(API_BASE+'/api/loyalty/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,phone})});
-    var d = await r.json();
-    if(d.success){
-      loySaveSession(d.member);
-      showLoyView('loy-dashboard');
-      renderDashboard(d.member);
-      toast('Welcome to Saucy Stamps, '+name.split(' ')[0]+'! 🍗');
-    } else {
-      errEl.textContent = d.error==='Phone already registered' ? 'Phone already registered! Use "Find my card" to log in.' : (d.error||'Signup failed');
-      errEl.style.display='block';
-    }
-  }catch(e){
-    errEl.textContent='Connection error. Please try again.';
-    errEl.style.display='block';
-  }
-  btn.textContent='CREATE MY STAMP CARD 🍗';btn.disabled=false;
-}
-async function loyaltyLookup(){
-  var input = document.getElementById('loy-lookup-input').value.trim();
-  var errEl = document.getElementById('loy-lookup-error');
-  errEl.style.display='none';
-  if(!input){errEl.textContent='Please enter your phone or email.';errEl.style.display='block';return;}
-  var btn = document.querySelector('#loy-lookup .loy-btn');
-  btn.textContent='Searching...';btn.disabled=true;
-  try{
-    var r = await fetch(API_BASE+'/api/loyalty/lookup?q='+encodeURIComponent(input));
-    var d = await r.json();
-    if(d.success){
-      loySaveSession(d.member);
-      showLoyView('loy-dashboard');
-      renderDashboard(d.member);
-      toast('Welcome back, '+d.member.name.split(' ')[0]+'! 🍗');
-    } else {
-      errEl.textContent='No account found. Check your phone/email or sign up free!';
-      errEl.style.display='block';
-    }
-  }catch(e){
-    errEl.textContent='Connection error. Please try again.';
-    errEl.style.display='block';
-  }
-  btn.textContent='FIND MY STAMPS 🍗';btn.disabled=false;
-}
-async function loyaltyAddStamp(){
-  var orderNum = document.getElementById('loy-order-num').value.trim().toUpperCase();
-  var errEl = document.getElementById('loy-stamp-error');
-  errEl.style.display='none';
-  if(!orderNum||!orderNum.startsWith('WO-')){
-    errEl.textContent='Please enter a valid Wing-O order number (WO-XXXX).';
-    errEl.style.display='block';return;
-  }
-  var session = loyGetSession();
-  if(!session){showLoyView('loy-signup');return;}
-  var btn = document.querySelector('#loy-add-stamp .loy-btn');
-  btn.textContent='Adding stamp...';btn.disabled=true;
-  try{
-    var r = await fetch(API_BASE+'/api/loyalty/stamp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:session.phone,orderNum,password:'sauceboss2025'})});
-    var d = await r.json();
-    if(d.success){
-      loySaveSession(d.member);
-      document.getElementById('loy-order-num').value='';
-      var msg = d.gotFree ? '🎉 10 stamps! You earned FREE WINGS! Show your card to redeem.' : 'Stamp #'+d.totalOrders+' added! '+(10-d.stamps)+' more until free wings 🍗';
-      document.getElementById('loy-stamp-success-msg').textContent=msg;
-      showLoyView('loy-stamp-success');
-      toast(d.gotFree ? '🎉 FREE WINGS EARNED!' : 'Stamp added! 🍗');
-    } else {
-      errEl.textContent = d.error==='Order number already used' ? 'This order number has already been used.' : (d.error||'Failed to add stamp');
-      errEl.style.display='block';
-    }
-  }catch(e){
-    errEl.textContent='Connection error. Please try again.';
-    errEl.style.display='block';
-  }
-  btn.textContent='STAMP MY CARD 🔥';btn.disabled=false;
-}
-function renderDashboard(member){
-  if(!member) return;
-  var stamps = member.stamps||0;
-  var totalOrders = member.totalOrders||0;
-  var freeEarned = member.freeEarned||0;
-  var toNext = 10 - stamps;
-  document.getElementById('dash-name').textContent = member.name;
-  document.getElementById('dash-stamps').textContent = stamps;
-  document.getElementById('dash-total-orders').textContent = totalOrders;
-  document.getElementById('dash-free-earned').textContent = freeEarned;
-  document.getElementById('dash-next-free').textContent = toNext;
-  var pct = Math.min((stamps/10)*100,100);
-  document.getElementById('loy-progress').style.width=pct+'%';
-  document.getElementById('loy-progress-label').textContent=stamps+' of 10 stamps · '+toNext+' more to free wings';
-  var rewardBox = document.getElementById('loy-reward-box');
-  if(stamps===0 && freeEarned>0 && member.history && member.history.length>0){
-    var code='SAUCY-'+member.phone.slice(-4);
-    document.getElementById('loy-reward-code').textContent=code;
-    rewardBox.style.display='block';
-  } else {
-    rewardBox.style.display='none';
-  }
-  var topGrid=document.getElementById('stamps-grid-top');
-  var botGrid=document.getElementById('stamps-grid-bot');
-  topGrid.innerHTML='';botGrid.innerHTML='';
-  for(var i=0;i<10;i++){
-    var div=document.createElement('div');
-    div.className='stamp';
-    if(i<stamps){div.classList.add('earned');div.textContent='🍗';}
-    else if(i===9&&stamps===9){div.textContent='🌟';}
-    if(i<5)topGrid.appendChild(div);
-    else botGrid.appendChild(div);
-  }
-  var histEl=document.getElementById('loy-history-list');
-  var hist=member.history||[];
-  if(!hist.length){
-    histEl.innerHTML='<div style="text-align:center;color:#AAA;font-size:.8rem;padding:1rem 0;">No stamps yet — place an order to earn your first stamp!</div>';
-  } else {
-    histEl.innerHTML=hist.slice(0,8).map(function(h){
-      return '<div class="loy-hist-item"><div><div style="font-family:var(--font-head);font-size:.8rem;color:var(--ink);letter-spacing:.5px;">'+h.orderNum+'</div><div class="loy-hist-date">'+h.date+(h.auto?' · Auto':'')+'</div></div><div style="color:var(--red);font-size:.85rem;font-weight:600;">🍗 Stamp #'+h.stamp+'</div></div>';
-    }).join('');
-  }
-}
-function loyaltyLogout(){
-  localStorage.removeItem(LOY_SESSION_KEY);
-  document.getElementById('loy-name').value='';
-  document.getElementById('loy-email').value='';
-  document.getElementById('loy-phone').value='';
-  showLoyView('loy-signup');
-}
-async function loyaltyAutoStamp(orderNum){
-  var session = loyGetSession();
-  if(!session) return;
-  try{
-    var r = await fetch(API_BASE+'/api/loyalty/stamp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:session.phone,orderNum,password:'sauceboss2025'})});
-    var d = await r.json();
-    if(d.success){
-      loySaveSession(d.member);
-      if(d.gotFree) toast('🎉 10 stamps! FREE WINGS EARNED! Open Rewards to redeem.');
-      else toast('🍗 Stamp added! '+(10-d.stamps)+' more to free wings.');
-    }
-  }catch(e){console.log('Auto-stamp failed silently');}
-}
+function loyGetSession(){try{ return JSON.parse(localStorage.getItem(LOY_SESSION_KEY)||'null'); }catch(e){ return null; }}
+function loySaveSession(member){localStorage.setItem(LOY_SESSION_KEY, JSON.stringify({phone:member.phone,name:member.name,email:member.email}));}
+function openLoyalty(){document.getElementById('loyalty-ov').classList.add('open');document.body.style.overflow='hidden';var session = loyGetSession();if(session){loyLoadMember(session.phone);} else {showLoyView('loy-signup');}}
+function closeLoyalty(){document.getElementById('loyalty-ov').classList.remove('open');document.body.style.overflow='';}
+function showLoyView(id){document.querySelectorAll('.loy-view').forEach(function(v){v.classList.remove('active');});var el = document.getElementById(id);if(el) el.classList.add('active');}
+async function loyLoadMember(phone){try{var r = await fetch(API_BASE+'/api/loyalty/member/'+phone.replace(/\D/g,''));var d = await r.json();if(d.success){loySaveSession(d.member);showLoyView('loy-dashboard');renderDashboard(d.member);} else {localStorage.removeItem(LOY_SESSION_KEY);showLoyView('loy-signup');}}catch(e){showLoyView('loy-signup');}}
+async function loyaltySignup(){var name = document.getElementById('loy-name').value.trim();var email = document.getElementById('loy-email').value.trim();var phone = document.getElementById('loy-phone').value.trim();var errEl = document.getElementById('loy-signup-error');errEl.style.display='none';if(!name||!email||!phone){errEl.textContent='Please fill in all fields.';errEl.style.display='block';return;}if(!email.includes('@')){errEl.textContent='Please enter a valid email.';errEl.style.display='block';return;}if(phone.replace(/\D/g,'').length < 10){errEl.textContent='Please enter a valid 10-digit phone number.';errEl.style.display='block';return;}var btn = document.querySelector('#loy-signup .loy-btn');btn.textContent='Creating your card...';btn.disabled=true;try{var r = await fetch(API_BASE+'/api/loyalty/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,phone})});var d = await r.json();if(d.success){loySaveSession(d.member);showLoyView('loy-dashboard');renderDashboard(d.member);toast('Welcome to Saucy Stamps, '+name.split(' ')[0]+'! 🍗');} else {errEl.textContent = d.error==='Phone already registered' ? 'Phone already registered! Use "Find my card" to log in.' : (d.error||'Signup failed');errEl.style.display='block';}}catch(e){errEl.textContent='Connection error. Please try again.';errEl.style.display='block';}btn.textContent='CREATE MY STAMP CARD 🍗';btn.disabled=false;}
+async function loyaltyLookup(){var input = document.getElementById('loy-lookup-input').value.trim();var errEl = document.getElementById('loy-lookup-error');errEl.style.display='none';if(!input){errEl.textContent='Please enter your phone or email.';errEl.style.display='block';return;}var btn = document.querySelector('#loy-lookup .loy-btn');btn.textContent='Searching...';btn.disabled=true;try{var r = await fetch(API_BASE+'/api/loyalty/lookup?q='+encodeURIComponent(input));var d = await r.json();if(d.success){loySaveSession(d.member);showLoyView('loy-dashboard');renderDashboard(d.member);toast('Welcome back, '+d.member.name.split(' ')[0]+'! 🍗');} else {errEl.textContent='No account found. Check your phone/email or sign up free!';errEl.style.display='block';}}catch(e){errEl.textContent='Connection error. Please try again.';errEl.style.display='block';}btn.textContent='FIND MY STAMPS 🍗';btn.disabled=false;}
+async function loyaltyAddStamp(){var orderNum = document.getElementById('loy-order-num').value.trim().toUpperCase();var errEl = document.getElementById('loy-stamp-error');errEl.style.display='none';if(!orderNum||!orderNum.startsWith('WO-')){errEl.textContent='Please enter a valid Wing-O order number (WO-XXXX).';errEl.style.display='block';return;}var session = loyGetSession();if(!session){showLoyView('loy-signup');return;}var btn = document.querySelector('#loy-add-stamp .loy-btn');btn.textContent='Adding stamp...';btn.disabled=true;try{var r = await fetch(API_BASE+'/api/loyalty/stamp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:session.phone,orderNum,password:'sauceboss2025'})});var d = await r.json();if(d.success){loySaveSession(d.member);document.getElementById('loy-order-num').value='';var msg = d.gotFree ? '🎉 10 stamps! You earned FREE WINGS! Show your card to redeem.' : 'Stamp #'+d.totalOrders+' added! '+(10-d.stamps)+' more until free wings 🍗';document.getElementById('loy-stamp-success-msg').textContent=msg;showLoyView('loy-stamp-success');toast(d.gotFree ? '🎉 FREE WINGS EARNED!' : 'Stamp added! 🍗');} else {errEl.textContent = d.error==='Order number already used' ? 'This order number has already been used.' : (d.error||'Failed to add stamp');errEl.style.display='block';}}catch(e){errEl.textContent='Connection error. Please try again.';errEl.style.display='block';}btn.textContent='STAMP MY CARD 🔥';btn.disabled=false;}
+function renderDashboard(member){if(!member) return;var stamps = member.stamps||0;var totalOrders = member.totalOrders||0;var freeEarned = member.freeEarned||0;var toNext = 10 - stamps;document.getElementById('dash-name').textContent = member.name;document.getElementById('dash-stamps').textContent = stamps;document.getElementById('dash-total-orders').textContent = totalOrders;document.getElementById('dash-free-earned').textContent = freeEarned;document.getElementById('dash-next-free').textContent = toNext;var pct = Math.min((stamps/10)*100,100);document.getElementById('loy-progress').style.width=pct+'%';document.getElementById('loy-progress-label').textContent=stamps+' of 10 stamps · '+toNext+' more to free wings';var rewardBox = document.getElementById('loy-reward-box');if(stamps===0 && freeEarned>0 && member.history && member.history.length>0){var code='SAUCY-'+member.phone.slice(-4);document.getElementById('loy-reward-code').textContent=code;rewardBox.style.display='block';} else {rewardBox.style.display='none';}var topGrid=document.getElementById('stamps-grid-top');var botGrid=document.getElementById('stamps-grid-bot');topGrid.innerHTML='';botGrid.innerHTML='';for(var i=0;i<10;i++){var div=document.createElement('div');div.className='stamp';if(i<stamps){div.classList.add('earned');div.textContent='🍗';}else if(i===9&&stamps===9){div.textContent='🌟';}if(i<5)topGrid.appendChild(div);else botGrid.appendChild(div);}var histEl=document.getElementById('loy-history-list');var hist=member.history||[];if(!hist.length){histEl.innerHTML='<div style="text-align:center;color:#AAA;font-size:.8rem;padding:1rem 0;">No stamps yet — place an order to earn your first stamp!</div>';} else {histEl.innerHTML=hist.slice(0,8).map(function(h){return '<div class="loy-hist-item"><div><div style="font-family:var(--font-head);font-size:.8rem;color:var(--ink);letter-spacing:.5px;">'+h.orderNum+'</div><div class="loy-hist-date">'+h.date+(h.auto?' · Auto':'')+'</div></div><div style="color:var(--red);font-size:.85rem;font-weight:600;">🍗 Stamp #'+h.stamp+'</div></div>';}).join('');}}
+function loyaltyLogout(){localStorage.removeItem(LOY_SESSION_KEY);document.getElementById('loy-name').value='';document.getElementById('loy-email').value='';document.getElementById('loy-phone').value='';showLoyView('loy-signup');}
+async function loyaltyAutoStamp(orderNum){var session = loyGetSession();if(!session) return;try{var r = await fetch(API_BASE+'/api/loyalty/stamp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:session.phone,orderNum,password:'sauceboss2025'})});var d = await r.json();if(d.success){loySaveSession(d.member);if(d.gotFree) toast('🎉 10 stamps! FREE WINGS EARNED! Open Rewards to redeem.');else toast('🍗 Stamp added! '+(10-d.stamps)+' more to free wings.');}}catch(e){console.log('Auto-stamp failed silently');}}
 </script>
 <div class="loyalty-ov" id="loyalty-ov" onclick="if(event.target===this)closeLoyalty()">
 <div class="loyalty-modal">
@@ -1572,91 +976,26 @@ async function loyaltyAutoStamp(orderNum){
   <div style="font-size:1.6rem;flex-shrink:0;">🔔</div>
   <div style="flex:1;min-width:0;">
     <div style="font-family:var(--font-display);font-size:.85rem;color:white;letter-spacing:1px;">GET DEAL ALERTS</div>
-    <div style="font-family:var(--font-head);font-size:.7rem;color:#888;letter-spacing:1px;text-transform:uppercase;margin-top:2px;">Thursday deals · Free wing alerts · New flavors</div>
+    <div style="font-family:var(--font-head);font-size:.7rem;color:#888;letter-spacing:1px;text-transform:uppercase;margin-top:2px;">Daily deals · Free wing alerts · New flavors</div>
   </div>
   <button onclick="enableNotifications()" style="background:var(--red);color:white;border:none;padding:.45rem .9rem;font-family:var(--font-head);font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;border-radius:4px;cursor:pointer;white-space:nowrap;">Enable</button>
   <button onclick="document.getElementById('notif-banner').style.display='none'" style="background:none;border:none;color:#555;font-size:1.1rem;cursor:pointer;padding:2px;flex-shrink:0;">✕</button>
 </div>
 <script>
 var swRegistration=null;
-if('serviceWorker' in navigator){
-  window.addEventListener('load',function(){
-    navigator.serviceWorker.register('/service-worker.js')
-      .then(function(reg){swRegistration=reg;})
-      .catch(function(err){console.log('[Wing-O] SW failed:',err);});
-  });
-}
-async function enableNotifications(){
-  document.getElementById('notif-banner').style.display='none';
-  try {
-    OneSignalDeferred.push(async function(OneSignal) {
-      await OneSignal.Slidedown.promptPush();
-    });
-  } catch(e) { console.log('OneSignal error:', e); }
-}
-function showNotifBanner(){
-  var banner = document.getElementById('notif-banner');
-  if(banner) banner.style.display='flex';
-}
+if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/service-worker.js').then(function(reg){swRegistration=reg;}).catch(function(err){console.log('[Wing-O] SW failed:',err);});});}
+async function enableNotifications(){document.getElementById('notif-banner').style.display='none';try {OneSignalDeferred.push(async function(OneSignal) {await OneSignal.Slidedown.promptPush();});} catch(e) { console.log('OneSignal error:', e); }}
+function showNotifBanner(){var banner = document.getElementById('notif-banner');if(banner) banner.style.display='flex';}
 var deferredPrompt=null;
 var installBanner=document.getElementById('pwa-banner');
 var installBtn=document.getElementById('pwa-install-btn');
-window.addEventListener('beforeinstallprompt',function(e){
-  e.preventDefault();
-  deferredPrompt=e;
-  setTimeout(function(){if(deferredPrompt) installBanner.style.display='flex';},30000);
-});
-if(installBtn){
-  installBtn.addEventListener('click',function(){
-    if(!deferredPrompt) return;
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then(function(result){
-      if(result.outcome==='accepted') console.log('[Wing-O] App installed!');
-      deferredPrompt=null;
-      installBanner.style.display='none';
-    });
-  });
-}
-window.addEventListener('appinstalled',function(){
-  installBanner.style.display='none';
-  deferredPrompt=null;
-  toast('🍗 Wing-O app installed! Find it on your home screen.');
-});
+window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferredPrompt=e;setTimeout(function(){if(deferredPrompt) installBanner.style.display='flex';},30000);});
+if(installBtn){installBtn.addEventListener('click',function(){if(!deferredPrompt) return;deferredPrompt.prompt();deferredPrompt.userChoice.then(function(result){if(result.outcome==='accepted') console.log('[Wing-O] App installed!');deferredPrompt=null;installBanner.style.display='none';});});}
+window.addEventListener('appinstalled',function(){installBanner.style.display='none';deferredPrompt=null;toast('🍗 Wing-O app installed! Find it on your home screen.');});
 function openPushAdmin(){document.getElementById('push-admin-ov').style.display='flex';}
 function closePushAdmin(){document.getElementById('push-admin-ov').style.display='none';document.getElementById('pa-status').textContent='';}
-async function pushAdminLogin(){
-  var pw=document.getElementById('pa-pw').value.trim();
-  if(!pw){document.getElementById('pa-status').textContent='Enter password';return;}
-  var btn=document.getElementById('pa-login-btn');
-  btn.textContent='Checking...';btn.disabled=true;
-  try{
-    var r=await fetch(API_BASE+'/api/push/count?password='+encodeURIComponent(pw));
-    var d=await r.json();
-    if(!d.success){document.getElementById('pa-status').textContent='Wrong password';btn.textContent='Login';btn.disabled=false;return;}
-    document.getElementById('pa-step1').style.display='none';
-    document.getElementById('pa-step2').style.display='block';
-    document.getElementById('pa-count').textContent=d.count;
-    document.getElementById('pa-stored-pw').value=pw;
-  }catch(e){document.getElementById('pa-status').textContent='Connection error';}
-  btn.textContent='Login';btn.disabled=false;
-}
-async function pushAdminSend(){
-  var pw=document.getElementById('pa-stored-pw').value;
-  var title=document.getElementById('pa-title').value.trim();
-  var body=document.getElementById('pa-body').value.trim();
-  var url=document.getElementById('pa-url').value.trim()||'/';
-  var statusEl=document.getElementById('pa-send-status');
-  if(!title||!body){statusEl.textContent='Title and message required';statusEl.style.color='var(--red)';return;}
-  var btn=document.getElementById('pa-send-btn');
-  btn.textContent='Sending...';btn.disabled=true;statusEl.textContent='';
-  try{
-    var r=await fetch(API_BASE+'/api/push/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pw,title:title,body:body,url:url})});
-    var d=await r.json();
-    if(d.success){statusEl.style.color='#48BB78';statusEl.textContent='✅ Sent to '+d.sent+' subscribers!';document.getElementById('pa-title').value='';document.getElementById('pa-body').value='';}
-    else{statusEl.style.color='var(--red)';statusEl.textContent='Error: '+(d.error||'Unknown');}
-  }catch(e){statusEl.style.color='var(--red)';statusEl.textContent='Connection error';}
-  btn.textContent='SEND NOTIFICATION 🔔';btn.disabled=false;
-}
+async function pushAdminLogin(){var pw=document.getElementById('pa-pw').value.trim();if(!pw){document.getElementById('pa-status').textContent='Enter password';return;}var btn=document.getElementById('pa-login-btn');btn.textContent='Checking...';btn.disabled=true;try{var r=await fetch(API_BASE+'/api/push/count?password='+encodeURIComponent(pw));var d=await r.json();if(!d.success){document.getElementById('pa-status').textContent='Wrong password';btn.textContent='Login';btn.disabled=false;return;}document.getElementById('pa-step1').style.display='none';document.getElementById('pa-step2').style.display='block';document.getElementById('pa-count').textContent=d.count;document.getElementById('pa-stored-pw').value=pw;}catch(e){document.getElementById('pa-status').textContent='Connection error';}btn.textContent='Login';btn.disabled=false;}
+async function pushAdminSend(){var pw=document.getElementById('pa-stored-pw').value;var title=document.getElementById('pa-title').value.trim();var body=document.getElementById('pa-body').value.trim();var url=document.getElementById('pa-url').value.trim()||'/';var statusEl=document.getElementById('pa-send-status');if(!title||!body){statusEl.textContent='Title and message required';statusEl.style.color='var(--red)';return;}var btn=document.getElementById('pa-send-btn');btn.textContent='Sending...';btn.disabled=true;statusEl.textContent='';try{var r=await fetch(API_BASE+'/api/push/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pw,title:title,body:body,url:url})});var d=await r.json();if(d.success){statusEl.style.color='#48BB78';statusEl.textContent='✅ Sent to '+d.sent+' subscribers!';document.getElementById('pa-title').value='';document.getElementById('pa-body').value='';}else{statusEl.style.color='var(--red)';statusEl.textContent='Error: '+(d.error||'Unknown');}}catch(e){statusEl.style.color='var(--red)';statusEl.textContent='Connection error';}btn.textContent='SEND NOTIFICATION 🔔';btn.disabled=false;}
 </script>
 <div id="push-admin-ov" style="display:none;position:fixed;inset:0;z-index:999999;background:rgba(0,0,0,.88);align-items:center;justify-content:center;padding:1rem;">
   <div style="background:var(--paper);border-radius:8px;width:min(480px,100%);overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5);">
@@ -1678,9 +1017,9 @@ async function pushAdminSend(){
           <div style="font-family:var(--font-head);font-size:.7rem;color:#7A6545;letter-spacing:2px;text-transform:uppercase;">Subscribers</div>
         </div>
         <div style="font-family:var(--font-head);font-size:.75rem;color:#7A6545;letter-spacing:1px;text-transform:uppercase;margin-bottom:.3rem;">Notification Title</div>
-        <input id="pa-title" type="text" placeholder="🔥 Thursday Deal" style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.6rem .9rem;font-family:var(--font-body);font-size:.9rem;outline:none;margin-bottom:.75rem;">
+        <input id="pa-title" type="text" placeholder="🔥 Today's Deal" style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.6rem .9rem;font-family:var(--font-body);font-size:.9rem;outline:none;margin-bottom:.75rem;">
         <div style="font-family:var(--font-head);font-size:.75rem;color:#7A6545;letter-spacing:1px;text-transform:uppercase;margin-bottom:.3rem;">Message</div>
-        <textarea id="pa-body" placeholder="50% off your 2nd order tonight only! 🍗" style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.6rem .9rem;font-family:var(--font-body);font-size:.9rem;outline:none;resize:none;height:80px;margin-bottom:.75rem;"></textarea>
+        <textarea id="pa-body" placeholder="Today's special tonight only! 🍗" style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.6rem .9rem;font-family:var(--font-body);font-size:.9rem;outline:none;resize:none;height:80px;margin-bottom:.75rem;"></textarea>
         <div style="font-family:var(--font-head);font-size:.75rem;color:#7A6545;letter-spacing:1px;text-transform:uppercase;margin-bottom:.3rem;">Link when tapped (optional)</div>
         <input id="pa-url" type="text" placeholder="/ (homepage)" value="/" style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.6rem .9rem;font-family:var(--font-body);font-size:.9rem;outline:none;margin-bottom:.75rem;">
         <div id="pa-send-status" style="font-family:var(--font-head);font-size:.8rem;letter-spacing:1px;margin-bottom:.5rem;min-height:1.2rem;"></div>
@@ -1690,215 +1029,78 @@ async function pushAdminSend(){
     </div>
   </div>
 </div>
-  <div class="lunch-modal-ov" id="lunch-modal-ov" onclick="if(event.target===this)closeLunchDeal()">
-  <div class="lunch-modal">
-    <div class="lunch-modal-hd">
-      <h2>🍗 LUNCH DEAL · $10</h2>
-      <button class="xcb" onclick="closeLunchDeal()" style="color:#888;background:none;border:none;font-size:1.4rem;cursor:pointer;">✕</button>
-    </div>
-    <div style="padding:1.5rem;" id="lunch-modal-bd"></div>
-  </div>
-</div>
+
+<!-- ===== ALL DAILY SPECIAL MODALS ===== -->
+<div class="lunch-modal-ov" id="lunch-modal-ov" onclick="if(event.target===this)closeLunchDeal()"><div class="lunch-modal"><div class="lunch-modal-hd"><h2>🍗 LUNCH DEAL · $10</h2><button onclick="closeLunchDeal()" style="color:#888;background:none;border:none;font-size:1.4rem;cursor:pointer;">✕</button></div><div style="padding:1.5rem;" id="lunch-modal-bd"></div></div></div>
+<div class="lunch-modal-ov" id="wing-night-ov" onclick="if(event.target===this)closeWingNight()"><div class="lunch-modal"><div class="lunch-modal-hd" style="border-bottom-color:var(--red);"><h2 style="color:var(--red);">🌶️ WING NIGHT</h2><button onclick="closeWingNight()" style="color:#888;background:none;border:none;font-size:1.4rem;cursor:pointer;">✕</button></div><div style="padding:1.5rem;" id="wing-night-bd"></div></div></div>
+<div class="lunch-modal-ov" id="ayce-ov" onclick="if(event.target===this)closeAYCE()"><div class="lunch-modal"><div class="lunch-modal-hd" style="border-bottom-color:var(--yellow);"><h2>🍗 ALL YOU CAN EAT</h2><button onclick="closeAYCE()" style="color:#888;background:none;border:none;font-size:1.4rem;cursor:pointer;">✕</button></div><div style="padding:1.5rem;" id="ayce-bd"></div></div></div>
+<div class="lunch-modal-ov" id="sat-ov" onclick="if(event.target===this)closeSatBurgers()"><div class="lunch-modal"><div class="lunch-modal-hd" style="border-bottom-color:var(--red);"><h2 style="color:var(--red);">🍔 2 FOR $20 BURGERS</h2><button onclick="closeSatBurgers()" style="color:#888;background:none;border:none;font-size:1.4rem;cursor:pointer;">✕</button></div><div style="padding:1.5rem;" id="sat-bd"></div></div></div>
+<div class="lunch-modal-ov" id="mon-ov" onclick="if(event.target===this)closeMonBoneless()"><div class="lunch-modal"><div class="lunch-modal-hd" style="border-bottom-color:var(--red);"><h2 style="color:var(--red);">🍗 BONELESS BOGO</h2><button onclick="closeMonBoneless()" style="color:#888;background:none;border:none;font-size:1.4rem;cursor:pointer;">✕</button></div><div style="padding:1.5rem;" id="mon-bd"></div></div></div>
+<div class="lunch-modal-ov" id="wed-ov" onclick="if(event.target===this)closeWedRibs()"><div class="lunch-modal"><div class="lunch-modal-hd" style="border-bottom-color:var(--red);"><h2 style="color:var(--red);">🔥 RIB NIGHT BOGO</h2><button onclick="closeWedRibs()" style="color:#888;background:none;border:none;font-size:1.4rem;cursor:pointer;">✕</button></div><div style="padding:1.5rem;" id="wed-bd"></div></div></div>
+<div class="lunch-modal-ov" id="fri-ov" onclick="if(event.target===this)closeFri330()"><div class="lunch-modal"><div class="lunch-modal-hd" style="border-bottom-color:var(--yellow);"><h2>🍗 3 FOR $30</h2><button onclick="closeFri330()" style="color:#888;background:none;border:none;font-size:1.4rem;cursor:pointer;">✕</button></div><div style="padding:1.5rem;" id="fri-bd"></div></div></div>
+<div class="lunch-modal-ov" id="sun-ov" onclick="if(event.target===this)closeSunWings()"><div class="lunch-modal"><div class="lunch-modal-hd" style="border-bottom-color:var(--yellow);"><h2>🍗 89¢ WING DAY</h2><button onclick="closeSunWings()" style="color:#888;background:none;border:none;font-size:1.4rem;cursor:pointer;">✕</button></div><div style="padding:1.5rem;" id="sun-bd"></div></div></div>
 
 <script>
+/* ===== DAILY SPECIALS ENGINE ===== */
+function getReginaDay(){var n=new Date();var r=new Date(n.toLocaleString('en-US',{timeZone:'America/Regina'}));return r.getDay();}
+function isToday(d){return getReginaDay()===d;}
+function buildFlavorSelect(id,label){var opts='<option value="">— Pick a flavor —</option>';Object.keys(FLAVORS).forEach(function(grp){opts+='<optgroup label="'+grp+'">';FLAVORS[grp].forEach(function(f){opts+='<option value="'+f+'">'+f+'</option>';});opts+='</optgroup>';});return '<label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.4rem;">'+label+'</label><select id="'+id+'" style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.55rem .85rem;font-size:.9rem;background:white;outline:none;margin-bottom:1rem;">'+opts+'</select>';}
+
+var ALL_PROMO_IDS=['pc-sun','pc-mon','pc-tue','pc-wed','pc-thu','pc-fri','pc-sat'];
+function updateTodaysSpecial(){var day=getReginaDay();ALL_PROMO_IDS.forEach(function(id){var c=document.getElementById(id);if(c){c.classList.remove('today-active','today-dimmed');}});var todayId='pc-'+['sun','mon','tue','wed','thu','fri','sat'][day];var todayCard=document.getElementById(todayId);if(todayCard)todayCard.classList.add('today-active');ALL_PROMO_IDS.forEach(function(id){if(id!==todayId){var c=document.getElementById(id);if(c)c.classList.add('today-dimmed');}});}
+updateTodaysSpecial();
+setInterval(updateTodaysSpecial,60000);
+
+/* ===== LUNCH DEAL ===== */
 var LUNCH_DEAL_PRICE = 10.00;
-var isLunchDealMode = false;
-var lunchSelectedFlavor = '';
+function isLunchHours(){var now=new Date();var regina=new Date(now.toLocaleString('en-US',{timeZone:'America/Regina'}));var minutes=regina.getHours()*60+regina.getMinutes();return minutes>=11*60 && minutes<15*60+30;}
+function openLunchDeal(){var bd=document.getElementById('lunch-modal-bd');var hoursWarn=isLunchHours()?'':'<div class="lunch-window-warn"><strong>Lunch Deal hours:</strong> 11:00 AM — 3:30 PM<br>You can still <strong>pre-order</strong> — we\'ll prep it during lunch.</div>';bd.innerHTML=hoursWarn+'<div class="lunch-banner-deal"><div class="lunch-banner-deal-price">$10</div><div style="font-family:var(--font-head);font-size:.78rem;letter-spacing:2px;text-transform:uppercase;font-weight:600;margin-top:.2rem;">Wings + Small Fries</div></div>'+'<div class="lunch-pickup-only">🏃 Pickup Only · No Delivery</div>'+'<div class="lunch-includes"><div style="font-family:var(--font-head);font-size:.7rem;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:.4rem;">What you get</div><div class="lunch-includes-row">🍗 <span><strong>One Order — Wings</strong> · Choose your flavor</span></div><div class="lunch-includes-row">🍟 <span><strong>Small Fries</strong> · Golden &amp; crispy</span></div><div class="lunch-includes-row" style="color:#7A6545;font-size:.78rem;border-top:1px dashed var(--paper-line);padding-top:6px;margin-top:4px;">💰 Save vs separately ($16.98 value)</div></div>'+buildFlavorSelect('lunch-flavor','🔥 Choose Your Wing Flavor')+'<label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.35rem;">Special Instructions</label><textarea id="lunch-notes" placeholder="Extra sauce, well done..." style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.5rem .75rem;font-size:.83rem;resize:vertical;min-height:55px;outline:none;margin-bottom:1rem;"></textarea>'+'<button class="btn-place" onclick="proceedLunchCheckout()">CHECKOUT — $10 PICKUP →</button>'+'<button onclick="closeLunchDeal()" style="width:100%;background:none;border:1.5px solid var(--paper-line);color:#888;padding:.65rem;font-family:var(--font-head);font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:4px;margin-top:.5rem;">✕ Cancel</button>';document.getElementById('lunch-modal-ov').classList.add('open');document.body.style.overflow='hidden';}
+function closeLunchDeal(){document.getElementById('lunch-modal-ov').classList.remove('open');document.body.style.overflow='';}
+function proceedLunchCheckout(){var flavor=document.getElementById('lunch-flavor').value;if(!flavor){toast('Please pick a wing flavor!');return;}var notes=document.getElementById('lunch-notes').value.trim();cart=cart.filter(function(it){return !it.lunchDeal;});cart.push({id:'lunch-deal',key:'LUNCH-DEAL|'+flavor+'|'+notes,qty:1,name:'🍗 LUNCH DEAL — Wings + Small Fries',price:LUNCH_DEAL_PRICE,details:flavor+' · 1 Order Wings + Small Fries',notes:notes,flavors:[flavor],cookieFl:'',sizeName:'',upgradeName:'',upgradePrice:0,lunchDeal:true});orderType='pickup';updateCart();closeLunchDeal();closeCart();renderCheckoutForm();document.getElementById('modal-ov').classList.add('open');setTimeout(function(){var dBtn=document.getElementById('ot-d');if(dBtn){dBtn.style.opacity='.4';dBtn.style.cursor='not-allowed';dBtn.onclick=function(){toast('Lunch Deal is pickup only 🏃');};}},100);}
 
-function isLunchHours(){
-  var now = new Date();
-  var regina = new Date(now.toLocaleString('en-US',{timeZone:'America/Regina'}));
-  var minutes = regina.getHours()*60 + regina.getMinutes();
-  return minutes >= 11*60 && minutes < 15*60+30;
-}
+/* ===== THURSDAY WING NIGHT ===== */
+var WING_NIGHT_FULL=11.99;
+var WING_NIGHT_DISCOUNT=WING_NIGHT_FULL/2;
+function openWingNight(){if(!isToday(4)){toast('Wing Night is Thursdays only 🌶️');return;}var bd=document.getElementById('wing-night-bd');var totalDeal=(WING_NIGHT_FULL+WING_NIGHT_DISCOUNT).toFixed(2);var save=(WING_NIGHT_FULL-WING_NIGHT_DISCOUNT).toFixed(2);bd.innerHTML='<div style="background:linear-gradient(135deg,#E8190A,#A80F00);border-radius:6px;padding:1rem;text-align:center;color:white;margin-bottom:1.25rem;border:2px solid var(--ink);"><div style="font-family:var(--font-display);font-size:2.2rem;letter-spacing:2px;line-height:1;">BUY 1 · 2ND 50% OFF</div><div style="font-family:var(--font-head);font-size:.78rem;letter-spacing:2px;text-transform:uppercase;margin-top:.4rem;">2 Orders of Wings · Pick 2 Flavors</div></div>'+'<div style="background:rgba(72,187,120,.1);border:1.5px solid #48BB78;color:#276749;padding:.6rem .85rem;border-radius:4px;font-family:var(--font-head);font-size:.8rem;letter-spacing:1px;margin-bottom:1rem;text-align:center;font-weight:700;">💰 You save $'+save+' tonight only</div>'+'<div class="lunch-pickup-only">🏃 Pickup Only · No Delivery</div>'+'<div class="lunch-includes"><div class="lunch-includes-row">🍗 <span><strong>Order #1 — Full Price</strong> · $'+WING_NIGHT_FULL.toFixed(2)+'</span></div><div class="lunch-includes-row">🍗 <span><strong>Order #2 — 50% Off</strong> · $'+WING_NIGHT_DISCOUNT.toFixed(2)+'</span></div><div class="lunch-includes-row" style="color:#7A6545;font-size:.78rem;border-top:1px dashed var(--paper-line);padding-top:6px;margin-top:4px;">Tonight: $'+totalDeal+'</div></div>'+buildFlavorSelect('wn-flavor-1','🔥 Order #1 Flavor')+buildFlavorSelect('wn-flavor-2','🔥 Order #2 Flavor (50% off)')+'<label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.35rem;">Special Instructions</label><textarea id="wn-notes" placeholder="Extra sauce, well done..." style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.5rem .75rem;font-size:.83rem;resize:vertical;min-height:55px;outline:none;margin-bottom:1rem;"></textarea>'+'<button class="btn-place" onclick="proceedWingNightCheckout()" style="background:var(--red);">CHECKOUT — $'+totalDeal+' →</button><button onclick="closeWingNight()" style="width:100%;background:none;border:1.5px solid var(--paper-line);color:#888;padding:.65rem;font-family:var(--font-head);font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:4px;margin-top:.5rem;">✕ Cancel</button>';document.getElementById('wing-night-ov').classList.add('open');document.body.style.overflow='hidden';}
+function closeWingNight(){document.getElementById('wing-night-ov').classList.remove('open');document.body.style.overflow='';}
+function proceedWingNightCheckout(){var f1=document.getElementById('wn-flavor-1').value;var f2=document.getElementById('wn-flavor-2').value;if(!f1||!f2){toast('Pick a flavor for both orders!');return;}var notes=document.getElementById('wn-notes').value.trim();cart=cart.filter(function(it){return !it.wingNight;});cart.push({id:'wn-1',key:'WN1|'+f1+'|'+notes,qty:1,name:'🌶️ WING NIGHT — Order #1',price:WING_NIGHT_FULL,details:f1+' · Full price',notes:notes,flavors:[f1],cookieFl:'',sizeName:'',upgradeName:'',upgradePrice:0,wingNight:true});cart.push({id:'wn-2',key:'WN2|'+f2+'|'+notes,qty:1,name:'🌶️ WING NIGHT — Order #2 (50% OFF)',price:WING_NIGHT_DISCOUNT,details:f2+' · 50% off Thursday special',notes:'',flavors:[f2],cookieFl:'',sizeName:'',upgradeName:'',upgradePrice:0,wingNight:true});orderType='pickup';updateCart();closeWingNight();closeCart();renderCheckoutForm();document.getElementById('modal-ov').classList.add('open');setTimeout(function(){var dBtn=document.getElementById('ot-d');if(dBtn){dBtn.style.opacity='.4';dBtn.style.cursor='not-allowed';dBtn.onclick=function(){toast('Wing Night is pickup only 🌶️');};}},100);}
 
-function openLunchDeal(){
-  lunchSelectedFlavor = '';
-  var bd = document.getElementById('lunch-modal-bd');
-  var hoursWarn = isLunchHours() ? '' :
-    '<div class="lunch-window-warn"><strong>Lunch Deal hours:</strong> 11:00 AM — 3:30 PM<br>You can still <strong>pre-order</strong> — we\'ll prep it during lunch.</div>';
-  var opts = '<option value="">— Pick your wing flavor —</option>';
-  Object.keys(FLAVORS).forEach(function(grp){
-    opts += '<optgroup label="'+grp+'">';
-    FLAVORS[grp].forEach(function(f){opts += '<option value="'+f+'">'+f+'</option>';});
-    opts += '</optgroup>';
-  });
-  bd.innerHTML =
-    hoursWarn +
-    '<div class="lunch-banner-deal"><div class="lunch-banner-deal-price">$10</div><div style="font-family:var(--font-head);font-size:.78rem;letter-spacing:2px;text-transform:uppercase;font-weight:600;margin-top:.2rem;">Wings + Small Fries</div></div>' +
-    '<div class="lunch-pickup-only">🏃 Pickup Only · No Delivery</div>' +
-    '<div class="lunch-includes">' +
-      '<div style="font-family:var(--font-head);font-size:.7rem;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:.4rem;">What you get</div>' +
-      '<div class="lunch-includes-row">🍗 <span><strong>One Order — Wings</strong> · Choose your flavor</span></div>' +
-      '<div class="lunch-includes-row">🍟 <span><strong>Small Fries</strong> · Golden &amp; crispy</span></div>' +
-      '<div class="lunch-includes-row" style="color:#7A6545;font-size:.78rem;border-top:1px dashed var(--paper-line);padding-top:6px;margin-top:4px;">💰 Save vs separately ($16.98 value)</div>' +
-    '</div>' +
-    '<label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.4rem;">🔥 Choose Your Wing Flavor</label>' +
-    '<select id="lunch-flavor" style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.55rem .85rem;font-size:.9rem;background:white;outline:none;margin-bottom:1rem;">' + opts + '</select>' +
-    '<label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.35rem;">Special Instructions</label>' +
-    '<textarea id="lunch-notes" placeholder="Extra sauce, well done..." style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.5rem .75rem;font-size:.83rem;resize:vertical;min-height:55px;outline:none;margin-bottom:1rem;"></textarea>' +
-    '<button class="btn-place" onclick="proceedLunchCheckout()">CHECKOUT — $10 PICKUP →</button>' +
-    '<button onclick="closeLunchDeal()" style="width:100%;background:none;border:1.5px solid var(--paper-line);color:#888;padding:.65rem;font-family:var(--font-head);font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:4px;margin-top:.5rem;">✕ Cancel</button>';
-  document.getElementById('lunch-modal-ov').classList.add('open');
-  document.body.style.overflow='hidden';
-}
+/* ===== TUESDAY AYCE — DINE-IN ONLY ===== */
+var AYCE_PRICE=28.99;
+function openAYCE(){if(!isToday(2)){toast('AYCE is Tuesdays only 🍗');return;}var bd=document.getElementById('ayce-bd');bd.innerHTML='<div class="lunch-banner-deal" style="background:linear-gradient(135deg,#F5A800,#E8190A);"><div class="lunch-banner-deal-price">$28.99</div><div style="font-family:var(--font-head);font-size:.78rem;letter-spacing:2px;text-transform:uppercase;font-weight:600;margin-top:.2rem;">All You Can Eat Wings</div></div>'+'<div class="ayce-portions">🍽️ <strong>DINE-IN ONLY</strong> · Reserve and come eat with us<br>Pick your starting flavor — refills brought to your table</div>'+'<div class="lunch-includes"><div class="lunch-includes-row">🍗 <span><strong>Unlimited wings</strong> · 125+ flavors available</span></div><div class="lunch-includes-row">⏱️ <span><strong>1.5 hour seating</strong> · Tuesday only</span></div><div class="lunch-includes-row">📋 <span><strong>One person per ticket</strong> · No sharing</span></div></div>'+buildFlavorSelect('ayce-flavor','🔥 Pick Your Starting Flavor')+'<label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.35rem;">Number of People</label><select id="ayce-people" style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.55rem .85rem;font-size:.9rem;background:white;outline:none;margin-bottom:1rem;"><option value="1">1 person — $28.99</option><option value="2">2 people — $57.98</option><option value="3">3 people — $86.97</option><option value="4">4 people — $115.96</option></select>'+'<label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.35rem;">Special Instructions</label><textarea id="ayce-notes" placeholder="Allergies, group name..." style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.5rem .75rem;font-size:.83rem;resize:vertical;min-height:55px;outline:none;margin-bottom:1rem;"></textarea>'+'<button class="btn-place" onclick="proceedAYCECheckout()" style="background:var(--yellow);color:var(--black);">RESERVE AYCE 🍗</button><button onclick="closeAYCE()" style="width:100%;background:none;border:1.5px solid var(--paper-line);color:#888;padding:.65rem;font-family:var(--font-head);font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:4px;margin-top:.5rem;">✕ Cancel</button>';document.getElementById('ayce-ov').classList.add('open');document.body.style.overflow='hidden';}
+function closeAYCE(){document.getElementById('ayce-ov').classList.remove('open');document.body.style.overflow='';}
+function proceedAYCECheckout(){var flavor=document.getElementById('ayce-flavor').value;if(!flavor){toast('Pick your starting flavor!');return;}var people=parseInt(document.getElementById('ayce-people').value);var notes=document.getElementById('ayce-notes').value.trim();cart=cart.filter(function(it){return !it.ayce;});for(var i=0;i<people;i++){cart.push({id:'ayce-'+i,key:'AYCE'+i+'|'+flavor+'|'+notes,qty:1,name:'🍗 AYCE — Person '+(i+1),price:AYCE_PRICE,details:(i===0?flavor+' · ':'')+'All You Can Eat · DINE-IN · 1.5 hr',notes:i===0?notes:'',flavors:[flavor],cookieFl:'',sizeName:'',upgradeName:'',upgradePrice:0,ayce:true});}orderType='pickup';updateCart();closeAYCE();closeCart();renderCheckoutForm();document.getElementById('modal-ov').classList.add('open');setTimeout(function(){var dBtn=document.getElementById('ot-d');if(dBtn){dBtn.style.opacity='.4';dBtn.style.cursor='not-allowed';dBtn.onclick=function(){toast('AYCE is DINE-IN only 🍽️ · Reserve & visit us!');};}},100);}
 
-function closeLunchDeal(){
-  document.getElementById('lunch-modal-ov').classList.remove('open');
-  document.body.style.overflow='';
-}
+/* ===== SATURDAY 2-FOR-$20 BURGERS ===== */
+var SAT_BURGER_PRICE=10.00;
+function openSatBurgers(){if(!isToday(6)){toast('Burger deal is Saturdays only 🍔');return;}var burgers=MENU.burgers;var burgerOpts='<option value="">— Pick burger —</option>'+burgers.map(function(b){return '<option value="'+b.id+'">'+b.name+'</option>';}).join('');var bd=document.getElementById('sat-bd');bd.innerHTML='<div style="background:linear-gradient(135deg,#E8190A,#A80F00);border-radius:6px;padding:1rem;text-align:center;color:white;margin-bottom:1.25rem;border:2px solid var(--ink);"><div style="font-family:var(--font-display);font-size:2.5rem;line-height:1;letter-spacing:2px;">$20</div><div style="font-family:var(--font-head);font-size:.78rem;letter-spacing:2px;text-transform:uppercase;font-weight:600;margin-top:.2rem;">2 Burgers · Save $9.98+</div></div>'+'<div class="lunch-pickup-only">🏃 Pickup Only · No Delivery</div>'+'<div class="lunch-includes"><div class="lunch-includes-row">🍔 <span><strong>2 Burgers</strong> · Pick any 2 from menu</span></div><div class="lunch-includes-row">🍟 <span>Each comes with fries &amp; a drink</span></div><div class="lunch-includes-row" style="color:#7A6545;font-size:.78rem;border-top:1px dashed var(--paper-line);padding-top:6px;margin-top:4px;">Saturdays only — tap and go</div></div>'+'<label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.4rem;">🍔 Burger #1</label><select id="sat-b1" style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.55rem .85rem;font-size:.9rem;background:white;outline:none;margin-bottom:.85rem;">'+burgerOpts+'</select>'+'<label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.4rem;">🍔 Burger #2</label><select id="sat-b2" style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.55rem .85rem;font-size:.9rem;background:white;outline:none;margin-bottom:1rem;">'+burgerOpts+'</select>'+'<label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.35rem;">Special Instructions</label><textarea id="sat-notes" placeholder="No pickles, extra spicy..." style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.5rem .75rem;font-size:.83rem;resize:vertical;min-height:55px;outline:none;margin-bottom:1rem;"></textarea>'+'<button class="btn-place" onclick="proceedSatCheckout()" style="background:var(--red);">CHECKOUT — $20 →</button><button onclick="closeSatBurgers()" style="width:100%;background:none;border:1.5px solid var(--paper-line);color:#888;padding:.65rem;font-family:var(--font-head);font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:4px;margin-top:.5rem;">✕ Cancel</button>';document.getElementById('sat-ov').classList.add('open');document.body.style.overflow='hidden';}
+function closeSatBurgers(){document.getElementById('sat-ov').classList.remove('open');document.body.style.overflow='';}
+function proceedSatCheckout(){var b1id=document.getElementById('sat-b1').value;var b2id=document.getElementById('sat-b2').value;if(!b1id||!b2id){toast('Pick both burgers!');return;}var b1=MENU.burgers.find(function(b){return b.id===b1id;});var b2=MENU.burgers.find(function(b){return b.id===b2id;});var notes=document.getElementById('sat-notes').value.trim();cart=cart.filter(function(it){return !it.satBurger;});cart.push({id:'sat-b1',key:'SAT1|'+b1id+'|'+notes,qty:1,name:'🍔 SAT DEAL — '+b1.name,price:SAT_BURGER_PRICE,details:'Saturday 2-for-$20',notes:notes,flavors:[],cookieFl:'',sizeName:'',upgradeName:'',upgradePrice:0,satBurger:true});cart.push({id:'sat-b2',key:'SAT2|'+b2id+'|'+notes,qty:1,name:'🍔 SAT DEAL — '+b2.name,price:SAT_BURGER_PRICE,details:'Saturday 2-for-$20',notes:'',flavors:[],cookieFl:'',sizeName:'',upgradeName:'',upgradePrice:0,satBurger:true});orderType='pickup';updateCart();closeSatBurgers();closeCart();renderCheckoutForm();document.getElementById('modal-ov').classList.add('open');setTimeout(function(){var dBtn=document.getElementById('ot-d');if(dBtn){dBtn.style.opacity='.4';dBtn.style.cursor='not-allowed';dBtn.onclick=function(){toast('Saturday Burger Deal is pickup only 🏃');};}},100);}
 
-function proceedLunchCheckout(){
-  var flavor = document.getElementById('lunch-flavor').value;
-  if(!flavor){toast('Please pick a wing flavor!');return;}
-  var notes = document.getElementById('lunch-notes').value.trim();
-  cart = cart.filter(function(it){return !it.lunchDeal;});
-  var details = [flavor, 'Includes: 1 Order Wings + Small Fries'];
-  if(notes) details.push('Note: '+notes);
-  cart.push({
-    id:'lunch-deal', key:'LUNCH-DEAL|'+flavor+'|'+notes, qty:1,
-    name:'🍗 LUNCH DEAL — Wings + Small Fries',
-    price:LUNCH_DEAL_PRICE,
-    details:details.join(' · '),
-    notes:notes, flavors:[flavor],
-    cookieFl:'', sizeName:'', upgradeName:'', upgradePrice:0,
-    lunchDeal:true
-  });
-  isLunchDealMode = true;
-  orderType = 'pickup';
-  updateCart();
-  closeLunchDeal();
-  closeCart();
-  renderCheckoutForm();
-  document.getElementById('modal-ov').classList.add('open');
-  setTimeout(function(){
-    var dBtn = document.getElementById('ot-d');
-    if(dBtn){dBtn.style.opacity='.4';dBtn.style.cursor='not-allowed';dBtn.onclick=function(){toast('Lunch Deal is pickup only 🏃');};}
-  },100);
-}
-</script>
-  <!-- ===== WING NIGHT THURSDAY MODAL ===== -->
-<div class="lunch-modal-ov" id="wing-night-ov" onclick="if(event.target===this)closeWingNight()">
-  <div class="lunch-modal">
-    <div class="lunch-modal-hd" style="border-bottom-color:var(--red);">
-      <h2 style="color:var(--red);">🌶️ WING NIGHT</h2>
-      <button onclick="closeWingNight()" style="color:#888;background:none;border:none;font-size:1.4rem;cursor:pointer;">✕</button>
-    </div>
-    <div style="padding:1.5rem;" id="wing-night-bd"></div>
-  </div>
-</div>
+/* ===== MONDAY BONELESS BOGO + WEDNESDAY RIBS BOGO (shared builder) ===== */
+function buildBogoModal(cfg){var bd=document.getElementById(cfg.bdId);var fullPrice=11.99;var halfPrice=fullPrice/2;var totalDeal=(fullPrice+halfPrice).toFixed(2);var save=(fullPrice-halfPrice).toFixed(2);bd.innerHTML='<div style="background:linear-gradient(135deg,#E8190A,#A80F00);border-radius:6px;padding:1rem;text-align:center;color:white;margin-bottom:1.25rem;border:2px solid var(--ink);"><div style="font-family:var(--font-display);font-size:2.2rem;letter-spacing:2px;line-height:1;">BUY 1 · 2ND 50% OFF</div><div style="font-family:var(--font-head);font-size:.78rem;letter-spacing:2px;text-transform:uppercase;margin-top:.4rem;">2 Orders of '+cfg.itemName+' · Pick 2 Flavors</div></div>'+'<div style="background:rgba(72,187,120,.1);border:1.5px solid #48BB78;color:#276749;padding:.6rem .85rem;border-radius:4px;font-family:var(--font-head);font-size:.8rem;letter-spacing:1px;margin-bottom:1rem;text-align:center;font-weight:700;">💰 You save $'+save+' tonight only</div>'+'<div class="lunch-pickup-only">🏃 Pickup Only · No Delivery</div>'+'<div class="lunch-includes"><div class="lunch-includes-row">'+cfg.icon+' <span><strong>Order #1 — Full Price</strong> · $'+fullPrice.toFixed(2)+'</span></div><div class="lunch-includes-row">'+cfg.icon+' <span><strong>Order #2 — 50% Off</strong> · $'+halfPrice.toFixed(2)+'</span></div><div class="lunch-includes-row" style="color:#7A6545;font-size:.78rem;border-top:1px dashed var(--paper-line);padding-top:6px;margin-top:4px;">Tonight: $'+totalDeal+'</div></div>'+buildFlavorSelect(cfg.prefix+'-f1','🔥 Order #1 Flavor')+buildFlavorSelect(cfg.prefix+'-f2','🔥 Order #2 Flavor (50% off)')+'<label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.35rem;">Special Instructions</label><textarea id="'+cfg.prefix+'-notes" placeholder="Extra sauce, well done..." style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.5rem .75rem;font-size:.83rem;resize:vertical;min-height:55px;outline:none;margin-bottom:1rem;"></textarea>'+'<button class="btn-place" onclick="proceedBogoCheckout(\''+cfg.prefix+'\',\''+cfg.itemName+'\','+fullPrice+','+halfPrice+',\''+cfg.tag+'\')" style="background:var(--red);">CHECKOUT — $'+totalDeal+' →</button><button onclick="'+cfg.closeFn+'()" style="width:100%;background:none;border:1.5px solid var(--paper-line);color:#888;padding:.65rem;font-family:var(--font-head);font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:4px;margin-top:.5rem;">✕ Cancel</button>';document.getElementById(cfg.ovId).classList.add('open');document.body.style.overflow='hidden';}
+function proceedBogoCheckout(prefix,itemName,fullPrice,halfPrice,tag){var f1=document.getElementById(prefix+'-f1').value;var f2=document.getElementById(prefix+'-f2').value;if(!f1||!f2){toast('Pick a flavor for both orders!');return;}var notes=document.getElementById(prefix+'-notes').value.trim();cart=cart.filter(function(it){return it.bogoTag!==tag;});cart.push({id:tag+'-1',key:tag+'1|'+f1+'|'+notes,qty:1,name:'🍗 '+itemName.toUpperCase()+' BOGO — Order #1',price:fullPrice,details:f1+' · Full price',notes:notes,flavors:[f1],cookieFl:'',sizeName:'',upgradeName:'',upgradePrice:0,bogoTag:tag});cart.push({id:tag+'-2',key:tag+'2|'+f2+'|'+notes,qty:1,name:'🍗 '+itemName.toUpperCase()+' BOGO — Order #2 (50% OFF)',price:halfPrice,details:f2+' · 50% off special',notes:'',flavors:[f2],cookieFl:'',sizeName:'',upgradeName:'',upgradePrice:0,bogoTag:tag});orderType='pickup';updateCart();document.querySelectorAll('.lunch-modal-ov').forEach(function(m){m.classList.remove('open');});document.body.style.overflow='';closeCart();renderCheckoutForm();document.getElementById('modal-ov').classList.add('open');setTimeout(function(){var dBtn=document.getElementById('ot-d');if(dBtn){dBtn.style.opacity='.4';dBtn.style.cursor='not-allowed';dBtn.onclick=function(){toast('Daily special is pickup only 🏃');};}},100);}
+function openMonBoneless(){if(!isToday(1)){toast('Boneless BOGO is Mondays only 🍗');return;}buildBogoModal({bdId:'mon-bd',ovId:'mon-ov',prefix:'mon',itemName:'Boneless Wings',icon:'🍗',tag:'MON-BONELESS',closeFn:'closeMonBoneless'});}
+function closeMonBoneless(){document.getElementById('mon-ov').classList.remove('open');document.body.style.overflow='';}
+function openWedRibs(){if(!isToday(3)){toast('Rib BOGO is Wednesdays only 🔥');return;}buildBogoModal({bdId:'wed-bd',ovId:'wed-ov',prefix:'wed',itemName:'Ribs',icon:'🔥',tag:'WED-RIBS',closeFn:'closeWedRibs'});}
+function closeWedRibs(){document.getElementById('wed-ov').classList.remove('open');document.body.style.overflow='';}
 
-<script>
-var WING_NIGHT_FULL = 11.99;          // One Order Wings price
-var WING_NIGHT_DISCOUNT = WING_NIGHT_FULL / 2; // 50% off second order
-var isWingNightMode = false;
+/* ===== FRIDAY 3-FOR-$30 ===== */
+var FRI330_PRICE=30.00;
+function openFri330(){if(!isToday(5)){toast('3-for-$30 is Fridays only 🍗');return;}var bd=document.getElementById('fri-bd');bd.innerHTML='<div style="background:linear-gradient(135deg,#F5A800,#E8190A);border-radius:6px;padding:1rem;text-align:center;color:white;margin-bottom:1.25rem;border:2px solid var(--ink);"><div style="font-family:var(--font-display);font-size:2.5rem;line-height:1;letter-spacing:2px;">$30</div><div style="font-family:var(--font-head);font-size:.78rem;letter-spacing:2px;text-transform:uppercase;font-weight:600;margin-top:.2rem;">3 Orders of Wings · Save $5.97</div></div>'+'<div class="lunch-pickup-only">🏃 Pickup Only · No Delivery</div>'+'<div class="lunch-includes"><div class="lunch-includes-row">🍗 <span><strong>3 Full Orders of Wings</strong> · ~30 wings total</span></div><div class="lunch-includes-row">🌶️ <span>Mix &amp; match — pick 3 different flavors</span></div><div class="lunch-includes-row" style="color:#7A6545;font-size:.78rem;border-top:1px dashed var(--paper-line);padding-top:6px;margin-top:4px;">Was $35.97 · Tonight $30.00</div></div>'+buildFlavorSelect('fri-f1','🔥 Order #1 Flavor')+buildFlavorSelect('fri-f2','🔥 Order #2 Flavor')+buildFlavorSelect('fri-f3','🔥 Order #3 Flavor')+'<label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.35rem;">Special Instructions</label><textarea id="fri-notes" placeholder="Extra sauce, well done..." style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.5rem .75rem;font-size:.83rem;resize:vertical;min-height:55px;outline:none;margin-bottom:1rem;"></textarea>'+'<button class="btn-place" onclick="proceedFri330Checkout()" style="background:var(--red);">CHECKOUT — $30 →</button><button onclick="closeFri330()" style="width:100%;background:none;border:1.5px solid var(--paper-line);color:#888;padding:.65rem;font-family:var(--font-head);font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:4px;margin-top:.5rem;">✕ Cancel</button>';document.getElementById('fri-ov').classList.add('open');document.body.style.overflow='hidden';}
+function closeFri330(){document.getElementById('fri-ov').classList.remove('open');document.body.style.overflow='';}
+function proceedFri330Checkout(){var f1=document.getElementById('fri-f1').value;var f2=document.getElementById('fri-f2').value;var f3=document.getElementById('fri-f3').value;if(!f1||!f2||!f3){toast('Pick a flavor for all 3 orders!');return;}var notes=document.getElementById('fri-notes').value.trim();cart=cart.filter(function(it){return !it.fri330;});cart.push({id:'fri-bundle',key:'FRI330|'+f1+'|'+f2+'|'+f3+'|'+notes,qty:1,name:'🍗 FRIDAY 3-FOR-$30',price:FRI330_PRICE,details:'3 Orders Wings · '+f1+' · '+f2+' · '+f3,notes:notes,flavors:[f1,f2,f3],cookieFl:'',sizeName:'',upgradeName:'',upgradePrice:0,fri330:true});orderType='pickup';updateCart();closeFri330();closeCart();renderCheckoutForm();document.getElementById('modal-ov').classList.add('open');setTimeout(function(){var dBtn=document.getElementById('ot-d');if(dBtn){dBtn.style.opacity='.4';dBtn.style.cursor='not-allowed';dBtn.onclick=function(){toast('3-for-$30 is pickup only 🏃');};}},100);}
 
-function isThursday(){
-  var now = new Date();
-  var regina = new Date(now.toLocaleString('en-US',{timeZone:'America/Regina'}));
-  return regina.getDay() === 4; // 4 = Thursday
-}
+/* ===== SUNDAY 89¢ WINGS ===== */
+var SUN_WING_PRICE=0.89;
+function openSunWings(){if(!isToday(0)){toast('89¢ Wing Day is Sundays only 🍗');return;}var bd=document.getElementById('sun-bd');var qtyOpts='<option value="0">— None —</option>';for(var q=10;q<=100;q+=10){qtyOpts+='<option value="'+q+'">'+q+' wings — $'+(q*SUN_WING_PRICE).toFixed(2)+'</option>';}var qtyOptsRequired=qtyOpts.replace('value="0">— None —','value="10">10 wings — $8.90');bd.innerHTML='<div style="background:linear-gradient(135deg,#F5A800,#E8190A);border-radius:6px;padding:1rem;text-align:center;color:white;margin-bottom:1.25rem;border:2px solid var(--ink);"><div style="font-family:var(--font-display);font-size:2.5rem;line-height:1;letter-spacing:2px;">89¢ / WING</div><div style="font-family:var(--font-head);font-size:.78rem;letter-spacing:2px;text-transform:uppercase;font-weight:600;margin-top:.2rem;">Sunday Only · Min 10 Per Flavor</div></div>'+'<div class="lunch-pickup-only">🏃 Pickup Only · No Delivery</div>'+'<div class="ayce-portions">📏 <strong>Pick up to 3 flavors</strong> · Min 10 wings per flavor (in 10s)<br>Build your own bucket — mix &amp; match</div>'+buildFlavorSelect('sun-f1','🔥 Flavor #1 (required)')+'<label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.35rem;margin-top:-0.35rem;">Quantity for Flavor #1</label><select id="sun-q1" onchange="updateSunTotal()" style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.55rem .85rem;font-size:.9rem;background:white;outline:none;margin-bottom:1rem;">'+qtyOptsRequired+'</select>'+buildFlavorSelect('sun-f2','🔥 Flavor #2 (optional)')+'<label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.35rem;margin-top:-0.35rem;">Quantity for Flavor #2</label><select id="sun-q2" onchange="updateSunTotal()" style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.55rem .85rem;font-size:.9rem;background:white;outline:none;margin-bottom:1rem;">'+qtyOpts+'</select>'+buildFlavorSelect('sun-f3','🔥 Flavor #3 (optional)')+'<label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.35rem;margin-top:-0.35rem;">Quantity for Flavor #3</label><select id="sun-q3" onchange="updateSunTotal()" style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.55rem .85rem;font-size:.9rem;background:white;outline:none;margin-bottom:1rem;">'+qtyOpts+'</select>'+'<div id="sun-total" style="background:white;border:2px solid var(--red);border-radius:5px;padding:.85rem;text-align:center;font-family:var(--font-display);font-size:1.6rem;color:var(--red);letter-spacing:2px;margin-bottom:1rem;">TOTAL: $8.90 · 10 wings</div>'+'<label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.35rem;">Special Instructions</label><textarea id="sun-notes" placeholder="Extra sauce, well done..." style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.5rem .75rem;font-size:.83rem;resize:vertical;min-height:55px;outline:none;margin-bottom:1rem;"></textarea>'+'<button class="btn-place" onclick="proceedSunCheckout()">CHECKOUT 🍗 →</button><button onclick="closeSunWings()" style="width:100%;background:none;border:1.5px solid var(--paper-line);color:#888;padding:.65rem;font-family:var(--font-head);font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:4px;margin-top:.5rem;">✕ Cancel</button>';document.getElementById('sun-ov').classList.add('open');document.body.style.overflow='hidden';updateSunTotal();}
+function closeSunWings(){document.getElementById('sun-ov').classList.remove('open');document.body.style.overflow='';}
+function updateSunTotal(){var q1=parseInt(document.getElementById('sun-q1')?document.getElementById('sun-q1').value:10)||0;var q2=parseInt(document.getElementById('sun-q2')?document.getElementById('sun-q2').value:0)||0;var q3=parseInt(document.getElementById('sun-q3')?document.getElementById('sun-q3').value:0)||0;var total=(q1+q2+q3)*SUN_WING_PRICE;var el=document.getElementById('sun-total');if(el)el.textContent='TOTAL: $'+total.toFixed(2)+' · '+(q1+q2+q3)+' wings';}
+function proceedSunCheckout(){var f1=document.getElementById('sun-f1').value;var q1=parseInt(document.getElementById('sun-q1').value)||0;var f2=document.getElementById('sun-f2').value;var q2=parseInt(document.getElementById('sun-q2').value)||0;var f3=document.getElementById('sun-f3').value;var q3=parseInt(document.getElementById('sun-q3').value)||0;if(!f1||q1<10){toast('Pick a flavor + 10+ wings for Flavor #1!');return;}if(q2>0&&!f2){toast('Pick a flavor for #2 or set qty to 0!');return;}if(q3>0&&!f3){toast('Pick a flavor for #3 or set qty to 0!');return;}var notes=document.getElementById('sun-notes').value.trim();cart=cart.filter(function(it){return !it.sunWing;});function addLine(flavor,qty,idx){if(!flavor||qty<10)return;cart.push({id:'sun-'+idx,key:'SUN'+idx+'|'+flavor+'|'+qty+'|'+notes,qty:1,name:'🍗 89¢ WINGS — '+qty+' x '+flavor,price:qty*SUN_WING_PRICE,details:qty+' wings · '+flavor+' · 89¢ each',notes:idx===1?notes:'',flavors:[flavor],cookieFl:'',sizeName:'',upgradeName:'',upgradePrice:0,sunWing:true});}addLine(f1,q1,1);addLine(f2,q2,2);addLine(f3,q3,3);orderType='pickup';updateCart();closeSunWings();closeCart();renderCheckoutForm();document.getElementById('modal-ov').classList.add('open');setTimeout(function(){var dBtn=document.getElementById('ot-d');if(dBtn){dBtn.style.opacity='.4';dBtn.style.cursor='not-allowed';dBtn.onclick=function(){toast('89¢ Wing Day is pickup only 🏃');};}},100);}
 
-function showWingNightPromo(){
-  var card = document.getElementById('wing-night-promo');
-  if(card) card.style.display = isThursday() ? 'block' : 'none';
-}
-showWingNightPromo();
-setInterval(showWingNightPromo, 60000); // re-check every minute (handles midnight rollover)
-
-function openWingNight(){
-  if(!isThursday()){ toast('Wing Night is Thursdays only 🌶️'); return; }
-  var bd = document.getElementById('wing-night-bd');
-  var opts = '<option value="">— Pick a flavor —</option>';
-  Object.keys(FLAVORS).forEach(function(grp){
-    opts += '<optgroup label="'+grp+'">';
-    FLAVORS[grp].forEach(function(f){opts += '<option value="'+f+'">'+f+'</option>';});
-    opts += '</optgroup>';
-  });
-  var totalFull = (WING_NIGHT_FULL * 2).toFixed(2);
-  var totalDeal = (WING_NIGHT_FULL + WING_NIGHT_DISCOUNT).toFixed(2);
-  var save = (WING_NIGHT_FULL - WING_NIGHT_DISCOUNT).toFixed(2);
-
-  bd.innerHTML =
-    '<div style="background:linear-gradient(135deg,#E8190A,#A80F00);border-radius:6px;padding:1rem;text-align:center;color:white;margin-bottom:1.25rem;border:2px solid var(--ink);">' +
-      '<div style="font-family:var(--font-display);font-size:2.2rem;letter-spacing:2px;line-height:1;">BUY 1 · GET 2ND 50% OFF</div>' +
-      '<div style="font-family:var(--font-head);font-size:.78rem;letter-spacing:2px;text-transform:uppercase;margin-top:.4rem;">2 Orders of Wings · Pick Any 2 Flavors</div>' +
-    '</div>' +
-    '<div style="background:rgba(72,187,120,.1);border:1.5px solid #48BB78;color:#276749;padding:.6rem .85rem;border-radius:4px;font-family:var(--font-head);font-size:.8rem;letter-spacing:1px;margin-bottom:1rem;text-align:center;font-weight:700;">' +
-      '💰 You save $'+save+' tonight only' +
-    '</div>' +
-    '<div class="lunch-includes">' +
-      '<div style="font-family:var(--font-head);font-size:.7rem;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:.4rem;">What you get</div>' +
-      '<div class="lunch-includes-row">🍗 <span><strong>Order #1 — Full Price</strong> · $'+WING_NIGHT_FULL.toFixed(2)+'</span></div>' +
-      '<div class="lunch-includes-row">🍗 <span><strong>Order #2 — 50% Off</strong> · $'+WING_NIGHT_DISCOUNT.toFixed(2)+'</span></div>' +
-      '<div class="lunch-includes-row" style="color:#7A6545;font-size:.78rem;border-top:1px dashed var(--paper-line);padding-top:6px;margin-top:4px;">Was $'+totalFull+' · Tonight $'+totalDeal+'</div>' +
-    '<div class="lunch-pickup-only">🏃 Pickup Only · No Delivery</div>' +
-    '</div>' +
-    '<label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.4rem;">🔥 Order #1 Flavor</label>' +
-    '<select id="wn-flavor-1" style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.55rem .85rem;font-size:.9rem;background:white;outline:none;margin-bottom:.85rem;">' + opts + '</select>' +
-    '<label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.4rem;">🔥 Order #2 Flavor (50% off)</label>' +
-    '<select id="wn-flavor-2" style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.55rem .85rem;font-size:.9rem;background:white;outline:none;margin-bottom:1rem;">' + opts + '</select>' +
-    '<label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.35rem;">Special Instructions</label>' +
-    '<textarea id="wn-notes" placeholder="Extra sauce, well done..." style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.5rem .75rem;font-size:.83rem;resize:vertical;min-height:55px;outline:none;margin-bottom:1rem;"></textarea>' +
-    '<button class="btn-place" onclick="proceedWingNightCheckout()" style="background:var(--red);">CHECKOUT — $'+totalDeal+' →</button>' +
-    '<button onclick="closeWingNight()" style="width:100%;background:none;border:1.5px solid var(--paper-line);color:#888;padding:.65rem;font-family:var(--font-head);font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:4px;margin-top:.5rem;">✕ Cancel</button>';
-
-  document.getElementById('wing-night-ov').classList.add('open');
-  document.body.style.overflow='hidden';
-}
-
-function closeWingNight(){
-  document.getElementById('wing-night-ov').classList.remove('open');
-  document.body.style.overflow='';
-}
-
-function proceedWingNightCheckout(){
-  var f1 = document.getElementById('wn-flavor-1').value;
-  var f2 = document.getElementById('wn-flavor-2').value;
-  if(!f1 || !f2){ toast('Pick a flavor for both orders!'); return; }
-  var notes = document.getElementById('wn-notes').value.trim();
-
-  cart = cart.filter(function(it){ return !it.wingNight; });
-
-  cart.push({
-    id:'wing-night-1', key:'WN1|'+f1+'|'+notes, qty:1,
-    name:'🌶️ WING NIGHT — Order #1',
-    price: WING_NIGHT_FULL,
-    details: f1 + ' · Full price',
-    notes:notes, flavors:[f1],
-    cookieFl:'', sizeName:'', upgradeName:'', upgradePrice:0,
-    wingNight:true
-  });
-
-  cart.push({
-    id:'wing-night-2', key:'WN2|'+f2+'|'+notes, qty:1,
-    name:'🌶️ WING NIGHT — Order #2 (50% OFF)',
-    price: WING_NIGHT_DISCOUNT,
-    details: f2 + ' · 50% off Thursday special',
-    notes:'', flavors:[f2],
-    cookieFl:'', sizeName:'', upgradeName:'', upgradePrice:0,
-    wingNight:true
-  });
-
-  isWingNightMode = true;
-  orderType = 'pickup';                    // ← lock to pickup
-  updateCart();
-  closeWingNight();
-  closeCart();
-  renderCheckoutForm();
-  document.getElementById('modal-ov').classList.add('open');
-  setTimeout(function(){                   // ← disable delivery button at checkout
-    var dBtn = document.getElementById('ot-d');
-    if(dBtn){
-      dBtn.style.opacity='.4';
-      dBtn.style.cursor='not-allowed';
-      dBtn.onclick=function(){toast('Wing Night is pickup only 🌶️');};
-    }
-  },100);
-}
-/* ===== Mouse-tracked 3D tilt for cards ===== */
+/* ===== 3D EFFECTS — Mouse-tracked tilt ===== */
 (function(){
-  if(window.matchMedia('(hover: none)').matches) return; // skip on touch devices
+  if(window.matchMedia('(hover: none)').matches) return;
   var cards = document.querySelectorAll('.cat-card, .mc, .lcard');
   cards.forEach(function(card){
     card.addEventListener('mousemove', function(e){
@@ -1911,13 +1113,11 @@ function proceedWingNightCheckout(){
       var rotY = ((x - cx) / cx) * 6;
       card.style.transform = 'translateY(-8px) rotateX('+rotX+'deg) rotateY('+rotY+'deg) scale(1.02)';
     });
-    card.addEventListener('mouseleave', function(){
-      card.style.transform = '';
-    });
+    card.addEventListener('mouseleave', function(){ card.style.transform = ''; });
   });
 })();
 
-/* ===== Hero parallax on scroll ===== */
+/* ===== 3D EFFECTS — Hero parallax ===== */
 (function(){
   var heroLogo = document.querySelector('.hero-content img');
   var orbs = document.querySelectorAll('.glow-orb');
