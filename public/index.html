@@ -682,37 +682,187 @@ var activeLocation = 'albert-st';
     <div id="im-content"></div>
   </div>
 </div>
-<div id="franchise-ov" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.85);padding:1rem;overflow-y:auto;">
-  <div style="background:white;border-radius:12px;width:min(620px,100%);margin:2rem auto;overflow:hidden;">
-    <div style="background:var(--black);padding:1.5rem 1.75rem;display:flex;align-items:center;justify-content:space-between;">
-      <div>
-        <div style="font-family:var(--font-display);font-size:1.6rem;color:white;letter-spacing:2px;">🚀 FRANCHISE WITH WING-O</div>
-        <div style="font-family:var(--font-head);font-size:.75rem;color:#666;letter-spacing:2px;text-transform:uppercase;margin-top:3px;">Join Regina's fastest growing brand</div>
+<div id="franchise-ov" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.92);padding:0;overflow-y:auto;">
+  <div style="background:var(--paper);width:100%;min-height:100vh;overflow:hidden;">
+    
+    <!-- Close button (sticky top right) -->
+    <button onclick="closeFranchise()" style="position:fixed;top:1rem;right:1.25rem;z-index:100;background:rgba(0,0,0,.7);border:1.5px solid rgba(255,255,255,.3);color:white;font-size:1.3rem;cursor:pointer;width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(10px);">✕</button>
+
+    <!-- HERO SECTION -->
+    <section style="background:linear-gradient(135deg,#0D0D0D 0%,#1A1208 100%);color:white;padding:3.5rem 1.5rem 3rem;text-align:center;position:relative;overflow:hidden;border-bottom:3px double var(--yellow);">
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 30% 20%,rgba(232,25,10,.18) 0%,transparent 50%),radial-gradient(ellipse at 70% 80%,rgba(245,168,0,.12) 0%,transparent 50%);pointer-events:none;animation:pulse-glow 4s ease-in-out infinite;"></div>
+      <div style="position:relative;z-index:1;max-width:800px;margin:0 auto;">
+        <div style="display:inline-block;background:rgba(232,25,10,.15);border:1.5px solid var(--red);color:var(--yellow);padding:.5rem 1.4rem;border-radius:50px;font-family:var(--font-head);font-size:.72rem;letter-spacing:4px;text-transform:uppercase;margin-bottom:1.5rem;font-weight:700;">🚀 Now Accepting Franchise Applications</div>
+        <h1 style="font-family:var(--font-display);font-size:clamp(2.5rem,7vw,5rem);letter-spacing:3px;line-height:.95;margin-bottom:.5rem;text-shadow:0 4px 20px rgba(0,0,0,.5);">BUILD A<br><span style="color:var(--red);text-shadow:0 4px 20px rgba(232,25,10,.4);">WING-O EMPIRE</span></h1>
+        <p style="font-family:var(--font-serif);font-size:clamp(1.1rem,2.5vw,1.4rem);font-style:italic;color:var(--yellow);margin:1rem 0 1.75rem;max-width:600px;margin-left:auto;margin-right:auto;line-height:1.4;">From one Regina kitchen to a Saskatchewan takeover — your city is next.</p>
+        
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem;max-width:700px;margin:2rem auto 0;">
+          <div style="background:rgba(255,255,255,.05);border:1px solid rgba(245,168,0,.3);padding:1rem .5rem;border-radius:6px;"><div style="font-family:var(--font-display);font-size:1.8rem;color:var(--yellow);letter-spacing:2px;">5</div><div style="font-family:var(--font-head);font-size:.65rem;color:#888;letter-spacing:2px;text-transform:uppercase;margin-top:3px;">Locations</div></div>
+          <div style="background:rgba(255,255,255,.05);border:1px solid rgba(245,168,0,.3);padding:1rem .5rem;border-radius:6px;"><div style="font-family:var(--font-display);font-size:1.8rem;color:var(--yellow);letter-spacing:2px;">125+</div><div style="font-family:var(--font-head);font-size:.65rem;color:#888;letter-spacing:2px;text-transform:uppercase;margin-top:3px;">Flavors</div></div>
+          <div style="background:rgba(255,255,255,.05);border:1px solid rgba(245,168,0,.3);padding:1rem .5rem;border-radius:6px;"><div style="font-family:var(--font-display);font-size:1.8rem;color:var(--yellow);letter-spacing:2px;">1M+</div><div style="font-family:var(--font-head);font-size:.65rem;color:#888;letter-spacing:2px;text-transform:uppercase;margin-top:3px;">Wings Sold</div></div>
+          <div style="background:rgba(255,255,255,.05);border:1px solid rgba(232,25,10,.4);padding:1rem .5rem;border-radius:6px;"><div style="font-family:var(--font-display);font-size:1.8rem;color:var(--red);letter-spacing:2px;">YOU</div><div style="font-family:var(--font-head);font-size:.65rem;color:#888;letter-spacing:2px;text-transform:uppercase;margin-top:3px;">Next Owner</div></div>
+        </div>
+
+        <a href="#fr-form" onclick="document.getElementById('fr-form').scrollIntoView({behavior:'smooth'});return false;" style="display:inline-block;background:var(--red);color:white;padding:1rem 2.5rem;border:none;font-family:var(--font-display);font-size:1.2rem;letter-spacing:2px;cursor:pointer;text-transform:uppercase;text-decoration:none;border-radius:4px;margin-top:2rem;box-shadow:0 4px 0 var(--red-deep),0 6px 20px rgba(232,25,10,.4);">CLAIM YOUR TERRITORY 🚀</a>
       </div>
-      <button onclick="closeFranchise()" style="background:none;border:none;color:#aaa;font-size:1.4rem;cursor:pointer;padding:4px;">✕</button>
-    </div>
-    <div style="padding:1.75rem;">
-      <div style="background:rgba(232,25,10,.05);border:1px solid rgba(232,25,10,.15);border-radius:8px;padding:1rem 1.25rem;margin-bottom:1.5rem;">
-        <div style="font-family:var(--font-display);font-size:1.1rem;color:var(--red);letter-spacing:1px;margin-bottom:.35rem;">Why Wing-O?</div>
-        <div style="font-size:.83rem;color:#666;line-height:1.7;">125+ handcrafted flavors · Proven brand · 5 SK locations · Strong community following · Low startup costs · Full training &amp; support from the Sauce Boss himself.</div>
+    </section>
+
+    <!-- WHY WING-O CARDS -->
+    <section style="background:var(--paper);padding:3.5rem 1.5rem;border-bottom:3px double var(--yellow);">
+      <div style="max-width:1100px;margin:0 auto;">
+        <div style="text-align:center;margin-bottom:2.5rem;">
+          <div style="font-family:var(--font-head);font-size:.78rem;color:var(--red);letter-spacing:4px;text-transform:uppercase;margin-bottom:.4rem;font-weight:600;">The Wing-O Edge</div>
+          <h2 style="font-family:var(--font-display);font-size:clamp(2rem,5vw,3.5rem);letter-spacing:3px;color:var(--ink);line-height:1;">WHY THIS WORKS</h2>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.25rem;">
+          <div style="background:white;border:1px solid var(--paper-line);border-top:4px solid var(--red);padding:1.75rem 1.5rem;border-radius:6px;text-align:left;">
+            <div style="font-size:2.5rem;margin-bottom:.75rem;">🔥</div>
+            <div style="font-family:var(--font-display);font-size:1.4rem;color:var(--ink);letter-spacing:2px;margin-bottom:.5rem;">PROVEN BRAND</div>
+            <p style="font-size:.88rem;color:#666;line-height:1.6;">5 successful locations across Saskatchewan. Strong community following. Recognized for our 125+ handcrafted flavors and unmatched quality.</p>
+          </div>
+          <div style="background:white;border:1px solid var(--paper-line);border-top:4px solid var(--yellow);padding:1.75rem 1.5rem;border-radius:6px;text-align:left;">
+            <div style="font-size:2.5rem;margin-bottom:.75rem;">🎓</div>
+            <div style="font-family:var(--font-display);font-size:1.4rem;color:var(--ink);letter-spacing:2px;margin-bottom:.5rem;">FULL TRAINING</div>
+            <p style="font-size:.88rem;color:#666;line-height:1.6;">Direct mentorship from the Sauce Boss himself. Full operations playbook, recipes, marketing systems, and ongoing support — we're invested in your win.</p>
+          </div>
+          <div style="background:white;border:1px solid var(--paper-line);border-top:4px solid var(--red);padding:1.75rem 1.5rem;border-radius:6px;text-align:left;">
+            <div style="font-size:2.5rem;margin-bottom:.75rem;">💰</div>
+            <div style="font-family:var(--font-display);font-size:1.4rem;color:var(--ink);letter-spacing:2px;margin-bottom:.5rem;">LOW STARTUP</div>
+            <p style="font-size:.88rem;color:#666;line-height:1.6;">Lean kitchen footprint. Streamlined menu. Lower buildout costs than national chains. Strong unit economics — fast path to profitability.</p>
+          </div>
+        </div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.85rem;margin-bottom:.85rem;">
-        <div><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">First Name *</label><input type="text" id="fr-fn" placeholder="First name"></div>
-        <div><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">Last Name</label><input type="text" id="fr-ln" placeholder="Last name"></div>
+    </section>
+
+    <!-- SAUCE BOSS FOUNDER SECTION -->
+    <section style="background:var(--ink);color:white;padding:3.5rem 1.5rem;border-bottom:3px double var(--yellow);position:relative;overflow:hidden;">
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 80% 50%,rgba(245,168,0,.08) 0%,transparent 60%);pointer-events:none;"></div>
+      <div style="max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1.3fr;gap:2.5rem;align-items:center;position:relative;z-index:1;">
+        <div style="text-align:center;">
+          <img src="images/logo.jpg" alt="Sauce Boss" style="width:100%;max-width:280px;border-radius:8px;border:3px solid var(--yellow);box-shadow:0 12px 30px rgba(0,0,0,.4);">
+          <div style="font-family:var(--font-head);font-size:.7rem;color:var(--yellow);letter-spacing:3px;text-transform:uppercase;margin-top:1rem;font-weight:700;">🔥 The Sauce Boss</div>
+          <div style="font-family:var(--font-display);font-size:1.5rem;color:white;letter-spacing:2px;line-height:1;margin-top:.3rem;">GAGANDEEP GHUMAN</div>
+          <div style="font-family:var(--font-head);font-size:.7rem;color:#666;letter-spacing:2px;text-transform:uppercase;margin-top:6px;">Founder · Wing-O Restaurants</div>
+        </div>
+        <div>
+          <div style="font-family:var(--font-head);font-size:.78rem;color:var(--yellow);letter-spacing:4px;text-transform:uppercase;margin-bottom:.5rem;font-weight:600;">From The Sauce Boss</div>
+          <h2 style="font-family:var(--font-display);font-size:clamp(1.8rem,4vw,2.6rem);letter-spacing:2px;color:white;line-height:1;margin-bottom:1.25rem;">"I CAME WITH<br><span style="color:var(--red);">$800 AND HUNGER.</span><br>NOW I'M LOOKING FOR PARTNERS."</h2>
+          <p style="color:#CCC;font-size:.95rem;line-height:1.7;margin-bottom:1rem;">In 2019 I landed in Regina with two bags and a dream. Spent 18 months obsessing over wings — flavors nobody had tried, sauces I built from scratch.</p>
+          <p style="color:#CCC;font-size:.95rem;line-height:1.7;margin-bottom:1rem;">Wing-O became Regina's first local wings eatery with 125+ flavors. One location became five. Saskatchewan is locked in. <strong style="color:var(--yellow);">Now I'm taking this national.</strong></p>
+          <p style="color:#CCC;font-size:.95rem;line-height:1.7;margin-bottom:1.25rem;">If you've got the hunger, the capital, and the city — let's build something legendary together.</p>
+          <div style="display:inline-block;border-left:4px solid var(--red);padding-left:1rem;font-family:var(--font-serif);font-style:italic;color:var(--yellow);font-size:1rem;line-height:1.5;">"Don't just buy a franchise.<br>Become part of the movement."</div>
+        </div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.85rem;margin-bottom:.85rem;">
-        <div><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">Email *</label><input type="email" id="fr-em" placeholder="your@email.com"></div>
-        <div><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">Phone *</label><input type="tel" id="fr-ph" placeholder="(306) 555-0123"></div>
+    </section>
+
+    <!-- THE NUMBERS THAT MATTER -->
+    <section style="background:var(--black);padding:3rem 1.5rem;border-bottom:3px double var(--yellow);">
+      <div style="max-width:1000px;margin:0 auto;text-align:center;">
+        <div style="font-family:var(--font-head);font-size:.78rem;color:var(--yellow);letter-spacing:4px;text-transform:uppercase;margin-bottom:.4rem;font-weight:600;">The Real Numbers</div>
+        <h2 style="font-family:var(--font-display);font-size:clamp(1.8rem,4vw,2.8rem);letter-spacing:3px;color:white;margin-bottom:2rem;line-height:1;">RECEIPTS, NOT PROMISES</h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.25rem;">
+          <div style="background:rgba(255,255,255,.04);border:1px solid rgba(245,168,0,.2);padding:1.5rem 1rem;border-radius:6px;"><div style="font-family:var(--font-display);font-size:2.4rem;color:var(--yellow);letter-spacing:2px;line-height:1;">1M+</div><div style="font-family:var(--font-head);font-size:.7rem;color:#888;letter-spacing:2px;text-transform:uppercase;margin-top:6px;">Wings Sold</div></div>
+          <div style="background:rgba(255,255,255,.04);border:1px solid rgba(245,168,0,.2);padding:1.5rem 1rem;border-radius:6px;"><div style="font-family:var(--font-display);font-size:2.4rem;color:var(--yellow);letter-spacing:2px;line-height:1;">135K+</div><div style="font-family:var(--font-head);font-size:.7rem;color:#888;letter-spacing:2px;text-transform:uppercase;margin-top:6px;">Orders Filled</div></div>
+          <div style="background:rgba(255,255,255,.04);border:1px solid rgba(232,25,10,.4);padding:1.5rem 1rem;border-radius:6px;"><div style="font-family:var(--font-display);font-size:2.4rem;color:var(--red);letter-spacing:2px;line-height:1;">27K+</div><div style="font-family:var(--font-head);font-size:.7rem;color:#888;letter-spacing:2px;text-transform:uppercase;margin-top:6px;">Wings Donated</div></div>
+          <div style="background:rgba(255,255,255,.04);border:1px solid rgba(245,168,0,.2);padding:1.5rem 1rem;border-radius:6px;"><div style="font-family:var(--font-display);font-size:2.4rem;color:var(--yellow);letter-spacing:2px;line-height:1;">4 YR</div><div style="font-family:var(--font-head);font-size:.7rem;color:#888;letter-spacing:2px;text-transform:uppercase;margin-top:6px;">Track Record</div></div>
+        </div>
       </div>
-      <div style="margin-bottom:.85rem;"><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">City / Province to open in *</label><input type="text" id="fr-city" placeholder="e.g. Winnipeg, MB"></div>
-      <div style="margin-bottom:.85rem;"><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">Investment Budget</label>
-        <select id="fr-budget"><option value="">Select budget range</option><option>Under $100,000</option><option>$100,000 — $200,000</option><option>$200,000 — $350,000</option><option>$350,000+</option></select>
+    </section>
+
+    <!-- APPLICATION FORM -->
+    <section id="fr-form" style="background:var(--paper);padding:3rem 1.5rem;">
+      <div style="max-width:760px;margin:0 auto;">
+        <div style="text-align:center;margin-bottom:2rem;">
+          <div style="font-family:var(--font-head);font-size:.78rem;color:var(--red);letter-spacing:4px;text-transform:uppercase;margin-bottom:.4rem;font-weight:600;">Step Into The Empire</div>
+          <h2 style="font-family:var(--font-display);font-size:clamp(2rem,5vw,3.5rem);letter-spacing:3px;color:var(--ink);line-height:1;">APPLY NOW</h2>
+          <p style="color:#666;font-size:.95rem;margin-top:.75rem;max-width:500px;margin-left:auto;margin-right:auto;line-height:1.6;">All applications go directly to the Sauce Boss. We respond within 48 hours — confidentially.</p>
+        </div>
+
+        <div style="background:white;border:1px solid var(--paper-line);border-radius:8px;padding:2rem;box-shadow:0 8px 24px rgba(0,0,0,.06);">
+          
+          <!-- ABOUT YOU SECTION -->
+          <div style="margin-bottom:2rem;">
+            <div style="font-family:var(--font-display);font-size:1.2rem;color:var(--ink);letter-spacing:2px;border-bottom:2px solid var(--red);padding-bottom:.5rem;margin-bottom:1.25rem;">👤 ABOUT YOU</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.85rem;margin-bottom:.85rem;">
+              <div><label style="font-family:var(--font-head);font-size:.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink);display:block;margin-bottom:.35rem;">First Name *</label><input type="text" id="fr-fn" placeholder="First name" style="width:100%;border:1.5px solid var(--paper-line);border-radius:5px;padding:.65rem .9rem;font-family:var(--font-body);font-size:.92rem;color:var(--ink);background:white;outline:none;"></div>
+              <div><label style="font-family:var(--font-head);font-size:.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink);display:block;margin-bottom:.35rem;">Last Name</label><input type="text" id="fr-ln" placeholder="Last name" style="width:100%;border:1.5px solid var(--paper-line);border-radius:5px;padding:.65rem .9rem;font-family:var(--font-body);font-size:.92rem;color:var(--ink);background:white;outline:none;"></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.85rem;">
+              <div><label style="font-family:var(--font-head);font-size:.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink);display:block;margin-bottom:.35rem;">Email *</label><input type="email" id="fr-em" placeholder="your@email.com" style="width:100%;border:1.5px solid var(--paper-line);border-radius:5px;padding:.65rem .9rem;font-family:var(--font-body);font-size:.92rem;color:var(--ink);background:white;outline:none;"></div>
+              <div><label style="font-family:var(--font-head);font-size:.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink);display:block;margin-bottom:.35rem;">Phone *</label><input type="tel" id="fr-ph" placeholder="(306) 555-0123" style="width:100%;border:1.5px solid var(--paper-line);border-radius:5px;padding:.65rem .9rem;font-family:var(--font-body);font-size:.92rem;color:var(--ink);background:white;outline:none;"></div>
+            </div>
+          </div>
+
+          <!-- YOUR LOCATION SECTION -->
+          <div style="margin-bottom:2rem;">
+            <div style="font-family:var(--font-display);font-size:1.2rem;color:var(--ink);letter-spacing:2px;border-bottom:2px solid var(--red);padding-bottom:.5rem;margin-bottom:1.25rem;">📍 YOUR TERRITORY</div>
+            <div style="margin-bottom:.85rem;"><label style="font-family:var(--font-head);font-size:.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink);display:block;margin-bottom:.35rem;">City / Province *</label><input type="text" id="fr-city" placeholder="e.g. Winnipeg, MB" style="width:100%;border:1.5px solid var(--paper-line);border-radius:5px;padding:.65rem .9rem;font-family:var(--font-body);font-size:.92rem;color:var(--ink);background:white;outline:none;"></div>
+            <div><label style="font-family:var(--font-head);font-size:.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink);display:block;margin-bottom:.35rem;">When are you ready to open? *</label>
+              <select id="fr-timeline" style="width:100%;border:1.5px solid var(--paper-line);border-radius:5px;padding:.65rem .9rem;font-family:var(--font-body);font-size:.92rem;color:var(--ink);background:white;outline:none;">
+                <option value="">Select timeline</option>
+                <option>ASAP — Within 3 months</option>
+                <option>3 — 6 months</option>
+                <option>6 — 12 months</option>
+                <option>12+ months — Just exploring</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- INVESTMENT SECTION -->
+          <div style="margin-bottom:2rem;">
+            <div style="font-family:var(--font-display);font-size:1.2rem;color:var(--ink);letter-spacing:2px;border-bottom:2px solid var(--red);padding-bottom:.5rem;margin-bottom:1.25rem;">💰 YOUR INVESTMENT</div>
+            <label style="font-family:var(--font-head);font-size:.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink);display:block;margin-bottom:.5rem;">Capital available — Pick range *</label>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.5rem;margin-bottom:.85rem;" id="fr-budget-cards">
+              <button type="button" class="fr-budget-btn" data-budget="Under $100,000" onclick="selectBudget(this)" style="background:white;border:1.5px solid var(--paper-line);padding:.7rem .5rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.8rem;font-weight:600;color:#666;letter-spacing:.5px;transition:all .15s;">Under $100K</button>
+              <button type="button" class="fr-budget-btn" data-budget="$100,000 — $200,000" onclick="selectBudget(this)" style="background:white;border:1.5px solid var(--paper-line);padding:.7rem .5rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.8rem;font-weight:600;color:#666;letter-spacing:.5px;transition:all .15s;">$100K — $200K</button>
+              <button type="button" class="fr-budget-btn" data-budget="$200,000 — $350,000" onclick="selectBudget(this)" style="background:white;border:1.5px solid var(--paper-line);padding:.7rem .5rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.8rem;font-weight:600;color:#666;letter-spacing:.5px;transition:all .15s;">$200K — $350K</button>
+              <button type="button" class="fr-budget-btn" data-budget="$350,000+" onclick="selectBudget(this)" style="background:white;border:1.5px solid var(--paper-line);padding:.7rem .5rem;border-radius:5px;cursor:pointer;font-family:var(--font-head);font-size:.8rem;font-weight:600;color:#666;letter-spacing:.5px;transition:all .15s;">$350K+</button>
+            </div>
+            <input type="hidden" id="fr-budget" value="">
+            <div><label style="font-family:var(--font-head);font-size:.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink);display:block;margin-bottom:.35rem;">Financing source</label>
+              <select id="fr-financing" style="width:100%;border:1.5px solid var(--paper-line);border-radius:5px;padding:.65rem .9rem;font-family:var(--font-body);font-size:.92rem;color:var(--ink);background:white;outline:none;">
+                <option value="">How are you funding this?</option>
+                <option>Personal savings / cash</option>
+                <option>Bank loan / SBA</option>
+                <option>Investor / partner</option>
+                <option>Mix of sources</option>
+                <option>Still exploring options</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- EXPERIENCE SECTION -->
+          <div style="margin-bottom:2rem;">
+            <div style="font-family:var(--font-display);font-size:1.2rem;color:var(--ink);letter-spacing:2px;border-bottom:2px solid var(--red);padding-bottom:.5rem;margin-bottom:1.25rem;">🎯 YOUR STORY</div>
+            <div style="margin-bottom:.85rem;"><label style="font-family:var(--font-head);font-size:.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink);display:block;margin-bottom:.35rem;">Restaurant / business experience</label>
+              <select id="fr-experience" style="width:100%;border:1.5px solid var(--paper-line);border-radius:5px;padding:.65rem .9rem;font-family:var(--font-body);font-size:.92rem;color:var(--ink);background:white;outline:none;">
+                <option value="">Pick your background</option>
+                <option>I currently own a restaurant</option>
+                <option>I've owned a business before</option>
+                <option>I work in restaurants / hospitality</option>
+                <option>First time business owner</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div><label style="font-family:var(--font-head);font-size:.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink);display:block;margin-bottom:.35rem;">Why Wing-O? Tell the Sauce Boss your story.</label><textarea id="fr-msg" placeholder="What draws you to Wing-O? Your background, your vision, why your city needs Wing-O..." style="width:100%;border:1.5px solid var(--paper-line);border-radius:5px;padding:.65rem .9rem;font-family:var(--font-body);font-size:.92rem;color:var(--ink);background:white;outline:none;min-height:110px;resize:vertical;"></textarea></div>
+          </div>
+
+          <div id="fr-msg-box"></div>
+
+          <button id="fr-btn" onclick="submitFranchise()" style="width:100%;background:var(--red);color:white;border:none;padding:1.1rem;font-family:var(--font-display);font-size:1.3rem;letter-spacing:2.5px;cursor:pointer;border-radius:5px;text-transform:uppercase;box-shadow:0 4px 0 var(--red-deep),0 6px 16px rgba(232,25,10,.3);">SEND TO THE SAUCE BOSS 🚀</button>
+
+          <!-- TRUST SIGNALS -->
+          <div style="display:flex;justify-content:center;gap:1.5rem;flex-wrap:wrap;margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid var(--paper-line);">
+            <div style="display:flex;align-items:center;gap:6px;font-family:var(--font-head);font-size:.7rem;color:#888;letter-spacing:1.5px;text-transform:uppercase;">🔒 Confidential</div>
+            <div style="display:flex;align-items:center;gap:6px;font-family:var(--font-head);font-size:.7rem;color:#888;letter-spacing:1.5px;text-transform:uppercase;">⏱️ 48hr Response</div>
+            <div style="display:flex;align-items:center;gap:6px;font-family:var(--font-head);font-size:.7rem;color:#888;letter-spacing:1.5px;text-transform:uppercase;">✅ No Obligation</div>
+          </div>
+          <p style="text-align:center;font-size:.78rem;color:#aaa;margin-top:.75rem;">📧 besaucy@wingorestaurants.com · Direct line to the founder</p>
+        </div>
+
       </div>
-      <div style="margin-bottom:1.25rem;"><label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;display:block;margin-bottom:.3rem;">Tell us about yourself</label><textarea id="fr-msg" placeholder="Previous business experience, why Wing-O, timeline..." style="min-height:80px;"></textarea></div>
-      <div id="fr-msg-box"></div>
-      <button id="fr-btn" onclick="submitFranchise()" style="width:100%;background:var(--red);color:white;border:none;padding:.95rem;font-family:var(--font-display);font-size:1.15rem;letter-spacing:2px;cursor:pointer;border-radius:4px;text-transform:uppercase;">SEND MY APPLICATION 🚀</button>
-      <p style="text-align:center;font-size:.75rem;color:#aaa;margin-top:.75rem;">We'll get back to you within 48 hours · besaucy@wingorestaurants.com</p>
-    </div>
+    </section>
+
   </div>
 </div>
 <div class="toast" id="toast"></div>
