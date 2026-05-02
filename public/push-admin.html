@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Wing-O Push Admin</title>
+<title>Wing-O Admin</title>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -21,11 +21,15 @@ input[type=password]{letter-spacing:2px;}
 .btn{width:100%;background:#E8190A;color:white;border:none;padding:1rem;font-family:'Anton',sans-serif;font-size:1.1rem;letter-spacing:2px;cursor:pointer;border-radius:6px;text-transform:uppercase;transition:background .15s;}
 .btn:hover{background:#A8120A;}
 .btn:disabled{background:#444;cursor:not-allowed;}
+.btn.gold{background:#F5A800;color:#0D0D0D;}
+.btn.gold:hover{background:#C28200;}
 .btn-ghost{width:100%;background:transparent;color:#555;border:1.5px solid #333;padding:.7rem;font-family:'Oswald',sans-serif;font-size:.85rem;letter-spacing:1px;cursor:pointer;border-radius:6px;text-transform:uppercase;margin-top:.5rem;}
 .btn-ghost:hover{border-color:#888;color:#888;}
 .stat{background:#111;border:1px solid #333;border-radius:8px;padding:1.25rem;text-align:center;margin-bottom:1.25rem;}
 .stat-num{font-family:'Anton',sans-serif;font-size:3rem;color:#E8190A;line-height:1;}
+.stat-num.gold{color:#F5A800;}
 .stat-lbl{font-family:'Oswald',sans-serif;font-size:.72rem;color:#555;letter-spacing:2px;text-transform:uppercase;margin-top:4px;}
+.stat-sub{font-family:'Oswald',sans-serif;font-size:.7rem;color:#888;letter-spacing:1px;margin-top:6px;}
 .status{font-family:'Oswald',sans-serif;font-size:.85rem;letter-spacing:1px;min-height:1.4rem;margin-bottom:.75rem;text-align:center;}
 .status.ok{color:#48BB78;}
 .status.err{color:#E8190A;}
@@ -35,6 +39,15 @@ input[type=password]{letter-spacing:2px;}
 .ex:last-child{border-bottom:none;}
 .ex:hover{color:#F5A800;}
 .ex span{color:#F5A800;}
+.tabs{display:flex;background:#0D0D0D;border-bottom:2px solid #E8190A;}
+.tab{flex:1;padding:.85rem;background:transparent;border:none;color:#555;font-family:'Oswald',sans-serif;font-size:.8rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-bottom:3px solid transparent;transition:all .15s;}
+.tab:hover{color:#888;}
+.tab.active{color:#E8190A;border-bottom-color:#E8190A;background:#1A1A1A;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+.quick-amt{display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem;margin-bottom:1rem;}
+.quick-amt button{background:#111;border:1.5px solid #333;color:#888;padding:.5rem;font-family:'Oswald',sans-serif;font-size:.78rem;font-weight:600;letter-spacing:1px;cursor:pointer;border-radius:5px;transition:all .15s;}
+.quick-amt button:hover{border-color:#F5A800;color:#F5A800;}
 #step1{display:block;}
 #step2{display:none;}
 .logo{font-family:'Anton',sans-serif;font-size:1.1rem;color:white;letter-spacing:2px;}
@@ -45,23 +58,29 @@ input[type=password]{letter-spacing:2px;}
 <div class="card">
   <div class="hd">
     <div class="logo">WING<span>-O</span></div>
-    <h1>🔔 PUSH ADMIN</h1>
-    <p>Send notifications to all subscribers</p>
+    <h1>🔧 SAUCE BOSS ADMIN</h1>
+    <p>Push Notifications · Donation Tracker</p>
   </div>
-  <div class="body">
 
-    <!-- STEP 1: LOGIN -->
-    <div id="step1">
-      <label class="label">Admin Password</label>
-      <input type="password" id="pw" placeholder="Enter password" onkeydown="if(event.key==='Enter')login()">
-      <div class="status err" id="login-status"></div>
-      <button class="btn" id="login-btn" onclick="login()">LOGIN →</button>
+  <!-- STEP 1: LOGIN -->
+  <div class="body" id="step1">
+    <label class="label">Admin Password</label>
+    <input type="password" id="pw" placeholder="Enter password" onkeydown="if(event.key==='Enter')login()">
+    <div class="status err" id="login-status"></div>
+    <button class="btn" id="login-btn" onclick="login()">LOGIN →</button>
+  </div>
+
+  <!-- STEP 2: TABS -->
+  <div id="step2">
+    <input type="hidden" id="stored-pw">
+
+    <div class="tabs">
+      <button class="tab active" id="tab-push" onclick="switchTab('push')">🔔 Push</button>
+      <button class="tab" id="tab-donation" onclick="switchTab('donation')">💰 Donations</button>
     </div>
 
-    <!-- STEP 2: SEND -->
-    <div id="step2">
-      <input type="hidden" id="stored-pw">
-
+    <!-- PUSH PANEL -->
+    <div class="body tab-panel active" id="panel-push">
       <div class="stat">
         <div class="stat-num" id="sub-count">0</div>
         <div class="stat-lbl">Active Subscribers</div>
@@ -90,6 +109,35 @@ input[type=password]{letter-spacing:2px;}
       <button class="btn-ghost" onclick="logout()">← Logout</button>
     </div>
 
+    <!-- DONATION PANEL -->
+    <div class="body tab-panel" id="panel-donation">
+      <div class="stat">
+        <div class="stat-num gold" id="don-current">—</div>
+        <div class="stat-lbl">🍗 Wings Donated (Current)</div>
+        <div class="stat-sub" id="don-updated"></div>
+      </div>
+
+      <label class="label">Update Donation Count</label>
+      <input type="number" id="don-amount" placeholder="e.g. 28500" min="0" step="1">
+
+      <div class="quick-amt">
+        <button onclick="bumpAmount(100)">+100</button>
+        <button onclick="bumpAmount(500)">+500</button>
+        <button onclick="bumpAmount(1000)">+1,000</button>
+        <button onclick="bumpAmount(5000)">+5,000</button>
+      </div>
+
+      <div class="examples">
+        <p>How this works:</p>
+        <div class="ex" style="cursor:default;color:#777;line-height:1.5;">
+          The number shows on the homepage in the Wing-O Impact section. Update after each donation drop. Saved to database — survives server restarts.
+        </div>
+      </div>
+
+      <div class="status" id="don-status"></div>
+      <button class="btn gold" id="don-btn" onclick="updateDonation()">UPDATE DONATION COUNT 🍗</button>
+      <button class="btn-ghost" onclick="logout()">← Logout</button>
+    </div>
   </div>
 </div>
 
@@ -101,21 +149,92 @@ async function login(){
   var statusEl = document.getElementById('login-status');
   var btn = document.getElementById('login-btn');
   if(!pw){ statusEl.textContent = 'Enter your password'; return; }
-
   btn.textContent = 'Checking...'; btn.disabled = true; statusEl.textContent = '';
-
   try{
     var r = await fetch(API_BASE + '/api/push/count?password=' + encodeURIComponent(pw));
     var d = await r.json();
-    if(d.error === 'Unauthorized' || (!d.success && d.error)){ statusEl.textContent = 'Wrong password'; btn.textContent = 'LOGIN →'; btn.disabled = false; return; }
+    if(d.error === 'Unauthorized' || (!d.success && d.error)){
+      statusEl.textContent = 'Wrong password';
+      btn.textContent = 'LOGIN →'; btn.disabled = false;
+      return;
+    }
     document.getElementById('stored-pw').value = pw;
     document.getElementById('sub-count').textContent = d.count;
     document.getElementById('step1').style.display = 'none';
     document.getElementById('step2').style.display = 'block';
+    loadDonation();
   }catch(e){
     statusEl.textContent = 'Connection error — check server';
   }
   btn.textContent = 'LOGIN →'; btn.disabled = false;
+}
+
+function switchTab(name){
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+  document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active');});
+  document.getElementById('tab-' + name).classList.add('active');
+  document.getElementById('panel-' + name).classList.add('active');
+  if(name === 'donation') loadDonation();
+}
+
+async function loadDonation(){
+  var el = document.getElementById('don-current');
+  var updEl = document.getElementById('don-updated');
+  el.textContent = '...';
+  try{
+    var r = await fetch(API_BASE + '/api/donation?_=' + Date.now());
+    var d = await r.json();
+    el.textContent = (d.amount || 0).toLocaleString('en-CA');
+    if(d.updatedAt){
+      var date = new Date(d.updatedAt);
+      updEl.textContent = 'Last refreshed: ' + date.toLocaleString('en-CA', {timeZone:'America/Regina'});
+    }
+    document.getElementById('don-amount').value = d.amount || '';
+  }catch(e){
+    el.textContent = '?';
+    updEl.textContent = 'Failed to load';
+  }
+}
+
+function bumpAmount(n){
+  var input = document.getElementById('don-amount');
+  var current = parseInt(input.value) || parseInt(document.getElementById('don-current').textContent.replace(/,/g,'')) || 0;
+  input.value = current + n;
+}
+
+async function updateDonation(){
+  var pw = document.getElementById('stored-pw').value;
+  var amount = parseInt(document.getElementById('don-amount').value);
+  var statusEl = document.getElementById('don-status');
+  var btn = document.getElementById('don-btn');
+  if(isNaN(amount) || amount < 0){
+    statusEl.className = 'status err';
+    statusEl.textContent = 'Enter a valid number';
+    return;
+  }
+  if(!confirm('Update donation count to ' + amount.toLocaleString('en-CA') + '?')) return;
+  btn.textContent = 'Saving...'; btn.disabled = true; statusEl.textContent = '';
+  try{
+    var r = await fetch(API_BASE + '/api/donation', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ amount: amount, password: pw })
+    });
+    var d = await r.json();
+    if(d.success){
+      statusEl.className = 'status ok';
+      statusEl.textContent = '✅ Updated! Now showing ' + d.amount.toLocaleString('en-CA');
+      document.getElementById('don-current').textContent = d.amount.toLocaleString('en-CA');
+      document.getElementById('don-updated').textContent = 'Just updated · ' + new Date().toLocaleString('en-CA', {timeZone:'America/Regina'});
+    } else {
+      statusEl.className = 'status err';
+      statusEl.textContent = 'Error: ' + (d.error || 'Update failed');
+    }
+  }catch(e){
+    statusEl.className = 'status err';
+    statusEl.textContent = 'Connection error';
+  }
+  btn.textContent = 'UPDATE DONATION COUNT 🍗'; btn.disabled = false;
 }
 
 async function send(){
@@ -130,7 +249,6 @@ async function send(){
   if(!body){ statusEl.className='status err'; statusEl.textContent='Message is required'; return; }
 
   btn.textContent = 'Sending...'; btn.disabled = true; statusEl.textContent = '';
-
   try{
     var r = await fetch(API_BASE + '/api/push/send', {
       method: 'POST',
@@ -141,7 +259,6 @@ async function send(){
     if(d.success){
       statusEl.className = 'status ok';
       statusEl.textContent = '✅ Sent to ' + d.sent + ' subscribers! (' + d.failed + ' failed)';
-      // Refresh count
       var rc = await fetch(API_BASE + '/api/push/count?password=' + encodeURIComponent(pw));
       var rd = await rc.json();
       if(rd.success) document.getElementById('sub-count').textContent = rd.count;
@@ -168,12 +285,15 @@ function logout(){
   document.getElementById('pw').value = '';
   document.getElementById('login-status').textContent = '';
   document.getElementById('send-status').textContent = '';
+  document.getElementById('don-status').textContent = '';
+  switchTab('push');
 }
 
-// Allow pressing Enter in fields
 document.addEventListener('keydown', function(e){
   if(e.key === 'Enter' && document.getElementById('step2').style.display !== 'none'){
-    if(document.activeElement.id !== 'notif-body') send();
+    var active = document.activeElement.id;
+    if(active === 'don-amount'){ updateDonation(); return; }
+    if(active !== 'notif-body' && document.getElementById('panel-push').classList.contains('active')) send();
   }
 });
 </script>
