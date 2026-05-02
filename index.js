@@ -36,6 +36,7 @@ async function connectDB() {
     await db.collection('loyalty').createIndex({ usedOrderNums: 1 });
     await db.collection('orders').createIndex({ locationId: 1, kitchenStatus: 1, createdAt: -1 });
     await db.collection('orders').createIndex({ orderNum: 1 });
+    await db.collection('settings').createIndex({ key: 1 }, { unique: true });
     return db;
   } catch (e) {
     console.error('❌ MongoDB connection failed:', e.message);
@@ -454,16 +455,53 @@ app.post('/api/kitchen/order/:id/status', async (req, res) => {
   }
 });
 
-// ── DONATION TRACKER ──────────────────────────────────────────
+// ── DONATION TRACKER (Mongo-backed, survives restarts) ────────
 let donationAmount = 27000;
-app.get('/api/donation', (req, res) => {
+let donationLoaded = false;
+
+async function loadDonationFromDB() {
+  try {
+    const database = await connectDB();
+    if (!database) return;
+    const doc = await database.collection('settings').findOne({ key: 'donation' });
+    if (doc && typeof doc.amount === 'number') {
+      donationAmount = doc.amount;
+      console.log(`✓ Donation loaded from DB: ${donationAmount}`);
+    } else {
+      await database.collection('settings').insertOne({ key: 'donation', amount: donationAmount, updatedAt: new Date() });
+      console.log(`✓ Donation initialized in DB: ${donationAmount}`);
+    }
+    donationLoaded = true;
+  } catch (e) {
+    console.warn('Donation load failed:', e.message);
+  }
+}
+setTimeout(loadDonationFromDB, 2000);
+
+app.get('/api/donation', async (req, res) => {
+  if (!donationLoaded) await loadDonationFromDB();
   res.json({ amount: donationAmount, updatedAt: new Date().toISOString() });
 });
-app.post('/api/donation', (req, res) => {
+
+app.post('/api/donation', async (req, res) => {
   const { amount, password } = req.body;
   if (password !== (process.env.ADMIN_PASSWORD || 'sauceboss2025')) return res.status(401).json({ error: 'Wrong password' });
-  donationAmount = Number(amount);
-  console.log(`✓ Donation updated to ${donationAmount}`);
+  const newAmount = Number(amount);
+  if (isNaN(newAmount) || newAmount < 0) return res.status(400).json({ error: 'Invalid amount' });
+  donationAmount = newAmount;
+  try {
+    const database = await connectDB();
+    if (database) {
+      await database.collection('settings').updateOne(
+        { key: 'donation' },
+        { $set: { amount: newAmount, updatedAt: new Date() } },
+        { upsert: true }
+      );
+      console.log(`✓ Donation updated to ${donationAmount} (saved to DB)`);
+    }
+  } catch (e) {
+    console.warn('Donation save failed:', e.message);
+  }
   res.json({ success: true, amount: donationAmount });
 });
 
