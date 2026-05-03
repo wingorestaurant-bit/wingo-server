@@ -1289,5 +1289,285 @@ function proceedSunCheckout(){var f1=document.getElementById('sun-f1').value;var
   }, { passive: true });
 })();
 </script>
+  <!-- ============================================ -->
+<!-- 🔥 NEW FEATURES: Quiz · Mood · Late Night    -->
+<!-- ============================================ -->
+
+<style>
+/* ===== SHARED STYLES ===== */
+.feature-trio{position:fixed;right:1rem;bottom:1rem;z-index:998;display:flex;flex-direction:column;gap:.6rem;}
+.ft-btn{background:linear-gradient(135deg,#E8190A,#A80F00);color:white;border:none;width:auto;padding:.7rem 1.1rem;border-radius:50px;font-family:var(--font-head);font-size:.78rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;box-shadow:0 6px 20px rgba(232,25,10,.4);display:flex;align-items:center;gap:8px;transition:transform .2s;}
+.ft-btn:hover{transform:translateY(-3px) scale(1.05);}
+.ft-btn.gold{background:linear-gradient(135deg,#F5A800,#C28200);}
+.ft-btn.purple{background:linear-gradient(135deg,#4A148C,#1A0033);}
+@media(max-width:600px){.feature-trio{bottom:5rem;right:.6rem;}.ft-btn{font-size:.7rem;padding:.55rem .85rem;}}
+
+/* ===== QUIZ MODAL ===== */
+.quiz-ov{display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.92);padding:1rem;overflow-y:auto;}
+.quiz-ov.open{display:block;}
+.quiz-modal{background:linear-gradient(135deg,#0D0D0D,#1A1208);border:2px solid var(--yellow);border-radius:12px;width:min(540px,100%);margin:1rem auto;overflow:hidden;color:white;box-shadow:0 20px 60px rgba(232,25,10,.3);}
+.quiz-hd{padding:1.5rem 1.75rem;text-align:center;border-bottom:1px solid rgba(245,168,0,.2);position:relative;}
+.quiz-hd .x{position:absolute;top:1rem;right:1.25rem;background:none;border:none;color:#888;font-size:1.4rem;cursor:pointer;}
+.quiz-title{font-family:var(--font-display);font-size:1.8rem;letter-spacing:3px;color:var(--yellow);}
+.quiz-sub{font-family:var(--font-head);font-size:.72rem;color:#888;letter-spacing:2px;text-transform:uppercase;margin-top:4px;}
+.quiz-body{padding:2rem 1.75rem;}
+.quiz-progress{height:4px;background:rgba(255,255,255,.1);border-radius:50px;margin-bottom:1.5rem;overflow:hidden;}
+.quiz-progress-bar{height:100%;background:linear-gradient(90deg,var(--red),var(--yellow));border-radius:50px;transition:width .4s;}
+.quiz-q{font-family:var(--font-display);font-size:1.6rem;letter-spacing:1.5px;color:white;margin-bottom:1.25rem;line-height:1.2;text-align:center;}
+.quiz-opts{display:grid;gap:.7rem;}
+.quiz-opt{background:rgba(255,255,255,.05);border:2px solid rgba(245,168,0,.2);color:white;padding:1rem 1.25rem;font-family:var(--font-head);font-size:.95rem;letter-spacing:1px;cursor:pointer;border-radius:8px;text-align:left;transition:all .2s;display:flex;align-items:center;gap:12px;}
+.quiz-opt:hover{border-color:var(--yellow);background:rgba(245,168,0,.1);transform:translateX(5px);}
+.quiz-opt-emoji{font-size:1.6rem;}
+.quiz-result{text-align:center;padding:1rem;}
+.quiz-result-tag{font-family:var(--font-head);font-size:.7rem;color:var(--yellow);letter-spacing:3px;text-transform:uppercase;margin-bottom:.5rem;}
+.quiz-result-flavor{font-family:var(--font-display);font-size:2.4rem;letter-spacing:3px;color:white;line-height:1;margin-bottom:.5rem;background:linear-gradient(135deg,#FFD700,#E8190A);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.quiz-result-match{font-family:var(--font-display);font-size:3.5rem;color:var(--yellow);letter-spacing:2px;line-height:1;margin:.5rem 0;}
+.quiz-result-desc{font-family:var(--font-serif);font-style:italic;color:#CCC;font-size:1rem;margin:1rem 0;line-height:1.5;}
+.quiz-result-cta{background:var(--red);color:white;border:none;padding:.95rem 2rem;font-family:var(--font-display);font-size:1.1rem;letter-spacing:2px;cursor:pointer;border-radius:5px;text-transform:uppercase;margin-top:.75rem;width:100%;box-shadow:0 4px 0 var(--red-deep);}
+.quiz-share{margin-top:1rem;display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;}
+.quiz-share-btn{background:transparent;border:1.5px solid rgba(255,255,255,.2);color:#888;padding:.5rem 1rem;font-family:var(--font-head);font-size:.7rem;letter-spacing:1.5px;cursor:pointer;border-radius:50px;text-transform:uppercase;}
+.quiz-share-btn:hover{border-color:var(--yellow);color:var(--yellow);}
+
+/* ===== MOOD PICKER MODAL ===== */
+.mood-ov{display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.92);padding:1rem;overflow-y:auto;}
+.mood-ov.open{display:block;}
+.mood-modal{background:linear-gradient(135deg,#1A1208,#0D0D0D);border:2px solid var(--red);border-radius:12px;width:min(540px,100%);margin:1rem auto;overflow:hidden;color:white;}
+.mood-hd{padding:1.5rem 1.75rem;text-align:center;border-bottom:1px solid rgba(232,25,10,.2);position:relative;}
+.mood-hd .x{position:absolute;top:1rem;right:1.25rem;background:none;border:none;color:#888;font-size:1.4rem;cursor:pointer;}
+.mood-body{padding:1.75rem;}
+.mood-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;margin-bottom:1rem;}
+.mood-card{background:rgba(255,255,255,.05);border:2px solid rgba(255,255,255,.1);padding:1.25rem .5rem;border-radius:10px;cursor:pointer;text-align:center;transition:all .2s;}
+.mood-card:hover{border-color:var(--red);background:rgba(232,25,10,.1);transform:translateY(-3px);}
+.mood-emoji{font-size:2.4rem;margin-bottom:.4rem;display:block;}
+.mood-label{font-family:var(--font-head);font-size:.72rem;color:#CCC;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;}
+.mood-result{padding:1rem;}
+.mood-suggestion{background:linear-gradient(135deg,rgba(232,25,10,.1),rgba(245,168,0,.05));border:2px solid var(--red);border-radius:10px;padding:1.5rem;margin-bottom:1rem;}
+.mood-rx-tag{font-family:var(--font-head);font-size:.7rem;color:var(--yellow);letter-spacing:3px;text-transform:uppercase;margin-bottom:.5rem;}
+.mood-rx-title{font-family:var(--font-display);font-size:1.5rem;letter-spacing:2px;color:white;margin-bottom:.5rem;line-height:1.1;}
+.mood-rx-items{font-family:var(--font-head);font-size:.9rem;color:var(--yellow);margin-bottom:.75rem;line-height:1.5;}
+.mood-rx-quote{font-family:var(--font-serif);font-style:italic;color:#CCC;font-size:.9rem;line-height:1.5;border-left:3px solid var(--red);padding-left:1rem;margin:.75rem 0;}
+.mood-rx-price{font-family:var(--font-display);font-size:2rem;color:var(--red);letter-spacing:2px;margin-bottom:.5rem;}
+
+/* ===== LATE NIGHT MODE ===== */
+body.late-night{background:#0a0612;}
+body.late-night .promo-bar{background:#0F0820;border-color:#1F1538;}
+body.late-night .pc{background:#1F1538;color:white;border-color:#3F2A6B;}
+body.late-night .pc .deal{color:#CCC;}
+body.late-night .cat-section{background:#0a0612;}
+body.late-night .sec-title,body.late-night .cat-card-name{color:white;}
+body.late-night .cat-card{background:#1F1538;border-color:#3F2A6B;}
+body.late-night .cat-card-sub{color:#999;}
+body.late-night .lunch-sec{background:#0a0612;}
+body.late-night .loc-sec{background:#0a0612;}
+body.late-night .loc-sec .sec-title,body.late-night .loc-sec .lname{color:white;}
+body.late-night .lcard{background:#1F1538;border-color:#3F2A6B;}
+body.late-night .lcard .laddr,body.late-night .lcard .lhours{color:#999;}
+body.late-night .about-sec{background:#0F0820;}
+body.late-night .about-text h2,body.late-night .about-quote{color:white;}
+body.late-night .about-text p{color:#CCC;}
+body.late-night::before{opacity:.15;}
+.late-night-banner{display:none;background:linear-gradient(90deg,#1A0033,#4A148C,#1A0033);color:white;text-align:center;padding:.85rem 1rem;font-family:var(--font-head);font-size:.85rem;letter-spacing:2px;border-bottom:2px solid #6B2FA5;font-weight:600;position:relative;overflow:hidden;}
+body.late-night .late-night-banner{display:block;animation:slide-down .5s ease-out;}
+.late-night-banner::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent);animation:moonshine 4s linear infinite;}
+@keyframes moonshine{0%{transform:translateX(-100%);}100%{transform:translateX(100%);}}
+.late-night-banner span{color:#F5A800;font-weight:700;}
+.ln-discount{display:inline-block;background:#F5A800;color:#1A0033;padding:2px 10px;border-radius:50px;font-size:.72rem;letter-spacing:1.5px;margin-left:8px;font-weight:700;}
+</style>
+
+<!-- FLOATING BUTTONS -->
+<div class="feature-trio">
+  <button class="ft-btn" onclick="openQuiz()">🎯 Sauce Match</button>
+  <button class="ft-btn gold" onclick="openMood()">🤔 What Should I Order?</button>
+</div>
+
+<!-- LATE NIGHT BANNER -->
+<div class="late-night-banner" id="late-night-banner">
+  🌙 IT'S LATE. SAUCE BOSS IS UP. SO ARE WE. <span>Late Night Mode is ON</span> <span class="ln-discount">5% OFF YOUR ORDER 🍗</span>
+</div>
+
+<!-- QUIZ MODAL -->
+<div class="quiz-ov" id="quiz-ov" onclick="if(event.target===this)closeQuiz()">
+  <div class="quiz-modal">
+    <div class="quiz-hd">
+      <div class="quiz-title">🎯 SAUCE MATCH</div>
+      <div class="quiz-sub">Find Your Soulmate Flavor in 5 Questions</div>
+      <button class="x" onclick="closeQuiz()">✕</button>
+    </div>
+    <div class="quiz-body" id="quiz-body"></div>
+  </div>
+</div>
+
+<!-- MOOD PICKER MODAL -->
+<div class="mood-ov" id="mood-ov" onclick="if(event.target===this)closeMood()">
+  <div class="mood-modal">
+    <div class="mood-hd">
+      <div class="quiz-title" style="color:var(--red);">🤔 WHAT ARE YOU FEELING?</div>
+      <div class="quiz-sub">Sauce Boss prescribes the cure</div>
+      <button class="x" onclick="closeMood()">✕</button>
+    </div>
+    <div class="mood-body" id="mood-body"></div>
+  </div>
+</div>
+
+<script>
+// ============================================
+// 🎯 SAUCE MATCH QUIZ
+// ============================================
+var QUIZ_QUESTIONS = [
+  {q:"What's your weather right now?",opts:[
+    {emoji:"🌞",text:"Bright & beautiful",val:"sweet"},
+    {emoji:"🌪️",text:"Chaotic energy",val:"hot"},
+    {emoji:"☔",text:"Gloomy & comforting",val:"savory"},
+    {emoji:"🔥",text:"Hot as hell",val:"reaper"}
+  ]},
+  {q:"Your relationship with spice:",opts:[
+    {emoji:"😇",text:"Friends only — keep it mild",val:"mild"},
+    {emoji:"💕",text:"Casual fling — medium heat",val:"medium"},
+    {emoji:"💍",text:"Committed — bring the burn",val:"hot"},
+    {emoji:"💀",text:"Toxic — punish me",val:"reaper"}
+  ]},
+  {q:"Pick a vibe:",opts:[
+    {emoji:"🍻",text:"Friday night with the crew",val:"hot"},
+    {emoji:"🛋️",text:"Sunday hangover survival",val:"savory"},
+    {emoji:"🌹",text:"Date night impressing someone",val:"sweet"},
+    {emoji:"🎮",text:"3am gaming session",val:"reaper"}
+  ]},
+  {q:"What flavor world calls you?",opts:[
+    {emoji:"🍯",text:"Sweet & sticky",val:"sweet"},
+    {emoji:"🌶️",text:"Bold & smoky BBQ",val:"savory"},
+    {emoji:"🌏",text:"Asian-inspired heat",val:"hot"},
+    {emoji:"☠️",text:"Carolina Reaper extreme",val:"reaper"}
+  ]},
+  {q:"Last question — your vibe energy:",opts:[
+    {emoji:"😎",text:"Smooth operator",val:"sweet"},
+    {emoji:"🤘",text:"Wild & untamed",val:"hot"},
+    {emoji:"🧘",text:"Zen comfort seeker",val:"savory"},
+    {emoji:"🥷",text:"Silent & deadly",val:"reaper"}
+  ]}
+];
+
+var QUIZ_RESULTS = {
+  sweet:{name:"HONEY GARLIC",match:92,desc:"You're warm, charming, the kind of person everyone wants at the table. Sweet but with substance — just like this flavor.",order:"w2"},
+  savory:{name:"MAPLE BBQ",match:88,desc:"You appreciate the classics done right. Smoky, smooth, and confident — comfort without compromise.",order:"w2"},
+  hot:{name:"BUFFALO RANCH",match:95,desc:"You bring the energy. Bold but balanced, with just enough kick to keep things interesting. The crowd-pleaser with edge.",order:"w2"},
+  reaper:{name:"DEVIL'S KISS",match:97,desc:"You don't do half-measures. Carolina Reaper energy — dangerous, unforgettable, and not for the weak. Respect.",order:"w2"}
+};
+
+var quizState={step:0,answers:[]};
+
+function openQuiz(){quizState={step:0,answers:[]};renderQuiz();document.getElementById('quiz-ov').classList.add('open');document.body.style.overflow='hidden';}
+function closeQuiz(){document.getElementById('quiz-ov').classList.remove('open');document.body.style.overflow='';}
+
+function renderQuiz(){
+  var bd=document.getElementById('quiz-body');
+  if(quizState.step>=QUIZ_QUESTIONS.length){renderQuizResult();return;}
+  var q=QUIZ_QUESTIONS[quizState.step];
+  var pct=(quizState.step/QUIZ_QUESTIONS.length)*100;
+  var html='<div class="quiz-progress"><div class="quiz-progress-bar" style="width:'+pct+'%"></div></div>';
+  html+='<div style="font-family:var(--font-head);font-size:.7rem;color:#666;letter-spacing:2px;text-transform:uppercase;text-align:center;margin-bottom:1rem;">Question '+(quizState.step+1)+' of '+QUIZ_QUESTIONS.length+'</div>';
+  html+='<div class="quiz-q">'+q.q+'</div><div class="quiz-opts">';
+  q.opts.forEach(function(opt,i){
+    html+='<button class="quiz-opt" onclick="answerQuiz(\''+opt.val+'\')"><span class="quiz-opt-emoji">'+opt.emoji+'</span><span>'+opt.text+'</span></button>';
+  });
+  html+='</div>';
+  bd.innerHTML=html;
+}
+
+function answerQuiz(val){
+  quizState.answers.push(val);
+  quizState.step++;
+  renderQuiz();
+}
+
+function renderQuizResult(){
+  var counts={sweet:0,savory:0,hot:0,reaper:0};
+  quizState.answers.forEach(function(a){counts[a]++;});
+  var winner='hot',max=0;
+  Object.keys(counts).forEach(function(k){if(counts[k]>max){max=counts[k];winner=k;}});
+  var result=QUIZ_RESULTS[winner];
+  var bd=document.getElementById('quiz-body');
+  bd.innerHTML='<div class="quiz-result"><div class="quiz-result-tag">🔥 Your Soulmate Flavor</div><div class="quiz-result-flavor">'+result.name+'</div><div class="quiz-result-match">'+result.match+'%</div><div style="font-family:var(--font-head);font-size:.75rem;color:var(--yellow);letter-spacing:2px;text-transform:uppercase;">PERFECT MATCH</div><div class="quiz-result-desc">"'+result.desc+'"</div><button class="quiz-result-cta" onclick="orderQuizResult(\''+winner+'\')">ORDER '+result.name+' WINGS NOW 🍗</button><div class="quiz-share"><button class="quiz-share-btn" onclick="shareQuizResult(\''+result.name+'\','+result.match+')">📸 Share Result</button><button class="quiz-share-btn" onclick="openQuiz()">🔄 Retake</button></div></div>';
+}
+
+function orderQuizResult(winner){
+  var flavorMap={sweet:"Honey Garlic",savory:"Maple BBQ",hot:"Buffalo Ranch",reaper:"Devil's Kiss"};
+  var flavor=flavorMap[winner];
+  cart.push({id:'quiz-w2',key:'QUIZ|'+flavor,qty:1,name:'🎯 One Order Wings',price:11.99,details:flavor+' · Quiz match',notes:'',flavors:[flavor],cookieFl:'',sizeName:'',upgradeName:'',upgradePrice:0});
+  updateCart();
+  closeQuiz();
+  toast('🍗 '+flavor+' added — your soulmate flavor!');
+  setTimeout(openCart,400);
+}
+
+function shareQuizResult(name,match){
+  var text="I'm "+match+"% "+name+" at WingO 🍗 Take the quiz: wingorestaurants.com";
+  if(navigator.share){navigator.share({title:'My WingO Sauce Match',text:text,url:'https://wingorestaurants.com'});}
+  else{navigator.clipboard&&navigator.clipboard.writeText(text);toast('Result copied! Paste it anywhere 📋');}
+}
+
+// ============================================
+// 🤔 MOOD PICKER
+// ============================================
+var MOODS={
+  '😤':{name:"Angry",rx:"WRATH MODE",items:"Devil's Kiss Wings + Curly Fries + Cookie Dough",quote:"Channel that rage into the hottest sauce we make. You'll feel reborn.",price:24.48,addToCart:[{id:'w2',name:'One Order Wings',price:11.99,flavor:"Devil's Kiss"},{id:'s2',name:'Curly Fries',price:9.99,flavor:""},{id:'m2',name:'Deep Fried Cookie Dough',price:2.50,flavor:"Peanut Butter"}]},
+  '🥱':{name:"Lazy",rx:"NO-BRAINER COMBO",items:"Combo for 1 + Honey Garlic + Pop included",quote:"You don't want to think. You want to eat. Combo for 1 = done. No decisions, all flavor.",price:15.99,addToCart:[{id:'c1',name:'Combo for 1',price:15.99,flavor:"Honey Garlic"}]},
+  '🤩':{name:"Hyped",rx:"PARTY ANIMAL",items:"Three Orders Wings (Buffalo Ranch · Maple BBQ · Mango Habanero)",quote:"You're feeling it tonight. Mix three flavors, share with the crew, take over the night.",price:34.99,addToCart:[{id:'w4',name:'Three Orders Wings',price:34.99,flavor:"Buffalo Ranch · Maple BBQ · Mango Habanero"}]},
+  '🥺':{name:"Hungover",rx:"COMFORT CURE",items:"Classic Poutine + Honey Garlic Wings + Pop",quote:"Carbs, cheese, gravy. Your sins forgiven. Classic Poutine doesn't judge.",price:19.98,addToCart:[{id:'la1',name:'Classic Poutine',price:7.99,flavor:""},{id:'w2',name:'One Order Wings',price:11.99,flavor:"Honey Garlic"}]},
+  '😎':{name:"Chill",rx:"COOL CUSTOMER",items:"Sauce Boss Pick: One Order Ribs + Buffalo Wings",quote:"You don't need much. Just quality. The Tough Guy combo for the unbothered.",price:23.98,addToCart:[{id:'r2',name:'One Order Ribs',price:11.99,flavor:"Honey BBQ"},{id:'w2',name:'One Order Wings',price:11.99,flavor:"Buffalo"}]},
+  '💔':{name:"Sad",rx:"HEALING DOSE",items:"Classic Poutine + Honey Garlic Wings + Cookie Dough",quote:"Comfort food was invented for moments like this. Wing-O prescribes carbs and chocolate.",price:22.48,addToCart:[{id:'la1',name:'Classic Poutine',price:7.99,flavor:""},{id:'w2',name:'One Order Wings',price:11.99,flavor:"Honey Garlic"},{id:'m2',name:'Cookie Dough',price:2.50,flavor:"Double Chocolate"}]},
+  '🎉':{name:"Celebrating",rx:"VICTORY FEAST",items:"A Bit of Other Platter (Ribs + Sides)",quote:"You did the thing. Time for the platter. Share the win with people who matter.",price:30.99,addToCart:[{id:'p1',name:'A Bit of Other Platter',price:30.99,flavor:"Honey BBQ"}]},
+  '😴':{name:"Late Night",rx:"3AM RESCUE",items:"Midnight Combo: Boneless Wings + Mozza Sticks",quote:"It's late. You're up. Sauce Boss is up. Let's eat like nobody's watching.",price:21.98,addToCart:[{id:'b2',name:'Full Order Boneless',price:11.99,flavor:"Buffalo"},{id:'s9',name:'Mozza Sticks',price:9.99,flavor:""}]},
+  '🥵':{name:"Brave",rx:"DEATH WISH",items:"Dead Angel Carolina Reaper Wings + Milk (you'll need it)",quote:"You said you can handle it. Reaper-level. We're not responsible for what happens next.",price:11.99,addToCart:[{id:'w2',name:'One Order Wings',price:11.99,flavor:"Dead Angel (Carolina Reaper)"}]}
+};
+
+function openMood(){renderMoodGrid();document.getElementById('mood-ov').classList.add('open');document.body.style.overflow='hidden';}
+function closeMood(){document.getElementById('mood-ov').classList.remove('open');document.body.style.overflow='';}
+
+function renderMoodGrid(){
+  var bd=document.getElementById('mood-body');
+  var html='<div style="font-family:var(--font-head);font-size:.85rem;color:#888;letter-spacing:1px;text-transform:uppercase;text-align:center;margin-bottom:1.25rem;">Pick how you feel — Sauce Boss prescribes the cure</div><div class="mood-grid">';
+  Object.keys(MOODS).forEach(function(emoji){
+    html+='<div class="mood-card" onclick="pickMood(\''+emoji+'\')"><span class="mood-emoji">'+emoji+'</span><div class="mood-label">'+MOODS[emoji].name+'</div></div>';
+  });
+  html+='</div>';
+  bd.innerHTML=html;
+}
+
+function pickMood(emoji){
+  var m=MOODS[emoji];
+  var bd=document.getElementById('mood-body');
+  bd.innerHTML='<div class="mood-result"><div class="mood-suggestion"><div class="mood-rx-tag">🔥 Sauce Boss Rx for '+emoji+' '+m.name+'</div><div class="mood-rx-title">'+m.rx+'</div><div class="mood-rx-items">'+m.items+'</div><div class="mood-rx-quote">"'+m.quote+'"</div><div class="mood-rx-price">$'+m.price.toFixed(2)+'</div><button class="quiz-result-cta" onclick="orderMood(\''+emoji+'\')">ADD TO CART 🍗</button></div><button class="quiz-share-btn" style="display:block;margin:0 auto;border:1.5px solid rgba(255,255,255,.2);color:#888;padding:.6rem 1.5rem;border-radius:50px;cursor:pointer;background:transparent;font-family:var(--font-head);font-size:.7rem;letter-spacing:1.5px;text-transform:uppercase;" onclick="renderMoodGrid()">← Try Different Mood</button></div>';
+}
+
+function orderMood(emoji){
+  var m=MOODS[emoji];
+  m.addToCart.forEach(function(item,i){
+    cart.push({id:'mood-'+emoji+'-'+i,key:'MOOD|'+emoji+'|'+i,qty:1,name:'🤔 '+item.name,price:item.price,details:item.flavor?item.flavor+' · '+m.name+' mood':m.name+' mood',notes:'',flavors:item.flavor?[item.flavor]:[],cookieFl:'',sizeName:'',upgradeName:'',upgradePrice:0});
+  });
+  updateCart();
+  closeMood();
+  toast('🍗 '+m.rx+' added — '+emoji+' mood activated!');
+  setTimeout(openCart,400);
+}
+
+// ============================================
+// 🌙 LATE NIGHT MODE
+// ============================================
+function checkLateNight(){
+  var now=new Date();
+  var regina=new Date(now.toLocaleString('en-US',{timeZone:'America/Regina'}));
+  var hour=regina.getHours();
+  var isLate=hour>=23||hour<5;
+  if(isLate){
+    document.body.classList.add('late-night');
+  } else {
+    document.body.classList.remove('late-night');
+  }
+}
+checkLateNight();
+setInterval(checkLateNight,60000);
+
+// Test trigger via console: document.body.classList.add('late-night');
+</script>
 </body>
 </html>
