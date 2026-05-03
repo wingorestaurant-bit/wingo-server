@@ -1569,5 +1569,120 @@ setInterval(checkLateNight,60000);
 
 // Test trigger via console: document.body.classList.add('late-night');
 </script>
+  <!-- ============================================ -->
+<!-- 💀 THE GAUNTLET CHALLENGE                    -->
+<!-- ============================================ -->
+<style>
+.gauntlet-trigger{position:fixed;left:1rem;bottom:1rem;z-index:998;background:linear-gradient(135deg,#1A0033,#4A148C,#1A0033);background-size:200% 100%;animation:gauntlet-shimmer 3s linear infinite;color:white;border:2px solid #F5A800;padding:.7rem 1.1rem;border-radius:50px;font-family:var(--font-head);font-size:.78rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;box-shadow:0 6px 20px rgba(74,20,140,.5);display:flex;align-items:center;gap:8px;}
+@keyframes gauntlet-shimmer{0%{background-position:0 0;}100%{background-position:200% 0;}}
+.gauntlet-trigger:hover{transform:translateY(-3px) scale(1.05);}
+@media(max-width:600px){.gauntlet-trigger{bottom:5rem;left:.6rem;font-size:.7rem;padding:.55rem .85rem;}}
+.gauntlet-ov{display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.95);padding:1rem;overflow-y:auto;}
+.gauntlet-ov.open{display:block;}
+.gauntlet-modal{background:linear-gradient(135deg,#0a0612,#1A0033);border:2px solid #F5A800;border-radius:12px;width:min(580px,100%);margin:1rem auto;overflow:hidden;color:white;box-shadow:0 0 60px rgba(245,168,0,.3);}
+.gauntlet-hd{padding:2rem 1.75rem 1.5rem;text-align:center;border-bottom:2px solid rgba(245,168,0,.3);position:relative;background:radial-gradient(ellipse at center,rgba(232,25,10,.2) 0%,transparent 70%);}
+.gauntlet-hd .x{position:absolute;top:1rem;right:1.25rem;background:none;border:none;color:#888;font-size:1.4rem;cursor:pointer;}
+.gauntlet-skull{font-size:3.5rem;margin-bottom:.4rem;display:block;animation:skull-float 3s ease-in-out infinite;}
+@keyframes skull-float{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+.gauntlet-title{font-family:var(--font-display);font-size:2.4rem;letter-spacing:4px;color:#F5A800;line-height:1;text-shadow:0 0 20px rgba(245,168,0,.5);}
+.gauntlet-sub{font-family:var(--font-head);font-size:.8rem;color:#999;letter-spacing:3px;text-transform:uppercase;margin-top:6px;}
+.gauntlet-body{padding:1.75rem;}
+.gauntlet-warn{background:rgba(232,25,10,.1);border:1.5px solid var(--red);border-radius:6px;padding:.85rem 1rem;margin-bottom:1.25rem;text-align:center;}
+.gauntlet-warn-tag{font-family:var(--font-head);font-size:.7rem;color:var(--red);letter-spacing:3px;text-transform:uppercase;font-weight:700;margin-bottom:.3rem;}
+.gauntlet-warn-text{font-family:var(--font-serif);font-style:italic;color:#CCC;font-size:.92rem;line-height:1.4;}
+.gauntlet-levels{margin-bottom:1.25rem;}
+.gauntlet-level{display:flex;align-items:center;gap:.85rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);padding:.85rem 1rem;border-radius:6px;margin-bottom:.5rem;}
+.gauntlet-level-num{font-family:var(--font-display);font-size:1.6rem;color:#F5A800;letter-spacing:2px;min-width:50px;}
+.gauntlet-level-info{flex:1;}
+.gauntlet-level-name{font-family:var(--font-head);font-size:.92rem;color:white;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+.gauntlet-level-desc{font-family:var(--font-head);font-size:.72rem;color:#888;letter-spacing:1px;margin-top:2px;}
+.gauntlet-rules{background:rgba(245,168,0,.05);border:1px solid rgba(245,168,0,.3);border-radius:6px;padding:1rem;margin-bottom:1.25rem;}
+.gauntlet-rules-title{font-family:var(--font-head);font-size:.75rem;color:#F5A800;letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:.6rem;}
+.gauntlet-rule{font-family:var(--font-head);font-size:.85rem;color:#CCC;letter-spacing:.5px;padding:4px 0;display:flex;align-items:center;gap:8px;}
+.gauntlet-prizes{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1.25rem;}
+.gauntlet-prize{padding:1rem;border-radius:6px;text-align:center;}
+.gauntlet-prize.win{background:linear-gradient(135deg,rgba(72,187,120,.15),rgba(72,187,120,.05));border:2px solid #48BB78;}
+.gauntlet-prize.fail{background:linear-gradient(135deg,rgba(232,25,10,.15),rgba(232,25,10,.05));border:2px solid var(--red);}
+.gauntlet-prize-tag{font-family:var(--font-head);font-size:.65rem;letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:.4rem;}
+.gauntlet-prize.win .gauntlet-prize-tag{color:#48BB78;}
+.gauntlet-prize.fail .gauntlet-prize-tag{color:var(--red);}
+.gauntlet-prize-emoji{font-size:1.8rem;margin-bottom:.3rem;}
+.gauntlet-prize-text{font-family:var(--font-head);font-size:.78rem;color:#CCC;letter-spacing:.5px;line-height:1.4;}
+.gauntlet-cta{width:100%;background:linear-gradient(135deg,var(--red),#A80F00);color:white;border:none;padding:1.1rem;font-family:var(--font-display);font-size:1.3rem;letter-spacing:3px;cursor:pointer;border-radius:6px;text-transform:uppercase;box-shadow:0 4px 0 #6B0800,0 6px 20px rgba(232,25,10,.4);margin-bottom:.5rem;}
+.gauntlet-cta:hover{transform:translateY(-2px);}
+.gauntlet-secondary{width:100%;background:transparent;border:1.5px solid rgba(255,255,255,.2);color:#888;padding:.7rem;font-family:var(--font-head);font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:6px;}
+.gauntlet-form-row{margin-bottom:.85rem;}
+.gauntlet-form-row label{font-family:var(--font-head);font-size:.7rem;color:#F5A800;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;display:block;margin-bottom:.35rem;}
+.gauntlet-form-row input,.gauntlet-form-row select{width:100%;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.2);border-radius:5px;padding:.65rem .9rem;font-family:var(--font-body);font-size:.92rem;color:white;outline:none;}
+.gauntlet-form-row input:focus,.gauntlet-form-row select:focus{border-color:#F5A800;}
+.gauntlet-checkbox{display:flex;align-items:flex-start;gap:10px;background:rgba(232,25,10,.08);border:1.5px solid var(--red);border-radius:5px;padding:.85rem;margin-bottom:1rem;cursor:pointer;}
+.gauntlet-checkbox input{margin-top:3px;}
+.gauntlet-checkbox-text{font-family:var(--font-head);font-size:.78rem;color:#CCC;letter-spacing:.5px;line-height:1.5;}
+</style>
+<button class="gauntlet-trigger" onclick="openGauntlet()">💀 The Gauntlet</button>
+<div class="gauntlet-ov" id="gauntlet-ov" onclick="if(event.target===this)closeGauntlet()">
+  <div class="gauntlet-modal">
+    <div class="gauntlet-hd">
+      <span class="gauntlet-skull">💀</span>
+      <div class="gauntlet-title">THE GAUNTLET</div>
+      <div class="gauntlet-sub">10 Wings · 5 Heat Levels · 1 Survivor</div>
+      <button class="x" onclick="closeGauntlet()">✕</button>
+    </div>
+    <div class="gauntlet-body" id="gauntlet-body"></div>
+  </div>
+</div>
+<script>
+function openGauntlet(){renderGauntletIntro();document.getElementById('gauntlet-ov').classList.add('open');document.body.style.overflow='hidden';}
+function closeGauntlet(){document.getElementById('gauntlet-ov').classList.remove('open');document.body.style.overflow='';}
+function renderGauntletIntro(){
+  document.getElementById('gauntlet-body').innerHTML=
+    '<div class="gauntlet-warn"><div class="gauntlet-warn-tag">⚠️ Sauce Boss Warning</div><div class="gauntlet-warn-text">"This isn\'t food. This is a test. Most people tap out by wing #6. Don\'t say I didn\'t warn you."</div></div>'+
+    '<div class="gauntlet-levels">'+
+      '<div class="gauntlet-level"><div class="gauntlet-level-num">1-2</div><div class="gauntlet-level-info"><div class="gauntlet-level-name">🌶️ Buffalo</div><div class="gauntlet-level-desc">Warm-up · You\'ll be fine</div></div></div>'+
+      '<div class="gauntlet-level"><div class="gauntlet-level-num">3-4</div><div class="gauntlet-level-info"><div class="gauntlet-level-name">🔥 Hot</div><div class="gauntlet-level-desc">Sweat starts here</div></div></div>'+
+      '<div class="gauntlet-level"><div class="gauntlet-level-num">5-6</div><div class="gauntlet-level-info"><div class="gauntlet-level-name">🌶️🔥 Mango Habanero</div><div class="gauntlet-level-desc">Most quit here</div></div></div>'+
+      '<div class="gauntlet-level"><div class="gauntlet-level-num">7-8</div><div class="gauntlet-level-info"><div class="gauntlet-level-name">💀 Carolina Reaper</div><div class="gauntlet-level-desc">Tears are normal</div></div></div>'+
+      '<div class="gauntlet-level"><div class="gauntlet-level-num">9-10</div><div class="gauntlet-level-info"><div class="gauntlet-level-name">☠️ DEATH SAUCE</div><div class="gauntlet-level-desc">Sauce Boss\'s secret recipe — only at this challenge</div></div></div>'+
+    '</div>'+
+    '<div class="gauntlet-rules"><div class="gauntlet-rules-title">📜 The Rules</div>'+
+      '<div class="gauntlet-rule">⏱️ <span>10 minutes to finish all 10 wings</span></div>'+
+      '<div class="gauntlet-rule">🥛 <span>NO milk · NO water during the challenge</span></div>'+
+      '<div class="gauntlet-rule">📹 <span>Filming required — for proof and the Wall of Fame</span></div>'+
+      '<div class="gauntlet-rule">🍽️ <span>DINE-IN ONLY at any Wing-O location</span></div>'+
+    '</div>'+
+    '<div class="gauntlet-prizes">'+
+      '<div class="gauntlet-prize win"><div class="gauntlet-prize-emoji">🏆</div><div class="gauntlet-prize-tag">If You Win</div><div class="gauntlet-prize-text">Wall of Fame · Photo on social · FREE wings for 1 year · Sauce Boss certificate</div></div>'+
+      '<div class="gauntlet-prize fail"><div class="gauntlet-prize-emoji">💀</div><div class="gauntlet-prize-tag">If You Tap Out</div><div class="gauntlet-prize-text">$25 challenge fee · Photo on the "Couldn\'t Hang" wall · Bragging rights you tried</div></div>'+
+    '</div>'+
+    '<button class="gauntlet-cta" onclick="renderGauntletForm()">I ACCEPT THE CHALLENGE 💀</button>'+
+    '<button class="gauntlet-secondary" onclick="closeGauntlet()">Maybe Another Day</button>';
+}
+function renderGauntletForm(){
+  document.getElementById('gauntlet-body').innerHTML=
+    '<div style="text-align:center;margin-bottom:1.25rem;"><div style="font-family:var(--font-display);font-size:1.4rem;color:#F5A800;letter-spacing:2px;">RESERVE YOUR ATTEMPT</div><div style="font-family:var(--font-head);font-size:.72rem;color:#888;letter-spacing:1.5px;margin-top:4px;text-transform:uppercase;">Sauce Boss will personally confirm</div></div>'+
+    '<div class="gauntlet-form-row"><label>Your Name</label><input type="text" id="gnt-name" placeholder="The legend (or victim) to be"></div>'+
+    '<div class="gauntlet-form-row"><label>Phone</label><input type="tel" id="gnt-phone" placeholder="(306) 555-0123"></div>'+
+    '<div class="gauntlet-form-row"><label>Email</label><input type="email" id="gnt-email" placeholder="for the certificate (or rejection)"></div>'+
+    '<div class="gauntlet-form-row"><label>Which Location?</label><select id="gnt-loc"><option value="albert-st">Albert Street — Regina</option><option value="rochdale">Rochdale — Regina</option><option value="east-regina">East Regina</option><option value="moose-jaw">Moose Jaw</option></select></div>'+
+    '<div class="gauntlet-form-row"><label>Preferred Date</label><input type="text" id="gnt-date" placeholder="When you want to suffer"></div>'+
+    '<label class="gauntlet-checkbox"><input type="checkbox" id="gnt-agree"><span class="gauntlet-checkbox-text">I understand: $25 fee if I tap out · I will sign a waiver · I am of legal age · I am not pregnant · I have no heart conditions · I will be filmed</span></label>'+
+    '<button class="gauntlet-cta" onclick="submitGauntlet()">SEND TO SAUCE BOSS 💀</button>'+
+    '<button class="gauntlet-secondary" onclick="renderGauntletIntro()">← Back</button>';
+}
+async function submitGauntlet(){
+  var name=document.getElementById('gnt-name').value.trim();
+  var phone=document.getElementById('gnt-phone').value.trim();
+  var email=document.getElementById('gnt-email').value.trim();
+  var loc=document.getElementById('gnt-loc').value;
+  var date=document.getElementById('gnt-date').value.trim();
+  var agree=document.getElementById('gnt-agree').checked;
+  if(!name||!phone||!email||!date){toast('Fill all fields, warrior');return;}
+  if(!agree){toast('You must accept the terms to enter');return;}
+  try{
+    await fetch(API_BASE+'/api/franchise',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({firstName:'🔥 GAUNTLET: '+name,lastName:'',email:email,phone:phone,city:loc+' · '+date,budget:'GAUNTLET CHALLENGE',message:'Gauntlet Challenge submission · Date: '+date+' · Location: '+loc+' · Phone: '+phone})});
+  }catch(e){}
+  document.getElementById('gauntlet-body').innerHTML='<div style="text-align:center;padding:2rem 1rem;"><div style="font-size:4rem;margin-bottom:1rem;">💀</div><div style="font-family:var(--font-display);font-size:2rem;color:#F5A800;letter-spacing:3px;line-height:1;margin-bottom:1rem;">CHALLENGE ACCEPTED</div><p style="font-family:var(--font-serif);font-style:italic;color:#CCC;font-size:1rem;line-height:1.5;margin-bottom:1.5rem;">"I see you, '+name+'. Sauce Boss will be in touch within 24 hours to confirm your appointment with destiny."</p><button class="gauntlet-cta" onclick="closeGauntlet()">UNDERSTOOD 🔥</button></div>';
+}
+</script>
 </body>
 </html>
