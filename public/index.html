@@ -1031,7 +1031,7 @@ updateHoursBanner();
 setInterval(updateHoursBanner,60000);
 detectAndSortLocations(false);
 checkAPI();
-setTimeout(showNotifBanner, 3000);
+setTimeout(function(){if(typeof showNotifBanner==='function')showNotifBanner();}, 3000);
 setTimeout(showWelcomeBack, 1500);
 var LOY_SESSION_KEY = 'wingo_loyalty_session';
 function loyGetSession(){try{ return JSON.parse(localStorage.getItem(LOY_SESSION_KEY)||'null'); }catch(e){ return null; }}
@@ -1685,182 +1685,170 @@ async function submitGauntlet(){
   document.getElementById('gauntlet-body').innerHTML='<div style="text-align:center;padding:2rem 1rem;"><div style="font-size:4rem;margin-bottom:1rem;">💀</div><div style="font-family:var(--font-display);font-size:2rem;color:#F5A800;letter-spacing:3px;line-height:1;margin-bottom:1rem;">CHALLENGE ACCEPTED</div><p style="font-family:var(--font-serif);font-style:italic;color:#CCC;font-size:1rem;line-height:1.5;margin-bottom:1.5rem;">"I see you, '+name+'. Sauce Boss will be in touch within 24 hours to confirm your appointment with destiny."</p><button class="gauntlet-cta" onclick="closeGauntlet()">UNDERSTOOD 🔥</button></div>';
 }
 </script>
-  <!-- ============================================ -->
-<!-- 🎁 REFERRAL PROGRAM — UI                     -->
+<!-- ============================================ -->
+<!-- 🎁 REFERRAL PROGRAM v3 — FINAL WORKING       -->
 <!-- ============================================ -->
 <style>
-.ref-welcome{display:none;background:linear-gradient(135deg,#0D0D0D,#1A0033);color:white;padding:1rem 1.25rem;border-bottom:3px solid var(--yellow);position:sticky;top:0;z-index:1001;animation:slide-down .5s ease-out;}
-.ref-welcome-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
-.ref-welcome-text{flex:1;min-width:240px;}
-.ref-welcome-tag{font-family:var(--font-head);font-size:.7rem;color:var(--yellow);letter-spacing:3px;text-transform:uppercase;font-weight:700;}
-.ref-welcome-msg{font-family:var(--font-display);font-size:1.2rem;color:white;letter-spacing:1.5px;line-height:1.2;margin-top:3px;}
-.ref-welcome-msg span{color:var(--red);}
-.ref-welcome-btn{background:var(--red);color:white;border:none;padding:.6rem 1.4rem;font-family:var(--font-head);font-size:.78rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;border-radius:4px;cursor:pointer;box-shadow:0 4px 0 var(--red-deep);}
-.ref-welcome-x{background:none;border:none;color:#666;font-size:1.1rem;cursor:pointer;padding:6px 10px;}
-
-.ref-section{background:linear-gradient(135deg,#0D0D0D,#1A0033);border:2px solid var(--yellow);border-radius:8px;padding:1.25rem;margin-bottom:1rem;color:white;}
-.ref-section-title{font-family:var(--font-display);font-size:1.2rem;color:var(--yellow);letter-spacing:2px;margin-bottom:.4rem;}
-.ref-section-sub{font-family:var(--font-head);font-size:.7rem;color:#888;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:.85rem;}
-.ref-code-box{background:rgba(255,255,255,.05);border:2px dashed var(--yellow);border-radius:6px;padding:.85rem;text-align:center;margin-bottom:.85rem;}
-.ref-code-label{font-family:var(--font-head);font-size:.65rem;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;}
-.ref-code-value{font-family:var(--font-display);font-size:1.6rem;color:var(--yellow);letter-spacing:3px;line-height:1;}
-.ref-link-row{display:flex;gap:.4rem;margin-bottom:.85rem;}
-.ref-link{flex:1;background:rgba(255,255,255,.05);border:1.5px solid rgba(245,168,0,.3);border-radius:5px;padding:.55rem .75rem;font-family:'Courier New',monospace;font-size:.78rem;color:white;outline:none;}
-.ref-copy-btn{background:var(--red);color:white;border:none;padding:.55rem .85rem;font-family:var(--font-head);font-size:.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;border-radius:5px;cursor:pointer;white-space:nowrap;}
-.ref-copy-btn.copied{background:#48BB78;}
-.ref-share-btn{width:100%;background:transparent;color:var(--yellow);border:1.5px solid var(--yellow);padding:.65rem;font-family:var(--font-head);font-size:.78rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;border-radius:5px;cursor:pointer;margin-bottom:.85rem;}
-.ref-share-btn:hover{background:rgba(245,168,0,.1);}
-.ref-stats{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;}
-.ref-stat-box{background:rgba(255,255,255,.05);border-radius:5px;padding:.7rem .5rem;text-align:center;}
-.ref-stat-num{font-family:var(--font-display);font-size:1.5rem;color:var(--yellow);letter-spacing:1.5px;}
-.ref-stat-lbl{font-family:var(--font-head);font-size:.6rem;color:#888;letter-spacing:1.5px;text-transform:uppercase;margin-top:2px;}
-.ref-explainer{background:rgba(245,168,0,.05);border:1px solid rgba(245,168,0,.2);border-radius:5px;padding:.7rem .85rem;margin-top:.85rem;font-family:var(--font-head);font-size:.72rem;color:#CCC;letter-spacing:.5px;line-height:1.5;}
+.r3-section{background:linear-gradient(135deg,#0D0D0D,#1A0033);border:2px solid #F5A800;border-radius:8px;padding:1.25rem;margin:1rem 0;color:white;}
+.r3-title{font-family:var(--font-display);font-size:1.4rem;color:#F5A800;letter-spacing:3px;margin-bottom:.4rem;}
+.r3-sub{font-family:var(--font-head);font-size:.7rem;color:#888;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:.85rem;}
+.r3-codebox{background:rgba(255,255,255,.05);border:2px dashed #F5A800;border-radius:6px;padding:.85rem;text-align:center;margin-bottom:.85rem;}
+.r3-codelbl{font-family:var(--font-head);font-size:.65rem;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;}
+.r3-codeval{font-family:var(--font-display);font-size:1.8rem;color:#F5A800;letter-spacing:3px;font-weight:bold;}
+.r3-input{width:100%;background:rgba(255,255,255,.08);border:1.5px solid rgba(245,168,0,.4);border-radius:5px;padding:.55rem .75rem;font-family:'Courier New',monospace;font-size:.78rem;color:white;margin-bottom:.6rem;box-sizing:border-box;}
+.r3-copy{width:100%;background:#E8190A;color:white;border:none;padding:.85rem;font-family:var(--font-display);font-size:1rem;letter-spacing:2px;border-radius:5px;cursor:pointer;margin-bottom:.6rem;text-transform:uppercase;}
+.r3-copy.r3-done{background:#48BB78;}
+.r3-share{width:100%;background:transparent;color:#F5A800;border:1.5px solid #F5A800;padding:.7rem;font-family:var(--font-head);font-size:.78rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;border-radius:5px;cursor:pointer;margin-bottom:.85rem;}
+.r3-stats{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.85rem;}
+.r3-stat{background:rgba(255,255,255,.05);border-radius:5px;padding:.7rem .5rem;text-align:center;}
+.r3-statnum{font-family:var(--font-display);font-size:1.6rem;color:#F5A800;letter-spacing:1.5px;}
+.r3-statlbl{font-family:var(--font-head);font-size:.6rem;color:#888;letter-spacing:1.5px;text-transform:uppercase;margin-top:2px;}
+.r3-explainer{background:rgba(245,168,0,.05);border:1px solid rgba(245,168,0,.2);border-radius:5px;padding:.7rem .85rem;font-family:var(--font-head);font-size:.72rem;color:#CCC;letter-spacing:.5px;line-height:1.5;}
+.r3-banner{display:none;background:linear-gradient(135deg,#0D0D0D,#1A0033);color:white;padding:1rem 1.25rem;border-bottom:3px solid #F5A800;position:sticky;top:0;z-index:1001;}
+.r3-banner.r3-show{display:block;}
+.r3-binner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+.r3-btxt{flex:1;min-width:240px;}
+.r3-btag{font-family:var(--font-head);font-size:.7rem;color:#F5A800;letter-spacing:3px;text-transform:uppercase;font-weight:700;}
+.r3-bmsg{font-family:var(--font-display);font-size:1.2rem;color:white;letter-spacing:1.5px;line-height:1.2;margin-top:3px;}
+.r3-bmsg span{color:#E8190A;}
+.r3-bbtn{background:#E8190A;color:white;border:none;padding:.6rem 1.4rem;font-family:var(--font-head);font-size:.78rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;border-radius:4px;cursor:pointer;}
+.r3-bx{background:none;border:none;color:#666;font-size:1.1rem;cursor:pointer;padding:6px 10px;}
 </style>
 
-<div class="ref-welcome" id="ref-welcome">
-  <div class="ref-welcome-inner">
-    <div class="ref-welcome-text">
-      <div class="ref-welcome-tag">🎁 You've Been Invited</div>
-      <div class="ref-welcome-msg"><span id="ref-welcome-name">Friend</span> invited you to Wing-O — <span>YOU BOTH GET A STAMP</span></div>
+<div class="r3-banner" id="r3-banner">
+  <div class="r3-binner">
+    <div class="r3-btxt">
+      <div class="r3-btag">🎁 You've Been Invited</div>
+      <div class="r3-bmsg"><span id="r3-name">Friend</span> invited you to Wing-O — <span>YOU BOTH GET A STAMP</span></div>
     </div>
-    <button class="ref-welcome-btn" onclick="openLoyalty();dismissRefWelcome();">JOIN FREE 🍗</button>
-    <button class="ref-welcome-x" onclick="dismissRefWelcome()">✕</button>
+    <button class="r3-bbtn" onclick="r3Open()">JOIN FREE 🍗</button>
+    <button class="r3-bx" onclick="r3Dismiss()">✕</button>
   </div>
 </div>
 
 <script>
-// ===== DETECT REFERRAL ON PAGE LOAD =====
 (function(){
+  // ===== Detect /r/CODE referral URL =====
   var path = window.location.pathname;
-  var match = path.match(/^\/r\/([A-Z0-9]+)/i);
-  if(!match) return;
-  var code = match[1].toUpperCase();
-  window._refCode = code;
-  fetch('/api/loyalty/referral-info/' + code).then(function(r){return r.json();}).then(function(d){
-    if(d.success){
-      var nameEl = document.getElementById('ref-welcome-name');
-      if(nameEl) nameEl.textContent = d.referrerName.toUpperCase();
-      var banner = document.getElementById('ref-welcome');
-      if(banner && !sessionStorage.getItem('wingo_ref_dismissed')) banner.style.display = 'block';
-    } else {
-      window._refCode = '';
-    }
-  }).catch(function(){window._refCode='';});
-  history.replaceState({page:'home'}, '', '/');
-})();
-
-function dismissRefWelcome(){
-  var el = document.getElementById('ref-welcome');
-  if(el) el.style.display = 'none';
-  sessionStorage.setItem('wingo_ref_dismissed', '1');
-}
-
-// ===== BRUTE FORCE: Watch DOM, inject Refer-a-Friend when dashboard appears =====
-function injectReferralSection(){
-  var dash = document.getElementById('loy-dashboard');
-  if(!dash || dash.style.display==='none' || !dash.offsetParent) return;
-  if(document.getElementById('ref-section')) return; // already injected
-  
-  // Get current member from various possible storage spots
-  var member = window.currentLoyaltyMember || window._loyMember || null;
-  if(!member){
-    var stored = localStorage.getItem('wingo_loyalty_member') || sessionStorage.getItem('wingo_loyalty_member');
-    if(stored){try{member=JSON.parse(stored);}catch(e){}}
-  }
-  if(!member){
-    // Fall back: read name from the dashboard DOM
-    var nameEl = dash.querySelector('[class*="member"], [class*="name"], h2, h3');
-    if(!nameEl) return;
-    // Try to find member by looking up via stored phone
-    var phone = localStorage.getItem('wingo_loy_phone');
-    if(!phone) return;
-    fetch('/api/loyalty/member/' + phone).then(function(r){return r.json();}).then(function(d){
-      if(d.success && d.member){
-        window.currentLoyaltyMember = d.member;
-        injectReferralSection();
+  var refMatch = path.match(/^\/r\/([A-Z0-9]+)/i);
+  if(refMatch){
+    var code = refMatch[1].toUpperCase();
+    window._r3Code = code;
+    fetch('/api/loyalty/referral-info/' + code).then(function(r){return r.json();}).then(function(d){
+      if(d.success){
+        var nameEl = document.getElementById('r3-name');
+        if(nameEl) nameEl.textContent = d.referrerName.toUpperCase();
+        var banner = document.getElementById('r3-banner');
+        if(banner && !sessionStorage.getItem('r3_dismissed')) banner.classList.add('r3-show');
+      } else {
+        window._r3Code = '';
       }
-    });
-    return;
+    }).catch(function(){window._r3Code='';});
+    history.replaceState({page:'home'}, '', '/');
   }
-  if(!member.referralCode) return;
+
+  window.r3Dismiss = function(){
+    var el = document.getElementById('r3-banner');
+    if(el) el.classList.remove('r3-show');
+    sessionStorage.setItem('r3_dismissed', '1');
+  };
   
-  var refLink = 'wingorestaurants.com/r/' + member.referralCode;
-  var fullLink = 'https://' + refLink;
-  var section = document.createElement('div');
-  section.id = 'ref-section';
-  section.className = 'ref-section';
-  section.innerHTML = 
-    '<div class="ref-section-title">🎁 REFER A FRIEND</div>' +
-    '<div class="ref-section-sub">Both get a free stamp when they join</div>' +
-    '<div class="ref-code-box">' +
-      '<div class="ref-code-label">Your Code</div>' +
-      '<div class="ref-code-value">' + member.referralCode + '</div>' +
-    '</div>' +
-    '<div class="ref-link-row">' +
-      '<input class="ref-link" type="text" value="' + refLink + '" readonly id="ref-link-input" onclick="this.select()">' +
-      '<button class="ref-copy-btn" id="ref-copy-btn" onclick="copyRefLink(\'' + fullLink + '\')">COPY</button>' +
-    '</div>' +
-    '<button class="ref-share-btn" onclick="shareRefLink(\'' + fullLink + '\',\'' + (member.name.split(' ')[0]||'') + '\')">📤 SHARE WITH FRIENDS</button>' +
-    '<div class="ref-stats">' +
-      '<div class="ref-stat-box"><div class="ref-stat-num">' + (member.referralCount || 0) + '</div><div class="ref-stat-lbl">Friends Joined</div></div>' +
-      '<div class="ref-stat-box"><div class="ref-stat-num">' + (member.referralCount || 0) + '</div><div class="ref-stat-lbl">Stamps Earned</div></div>' +
-    '</div>' +
-    '<div class="ref-explainer">💡 Share your code or link. When a friend signs up, you BOTH instantly get +1 stamp. No limit. No catch.</div>';
-  
-  // Insert at the end of the dashboard
-  dash.appendChild(section);
-  console.log('🎁 Referral section injected');
-}
+  window.r3Open = function(){
+    if(typeof openLoyalty === 'function') openLoyalty();
+    r3Dismiss();
+  };
 
-// Watch for dashboard appearing — try every 500ms
-setInterval(injectReferralSection, 500);
-
-// Also try when REWARDS button or any element is clicked
-document.addEventListener('click', function(){setTimeout(injectReferralSection, 300);});
-
-function copyRefLink(url){
-  var btn = document.getElementById('ref-copy-btn');
-  if(navigator.clipboard){
-    navigator.clipboard.writeText(url).then(function(){
-      if(btn){btn.textContent='COPIED ✓';btn.classList.add('copied');setTimeout(function(){btn.textContent='COPY';btn.classList.remove('copied');},2000);}
-      if(typeof toast==='function') toast('Link copied! Share it with friends 🎁');
-    });
-  } else {
-    var input = document.getElementById('ref-link-input');
-    if(input){input.select();document.execCommand('copy');if(typeof toast==='function')toast('Link copied!');}
+  // ===== Find logged-in member from various storage keys =====
+  function findMemberPhone(){
+    var keys = ['wingo_loyalty_session', 'wingo_loyalty_member', 'wingo_loy_phone', 'loyalty_session', 'wingo_session'];
+    for(var i = 0; i < keys.length; i++){
+      var raw = localStorage.getItem(keys[i]);
+      if(!raw) continue;
+      try {
+        var parsed = JSON.parse(raw);
+        if(parsed && parsed.phone) return String(parsed.phone).replace(/\D/g,'');
+        if(parsed && parsed.member && parsed.member.phone) return String(parsed.member.phone).replace(/\D/g,'');
+      } catch(e){
+        if(/^\+?\d[\d\-\(\) ]{8,}$/.test(raw)) return raw.replace(/\D/g,'');
+      }
+    }
+    // Last resort: scan all localStorage values for anything that looks like a session
+    for(var j = 0; j < localStorage.length; j++){
+      var k = localStorage.key(j);
+      var v = localStorage.getItem(k);
+      try {
+        var p = JSON.parse(v);
+        if(p && p.phone) return String(p.phone).replace(/\D/g,'');
+      } catch(e){}
+    }
+    return null;
   }
-}
 
-function shareRefLink(url, name){
-  var text = name + ' invited you to Wing-O 🍗 You both get a FREE stamp when you join!';
-  if(navigator.share){
-    navigator.share({title:'Join Wing-O Saucy Stamps',text:text,url:url}).catch(function(){});
-  } else {
-    copyRefLink(url + ' — ' + text);
+  // ===== Inject referral section into dashboard =====
+  function r3Inject(){
+    var dash = document.getElementById('loy-dashboard');
+    if(!dash || !dash.offsetParent) return;
+    if(document.getElementById('r3-section')) return;
+    
+    var phone = findMemberPhone();
+    if(!phone) return;
+    
+    fetch('/api/loyalty/member/' + phone)
+      .then(function(r){return r.json();})
+      .then(function(d){
+        if(!d.success || !d.member || !d.member.referralCode) return;
+        if(document.getElementById('r3-section')) return;
+        var m = d.member;
+        var refLink = 'wingorestaurants.com/r/' + m.referralCode;
+        var fullLink = 'https://' + refLink;
+        var firstName = (m.name || '').split(' ')[0] || 'Friend';
+        var section = document.createElement('div');
+        section.id = 'r3-section';
+        section.className = 'r3-section';
+        section.innerHTML = 
+          '<div class="r3-title">🎁 REFER A FRIEND</div>' +
+          '<div class="r3-sub">Both get a free stamp when they join</div>' +
+          '<div class="r3-codebox"><div class="r3-codelbl">Your Code</div><div class="r3-codeval">' + m.referralCode + '</div></div>' +
+          '<input class="r3-input" type="text" value="' + refLink + '" readonly id="r3-input" onclick="this.select()">' +
+          '<button class="r3-copy" id="r3-copy">📋 COPY MY LINK</button>' +
+          '<button class="r3-share" id="r3-share">📤 SHARE WITH FRIENDS</button>' +
+          '<div class="r3-stats">' +
+            '<div class="r3-stat"><div class="r3-statnum">' + (m.referralCount || 0) + '</div><div class="r3-statlbl">Friends Joined</div></div>' +
+            '<div class="r3-stat"><div class="r3-statnum">' + (m.referralCount || 0) + '</div><div class="r3-statlbl">Stamps Earned</div></div>' +
+          '</div>' +
+          '<div class="r3-explainer">💡 Share your code or link. When a friend signs up, you BOTH instantly get +1 stamp. No limit. No catch.</div>';
+        dash.appendChild(section);
+        
+        document.getElementById('r3-copy').onclick = function(){
+          var btn = this;
+          if(navigator.clipboard){
+            navigator.clipboard.writeText(fullLink).then(function(){
+              btn.textContent = 'COPIED ✓';
+              btn.classList.add('r3-done');
+              if(typeof toast === 'function') toast('Link copied! Share it 🎁');
+              setTimeout(function(){btn.textContent='📋 COPY MY LINK';btn.classList.remove('r3-done');}, 2500);
+            });
+          }
+        };
+        
+        document.getElementById('r3-share').onclick = function(){
+          var text = firstName + ' invited you to Wing-O 🍗 You both get a FREE stamp when you join!';
+          if(navigator.share){
+            navigator.share({title:'Join Wing-O', text:text, url:fullLink}).catch(function(){});
+          } else {
+            navigator.clipboard && navigator.clipboard.writeText(fullLink + ' — ' + text);
+            if(typeof toast === 'function') toast('Link copied 📋');
+          }
+        };
+        
+        console.log('🎁 Referral live: ' + m.name + ' · ' + m.referralCode);
+      })
+      .catch(function(e){console.warn('r3 lookup failed:', e);});
   }
-}
 
-function copyRefLink(url){
-  var btn = document.getElementById('ref-copy-btn');
-  if(navigator.clipboard){
-    navigator.clipboard.writeText(url).then(function(){
-      if(btn){btn.textContent='COPIED ✓';btn.classList.add('copied');setTimeout(function(){btn.textContent='COPY';btn.classList.remove('copied');},2000);}
-      toast('Link copied! Share it with friends 🎁');
-    });
-  } else {
-    var input = document.getElementById('ref-link-input');
-    if(input){input.select();document.execCommand('copy');toast('Link copied!');}
-  }
-}
-
-function shareRefLink(url, name){
-  var text = name + ' invited you to Wing-O 🍗 You both get a FREE stamp when you join!';
-  if(navigator.share){
-    navigator.share({title:'Join Wing-O Saucy Stamps',text:text,url:url}).catch(function(){});
-  } else {
-    copyRefLink(url + ' — ' + text);
-  }
-}
+  // Poll for dashboard appearing — every 1.5s
+  setInterval(r3Inject, 1500);
+})();
 </script>
   <script>
 // Define the missing function so it stops crashing
