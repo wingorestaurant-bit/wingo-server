@@ -791,6 +791,156 @@ app.get('*', (req, res, next) => {
 });
 
 // ── START ─────────────────────────────────────────────────────
+// ========================================================
+// 🎁 REFERRAL PROGRAM (added at end — safe paste)
+// ========================================================
+
+function generateReferralCode(name, phone) {
+  const cleanName = (name || '').toUpperCase().replace(/[^A-Z]/g, '').slice(0, 6) || 'WINGO';
+  const phoneSuffix = (phone || '').replace(/\D/g, '').slice(-4) || Math.floor(1000 + Math.random() * 9000);
+  return cleanName + phoneSuffix;
+}
+
+async function creditReferralBonus(referrerCode, newMemberPhone, newMemberName) {
+  if (!referrerCode || !newMemberPhone) return null;
+  try {
+    const database = await connectDB();
+    if (!database) return null;
+    const referrer = await database.collection('loyalty').findOne({ referralCode: referrerCode });
+    if (!referrer) {
+      console.log(`⚠️ Referral code ${referrerCode} not found`);
+      return null;
+    }
+    if (referrer.phone === newMemberPhone.replace(/\D/g, '')) {
+      console.log(`⚠️ Self-referral blocked: ${referrerCode}`);
+      return null;
+    }
+    const newReferrerStamps = (referrer.stamps || 0) + 1;
+    const gotFree = newReferrerStamps >= 10;
+    const finalStamps = gotFree ? 0 : newReferrerStamps;
+    const newFreeEarned = gotFree ? (referrer.freeEarned || 0) + 1 : (referrer.freeEarned || 0);
+    const newTotalOrders = (referrer.totalOrders || 0) + 1;
+    const newReferralCount = (referrer.referralCount || 0) + 1;
+    const newHistory = [
+      { orderNum: 'REF-' + newMemberName.split(' ')[0], date: new Date().toLocaleDateString('en-CA'), stamp: newTotalOrders, referral: true },
+      ...(referrer.history || [])
+    ].slice(0, 50);
+    await database.collection('loyalty').updateOne(
+      { referralCode: referrerCode },
+      {
+        $set: {
+          stamps: finalStamps,
+          totalOrders: newTotalOrders,
+          freeEarned: newFreeEarned,
+          referralCount: newReferralCount,
+          history: newHistory,
+          updatedAt: new Date()
+        }
+      }
+    );
+    console.log(`🎁 REFERRAL: ${referrer.name} earned a stamp from ${newMemberName}`);
+    sendEmail({
+      to: 'besaucy@wingorestaurants.com',
+      subject: `🎁 NEW REFERRAL — ${referrer.name} brought in ${newMemberName}`,
+      html: `<div style="font-family:Arial;max-width:500px;margin:0 auto;background:#0D0D0D;padding:24px;border-radius:8px;">
+        <h2 style="color:#F5A800;margin:0 0 16px;">🎁 Referral Activated!</h2>
+        <table style="width:100%;color:#CCC;font-size:14px;">
+          <tr><td style="padding:6px 0;color:#888;">Referrer</td><td><strong style="color:white;">${referrer.name}</strong></td></tr>
+          <tr><td style="padding:6px 0;color:#888;">Code</td><td>${referrerCode}</td></tr>
+          <tr><td style="padding:6px 0;color:#888;">New Member</td><td>${newMemberName}</td></tr>
+          <tr><td style="padding:6px 0;color:#888;">Total Referrals</td><td style="color:#F5A800;font-weight:bold;">${newReferralCount}</td></tr>
+          ${gotFree ? '<tr><td style="padding:6px 0;color:#E8190A;font-weight:bold;">🎉 EARNED FREE WINGS!</td><td></td></tr>' : ''}
+        </table>
+      </div>`
+    });
+    return { success: true, gotFree, referrerName: referrer.name };
+  } catch (e) {
+    console.error('Referral credit error:', e.message);
+    return null;
+  }
+}
+
+// New signup endpoint that handles referrals
+app.post('/api/loyalty/signup-v2', async (req, res) => {
+  const { name, email, phone, referralCode } = req.body;
+  if (!name || !email || !phone) return res.json({ success: false, error: 'Missing fields' });
+  const cleanPhone = phone.replace(/\D/g, '');
+  try {
+    const database = await connectDB();
+    if (!database) return res.json({ success: false, error: 'Database unavailable' });
+    const existing = await database.collection('loyalty').findOne({ phone: cleanPhone });
+    if (existing) return res.json({ success: false, error: 'Phone already registered' });
+    const myReferralCode = generateReferralCode(name, cleanPhone);
+    let initialStamps = 0;
+    let referralBonus = null;
+    if (referralCode) {
+      const result = await creditReferralBonus(referralCode, cleanPhone, name);
+      if (result && result.success) {
+        initialStamps = 1;
+        referralBonus = result;
+      }
+    }
+    const member = {
+      name, email, phone: cleanPhone,
+      stamps: initialStamps, totalOrders: initialStamps, freeEarned: 0,
+      referralCode: myReferralCode, referralCount: 0, referredBy: referralCode || null,
+      usedOrderNums: [], history: initialStamps > 0 ? [{ orderNum: 'WELCOME-REF', date: new Date().toLocaleDateString('en-CA'), stamp: 1, referral: true }] : [],
+      joinDate: new Date().toISOString(), createdAt: new Date()
+    };
+    await database.collection('loyalty').insertOne(member);
+    console.log(`🍗 New loyalty member: ${name} — ${cleanPhone}${referralBonus ? ' (referred by ' + referralBonus.referrerName + ')' : ''}`);
+    sendEmail({
+      to: 'besaucy@wingorestaurants.com',
+      subject: `🍗 New Saucy Stamps Member — ${name}${referralBonus ? ' (REFERRAL!)' : ''}`,
+      html: `<div style="font-family:Arial,sans-serif;max-width:500px;margin:0 auto;background:#0D0D0D;padding:24px;border-radius:8px;">
+        <h2 style="color:#F5A800;font-size:22px;margin:0 0 16px;">New Saucy Stamps Member! 🍗</h2>
+        <table style="width:100%;color:#CCC;font-size:14px;border-collapse:collapse;">
+          <tr><td style="padding:8px 0;color:#888;width:80px;">Name</td><td style="font-weight:bold;color:white;">${name}</td></tr>
+          <tr><td style="padding:8px 0;color:#888;">Email</td><td>${email}</td></tr>
+          <tr><td style="padding:8px 0;color:#888;">Phone</td><td>${cleanPhone}</td></tr>
+          <tr><td style="padding:8px 0;color:#888;">Code</td><td style="color:#F5A800;">${myReferralCode}</td></tr>
+          ${referralBonus ? `<tr><td style="padding:8px 0;color:#E8190A;font-weight:bold;">Referred By</td><td>${referralBonus.referrerName} 🎁</td></tr>` : ''}
+        </table>
+      </div>`
+    });
+    res.json({ success: true, member, referralBonus });
+  } catch (e) {
+    console.error('Loyalty signup-v2 error:', e.message);
+    res.json({ success: false, error: 'Signup failed' });
+  }
+});
+
+// Look up referrer info from a code
+app.get('/api/loyalty/referral-info/:code', async (req, res) => {
+  try {
+    const database = await connectDB();
+    if (!database) return res.json({ success: false, error: 'Database unavailable' });
+    const member = await database.collection('loyalty').findOne({ referralCode: req.params.code });
+    if (!member) return res.json({ success: false, error: 'Invalid referral code' });
+    res.json({ success: true, referrerName: member.name.split(' ')[0], referralCode: member.referralCode });
+  } catch (e) { res.json({ success: false, error: 'Lookup failed' }); }
+});
+
+// One-time migration: give existing members their referral codes
+app.post('/api/loyalty/migrate-codes', async (req, res) => {
+  if (req.body.password !== (process.env.ADMIN_PASSWORD || 'sauceboss2025')) return res.status(401).json({ error: 'Unauthorized' });
+  try {
+    const database = await connectDB();
+    const members = await database.collection('loyalty').find({ referralCode: { $exists: false } }).toArray();
+    let migrated = 0;
+    for (const m of members) {
+      const code = generateReferralCode(m.name, m.phone);
+      await database.collection('loyalty').updateOne({ _id: m._id }, { $set: { referralCode: code, referralCount: 0 } });
+      migrated++;
+    }
+    res.json({ success: true, migrated });
+  } catch (e) { res.json({ success: false, error: e.message }); }
+});
+
+// Pretty URL for share links: wingorestaurants.com/r/MIKE2024
+app.get('/r/:code', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`\n🔥 Wing-O server on port ${PORT}`);
