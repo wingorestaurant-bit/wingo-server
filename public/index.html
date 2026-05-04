@@ -1754,15 +1754,35 @@ function dismissRefWelcome(){
   sessionStorage.setItem('wingo_ref_dismissed', '1');
 }
 
-// ===== INJECT "REFER A FRIEND" SECTION INTO LOYALTY DASHBOARD =====
-var _origRenderDashboard = window.renderDashboard;
-window.renderDashboard = function(member){
-  if(_origRenderDashboard) _origRenderDashboard(member);
-  if(!member || !member.referralCode) return;
-  var dashboardView = document.getElementById('loy-dashboard');
-  if(!dashboardView) return;
-  var existingSection = document.getElementById('ref-section');
-  if(existingSection) existingSection.remove();
+// ===== BRUTE FORCE: Watch DOM, inject Refer-a-Friend when dashboard appears =====
+function injectReferralSection(){
+  var dash = document.getElementById('loy-dashboard');
+  if(!dash || dash.style.display==='none' || !dash.offsetParent) return;
+  if(document.getElementById('ref-section')) return; // already injected
+  
+  // Get current member from various possible storage spots
+  var member = window.currentLoyaltyMember || window._loyMember || null;
+  if(!member){
+    var stored = localStorage.getItem('wingo_loyalty_member') || sessionStorage.getItem('wingo_loyalty_member');
+    if(stored){try{member=JSON.parse(stored);}catch(e){}}
+  }
+  if(!member){
+    // Fall back: read name from the dashboard DOM
+    var nameEl = dash.querySelector('[class*="member"], [class*="name"], h2, h3');
+    if(!nameEl) return;
+    // Try to find member by looking up via stored phone
+    var phone = localStorage.getItem('wingo_loy_phone');
+    if(!phone) return;
+    fetch('/api/loyalty/member/' + phone).then(function(r){return r.json();}).then(function(d){
+      if(d.success && d.member){
+        window.currentLoyaltyMember = d.member;
+        injectReferralSection();
+      }
+    });
+    return;
+  }
+  if(!member.referralCode) return;
+  
   var refLink = 'wingorestaurants.com/r/' + member.referralCode;
   var fullLink = 'https://' + refLink;
   var section = document.createElement('div');
@@ -1785,10 +1805,39 @@ window.renderDashboard = function(member){
       '<div class="ref-stat-box"><div class="ref-stat-num">' + (member.referralCount || 0) + '</div><div class="ref-stat-lbl">Stamps Earned</div></div>' +
     '</div>' +
     '<div class="ref-explainer">💡 Share your code or link. When a friend signs up, you BOTH instantly get +1 stamp. No limit. No catch.</div>';
-  var historySection = dashboardView.querySelector('.loy-history');
-  if(historySection) historySection.parentNode.insertBefore(section, historySection);
-  else dashboardView.appendChild(section);
-};
+  
+  // Insert at the end of the dashboard
+  dash.appendChild(section);
+  console.log('🎁 Referral section injected');
+}
+
+// Watch for dashboard appearing — try every 500ms
+setInterval(injectReferralSection, 500);
+
+// Also try when REWARDS button or any element is clicked
+document.addEventListener('click', function(){setTimeout(injectReferralSection, 300);});
+
+function copyRefLink(url){
+  var btn = document.getElementById('ref-copy-btn');
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(url).then(function(){
+      if(btn){btn.textContent='COPIED ✓';btn.classList.add('copied');setTimeout(function(){btn.textContent='COPY';btn.classList.remove('copied');},2000);}
+      if(typeof toast==='function') toast('Link copied! Share it with friends 🎁');
+    });
+  } else {
+    var input = document.getElementById('ref-link-input');
+    if(input){input.select();document.execCommand('copy');if(typeof toast==='function')toast('Link copied!');}
+  }
+}
+
+function shareRefLink(url, name){
+  var text = name + ' invited you to Wing-O 🍗 You both get a FREE stamp when you join!';
+  if(navigator.share){
+    navigator.share({title:'Join Wing-O Saucy Stamps',text:text,url:url}).catch(function(){});
+  } else {
+    copyRefLink(url + ' — ' + text);
+  }
+}
 
 function copyRefLink(url){
   var btn = document.getElementById('ref-copy-btn');
