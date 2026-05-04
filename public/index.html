@@ -1861,5 +1861,9 @@ function shareRefLink(url, name){
   }
 }
 </script>
+  <script>
+// Define the missing function so it stops crashing
+if(typeof showNotifBanner!=='function'){window.showNotifBanner=function(){};}
+</script>
 </body>
 </html>
