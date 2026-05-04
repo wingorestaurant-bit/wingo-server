@@ -1040,7 +1040,7 @@ function openLoyalty(){document.getElementById('loyalty-ov').classList.add('open
 function closeLoyalty(){document.getElementById('loyalty-ov').classList.remove('open');document.body.style.overflow='';}
 function showLoyView(id){document.querySelectorAll('.loy-view').forEach(function(v){v.classList.remove('active');});var el = document.getElementById(id);if(el) el.classList.add('active');}
 async function loyLoadMember(phone){try{var r = await fetch(API_BASE+'/api/loyalty/member/'+phone.replace(/\D/g,''));var d = await r.json();if(d.success){loySaveSession(d.member);showLoyView('loy-dashboard');renderDashboard(d.member);} else {localStorage.removeItem(LOY_SESSION_KEY);showLoyView('loy-signup');}}catch(e){showLoyView('loy-signup');}}
-async function loyaltySignup(){var name = document.getElementById('loy-name').value.trim();var email = document.getElementById('loy-email').value.trim();var phone = document.getElementById('loy-phone').value.trim();var errEl = document.getElementById('loy-signup-error');errEl.style.display='none';if(!name||!email||!phone){errEl.textContent='Please fill in all fields.';errEl.style.display='block';return;}if(!email.includes('@')){errEl.textContent='Please enter a valid email.';errEl.style.display='block';return;}if(phone.replace(/\D/g,'').length < 10){errEl.textContent='Please enter a valid 10-digit phone number.';errEl.style.display='block';return;}var btn = document.querySelector('#loy-signup .loy-btn');btn.textContent='Creating your card...';btn.disabled=true;try{var r = await fetch(API_BASE+'/api/loyalty/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,phone})});var d = await r.json();if(d.success){loySaveSession(d.member);showLoyView('loy-dashboard');renderDashboard(d.member);toast('Welcome to Saucy Stamps, '+name.split(' ')[0]+'! 🍗');} else {errEl.textContent = d.error==='Phone already registered' ? 'Phone already registered! Use "Find my card" to log in.' : (d.error||'Signup failed');errEl.style.display='block';}}catch(e){errEl.textContent='Connection error. Please try again.';errEl.style.display='block';}btn.textContent='CREATE MY STAMP CARD 🍗';btn.disabled=false;}
+async function loyaltySignup(){var name = document.getElementById('loy-name').value.trim();var email = document.getElementById('loy-email').value.trim();var phone = document.getElementById('loy-phone').value.trim();var refCode = window._refCode || '';var errEl = document.getElementById('loy-signup-error');errEl.style.display='none';if(!name||!email||!phone){errEl.textContent='Please fill in all fields.';errEl.style.display='block';return;}if(!email.includes('@')){errEl.textContent='Please enter a valid email.';errEl.style.display='block';return;}if(phone.replace(/\D/g,'').length < 10){errEl.textContent='Please enter a valid 10-digit phone number.';errEl.style.display='block';return;}var btn = document.querySelector('#loy-signup .loy-btn');btn.textContent='Creating your card...';btn.disabled=true;try{var r = await fetch(API_BASE+'/api/loyalty/signup-v2',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,phone,referralCode:refCode})});var d = await r.json();if(d.success){loySaveSession(d.member);showLoyView('loy-dashboard');renderDashboard(d.member);if(d.referralBonus){toast('🎁 Referred by '+d.referralBonus.referrerName+'! You start with 1 stamp.');setTimeout(function(){toast('Welcome to Saucy Stamps, '+name.split(' ')[0]+'! 🍗');},2800);}else{toast('Welcome to Saucy Stamps, '+name.split(' ')[0]+'! 🍗');}window._refCode='';} else {errEl.textContent = d.error==='Phone already registered' ? 'Phone already registered! Use "Find my card" to log in.' : (d.error||'Signup failed');errEl.style.display='block';}}catch(e){errEl.textContent='Connection error. Please try again.';errEl.style.display='block';}btn.textContent='CREATE MY STAMP CARD 🍗';btn.disabled=false;}
 async function loyaltyLookup(){var input = document.getElementById('loy-lookup-input').value.trim();var errEl = document.getElementById('loy-lookup-error');errEl.style.display='none';if(!input){errEl.textContent='Please enter your phone or email.';errEl.style.display='block';return;}var btn = document.querySelector('#loy-lookup .loy-btn');btn.textContent='Searching...';btn.disabled=true;try{var r = await fetch(API_BASE+'/api/loyalty/lookup?q='+encodeURIComponent(input));var d = await r.json();if(d.success){loySaveSession(d.member);showLoyView('loy-dashboard');renderDashboard(d.member);toast('Welcome back, '+d.member.name.split(' ')[0]+'! 🍗');} else {errEl.textContent='No account found. Check your phone/email or sign up free!';errEl.style.display='block';}}catch(e){errEl.textContent='Connection error. Please try again.';errEl.style.display='block';}btn.textContent='FIND MY STAMPS 🍗';btn.disabled=false;}
 async function loyaltyAddStamp(){var orderNum = document.getElementById('loy-order-num').value.trim().toUpperCase();var errEl = document.getElementById('loy-stamp-error');errEl.style.display='none';if(!orderNum||!orderNum.startsWith('WO-')){errEl.textContent='Please enter a valid Wing-O order number (WO-XXXX).';errEl.style.display='block';return;}var session = loyGetSession();if(!session){showLoyView('loy-signup');return;}var btn = document.querySelector('#loy-add-stamp .loy-btn');btn.textContent='Adding stamp...';btn.disabled=true;try{var r = await fetch(API_BASE+'/api/loyalty/stamp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:session.phone,orderNum,password:'sauceboss2025'})});var d = await r.json();if(d.success){loySaveSession(d.member);document.getElementById('loy-order-num').value='';var msg = d.gotFree ? '🎉 10 stamps! You earned FREE WINGS! Show your card to redeem.' : 'Stamp #'+d.totalOrders+' added! '+(10-d.stamps)+' more until free wings 🍗';document.getElementById('loy-stamp-success-msg').textContent=msg;showLoyView('loy-stamp-success');toast(d.gotFree ? '🎉 FREE WINGS EARNED!' : 'Stamp added! 🍗');} else {errEl.textContent = d.error==='Order number already used' ? 'This order number has already been used.' : (d.error||'Failed to add stamp');errEl.style.display='block';}}catch(e){errEl.textContent='Connection error. Please try again.';errEl.style.display='block';}btn.textContent='STAMP MY CARD 🔥';btn.disabled=false;}
 function renderDashboard(member){if(!member) return;var stamps = member.stamps||0;var totalOrders = member.totalOrders||0;var freeEarned = member.freeEarned||0;var toNext = 10 - stamps;document.getElementById('dash-name').textContent = member.name;document.getElementById('dash-stamps').textContent = stamps;document.getElementById('dash-total-orders').textContent = totalOrders;document.getElementById('dash-free-earned').textContent = freeEarned;document.getElementById('dash-next-free').textContent = toNext;var pct = Math.min((stamps/10)*100,100);document.getElementById('loy-progress').style.width=pct+'%';document.getElementById('loy-progress-label').textContent=stamps+' of 10 stamps · '+toNext+' more to free wings';var rewardBox = document.getElementById('loy-reward-box');if(stamps===0 && freeEarned>0 && member.history && member.history.length>0){var code='SAUCY-'+member.phone.slice(-4);document.getElementById('loy-reward-code').textContent=code;rewardBox.style.display='block';} else {rewardBox.style.display='none';}var topGrid=document.getElementById('stamps-grid-top');var botGrid=document.getElementById('stamps-grid-bot');topGrid.innerHTML='';botGrid.innerHTML='';for(var i=0;i<10;i++){var div=document.createElement('div');div.className='stamp';if(i<stamps){div.classList.add('earned');div.textContent='🍗';}else if(i===9&&stamps===9){div.textContent='🌟';}if(i<5)topGrid.appendChild(div);else botGrid.appendChild(div);}var histEl=document.getElementById('loy-history-list');var hist=member.history||[];if(!hist.length){histEl.innerHTML='<div style="text-align:center;color:#AAA;font-size:.8rem;padding:1rem 0;">No stamps yet — place an order to earn your first stamp!</div>';} else {histEl.innerHTML=hist.slice(0,8).map(function(h){return '<div class="loy-hist-item"><div><div style="font-family:var(--font-head);font-size:.8rem;color:var(--ink);letter-spacing:.5px;">'+h.orderNum+'</div><div class="loy-hist-date">'+h.date+(h.auto?' · Auto':'')+'</div></div><div style="color:var(--red);font-size:.85rem;font-weight:600;">🍗 Stamp #'+h.stamp+'</div></div>';}).join('');}}
@@ -1682,6 +1682,134 @@ async function submitGauntlet(){
     await fetch(API_BASE+'/api/franchise',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({firstName:'🔥 GAUNTLET: '+name,lastName:'',email:email,phone:phone,city:loc+' · '+date,budget:'GAUNTLET CHALLENGE',message:'Gauntlet Challenge submission · Date: '+date+' · Location: '+loc+' · Phone: '+phone})});
   }catch(e){}
   document.getElementById('gauntlet-body').innerHTML='<div style="text-align:center;padding:2rem 1rem;"><div style="font-size:4rem;margin-bottom:1rem;">💀</div><div style="font-family:var(--font-display);font-size:2rem;color:#F5A800;letter-spacing:3px;line-height:1;margin-bottom:1rem;">CHALLENGE ACCEPTED</div><p style="font-family:var(--font-serif);font-style:italic;color:#CCC;font-size:1rem;line-height:1.5;margin-bottom:1.5rem;">"I see you, '+name+'. Sauce Boss will be in touch within 24 hours to confirm your appointment with destiny."</p><button class="gauntlet-cta" onclick="closeGauntlet()">UNDERSTOOD 🔥</button></div>';
+}
+</script>
+  <!-- ============================================ -->
+<!-- 🎁 REFERRAL PROGRAM — UI                     -->
+<!-- ============================================ -->
+<style>
+.ref-welcome{display:none;background:linear-gradient(135deg,#0D0D0D,#1A0033);color:white;padding:1rem 1.25rem;border-bottom:3px solid var(--yellow);position:sticky;top:0;z-index:1001;animation:slide-down .5s ease-out;}
+.ref-welcome-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+.ref-welcome-text{flex:1;min-width:240px;}
+.ref-welcome-tag{font-family:var(--font-head);font-size:.7rem;color:var(--yellow);letter-spacing:3px;text-transform:uppercase;font-weight:700;}
+.ref-welcome-msg{font-family:var(--font-display);font-size:1.2rem;color:white;letter-spacing:1.5px;line-height:1.2;margin-top:3px;}
+.ref-welcome-msg span{color:var(--red);}
+.ref-welcome-btn{background:var(--red);color:white;border:none;padding:.6rem 1.4rem;font-family:var(--font-head);font-size:.78rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;border-radius:4px;cursor:pointer;box-shadow:0 4px 0 var(--red-deep);}
+.ref-welcome-x{background:none;border:none;color:#666;font-size:1.1rem;cursor:pointer;padding:6px 10px;}
+
+.ref-section{background:linear-gradient(135deg,#0D0D0D,#1A0033);border:2px solid var(--yellow);border-radius:8px;padding:1.25rem;margin-bottom:1rem;color:white;}
+.ref-section-title{font-family:var(--font-display);font-size:1.2rem;color:var(--yellow);letter-spacing:2px;margin-bottom:.4rem;}
+.ref-section-sub{font-family:var(--font-head);font-size:.7rem;color:#888;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:.85rem;}
+.ref-code-box{background:rgba(255,255,255,.05);border:2px dashed var(--yellow);border-radius:6px;padding:.85rem;text-align:center;margin-bottom:.85rem;}
+.ref-code-label{font-family:var(--font-head);font-size:.65rem;color:#888;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;}
+.ref-code-value{font-family:var(--font-display);font-size:1.6rem;color:var(--yellow);letter-spacing:3px;line-height:1;}
+.ref-link-row{display:flex;gap:.4rem;margin-bottom:.85rem;}
+.ref-link{flex:1;background:rgba(255,255,255,.05);border:1.5px solid rgba(245,168,0,.3);border-radius:5px;padding:.55rem .75rem;font-family:'Courier New',monospace;font-size:.78rem;color:white;outline:none;}
+.ref-copy-btn{background:var(--red);color:white;border:none;padding:.55rem .85rem;font-family:var(--font-head);font-size:.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;border-radius:5px;cursor:pointer;white-space:nowrap;}
+.ref-copy-btn.copied{background:#48BB78;}
+.ref-share-btn{width:100%;background:transparent;color:var(--yellow);border:1.5px solid var(--yellow);padding:.65rem;font-family:var(--font-head);font-size:.78rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;border-radius:5px;cursor:pointer;margin-bottom:.85rem;}
+.ref-share-btn:hover{background:rgba(245,168,0,.1);}
+.ref-stats{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;}
+.ref-stat-box{background:rgba(255,255,255,.05);border-radius:5px;padding:.7rem .5rem;text-align:center;}
+.ref-stat-num{font-family:var(--font-display);font-size:1.5rem;color:var(--yellow);letter-spacing:1.5px;}
+.ref-stat-lbl{font-family:var(--font-head);font-size:.6rem;color:#888;letter-spacing:1.5px;text-transform:uppercase;margin-top:2px;}
+.ref-explainer{background:rgba(245,168,0,.05);border:1px solid rgba(245,168,0,.2);border-radius:5px;padding:.7rem .85rem;margin-top:.85rem;font-family:var(--font-head);font-size:.72rem;color:#CCC;letter-spacing:.5px;line-height:1.5;}
+</style>
+
+<div class="ref-welcome" id="ref-welcome">
+  <div class="ref-welcome-inner">
+    <div class="ref-welcome-text">
+      <div class="ref-welcome-tag">🎁 You've Been Invited</div>
+      <div class="ref-welcome-msg"><span id="ref-welcome-name">Friend</span> invited you to Wing-O — <span>YOU BOTH GET A STAMP</span></div>
+    </div>
+    <button class="ref-welcome-btn" onclick="openLoyalty();dismissRefWelcome();">JOIN FREE 🍗</button>
+    <button class="ref-welcome-x" onclick="dismissRefWelcome()">✕</button>
+  </div>
+</div>
+
+<script>
+// ===== DETECT REFERRAL ON PAGE LOAD =====
+(function(){
+  var path = window.location.pathname;
+  var match = path.match(/^\/r\/([A-Z0-9]+)/i);
+  if(!match) return;
+  var code = match[1].toUpperCase();
+  window._refCode = code;
+  fetch('/api/loyalty/referral-info/' + code).then(function(r){return r.json();}).then(function(d){
+    if(d.success){
+      var nameEl = document.getElementById('ref-welcome-name');
+      if(nameEl) nameEl.textContent = d.referrerName.toUpperCase();
+      var banner = document.getElementById('ref-welcome');
+      if(banner && !sessionStorage.getItem('wingo_ref_dismissed')) banner.style.display = 'block';
+    } else {
+      window._refCode = '';
+    }
+  }).catch(function(){window._refCode='';});
+  history.replaceState({page:'home'}, '', '/');
+})();
+
+function dismissRefWelcome(){
+  var el = document.getElementById('ref-welcome');
+  if(el) el.style.display = 'none';
+  sessionStorage.setItem('wingo_ref_dismissed', '1');
+}
+
+// ===== INJECT "REFER A FRIEND" SECTION INTO LOYALTY DASHBOARD =====
+var _origRenderDashboard = window.renderDashboard;
+window.renderDashboard = function(member){
+  if(_origRenderDashboard) _origRenderDashboard(member);
+  if(!member || !member.referralCode) return;
+  var dashboardView = document.getElementById('loy-dashboard');
+  if(!dashboardView) return;
+  var existingSection = document.getElementById('ref-section');
+  if(existingSection) existingSection.remove();
+  var refLink = 'wingorestaurants.com/r/' + member.referralCode;
+  var fullLink = 'https://' + refLink;
+  var section = document.createElement('div');
+  section.id = 'ref-section';
+  section.className = 'ref-section';
+  section.innerHTML = 
+    '<div class="ref-section-title">🎁 REFER A FRIEND</div>' +
+    '<div class="ref-section-sub">Both get a free stamp when they join</div>' +
+    '<div class="ref-code-box">' +
+      '<div class="ref-code-label">Your Code</div>' +
+      '<div class="ref-code-value">' + member.referralCode + '</div>' +
+    '</div>' +
+    '<div class="ref-link-row">' +
+      '<input class="ref-link" type="text" value="' + refLink + '" readonly id="ref-link-input" onclick="this.select()">' +
+      '<button class="ref-copy-btn" id="ref-copy-btn" onclick="copyRefLink(\'' + fullLink + '\')">COPY</button>' +
+    '</div>' +
+    '<button class="ref-share-btn" onclick="shareRefLink(\'' + fullLink + '\',\'' + (member.name.split(' ')[0]||'') + '\')">📤 SHARE WITH FRIENDS</button>' +
+    '<div class="ref-stats">' +
+      '<div class="ref-stat-box"><div class="ref-stat-num">' + (member.referralCount || 0) + '</div><div class="ref-stat-lbl">Friends Joined</div></div>' +
+      '<div class="ref-stat-box"><div class="ref-stat-num">' + (member.referralCount || 0) + '</div><div class="ref-stat-lbl">Stamps Earned</div></div>' +
+    '</div>' +
+    '<div class="ref-explainer">💡 Share your code or link. When a friend signs up, you BOTH instantly get +1 stamp. No limit. No catch.</div>';
+  var historySection = dashboardView.querySelector('.loy-history');
+  if(historySection) historySection.parentNode.insertBefore(section, historySection);
+  else dashboardView.appendChild(section);
+};
+
+function copyRefLink(url){
+  var btn = document.getElementById('ref-copy-btn');
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(url).then(function(){
+      if(btn){btn.textContent='COPIED ✓';btn.classList.add('copied');setTimeout(function(){btn.textContent='COPY';btn.classList.remove('copied');},2000);}
+      toast('Link copied! Share it with friends 🎁');
+    });
+  } else {
+    var input = document.getElementById('ref-link-input');
+    if(input){input.select();document.execCommand('copy');toast('Link copied!');}
+  }
+}
+
+function shareRefLink(url, name){
+  var text = name + ' invited you to Wing-O 🍗 You both get a FREE stamp when you join!';
+  if(navigator.share){
+    navigator.share({title:'Join Wing-O Saucy Stamps',text:text,url:url}).catch(function(){});
+  } else {
+    copyRefLink(url + ' — ' + text);
+  }
 }
 </script>
 </body>
