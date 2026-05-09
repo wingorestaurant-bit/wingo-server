@@ -106,6 +106,7 @@ function getKitchenPassword(loc) {
     case 'rochdale':    return process.env.KITCHEN_PW_ROCHDALE;
     case 'east-regina': return process.env.KITCHEN_PW_EAST;
     case 'moose-jaw':   return process.env.KITCHEN_PW_MOOSEJAW;
+    case 'regina-beach': return process.env.KITCHEN_PW_BEACH;
     default: return null;
   }
 }
