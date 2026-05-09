@@ -86,6 +86,16 @@ const LOCATIONS = {
     hours: "Mon-Wed 11am-1am · Thu-Sun 11am-3am",
     onlinePayments: false,
     cloverPrivateKey: process.env.CLOVER_PRIVATE_KEY_MOOSEJAW
+  },
+  "regina-beach": {
+    name: "Regina Beach",
+    merchantId: "WSTB4D3E5RAG1",
+    apiToken: process.env.CLOVER_API_TOKEN_BEACH,
+    address: "110 Centre St, Regina Beach, SK",
+    phone: "639-777-1071",
+    hours: "Every Day 11am-10pm",
+    onlinePayments: false,
+    cloverPrivateKey: process.env.CLOVER_PRIVATE_KEY_BEACH
   }
 };
 
