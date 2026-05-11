@@ -326,6 +326,16 @@ app.get('/dashboard.html', (req, res) => { res.sendFile(path.join(__dirname, 'pu
 app.post('/api/orders', async (req, res) => {
   const { locationId, orderType, customer, items, notes, subtotal, tax, total, preOrder, openTime } = req.body;
   if (!locationId || !LOCATIONS[locationId]) return res.status(400).json({ error: 'Invalid location' });
+  // Check if location is enabled
+  try {
+    const database = await connectDB();
+    if (database) {
+      const statusDoc = await database.collection('settings').findOne({ key: 'location_status' });
+      if (statusDoc?.status && statusDoc.status[locationId] === false) {
+        return res.status(400).json({ error: 'This location is temporarily closed. Please pick another location.' });
+      }
+    }
+  } catch (e) { /* fail-open if DB check fails */ }
   if (!customer?.firstName || !customer?.phone) return res.status(400).json({ error: 'Missing customer info' });
   if (!items || !items.length) return res.status(400).json({ error: 'No items' });
 
