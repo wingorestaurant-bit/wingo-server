@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Wing-O Admin · Donation Tracker</title>
+<title>Wing-O Admin · Sauce Boss Control Panel</title>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;600&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
 <style>
   *{margin:0;padding:0;box-sizing:border-box;}
   body{background:#0D0D0D;font-family:'Barlow',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;}
-  .card{background:#1A1A1A;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:2.5rem;width:min(480px,100%);border-top:4px solid #E8190A;}
+  .card{background:#1A1A1A;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:2.5rem;width:min(520px,100%);border-top:4px solid #E8190A;}
   .logo{font-family:'Anton',sans-serif;font-size:2.5rem;color:white;letter-spacing:2px;margin-bottom:.25rem;}
   .logo span{color:#E8190A;}
   .subtitle{font-family:'Oswald',sans-serif;font-size:.85rem;letter-spacing:3px;text-transform:uppercase;color:#555;margin-bottom:2rem;}
@@ -28,13 +28,70 @@
   .stat-num{font-family:'Anton',sans-serif;font-size:1.5rem;color:white;letter-spacing:1px;}
   .stat-lbl{font-family:'Oswald',sans-serif;font-size:.7rem;letter-spacing:1px;text-transform:uppercase;color:#555;margin-top:2px;}
   .divider{border:none;border-top:1px solid #2A2A2A;margin:1.5rem 0;}
+  .loc-row{display:flex;align-items:center;justify-content:space-between;background:#222;border-radius:8px;padding:.85rem 1rem;margin-bottom:.5rem;border:1px solid rgba(255,255,255,.05);transition:all .2s;}
+  .loc-row.off{opacity:.6;border-color:rgba(232,25,10,.3);}
+  .loc-info{display:flex;align-items:center;gap:.85rem;flex:1;min-width:0;flex-wrap:wrap;}
+  .loc-name{font-family:'Oswald',sans-serif;font-weight:600;color:white;font-size:.92rem;letter-spacing:.5px;text-transform:uppercase;}
+  .loc-status{font-family:'Oswald',sans-serif;font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;padding:2px 8px;border-radius:50px;font-weight:600;}
+  .loc-status.on{background:rgba(74,222,128,.15);color:#4ADE80;border:1px solid rgba(74,222,128,.3);}
+  .loc-status.off{background:rgba(232,25,10,.15);color:#E8190A;border:1px solid rgba(232,25,10,.3);}
+  .toggle{position:relative;width:48px;height:26px;background:#333;border-radius:50px;cursor:pointer;transition:background .2s;flex-shrink:0;}
+  .toggle.on{background:#4ADE80;}
+  .toggle.off{background:#E8190A;}
+  .toggle::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;background:white;border-radius:50%;transition:transform .2s;box-shadow:0 2px 4px rgba(0,0,0,.3);}
+  .toggle.on::after{transform:translateX(22px);}
+  .toggle.disabled{opacity:.5;cursor:not-allowed;}
+  .loc-help{font-family:'Oswald',sans-serif;font-size:.72rem;color:#666;letter-spacing:1px;margin-bottom:1rem;line-height:1.6;}
+  .loc-help strong{color:#F5A800;}
+  .pw-banner{background:rgba(245,168,0,.1);border:1px solid rgba(245,168,0,.3);border-radius:6px;padding:.7rem 1rem;font-family:'Oswald',sans-serif;font-size:.78rem;color:#F5A800;letter-spacing:1px;margin-bottom:1rem;text-align:center;}
+  .pw-banner.unlocked{background:rgba(74,222,128,.1);border-color:rgba(74,222,128,.3);color:#4ADE80;}
 </style>
 </head>
 <body>
 <div class="card">
   <div class="logo">WING<span>-O</span></div>
-  <div class="subtitle">Sauce Boss Admin · Impact Dashboard</div>
+  <div class="subtitle">Sauce Boss Admin · Control Panel</div>
 
+  <!-- ADMIN PASSWORD AT TOP — used by both sections -->
+  <label>Admin Password</label>
+  <input type="password" id="password-input" placeholder="Enter password to unlock controls" autocomplete="off">
+
+  <div class="pw-banner" id="pw-banner">🔒 Enter password to enable toggles</div>
+
+  <hr class="divider">
+
+  <!-- LOCATION STATUS TOGGLES -->
+  <div class="section-title" style="margin-bottom:.5rem;">📍 Location Status — Online Ordering</div>
+  <div class="loc-help">Toggle locations <strong>OFF</strong> to temporarily hide them from checkout. Customers can't order to <strong>OFF</strong> locations. Changes are <strong>instant</strong>.</div>
+
+  <div id="loc-toggles">
+    <div class="loc-row" data-loc="albert-st">
+      <div class="loc-info"><span class="loc-name">Albert Street</span><span class="loc-status on">OPEN</span></div>
+      <div class="toggle on disabled" onclick="toggleLocation('albert-st')"></div>
+    </div>
+    <div class="loc-row" data-loc="rochdale">
+      <div class="loc-info"><span class="loc-name">Rochdale</span><span class="loc-status on">OPEN</span></div>
+      <div class="toggle on disabled" onclick="toggleLocation('rochdale')"></div>
+    </div>
+    <div class="loc-row" data-loc="east-regina">
+      <div class="loc-info"><span class="loc-name">East Regina</span><span class="loc-status on">OPEN</span></div>
+      <div class="toggle on disabled" onclick="toggleLocation('east-regina')"></div>
+    </div>
+    <div class="loc-row" data-loc="moose-jaw">
+      <div class="loc-info"><span class="loc-name">Moose Jaw</span><span class="loc-status on">OPEN</span></div>
+      <div class="toggle on disabled" onclick="toggleLocation('moose-jaw')"></div>
+    </div>
+    <div class="loc-row" data-loc="regina-beach">
+      <div class="loc-info"><span class="loc-name">Regina Beach</span><span class="loc-status on">OPEN</span></div>
+      <div class="toggle on disabled" onclick="toggleLocation('regina-beach')"></div>
+    </div>
+  </div>
+
+  <div class="msg" id="loc-msg"></div>
+
+  <hr class="divider">
+
+  <!-- DONATION TRACKER -->
   <div class="section-title">Current Donation Total</div>
   <div class="current-amount" id="current-display">Loading...</div>
 
@@ -43,16 +100,11 @@
     <div class="stat-box"><div class="stat-num" id="stat-orders">—</div><div class="stat-lbl">Total Orders</div></div>
   </div>
 
-  <hr class="divider">
-
   <div class="section-title" style="margin-bottom:1.25rem;">Update Community Fridge Donation</div>
 
   <div>
     <label>New Total Donated ($)</label>
     <input type="number" id="amount-input" placeholder="e.g. 1250" min="0" step="0.01">
-
-    <label>Admin Password</label>
-    <input type="password" id="password-input" placeholder="Enter password">
 
     <button class="btn" id="update-btn" onclick="updateDonation()">Update Donation 🔥</button>
     <div class="msg" id="msg"></div>
@@ -77,6 +129,98 @@ function getLive() {
 
 function fmt(n) { return n.toLocaleString('en-CA'); }
 
+// ── LOCATION TOGGLES ───────────────────────────────────
+async function loadLocationStatus() {
+  try {
+    const r = await fetch(API + '/api/locations/status');
+    const d = await r.json();
+    const status = d.status || {};
+    document.querySelectorAll('.loc-row').forEach(row => {
+      const loc = row.dataset.loc;
+      const enabled = status[loc] !== false; // default ON
+      updateLocRow(row, enabled);
+    });
+  } catch (e) { console.warn('Load location status failed:', e); }
+}
+
+function updateLocRow(row, enabled) {
+  const toggle = row.querySelector('.toggle');
+  const status = row.querySelector('.loc-status');
+  if (enabled) {
+    row.classList.remove('off');
+    toggle.classList.add('on'); toggle.classList.remove('off');
+    status.classList.add('on'); status.classList.remove('off');
+    status.textContent = 'OPEN';
+  } else {
+    row.classList.add('off');
+    toggle.classList.remove('on'); toggle.classList.add('off');
+    status.classList.remove('on'); status.classList.add('off');
+    status.textContent = 'CLOSED';
+  }
+}
+
+async function toggleLocation(locationId) {
+  const password = document.getElementById('password-input').value.trim();
+  if (!password) {
+    showLocMsg('⚠️ Enter admin password above first', 'err');
+    document.getElementById('password-input').focus();
+    return;
+  }
+  const row = document.querySelector('.loc-row[data-loc="' + locationId + '"]');
+  if (!row) return;
+  const toggle = row.querySelector('.toggle');
+  if (toggle.classList.contains('disabled')) return;
+  const wasEnabled = toggle.classList.contains('on');
+  const newState = !wasEnabled;
+
+  toggle.classList.add('disabled');
+
+  try {
+    const r = await fetch(API + '/api/locations/status', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ locationId, enabled: newState, password })
+    });
+    const d = await r.json();
+    if (d.success) {
+      updateLocRow(row, newState);
+      const locName = row.querySelector('.loc-name').textContent;
+      showLocMsg('✓ ' + locName + ' is now ' + (newState ? 'OPEN' : 'CLOSED'), 'ok');
+    } else {
+      showLocMsg('✗ ' + (d.error || 'Failed to update — check password'), 'err');
+    }
+  } catch (e) {
+    showLocMsg('✗ Server error — try again', 'err');
+  }
+  toggle.classList.remove('disabled');
+}
+
+function showLocMsg(text, type) {
+  const el = document.getElementById('loc-msg');
+  el.textContent = text;
+  el.className = 'msg ' + type;
+  el.style.display = 'block';
+  setTimeout(() => { el.style.display = 'none'; }, 4000);
+}
+
+// Enable toggles once password is typed
+document.getElementById('password-input').addEventListener('input', function() {
+  const hasPw = this.value.trim().length > 0;
+  const banner = document.getElementById('pw-banner');
+  document.querySelectorAll('.toggle').forEach(t => {
+    if (hasPw) t.classList.remove('disabled');
+    else t.classList.add('disabled');
+  });
+  if (hasPw) {
+    banner.textContent = '🔓 Controls unlocked — toggle locations or update donation';
+    banner.classList.add('unlocked');
+  } else {
+    banner.textContent = '🔒 Enter password to enable toggles';
+    banner.classList.remove('unlocked');
+  }
+});
+
+// ── DONATION ───────────────────────────────────────────
 async function loadCurrent() {
   try {
     const r = await fetch(API + '/api/donation');
@@ -92,9 +236,8 @@ async function updateDonation() {
   const amount = document.getElementById('amount-input').value;
   const password = document.getElementById('password-input').value;
   const btn = document.getElementById('update-btn');
-  const msg = document.getElementById('msg');
 
-  if (!amount || !password) { showMsg('Fill in both fields', 'err'); return; }
+  if (!amount || !password) { showMsg('Fill in amount + password', 'err'); return; }
 
   btn.disabled = true;
   btn.textContent = 'Updating...';
@@ -110,7 +253,6 @@ async function updateDonation() {
       showMsg('✓ Donation updated to $' + fmt(Number(amount)) + ' — live on the website!', 'ok');
       document.getElementById('current-display').textContent = '$' + fmt(Number(amount));
       document.getElementById('amount-input').value = '';
-      document.getElementById('password-input').value = '';
     } else {
       showMsg('Wrong password!', 'err');
     }
@@ -128,7 +270,10 @@ function showMsg(text, type) {
   setTimeout(() => el.style.display = 'none', 4000);
 }
 
+// Initial loads
+loadLocationStatus();
 loadCurrent();
+setInterval(loadLocationStatus, 10000);
 setInterval(loadCurrent, 5000);
 </script>
 </body>
