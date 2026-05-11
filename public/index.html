@@ -390,6 +390,12 @@ footer{background:var(--black);color:#888;padding:3rem 1.5rem 2rem;}
 <script>
 var API_BASE = '';
 var activeLocation = 'albert-st';
+var LOCATION_STATUS = {}; // populated on load — {locationId: enabled}
+async function fetchLocationStatus(){try{var r=await fetch('/api/locations/status');var d=await r.json();LOCATION_STATUS=d.status||{};applyLocationStatusToCards();applyLocationStatusToCheckout();}catch(e){console.warn('Location status fetch failed:',e);}}
+function isLocationEnabled(loc){return LOCATION_STATUS[loc]!==false;}
+function applyLocationStatusToCards(){var cards=document.querySelectorAll('.lcard[data-loc]');cards.forEach(function(card){var loc=card.dataset.loc;if(!loc)return;var enabled=isLocationEnabled(loc);var badge=card.querySelector('.lbadge');if(enabled){card.style.opacity='';card.style.filter='';if(badge){badge.className='lbadge lb-live';badge.textContent='✓ Online Ordering Live';}}else{card.style.opacity='.55';card.style.filter='grayscale(.6)';if(badge){badge.className='lbadge lb-soon';badge.textContent='⚠️ Temporarily Closed';}}});}
+function applyLocationStatusToCheckout(){var sel=document.getElementById('o-loc');if(!sel)return;Array.from(sel.options).forEach(function(opt){var loc=opt.value;if(!loc)return;if(!isLocationEnabled(loc)){opt.disabled=true;opt.style.display='none';}else{opt.disabled=false;opt.style.display='';}});if(sel.selectedOptions[0]&&sel.selectedOptions[0].disabled){var firstEnabled=Array.from(sel.options).find(function(o){return!o.disabled&&o.value;});if(firstEnabled){sel.value=firstEnabled.value;setLocation(firstEnabled.value);}}}
+setInterval(fetchLocationStatus,30000);
 </script>
 <div id="welcome-back" class="welcome-back" style="display:none;">
   <div class="wb-inner">
