@@ -516,6 +516,40 @@ app.post('/api/donation', async (req, res) => {
   res.json({ success: true, amount: donationAmount });
 });
 
+// ── LOCATION STATUS (ON/OFF toggle) ───────────────────────────
+app.get('/api/locations/status', async (req, res) => {
+  try {
+    const database = await connectDB();
+    if (!database) return res.json({ status: {} });
+    const doc = await database.collection('settings').findOne({ key: 'location_status' });
+    res.json({ status: doc?.status || {} });
+  } catch (e) {
+    res.json({ status: {} });
+  }
+});
+
+app.post('/api/locations/status', async (req, res) => {
+  const { locationId, enabled, password } = req.body;
+  if (password !== (process.env.ADMIN_PASSWORD || 'sauceboss2025')) return res.status(401).json({ error: 'Wrong password' });
+  if (!locationId || !LOCATIONS[locationId]) return res.status(400).json({ error: 'Invalid location' });
+  try {
+    const database = await connectDB();
+    if (!database) return res.status(500).json({ error: 'Database unavailable' });
+    const doc = await database.collection('settings').findOne({ key: 'location_status' });
+    const status = doc?.status || {};
+    status[locationId] = !!enabled;
+    await database.collection('settings').updateOne(
+      { key: 'location_status' },
+      { $set: { status, updatedAt: new Date() } },
+      { upsert: true }
+    );
+    console.log(`📍 Location ${locationId} → ${enabled ? 'ENABLED' : 'DISABLED'}`);
+    res.json({ success: true, locationId, enabled });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // ── LOCATIONS ─────────────────────────────────────────────────
 app.get('/api/locations', (req, res) => {
   const safe = Object.entries(LOCATIONS).map(([id, loc]) => ({
