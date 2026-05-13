@@ -422,7 +422,8 @@ app.post('/api/orders', async (req, res) => {
     message: cloverSuccess ? `Order sent to ${loc.name} kitchen!` : 'Order recorded!',
     customer: customer.firstName, total: Number(total).toFixed(2),
     phone: customer.phone, orderType, location: loc.name,
-    stampAdded: !!stampResult, gotFreeWings: stampResult?.gotFree || false, loyaltyStamps: stampResult?.stamps
+    stampAdded: !!stampResult, gotFreeWings: stampResult?.gotFree || false, loyaltyStamps: stampResult?.stamps,
+    discountApplied, discountValidated
   });
 });
 
