@@ -303,7 +303,7 @@ PAY AT ${orderType === 'delivery' ? 'DELIVERY' : 'PICKUP'}
   return cloverId;
 }
 
-// ── HEALTH CHECK ───────────────────────────────────────────────
+// ── FIRST-ORDER DISCOUNT CHECK ──────────────────────────────── const FIRST_ORDER_DISCOUNT_PCT = 0.15; const FIRST_ORDER_MIN_SUBTOTAL = 25.00;  async function isFirstOrder(phone) {   if (!phone) return false;   const cleanPhone = String(phone).replace(/\D/g, '');   if (cleanPhone.length < 10) return false;   try {     const database = await connectDB();     if (!database) return false;     const existing = await database.collection('orders').findOne({ 'customer.phone': cleanPhone });     return !existing;   } catch (e) {     console.warn('isFirstOrder check failed:', e.message);     return false;   } }  app.get('/api/check-first-order', async (req, res) => {   const { phone } = req.query;   if (!phone) return res.json({ firstOrder: true, eligible: true });   const firstOrder = await isFirstOrder(phone);   res.json({     firstOrder,     eligible: firstOrder,     discountPct: FIRST_ORDER_DISCOUNT_PCT * 100,     minSubtotal: FIRST_ORDER_MIN_SUBTOTAL   }); });  // ── HEALTH CHECK ───────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', locations: Object.keys(LOCATIONS), time: new Date().toISOString() });
 });
