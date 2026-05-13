@@ -342,6 +342,21 @@ app.post('/api/orders', async (req, res) => {
   const loc = LOCATIONS[locationId];
   const orderNum = 'WO-' + String(Math.floor(1000 + Math.random() * 9000));
   const timestamp = new Date().toLocaleString('en-CA', { timeZone: 'America/Regina' });
+
+  // ── FIRST-ORDER DISCOUNT VALIDATION ────────────────────────
+  let discountApplied = 0;
+  let discountValidated = false;
+  if (req.body.discountRequested === 'first-order') {
+    const eligibleFirstOrder = await isFirstOrder(customer.phone);
+    const subtotalNum = Number(subtotal) || 0;
+    if (eligibleFirstOrder && subtotalNum >= FIRST_ORDER_MIN_SUBTOTAL) {
+      discountApplied = Math.round(subtotalNum * FIRST_ORDER_DISCOUNT_PCT * 100) / 100;
+      discountValidated = true;
+      console.log(`🎉 First-order discount applied: $${discountApplied.toFixed(2)} for ${customer.phone}`);
+    } else {
+      console.log(`⚠️ Discount denied for ${customer.phone}: eligible=${eligibleFirstOrder}, subtotal=$${subtotalNum}, min=$${FIRST_ORDER_MIN_SUBTOTAL}`);
+    }
+  }
   console.log(`\n[${timestamp}] Order ${orderNum} for ${customer.firstName} at ${loc.name}`);
 
   let cloverId = null, cloverSuccess = false;
