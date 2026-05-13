@@ -377,6 +377,7 @@ app.post('/api/orders', async (req, res) => {
         items: items.map(i => ({ name: i.name, flavor: i.flavor || '', price: i.price, qty: i.qty })),
         notes: notes || '', subtotal: Number(subtotal), tax: Number(tax), total: Number(total),
         preOrder: !!preOrder, openTime: openTime || null, cloverId, cloverSuccess,
+        firstOrderDiscount: discountApplied, discountValidated,
         kitchenStatus: 'pending', createdAt: new Date()
       });
       console.log(`✓ Order ${orderNum} saved to Mongo`);
