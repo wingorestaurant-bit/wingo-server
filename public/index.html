@@ -1919,5 +1919,109 @@ showFirstOrderBanner();
   };
 })();
 </script>
+  </script>
+<script>
+// ============================================
+// 🎉 FIRST ORDER 15% DISCOUNT — Safe Wrapper
+// Wraps existing functions without modifying them
+// To disable: delete this entire <script> block
+// ============================================
+(function(){
+  var DISCOUNT_PCT = 0.15;
+  var MIN_SUBTOTAL = 25;
+
+  function isFirstOrderEligible(){
+    if(localStorage.getItem('wingo_last_order')) return false;
+    return localStorage.getItem('wingo_first_order_eligible')==='1' || !localStorage.getItem('wingo_first_order_popup_seen');
+  }
+
+  function wrapCheckout(){
+    if(typeof window.renderCheckoutForm !== 'function'){
+      setTimeout(wrapCheckout, 200);
+      return;
+    }
+    if(window._discountWrapped) return;
+    window._discountWrapped = true;
+
+    var origRender = window.renderCheckoutForm;
+    window.renderCheckoutForm = function(){
+      origRender.apply(this, arguments);
+      try {
+        var sub = (window.cart||[]).reduce(function(s,i){return s + i.price*i.qty;}, 0);
+        if(!isFirstOrderEligible()) { window._foDiscount = 0; return; }
+
+        var mbd = document.getElementById('mbd');
+        if(!mbd) return;
+
+        var existing = document.getElementById('fo-discount-badge');
+        if(existing) existing.remove();
+
+        var osBox = mbd.querySelector('.os-box');
+        if(!osBox) return;
+
+        var discountAmount = 0;
+        var msg = '';
+
+        if(sub >= MIN_SUBTOTAL){
+          discountAmount = Math.round(sub * DISCOUNT_PCT * 100) / 100;
+          msg = '<div id="fo-discount-badge" style="background:rgba(72,187,120,.12);border:1.5px solid #48BB78;border-radius:5px;padding:.6rem .85rem;margin:.5rem 0;display:flex;justify-content:space-between;align-items:center;font-family:var(--font-head);font-size:.85rem;color:#276749;font-weight:700;letter-spacing:.5px;"><span>🎉 First Order Discount (15% off)</span><span>−$'+discountAmount.toFixed(2)+'</span></div>';
+        } else if(sub > 0){
+          msg = '<div id="fo-discount-badge" style="background:rgba(245,168,0,.08);border:1.5px dashed rgba(245,168,0,.6);border-radius:5px;padding:.6rem .85rem;margin:.5rem 0;font-family:var(--font-head);font-size:.78rem;color:#7B5500;font-weight:600;letter-spacing:.5px;text-align:center;">💡 Add $'+(MIN_SUBTOTAL-sub).toFixed(2)+' more to unlock 15% off your first order!</div>';
+        }
+
+        if(msg){
+          osBox.insertAdjacentHTML('beforebegin', msg);
+        }
+
+        window._foDiscount = discountAmount;
+
+        if(discountAmount > 0){
+          adjustDisplayedTotal(discountAmount);
+        }
+      } catch(e){ console.warn('Discount wrapper error:', e); }
+    };
+    console.log('🎉 First-order discount wrapper attached');
+  }
+
+  function adjustDisplayedTotal(discount){
+    var mbd = document.getElementById('mbd');
+    if(!mbd) return;
+    var totalEl = mbd.querySelector('.os-total span:last-child');
+    if(!totalEl) return;
+    var sub = (window.cart||[]).reduce(function(s,i){return s + i.price*i.qty;}, 0);
+    var subAfter = sub - discount;
+    var del = (window.orderType==='delivery') ? 5.50 : 0;
+    var tipPct = window._tipPct!==undefined ? window._tipPct : 15;
+    var newTotal = subAfter + (subAfter*0.05) + (subAfter*0.06) + del + (subAfter*tipPct/100);
+    totalEl.textContent = '$'+newTotal.toFixed(2);
+  }
+
+  function wrapSubmit(){
+    if(window._submitWrapped) return;
+    window._submitWrapped = true;
+
+    var origFetch = window.fetch;
+    window.fetch = function(url, options){
+      if(typeof url === 'string' && url.indexOf('/api/orders') !== -1 && options && options.method === 'POST'){
+        try {
+          var body = JSON.parse(options.body);
+          if(window._foDiscount && window._foDiscount > 0 && isFirstOrderEligible()){
+            body.discountRequested = 'first-order';
+            body.discountAmount = window._foDiscount;
+            options.body = JSON.stringify(body);
+            console.log('🎉 Sending first-order discount: $'+window._foDiscount);
+          }
+        } catch(e){ console.warn('Order body intercept failed:', e); }
+      }
+      return origFetch.apply(this, arguments);
+    };
+    console.log('🎉 Order submit wrapper attached');
+  }
+
+  wrapCheckout();
+  wrapSubmit();
+})();
+</script>
+</body>
 </body>
 </html>
