@@ -1846,6 +1846,61 @@ async function submitGauntlet(){
   <script>
 // Define the missing function so it stops crashing
 if(typeof showNotifBanner!=='function'){window.showNotifBanner=function(){};}
+
+// ============================================
+// 🎉 FIRST ORDER 15% OFF — WELCOME POPUP
+// ============================================
+(function(){
+  var STORAGE_KEY = 'wingo_first_order_popup_seen';
+  var DISCOUNT_KEY = 'wingo_first_order_eligible';
+
+  // Skip if popup already seen
+  if(localStorage.getItem(STORAGE_KEY)) return;
+
+  // Skip if user has order history (they're not a first-timer)
+  if(localStorage.getItem('wingo_last_order')) {
+    localStorage.setItem(STORAGE_KEY, '1');
+    return;
+  }
+
+  // Wait 3 seconds before showing — let page load
+  setTimeout(showFirstOrderPopup, 3000);
+
+  function showFirstOrderPopup(){
+    var ov = document.createElement('div');
+    ov.id = 'fo-popup-ov';
+    ov.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:1rem;animation:fo-fade .3s ease-out;';
+    ov.innerHTML = '<style>@keyframes fo-fade{from{opacity:0;}to{opacity:1;}}@keyframes fo-pop{from{transform:scale(.85);opacity:0;}to{transform:scale(1);opacity:1;}}</style>'+
+      '<div style="background:linear-gradient(135deg,#0D0D0D,#1A1208);border:3px solid #F5A800;border-radius:12px;max-width:440px;width:100%;padding:2rem 1.75rem;text-align:center;color:white;position:relative;animation:fo-pop .4s cubic-bezier(.34,1.56,.64,1);box-shadow:0 20px 60px rgba(232,25,10,.4);">'+
+        '<button onclick="dismissFirstOrderPopup()" style="position:absolute;top:.85rem;right:1rem;background:none;border:none;color:#888;font-size:1.4rem;cursor:pointer;">✕</button>'+
+        '<div style="font-size:3rem;margin-bottom:.5rem;">🎉</div>'+
+        '<div style="font-family:var(--font-head);font-size:.78rem;color:#F5A800;letter-spacing:3px;text-transform:uppercase;margin-bottom:.5rem;font-weight:700;">First Time Here?</div>'+
+        '<div style="font-family:var(--font-display);font-size:2.4rem;color:white;letter-spacing:3px;line-height:1;margin-bottom:.4rem;">15% OFF</div>'+
+        '<div style="font-family:var(--font-display);font-size:1.4rem;color:#E8190A;letter-spacing:2px;line-height:1;margin-bottom:1rem;">YOUR FIRST ORDER</div>'+
+        '<p style="color:#CCC;font-size:.92rem;line-height:1.5;margin-bottom:1.25rem;">Skip the delivery apps. Order direct from us and save 15% on your first order.<br><strong style="color:#F5A800;">Auto-applied at checkout</strong> on orders over $25.</p>'+
+        '<button onclick="claimFirstOrderDiscount()" style="width:100%;background:#E8190A;color:white;border:none;padding:1rem;font-family:var(--font-display);font-size:1.2rem;letter-spacing:2.5px;cursor:pointer;border-radius:5px;text-transform:uppercase;box-shadow:0 4px 0 #A80F00;margin-bottom:.5rem;">START SAVING 🔥</button>'+
+        '<button onclick="dismissFirstOrderPopup()" style="width:100%;background:transparent;color:#888;border:none;padding:.6rem;font-family:var(--font-head);font-size:.75rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;">No thanks</button>'+
+      '</div>';
+    document.body.appendChild(ov);
+  }
+
+  window.dismissFirstOrderPopup = function(){
+    var el = document.getElementById('fo-popup-ov');
+    if(el) el.remove();
+    localStorage.setItem(STORAGE_KEY, '1');
+  };
+
+  window.claimFirstOrderDiscount = function(){
+    localStorage.setItem(STORAGE_KEY, '1');
+    localStorage.setItem(DISCOUNT_KEY, '1');
+    dismissFirstOrderPopup();
+    if(typeof toast === 'function') toast('🎉 Discount locked in! Add wings to your cart 🍗');
+    setTimeout(function(){
+      var menu = document.getElementById('cat-section');
+      if(menu) menu.scrollIntoView({behavior:'smooth'});
+    }, 300);
+  };
+})();
 </script>
 </body>
 </html>
