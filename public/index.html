@@ -1849,8 +1849,24 @@ async function submitGauntlet(){
 if(typeof showNotifBanner!=='function'){window.showNotifBanner=function(){};}
 
 // ============================================
-// 🎉 FIRST ORDER 15% OFF — WELCOME POPUP
+// 🎉 FIRST ORDER 15% OFF — BANNER + POPUP
 // ============================================
+function showFirstOrderBanner(){
+  var banner = document.getElementById('first-order-banner');
+  if(!banner) return;
+  // Hide banner if user already has order history (returning customer)
+  if(localStorage.getItem('wingo_last_order')){
+    banner.style.display='none';
+    return;
+  }
+  banner.style.display='block';
+}
+window.scrollToOrderFromBanner = function(){
+  var menu = document.getElementById('cat-section');
+  if(menu) menu.scrollIntoView({behavior:'smooth'});
+  if(typeof toast==='function') toast('🎉 Add items to your cart — 15% off applies at checkout!');
+};
+showFirstOrderBanner();
 (function(){
   var STORAGE_KEY = 'wingo_first_order_popup_seen';
   var DISCOUNT_KEY = 'wingo_first_order_eligible';
