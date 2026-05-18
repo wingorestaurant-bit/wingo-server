@@ -1044,6 +1044,125 @@ app.post('/api/loyalty/migrate-codes', async (req, res) => {
 app.get('/r/:code', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
+
+// ========================================================
+// 👥 CUSTOMER DATABASE — Aggregates all customers from orders
+// ========================================================
+app.get('/customers', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'customers.html')); });
+app.get('/customers.html', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'customers.html')); });
+
+app.get('/api/customers', async (req, res) => {
+  const { password } = req.query;
+  if (password !== (process.env.ADMIN_PASSWORD || 'sauceboss2025')) {
+    return res.status(401).json({ success: false, error: 'Unauthorized' });
+  }
+  try {
+    const database = await connectDB();
+    if (!database) return res.json({ success: false, error: 'Database unavailable' });
+
+    // Aggregate ALL orders by phone number
+    const orders = await database.collection('orders').find({}).sort({ createdAt: -1 }).toArray();
+    const loyaltyMembers = await database.collection('loyalty').find({}).toArray();
+
+    // Build a phone -> loyalty member map
+    const loyaltyMap = {};
+    loyaltyMembers.forEach(m => {
+      if (m.phone) loyaltyMap[m.phone] = m;
+    });
+
+    // Aggregate orders by customer phone
+    const customerMap = {};
+    orders.forEach(o => {
+      const phone = (o.customer?.phone || '').replace(/\D/g, '');
+      if (!phone || phone.length < 10) return;
+      if (!customerMap[phone]) {
+        customerMap[phone] = {
+          phone,
+          firstName: o.customer?.firstName || '',
+          lastName: o.customer?.lastName || '',
+          email: o.customer?.email || '',
+          firstOrderDate: o.createdAt,
+          lastOrderDate: o.createdAt,
+          totalOrders: 0,
+          totalRevenue: 0,
+          locations: {},
+          orderTypes: { pickup: 0, delivery: 0 },
+          orders: []
+        };
+      }
+      const c = customerMap[phone];
+      c.totalOrders++;
+      c.totalRevenue += Number(o.total) || 0;
+      if (new Date(o.createdAt) < new Date(c.firstOrderDate)) c.firstOrderDate = o.createdAt;
+      if (new Date(o.createdAt) > new Date(c.lastOrderDate)) c.lastOrderDate = o.createdAt;
+      const loc = o.locationId || 'unknown';
+      c.locations[loc] = (c.locations[loc] || 0) + 1;
+      const otype = o.orderType || 'pickup';
+      c.orderTypes[otype] = (c.orderTypes[otype] || 0) + 1;
+      c.orders.push({
+        orderNum: o.orderNum,
+        date: o.createdAt,
+        total: o.total,
+        location: o.locationId,
+        orderType: o.orderType,
+        items: o.items?.length || 0,
+        discountApplied: o.firstOrderDiscount || 0
+      });
+      // Always use latest name/email if missing
+      if (!c.firstName && o.customer?.firstName) c.firstName = o.customer.firstName;
+      if (!c.email && o.customer?.email) c.email = o.customer.email;
+    });
+
+    // Convert to array + enrich with loyalty data
+    const customers = Object.values(customerMap).map(c => {
+      const loyalty = loyaltyMap[c.phone];
+      // Find favorite location
+      let favLocation = '';
+      let maxCount = 0;
+      Object.entries(c.locations).forEach(([loc, count]) => {
+        if (count > maxCount) { maxCount = count; favLocation = loc; }
+      });
+      return {
+        ...c,
+        avgOrderValue: c.totalRevenue / c.totalOrders,
+        favoriteLocation: favLocation,
+        isLoyaltyMember: !!loyalty,
+        loyaltyStamps: loyalty?.stamps || 0,
+        loyaltyTotalOrders: loyalty?.totalOrders || 0,
+        loyaltyFreeEarned: loyalty?.freeEarned || 0,
+        referralCode: loyalty?.referralCode || '',
+        referralCount: loyalty?.referralCount || 0
+      };
+    });
+
+    // Sort by most recent order by default
+    customers.sort((a, b) => new Date(b.lastOrderDate) - new Date(a.lastOrderDate));
+
+    // Compute summary stats
+    const now = new Date();
+    const reginaNow = new Date(now.toLocaleString('en-US', { timeZone: 'America/Regina' }));
+    const todayStart = new Date(reginaNow); todayStart.setHours(0, 0, 0, 0);
+    const weekStart = new Date(todayStart); weekStart.setDate(weekStart.getDate() - 7);
+    const monthStart = new Date(todayStart); monthStart.setDate(monthStart.getDate() - 30);
+
+    const stats = {
+      totalCustomers: customers.length,
+      newToday: customers.filter(c => new Date(c.firstOrderDate) >= todayStart).length,
+      newThisWeek: customers.filter(c => new Date(c.firstOrderDate) >= weekStart).length,
+      newThisMonth: customers.filter(c => new Date(c.firstOrderDate) >= monthStart).length,
+      totalOrders: customers.reduce((s, c) => s + c.totalOrders, 0),
+      totalRevenue: customers.reduce((s, c) => s + c.totalRevenue, 0),
+      avgLifetimeValue: customers.length ? customers.reduce((s, c) => s + c.totalRevenue, 0) / customers.length : 0,
+      loyaltyMembers: customers.filter(c => c.isLoyaltyMember).length,
+      repeatCustomers: customers.filter(c => c.totalOrders > 1).length
+    };
+
+    res.json({ success: true, customers, stats });
+  } catch (e) {
+    console.error('[Customers] Error:', e.message);
+    res.json({ success: false, error: e.message });
+  }
+});
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`\n🔥 Wing-O server on port ${PORT}`);
