@@ -92,7 +92,7 @@ const LOCATIONS = {
     merchantId: "WSTB4D3E5RAG1",
     apiToken: process.env.CLOVER_API_TOKEN_BEACH,
     address: "110 Centre St, Regina Beach, SK",
-    phone: "639-777-1071",
+    phone: "639-997-0553",
     hours: "Every Day 11am-10pm",
     onlinePayments: false,
     cloverPrivateKey: process.env.CLOVER_PRIVATE_KEY_BEACH
