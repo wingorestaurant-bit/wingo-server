@@ -388,6 +388,21 @@ app.post('/api/orders', async (req, res) => {
       console.log(`⚠️ Discount denied for ${customer.phone}: eligible=${eligibleFirstOrder}, subtotal=$${subtotalNum}, min=$${FIRST_ORDER_MIN_SUBTOTAL}`);
     }
   }
+
+  // ── CONTEST WINNER REDEMPTION CHECK ────────────────────────
+  let contestRedemption = null;
+  try {
+    const phoneNorm = String(customer.phone || '').replace(/\D/g, '');
+    const subtotalForContest = Number(subtotal) || 0;
+    if (typeof checkContestRedemption === 'function') {
+      const r = await checkContestRedemption(phoneNorm, locationId, subtotalForContest);
+      if (r.applies) {
+        contestRedemption = r;
+        console.log(`🏆 CONTEST WINNER REDEMPTION: ${r.winner_name} (${phoneNorm}) — discount $${r.discount_amount.toFixed(2)} at ${loc.name}`);
+      }
+    }
+  } catch (e) { console.warn('Contest redemption check failed:', e.message); }
+
   console.log(`\n[${timestamp}] Order ${orderNum} for ${customer.firstName} at ${loc.name}`);
 
   let cloverId = null, cloverSuccess = false;
@@ -406,9 +421,13 @@ app.post('/api/orders', async (req, res) => {
           phone: customer.phone, email: customer.email || '', address: customer.address || ''
         },
         items: items.map(i => ({ name: i.name, flavor: i.flavor || '', price: i.price, qty: i.qty })),
-        notes: notes || '', subtotal: Number(subtotal), tax: Number(tax), total: Number(total),
+        notes: contestRedemption
+          ? ('🏆 FREE WINGS WINNER · ' + contestRedemption.label + ' · ' + (notes || ''))
+          : (notes || ''),
+        subtotal: Number(subtotal), tax: Number(tax), total: Number(total),
         preOrder: !!preOrder, openTime: openTime || null, cloverId, cloverSuccess,
         firstOrderDiscount: discountApplied, discountValidated,
+        contestRedemption: contestRedemption || null,
         kitchenStatus: 'pending', createdAt: new Date()
       });
       console.log(`✓ Order ${orderNum} saved to Mongo`);
@@ -886,6 +905,392 @@ app.get('/api/dashboard/orders', async (req, res) => {
     res.json({ success: false, error: err.message });
   }
 });
+
+// ========================================================
+// 🏆 FREE WINGS FOR A YEAR — Contest module
+// ========================================================
+// Paste this ENTIRE block into server.js immediately BEFORE
+// the "// ── SPA FALLBACK ──" section (the app.get('*') line).
+// No new dependencies required — uses your existing connectDB,
+// sendEmail, MongoClient, ObjectId, and node-fetch.
+// ========================================================
+
+// ── CONTEST CONFIG ─────────────────────────────────────────────
+// Edit these 3 dates before launch. SK uses CST year-round (no DST).
+const CONTEST_CONFIG = {
+  ENTRY_OPENS_AT:  process.env.CONTEST_OPEN  || '2026-06-02T00:00:00-06:00',
+  ENTRY_CLOSES_AT: process.env.CONTEST_CLOSE || '2026-06-29T23:59:59-06:00',
+  DRAW_DATE_LABEL: process.env.CONTEST_DRAW_LABEL || 'Wednesday, July 1, 2026',
+  CLAIM_WINDOW_DAYS: 7,
+  WEEKLY_CAP_DOLLARS: null,   // null = no cap. Set a number (e.g. 50) to cap.
+  WEEKS: 52,
+  ELIGIBLE_LOCATIONS: ['albert-st','rochdale','east-regina','moose-jaw','regina-beach'],
+  ADMIN_PASSWORD: process.env.CONTEST_ADMIN_PASSWORD || 'wingocontest2026',
+  ELIGIBLE_PROVINCE: 'SK',
+  RATE_LIMIT_PER_MIN: 5
+};
+
+// ── CONTEST HELPERS ────────────────────────────────────────────
+function contestIsOpen() {
+  const now = Date.now();
+  return now >= Date.parse(CONTEST_CONFIG.ENTRY_OPENS_AT) && now <= Date.parse(CONTEST_CONFIG.ENTRY_CLOSES_AT);
+}
+
+function genSkillQuestion() {
+  const a = 5 + Math.floor(Math.random() * 20);
+  const b = 2 + Math.floor(Math.random() * 8);
+  const c = 5 + Math.floor(Math.random() * 30);
+  const d = 1 + Math.floor(Math.random() * 15);
+  return { text: `(${a} × ${b}) + ${c} − ${d} = ?`, answer: (a * b) + c - d };
+}
+
+function newContestToken() {
+  return require('crypto').randomBytes(24).toString('hex');
+}
+
+// Start of current week (Monday 00:00 CST) in epoch ms — SK has no DST
+function weekStartCstMs(d) {
+  d = d || new Date();
+  const cstOffsetMs = -6 * 60 * 60 * 1000;
+  const utc = d.getTime() + d.getTimezoneOffset() * 60000;
+  const cst = new Date(utc + cstOffsetMs);
+  const day = cst.getUTCDay();
+  const diffToMon = (day === 0 ? -6 : 1 - day);
+  cst.setUTCDate(cst.getUTCDate() + diffToMon);
+  cst.setUTCHours(0, 0, 0, 0);
+  return cst.getTime() - cstOffsetMs;
+}
+
+// In-memory rate limiter
+const contestRateBuckets = new Map();
+function contestCheckRate(ip) {
+  const now = Date.now();
+  const bucket = (contestRateBuckets.get(ip) || []).filter(t => now - t < 60000);
+  if (bucket.length >= CONTEST_CONFIG.RATE_LIMIT_PER_MIN) return false;
+  bucket.push(now);
+  contestRateBuckets.set(ip, bucket);
+  return true;
+}
+
+// Build the contest indexes once at startup (non-blocking)
+setTimeout(async function() {
+  try {
+    const database = await connectDB();
+    if (!database) return;
+    await database.collection('contest_entries').createIndex({ email_normalized: 1 }, { unique: true });
+    await database.collection('contest_entries').createIndex({ phone_normalized: 1 });
+    await database.collection('contest_entries').createIndex({ created_at: -1 });
+    console.log('✓ Contest indexes ready');
+  } catch (e) { console.warn('Contest index setup:', e.message); }
+}, 3000);
+
+// ── STATIC PAGES ──────────────────────────────────────────────
+app.get('/contest',       (req, res) => res.sendFile(path.join(__dirname, 'public', 'contest.html')));
+app.get('/contest/rules', (req, res) => res.sendFile(path.join(__dirname, 'public', 'contest-rules.html')));
+app.get('/contest/claim/:token', (req, res) => res.sendFile(path.join(__dirname, 'public', 'contest-claim.html')));
+app.get('/contest-admin', (req, res) => res.sendFile(path.join(__dirname, 'public', 'contest-admin.html')));
+
+// ── PUBLIC: SUBMIT ENTRY ──────────────────────────────────────
+app.post('/api/contest/entry', async (req, res) => {
+  try {
+    const ip = (req.headers['x-forwarded-for'] || req.ip || '').split(',')[0].trim();
+    if (!contestCheckRate(ip)) return res.status(429).json({ success: false, error: 'Too many entries from this address — try again in a minute.' });
+    if (!contestIsOpen()) return res.status(400).json({ success: false, error: 'The contest is not currently open.' });
+
+    const { firstName, lastName, email, phone, city, province, age_confirm, consent_rules, consent_marketing, ig_handle, fb_handle, tagged_friends } = req.body || {};
+    if (!firstName || !email || !phone) return res.status(400).json({ success: false, error: 'Name, email, and phone are required.' });
+    if (!consent_rules) return res.status(400).json({ success: false, error: 'You must agree to the contest rules to enter.' });
+    if (age_confirm !== true && age_confirm !== 'true') return res.status(400).json({ success: false, error: 'You must confirm you are 18 or older.' });
+    if ((province || '').toUpperCase() !== CONTEST_CONFIG.ELIGIBLE_PROVINCE) return res.status(400).json({ success: false, error: 'Open to Saskatchewan residents only.' });
+
+    const emailNorm = String(email).trim().toLowerCase();
+    const phoneNorm = String(phone).replace(/\D/g, '');
+    if (!emailNorm.includes('@')) return res.status(400).json({ success: false, error: 'Please enter a valid email.' });
+    if (phoneNorm.length < 10)    return res.status(400).json({ success: false, error: 'Please enter a valid phone number.' });
+
+    const bonuses = [];
+    if (ig_handle && String(ig_handle).trim())                    bonuses.push('ig_follow');
+    if (fb_handle && String(fb_handle).trim())                    bonuses.push('fb_follow');
+    if (tagged_friends && String(tagged_friends).trim().length>3) bonuses.push('tag_friend');
+
+    const doc = {
+      firstName: String(firstName).trim().slice(0, 60),
+      lastName:  String(lastName || '').trim().slice(0, 60),
+      email:     String(email).trim().slice(0, 200),
+      email_normalized: emailNorm,
+      phone:     String(phone).trim().slice(0, 30),
+      phone_normalized: phoneNorm,
+      city:      String(city || '').trim().slice(0, 80),
+      province:  'SK',
+      age_confirm: true,
+      consent_rules: true,
+      consent_marketing: !!consent_marketing,
+      ig_handle: String(ig_handle || '').trim().slice(0, 60),
+      fb_handle: String(fb_handle || '').trim().slice(0, 60),
+      tagged_friends: String(tagged_friends || '').trim().slice(0, 300),
+      bonus_entries: bonuses,
+      total_entries: 1 + bonuses.length,
+      created_at: new Date(),
+      ip,
+      user_agent: String(req.headers['user-agent'] || '').slice(0, 300)
+    };
+
+    const database = await connectDB();
+    if (!database) return res.status(500).json({ success: false, error: 'Database unavailable.' });
+
+    try {
+      await database.collection('contest_entries').insertOne(doc);
+    } catch (e) {
+      if (e.code === 11000) return res.status(409).json({ success: false, error: 'This email is already entered. One entry per person.' });
+      throw e;
+    }
+
+    console.log(`🏆 Contest entry: ${doc.firstName} ${doc.lastName} (${emailNorm}) — ${doc.total_entries} entr${doc.total_entries===1?'y':'ies'}`);
+
+    // Reuse existing email infra to notify Gagan
+    sendEmail({
+      to: 'besaucy@wingorestaurants.com',
+      subject: `🏆 New Contest Entry — ${doc.firstName} ${doc.lastName} (${doc.total_entries} entries)`,
+      html: `<div style="font-family:Arial;max-width:500px;margin:0 auto;background:#0D0D0D;padding:24px;border-radius:8px;color:#CCC;">
+        <h2 style="color:#F5A800;margin:0 0 16px;">🏆 New Contest Entry</h2>
+        <table style="width:100%;font-size:14px;">
+          <tr><td style="padding:6px 0;color:#888;width:120px;">Name</td><td style="color:white;font-weight:bold;">${doc.firstName} ${doc.lastName}</td></tr>
+          <tr><td style="padding:6px 0;color:#888;">Email</td><td>${doc.email}</td></tr>
+          <tr><td style="padding:6px 0;color:#888;">Phone</td><td>${doc.phone}</td></tr>
+          <tr><td style="padding:6px 0;color:#888;">City</td><td>${doc.city}</td></tr>
+          <tr><td style="padding:6px 0;color:#888;">Entries</td><td style="color:#F5A800;font-weight:bold;">${doc.total_entries} (${doc.bonus_entries.length} bonus)</td></tr>
+          <tr><td style="padding:6px 0;color:#888;">Marketing</td><td>${doc.consent_marketing ? '✓ Opted in' : '— Skipped'}</td></tr>
+        </table>
+      </div>`
+    });
+
+    res.json({ success: true, entries: doc.total_entries, message: `You're in, ${doc.firstName}! You earned ${doc.total_entries} ${doc.total_entries === 1 ? 'entry' : 'entries'}.` });
+  } catch (e) {
+    console.error('[contest/entry]', e.message);
+    res.status(500).json({ success: false, error: 'Server error. Please try again.' });
+  }
+});
+
+// ── PUBLIC: STATUS (for countdown / counters) ─────────────────
+app.get('/api/contest/status', async (req, res) => {
+  try {
+    const database = await connectDB();
+    const total = database ? await database.collection('contest_entries').countDocuments({}) : 0;
+    res.json({
+      success: true,
+      open: contestIsOpen(),
+      opens_at: CONTEST_CONFIG.ENTRY_OPENS_AT,
+      closes_at: CONTEST_CONFIG.ENTRY_CLOSES_AT,
+      draw_date_label: CONTEST_CONFIG.DRAW_DATE_LABEL,
+      entries_count: total,
+      weekly_cap: CONTEST_CONFIG.WEEKLY_CAP_DOLLARS,
+      weeks: CONTEST_CONFIG.WEEKS
+    });
+  } catch (e) { res.json({ success: false }); }
+});
+
+// ── ADMIN: LOGIN CHECK ────────────────────────────────────────
+app.post('/api/contest/admin/login', (req, res) => {
+  if ((req.body || {}).password !== CONTEST_CONFIG.ADMIN_PASSWORD) return res.status(401).json({ success: false, error: 'Unauthorized' });
+  res.json({ success: true });
+});
+
+// ── ADMIN: LIST ENTRIES ───────────────────────────────────────
+app.post('/api/contest/admin/list', async (req, res) => {
+  if ((req.body || {}).password !== CONTEST_CONFIG.ADMIN_PASSWORD) return res.status(401).json({ success: false, error: 'Unauthorized' });
+  try {
+    const database = await connectDB();
+    if (!database) return res.json({ success: false, error: 'Database unavailable' });
+    const list = await database.collection('contest_entries').find({}, { projection: { ip: 0, user_agent: 0 } }).sort({ created_at: -1 }).limit(5000).toArray();
+    res.json({ success: true, count: list.length, entries: list });
+  } catch (e) { res.status(500).json({ success: false, error: e.message }); }
+});
+
+// ── ADMIN: DRAW WINNER ────────────────────────────────────────
+app.post('/api/contest/admin/draw', async (req, res) => {
+  if ((req.body || {}).password !== CONTEST_CONFIG.ADMIN_PASSWORD) return res.status(401).json({ success: false, error: 'Unauthorized' });
+  try {
+    const database = await connectDB();
+    if (!database) return res.status(500).json({ success: false, error: 'Database unavailable' });
+
+    const existing = await database.collection('contest_winner').findOne({});
+    if (existing && existing.claimed_at) return res.status(400).json({ success: false, error: 'A winner has already been drawn and claimed the prize.' });
+
+    const all = await database.collection('contest_entries').find({}).toArray();
+    if (!all.length) return res.status(400).json({ success: false, error: 'No entries to draw from.' });
+
+    // Weighted pool: each entry appears once per total_entries
+    const pool = [];
+    all.forEach(e => {
+      const n = e.total_entries || 1;
+      for (let i = 0; i < n; i++) pool.push(e._id);
+    });
+    const winnerId = pool[Math.floor(Math.random() * pool.length)];
+    const winnerEntry = all.find(e => String(e._id) === String(winnerId));
+
+    const stq = genSkillQuestion();
+    const token = newContestToken();
+    const expiresAt = new Date(Date.now() + CONTEST_CONFIG.CLAIM_WINDOW_DAYS * 86400000);
+
+    await database.collection('contest_winner').deleteMany({});
+    await database.collection('contest_winner').insertOne({
+      entry_id: winnerEntry._id,
+      firstName: winnerEntry.firstName,
+      lastName:  winnerEntry.lastName,
+      email:     winnerEntry.email,
+      phone:     winnerEntry.phone_normalized,
+      city:      winnerEntry.city,
+      drawn_at:  new Date(),
+      claim_token: token,
+      claim_expires_at: expiresAt,
+      stq_question: stq.text,
+      stq_correct_answer: stq.answer,
+      stq_attempts: 0,
+      claimed_at: null,
+      weeks_used: 0,
+      weekly_cap_dollars: CONTEST_CONFIG.WEEKLY_CAP_DOLLARS,
+      last_redeemed_week_start: null
+    });
+
+    const host = req.headers['x-forwarded-host'] || req.headers.host || 'wingorestaurants.com';
+    const claim_url = `https://${host}/contest/claim/${token}`;
+
+    console.log(`🎲 Contest draw: ${winnerEntry.firstName} ${winnerEntry.lastName} (pool size: ${pool.length}, unique: ${all.length})`);
+
+    sendEmail({
+      to: 'besaucy@wingorestaurants.com',
+      subject: `🎲 CONTEST WINNER DRAWN — ${winnerEntry.firstName} ${winnerEntry.lastName}`,
+      html: `<div style="font-family:Arial;max-width:500px;margin:0 auto;background:#0D0D0D;padding:24px;border-radius:8px;color:#CCC;">
+        <h2 style="color:#F5A800;margin:0 0 16px;">🏆 Potential Winner Drawn</h2>
+        <table style="width:100%;font-size:14px;">
+          <tr><td style="padding:6px 0;color:#888;width:120px;">Name</td><td style="color:white;font-weight:bold;">${winnerEntry.firstName} ${winnerEntry.lastName}</td></tr>
+          <tr><td style="padding:6px 0;color:#888;">Phone</td><td><a href="tel:${winnerEntry.phone_normalized}" style="color:#E8190A;">${winnerEntry.phone_normalized}</a></td></tr>
+          <tr><td style="padding:6px 0;color:#888;">Email</td><td>${winnerEntry.email}</td></tr>
+          <tr><td style="padding:6px 0;color:#888;">City</td><td>${winnerEntry.city || '—'}</td></tr>
+          <tr><td style="padding:6px 0;color:#888;">Pool size</td><td>${pool.length} weighted / ${all.length} unique</td></tr>
+        </table>
+        <div style="background:#1A1208;border:1.5px dashed #F5A800;border-radius:6px;padding:12px;margin-top:16px;text-align:center;">
+          <div style="color:#888;font-size:11px;letter-spacing:2px;margin-bottom:6px;">CLAIM URL — SEND TO WINNER</div>
+          <div style="color:#F5A800;font-family:monospace;font-size:13px;word-break:break-all;">${claim_url}</div>
+        </div>
+        <p style="margin-top:14px;font-size:13px;color:#888;">Expires: ${expiresAt.toLocaleString()}. 3 attempts. STQ: <strong style="color:white;">${stq.text}</strong></p>
+      </div>`
+    });
+
+    res.json({
+      success: true,
+      winner: { name: winnerEntry.firstName + ' ' + winnerEntry.lastName, email: winnerEntry.email, phone: winnerEntry.phone_normalized, city: winnerEntry.city },
+      claim_url,
+      claim_expires_at: expiresAt,
+      stq_question: stq.text,
+      message: `Drawn from pool of ${pool.length} weighted entries (${all.length} unique entrants). Contact the winner with the claim URL.`
+    });
+  } catch (e) {
+    console.error('[contest/admin/draw]', e.message);
+    res.status(500).json({ success: false, error: 'Draw failed.' });
+  }
+});
+
+// ── WINNER: GET STQ ───────────────────────────────────────────
+app.get('/api/contest/claim/:token', async (req, res) => {
+  try {
+    const database = await connectDB();
+    if (!database) return res.json({ success: false, error: 'Database unavailable' });
+    const w = await database.collection('contest_winner').findOne({ claim_token: req.params.token });
+    if (!w) return res.json({ success: false, error: 'Invalid or expired claim link.' });
+    if (w.claimed_at) return res.json({ success: false, error: 'This prize has already been claimed.' });
+    if (Date.now() > new Date(w.claim_expires_at).getTime()) return res.json({ success: false, error: 'This claim link has expired.' });
+    res.json({ success: true, firstName: w.firstName, stq_question: w.stq_question, attempts_remaining: 3 - (w.stq_attempts || 0) });
+  } catch (e) { res.json({ success: false, error: 'Lookup failed' }); }
+});
+
+// ── WINNER: SUBMIT STQ ────────────────────────────────────────
+app.post('/api/contest/claim', async (req, res) => {
+  try {
+    const { token, answer } = req.body || {};
+    const database = await connectDB();
+    if (!database) return res.json({ success: false, error: 'Database unavailable' });
+    const w = await database.collection('contest_winner').findOne({ claim_token: token });
+    if (!w) return res.json({ success: false, error: 'Invalid or expired claim link.' });
+    if (w.claimed_at) return res.json({ success: false, error: 'This prize has already been claimed.' });
+    if (Date.now() > new Date(w.claim_expires_at).getTime()) return res.json({ success: false, error: 'Claim link expired.' });
+    if ((w.stq_attempts || 0) >= 3) return res.json({ success: false, error: 'No attempts remaining. The next entrant will be drawn.' });
+
+    const submitted = parseInt(String(answer).trim(), 10);
+    if (isNaN(submitted)) return res.json({ success: false, error: 'Please enter a number.' });
+
+    if (submitted !== w.stq_correct_answer) {
+      await database.collection('contest_winner').updateOne({ _id: w._id }, { $inc: { stq_attempts: 1 } });
+      const remaining = 2 - (w.stq_attempts || 0);
+      return res.json({ success: false, error: `Incorrect. ${remaining > 0 ? remaining + ' attempt(s) remaining.' : 'No attempts remaining.'}` });
+    }
+
+    await database.collection('contest_winner').updateOne({ _id: w._id }, { $set: { claimed_at: new Date() } });
+
+    console.log(`🏆 CONTEST CLAIMED: ${w.firstName} ${w.lastName} (${w.phone}) — free wings for ${CONTEST_CONFIG.WEEKS} weeks activated`);
+
+    sendEmail({
+      to: 'besaucy@wingorestaurants.com',
+      subject: `🏆 CONTEST CLAIMED — ${w.firstName} ${w.lastName} is the winner`,
+      html: `<div style="font-family:Arial;max-width:500px;margin:0 auto;background:#0D0D0D;padding:24px;border-radius:8px;color:#CCC;">
+        <h2 style="color:#F5A800;margin:0 0 16px;">🏆 Winner Claimed!</h2>
+        <p>${w.firstName} ${w.lastName} solved the skill-testing question and is now the confirmed winner.</p>
+        <table style="width:100%;font-size:14px;margin-top:12px;">
+          <tr><td style="padding:6px 0;color:#888;width:120px;">Phone</td><td style="color:white;">${w.phone}</td></tr>
+          <tr><td style="padding:6px 0;color:#888;">Email</td><td>${w.email}</td></tr>
+          <tr><td style="padding:6px 0;color:#888;">Active for</td><td style="color:#F5A800;">${CONTEST_CONFIG.WEEKS} weeks</td></tr>
+        </table>
+        <p style="margin-top:14px;font-size:13px;color:#888;">From now on, orders placed using ${w.phone} at any of the 5 corporate locations will be free (one per week).</p>
+      </div>`
+    });
+
+    res.json({ success: true, message: `Congratulations, ${w.firstName}! You answered correctly. You've won free wings for ${CONTEST_CONFIG.WEEKS} weeks. Show your phone (${w.phone}) at any of our 5 corporate locations to redeem.` });
+  } catch (e) {
+    console.error('[contest/claim]', e.message);
+    res.json({ success: false, error: 'Server error.' });
+  }
+});
+
+// ── ORDER-TIME REDEMPTION CHECK ───────────────────────────────
+// Called from inside /api/orders below. Returns { applies, discount_amount, label, winner_name }.
+async function checkContestRedemption(phoneNormalized, locationId, subtotalNum) {
+  if (!phoneNormalized) return { applies: false };
+  if (!CONTEST_CONFIG.ELIGIBLE_LOCATIONS.includes(locationId)) return { applies: false, reason: 'location_not_eligible' };
+
+  const database = await connectDB();
+  if (!database) return { applies: false };
+
+  const winner = await database.collection('contest_winner').findOne({ phone: phoneNormalized, claimed_at: { $ne: null } });
+  if (!winner) return { applies: false };
+  if ((winner.weeks_used || 0) >= CONTEST_CONFIG.WEEKS) return { applies: false, reason: 'all_weeks_used' };
+
+  const thisWeek = weekStartCstMs();
+  if (winner.last_redeemed_week_start === thisWeek) return { applies: false, reason: 'already_redeemed_this_week' };
+
+  let discount = subtotalNum;
+  if (CONTEST_CONFIG.WEEKLY_CAP_DOLLARS && discount > CONTEST_CONFIG.WEEKLY_CAP_DOLLARS) discount = CONTEST_CONFIG.WEEKLY_CAP_DOLLARS;
+
+  // Atomic week-lock to prevent double-redemption races
+  const upd = await database.collection('contest_winner').findOneAndUpdate(
+    { _id: winner._id, last_redeemed_week_start: winner.last_redeemed_week_start || null },
+    { $set: { last_redeemed_week_start: thisWeek }, $inc: { weeks_used: 1 } },
+    { returnDocument: 'after' }
+  );
+  if (!upd.value) return { applies: false, reason: 'race_lost' };
+
+  return {
+    applies: true,
+    discount_amount: Number(discount.toFixed(2)),
+    label: `🏆 Free Wings For A Year · Week ${upd.value.weeks_used}/${CONTEST_CONFIG.WEEKS}`,
+    winner_name: winner.firstName + ' ' + winner.lastName
+  };
+}
+// Expose for use inside /api/orders below
+app.locals.checkContestRedemption = checkContestRedemption;
+
+// ========================================================
+// END CONTEST MODULE
+// ========================================================
 
 // ── SPA FALLBACK ───────────────────────────────────────────────
 app.get('*', (req, res, next) => {
