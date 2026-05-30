@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>Free Wings For A Year — Wing-O Contest</title>
+<meta name="description" content="Win free Wing-O wings every week for a full year. Enter free. Saskatchewan residents 18+.">
+<link rel="icon" type="image/jpeg" href="/images/logo.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;500;600;700&family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--black:#0D0D0D;--ink:#1A1208;--paper:#F4EBD7;--paper-line:#C8B89A;--red:#E8190A;--red-deep:#A80F00;--yellow:#F5A800;--gold:#8B6A1A;--font-head:'Oswald',sans-serif;--font-display:'Bebas Neue',sans-serif;--font-serif:'Playfair Display',serif;--font-body:'Inter',sans-serif;}
+body{font-family:var(--font-body);background:var(--paper);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased;}
+.nav{background:var(--black);padding:.7rem 1.5rem;display:flex;align-items:center;justify-content:space-between;border-bottom:3px double var(--yellow);}
+.nav a{color:#aaa;text-decoration:none;font-family:var(--font-head);font-size:.8rem;letter-spacing:2px;text-transform:uppercase;}
+.nav img{height:42px;}
+.hero{background:linear-gradient(135deg,#0D0D0D,#1A1208);color:white;padding:4rem 1.5rem 3.5rem;text-align:center;border-bottom:3px double var(--yellow);position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 20%,rgba(232,25,10,.18),transparent 60%),radial-gradient(ellipse at 70% 80%,rgba(245,168,0,.12),transparent 60%);pointer-events:none;}
+.hero-inner{position:relative;z-index:1;max-width:780px;margin:0 auto;}
+.hero-tag{display:inline-block;background:rgba(232,25,10,.15);border:1.5px solid var(--red);color:var(--yellow);padding:.5rem 1.4rem;border-radius:50px;font-family:var(--font-head);font-size:.72rem;letter-spacing:4px;text-transform:uppercase;margin-bottom:1.25rem;font-weight:700;}
+.hero h1{font-family:var(--font-display);font-size:clamp(2.6rem,7vw,5.2rem);letter-spacing:3px;line-height:.95;margin-bottom:.5rem;}
+.hero h1 span{color:var(--red);}
+.hero h2{font-family:var(--font-serif);font-size:clamp(1.1rem,2.4vw,1.5rem);font-style:italic;color:var(--yellow);margin:1rem 0 2rem;}
+.countdown{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;max-width:480px;margin:1.5rem auto;}
+.cd-box{background:rgba(255,255,255,.05);border:1px solid rgba(245,168,0,.3);border-radius:8px;padding:.85rem .5rem;}
+.cd-num{font-family:var(--font-display);font-size:2rem;color:var(--yellow);letter-spacing:2px;line-height:1;}
+.cd-lbl{font-family:var(--font-head);font-size:.62rem;color:#888;letter-spacing:2px;text-transform:uppercase;margin-top:4px;}
+.section{padding:3rem 1.5rem;}
+.section-inner{max-width:760px;margin:0 auto;}
+.eyebrow{font-family:var(--font-head);font-size:.78rem;color:var(--red);letter-spacing:4px;text-transform:uppercase;font-weight:600;text-align:center;margin-bottom:.4rem;}
+.sec-title{font-family:var(--font-display);font-size:clamp(2rem,5vw,3.2rem);letter-spacing:3px;color:var(--ink);text-align:center;line-height:1;margin-bottom:1.75rem;}
+.steps{display:grid;gap:1rem;margin-bottom:1.5rem;}
+.step{background:white;border:1px solid var(--paper-line);border-left:4px solid var(--red);border-radius:6px;padding:1rem 1.25rem;display:flex;gap:1rem;align-items:flex-start;}
+.step-n{font-family:var(--font-display);font-size:1.6rem;color:var(--red);letter-spacing:1px;min-width:30px;}
+.step-body strong{display:block;font-family:var(--font-head);text-transform:uppercase;letter-spacing:1px;color:var(--ink);margin-bottom:3px;}
+.step-body span{font-size:.88rem;color:#666;}
+.bonus-tag{display:inline-block;background:var(--yellow);color:var(--ink);font-family:var(--font-head);font-size:.65rem;padding:2px 8px;border-radius:3px;letter-spacing:1.5px;text-transform:uppercase;margin-left:6px;font-weight:700;}
+.form-box{background:white;border:1px solid var(--paper-line);border-radius:8px;padding:1.75rem;box-shadow:0 8px 24px rgba(0,0,0,.06);}
+.fg{margin-bottom:.85rem;}
+.fg label{font-family:var(--font-head);font-size:.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink);display:block;margin-bottom:.35rem;}
+.fg input,.fg select{width:100%;border:1.5px solid var(--paper-line);border-radius:5px;padding:.65rem .9rem;font-family:var(--font-body);font-size:.92rem;color:var(--ink);background:white;outline:none;}
+.fg input:focus,.fg select:focus{border-color:var(--red);}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:.85rem;}
+@media(max-width:560px){.frow{grid-template-columns:1fr;}}
+.section-title{font-family:var(--font-display);font-size:1.2rem;letter-spacing:2px;color:var(--ink);border-bottom:2px solid var(--red);padding-bottom:.4rem;margin:1.5rem 0 1rem;}
+.section-title:first-child{margin-top:0;}
+.checkbox-row{display:flex;align-items:flex-start;gap:10px;padding:.6rem .85rem;background:#FFF8EE;border:1px solid #F5D98A;border-radius:5px;margin-bottom:.6rem;cursor:pointer;}
+.checkbox-row input{margin-top:3px;flex-shrink:0;}
+.checkbox-row label{font-family:var(--font-body);font-size:.85rem;color:#555;letter-spacing:0;text-transform:none;line-height:1.5;cursor:pointer;margin:0;font-weight:400;}
+.checkbox-row label a{color:var(--red);font-weight:600;}
+.bonus-card{background:linear-gradient(135deg,rgba(245,168,0,.06),rgba(232,25,10,.04));border:1.5px solid var(--yellow);border-radius:6px;padding:.85rem 1rem;margin-bottom:.7rem;}
+.bonus-card-title{font-family:var(--font-head);font-size:.72rem;color:#7B5500;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-bottom:.4rem;display:flex;align-items:center;gap:6px;}
+.btn-submit{width:100%;background:var(--red);color:white;border:none;padding:1.1rem;font-family:var(--font-display);font-size:1.3rem;letter-spacing:2.5px;cursor:pointer;border-radius:6px;text-transform:uppercase;box-shadow:0 4px 0 var(--red-deep),0 6px 16px rgba(232,25,10,.3);margin-top:.5rem;}
+.btn-submit:hover{transform:translateY(-2px);}
+.btn-submit:disabled{background:#888;cursor:not-allowed;box-shadow:none;transform:none;}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;margin-right:7px;vertical-align:middle;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.msg{padding:.85rem 1rem;border-radius:5px;margin-bottom:1rem;font-family:var(--font-head);font-size:.85rem;letter-spacing:.5px;}
+.msg.err{background:rgba(232,25,10,.08);border:1.5px solid var(--red);color:var(--red-deep);}
+.msg.ok{background:rgba(72,187,120,.08);border:1.5px solid #48BB78;color:#276749;}
+.success-card{background:linear-gradient(135deg,#0D0D0D,#1A1208);border:2px solid var(--yellow);border-radius:10px;padding:2rem 1.5rem;text-align:center;color:white;}
+.success-card .icon{font-size:3.5rem;margin-bottom:.5rem;}
+.success-card h2{font-family:var(--font-display);font-size:2rem;color:var(--yellow);letter-spacing:3px;margin-bottom:.5rem;}
+.success-card p{color:#CCC;font-size:.95rem;line-height:1.6;}
+.success-card .entry-num{display:inline-block;background:var(--red);color:white;font-family:var(--font-display);font-size:1.3rem;letter-spacing:2px;padding:.4rem 1rem;border-radius:5px;margin:.85rem 0;}
+.legal{background:var(--ink);color:#888;padding:2.5rem 1.5rem;font-size:.78rem;line-height:1.6;text-align:center;}
+.legal a{color:var(--yellow);}
+.legal-strong{color:white;font-weight:600;}
+footer{background:var(--black);color:#666;padding:1.5rem;text-align:center;font-size:.78rem;}
+footer a{color:#888;text-decoration:none;}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" style="display:flex;align-items:center;"><img src="/images/wingo-logo-new.png" alt="Wing-O"></a>
+  <a href="/">← Back to wingorestaurants.com</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">🏆 No Purchase Necessary · Free To Enter</div>
+    <h1>FREE WINGS<br><span>FOR A YEAR</span></h1>
+    <h2>One winner. One year. 52 free wing orders. Period.</h2>
+    <div id="countdown-row" class="countdown" style="display:none;">
+      <div class="cd-box"><div class="cd-num" id="cd-d">0</div><div class="cd-lbl">Days</div></div>
+      <div class="cd-box"><div class="cd-num" id="cd-h">0</div><div class="cd-lbl">Hours</div></div>
+      <div class="cd-box"><div class="cd-num" id="cd-m">0</div><div class="cd-lbl">Mins</div></div>
+      <div class="cd-box"><div class="cd-num" id="cd-s">0</div><div class="cd-lbl">Secs</div></div>
+    </div>
+    <p id="entries-count" style="font-family:var(--font-head);font-size:.75rem;color:#888;letter-spacing:2px;text-transform:uppercase;margin-top:1rem;"></p>
+  </div>
+</section>
+
+<section class="section" style="background:white;">
+  <div class="section-inner">
+    <div class="eyebrow">How To Enter</div>
+    <h2 class="sec-title">3 STEPS · 60 SECONDS</h2>
+    <div class="steps">
+      <div class="step"><div class="step-n">1</div><div class="step-body"><strong>Fill out the form below</strong><span>Name, email, phone. Saskatchewan residents 18+. One entry per person.</span></div></div>
+      <div class="step"><div class="step-n">2</div><div class="step-body"><strong>Add bonus entries <span class="bonus-tag">Optional</span></strong><span>Follow us on IG/FB or tag a friend — each one is an extra entry. Max 4 total.</span></div></div>
+      <div class="step"><div class="step-n">3</div><div class="step-body"><strong>Winner drawn after entry closes</strong><span>We'll call the winner. They'll answer a quick skill-testing question, then it's wings every week for a year.</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-inner">
+    <div class="eyebrow">Enter Now</div>
+    <h2 class="sec-title">CLAIM YOUR ENTRY</h2>
+
+    <div id="msg-box"></div>
+    <div id="success-view" style="display:none;"></div>
+
+    <div id="form-view" class="form-box">
+
+      <div class="section-title">👤 Your Info</div>
+      <div class="frow">
+        <div class="fg"><label>First Name *</label><input type="text" id="firstName" autocomplete="given-name"></div>
+        <div class="fg"><label>Last Name</label><input type="text" id="lastName" autocomplete="family-name"></div>
+      </div>
+      <div class="fg"><label>Email *</label><input type="email" id="email" autocomplete="email" placeholder="you@email.com"></div>
+      <div class="fg"><label>Phone *</label><input type="tel" id="phone" autocomplete="tel" placeholder="(306) 555-0123"></div>
+      <div class="frow">
+        <div class="fg"><label>City *</label><input type="text" id="city" placeholder="Regina, Moose Jaw, etc."></div>
+        <div class="fg"><label>Province *</label><select id="province"><option value="SK">Saskatchewan</option><option value="OTHER">Other (not eligible)</option></select></div>
+      </div>
+
+      <div class="section-title">🎁 Bonus Entries (Optional)</div>
+      <p style="font-size:.85rem;color:#666;margin-bottom:.85rem;">Each one adds a bonus entry — more entries = better odds. Skip them if you'd rather not.</p>
+
+      <div class="bonus-card">
+        <div class="bonus-card-title">📸 Follow @wingorestaurants on Instagram</div>
+        <input type="text" id="ig_handle" placeholder="Your IG @ (proof of follow)" style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.55rem .85rem;font-size:.9rem;outline:none;">
+      </div>
+      <div class="bonus-card">
+        <div class="bonus-card-title">👍 Follow Wing-O on Facebook</div>
+        <input type="text" id="fb_handle" placeholder="Your Facebook name" style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.55rem .85rem;font-size:.9rem;outline:none;">
+      </div>
+      <div class="bonus-card">
+        <div class="bonus-card-title">🏷️ Tag a friend in our IG contest post</div>
+        <input type="text" id="tagged_friends" placeholder="@friend_handle (or multiple)" style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.55rem .85rem;font-size:.9rem;outline:none;">
+      </div>
+
+      <div class="section-title">✅ Required Confirmations</div>
+
+      <div class="checkbox-row">
+        <input type="checkbox" id="age_confirm">
+        <label for="age_confirm">I confirm I am <strong>18 years of age or older</strong> and a resident of Saskatchewan.</label>
+      </div>
+      <div class="checkbox-row">
+        <input type="checkbox" id="consent_rules">
+        <label for="consent_rules">I have read and agree to the <a href="/contest/rules" target="_blank">Official Contest Rules</a>, including the skill-testing question requirement.</label>
+      </div>
+      <div class="checkbox-row" style="background:#F4EBD7;border-color:var(--paper-line);">
+        <input type="checkbox" id="consent_marketing">
+        <label for="consent_marketing"><strong>(Optional, but recommended)</strong> Yes, send me Wing-O deals, weekly flavor news, and special offers by email/SMS. I can unsubscribe anytime.</label>
+      </div>
+
+      <button id="submit-btn" class="btn-submit" onclick="submitEntry()">ENTER TO WIN 🏆</button>
+
+      <p style="text-align:center;font-size:.72rem;color:#888;margin-top:1rem;letter-spacing:.5px;">🔒 Your info stays with Wing-O. We never sell data.</p>
+    </div>
+  </div>
+</section>
+
+<section class="legal">
+  <div style="max-width:760px;margin:0 auto;">
+    <p><span class="legal-strong">No purchase necessary.</span> Open to legal residents of Saskatchewan who are 18 years of age or older at time of entry. One grand-prize winner. Approximate retail value of prize varies based on weekly redemption (no individual order cap). Odds of winning depend on number of eligible entries received. Winner must correctly answer a mathematical skill-testing question to claim the prize. Full rules: <a href="/contest/rules">wingorestaurants.com/contest/rules</a></p>
+  </div>
+</section>
+
+<footer>
+  © 2026 Wing-O Restaurants Ltd. · Regina, Saskatchewan · <a href="/">wingorestaurants.com</a>
+</footer>
+
+<script>
+var status = null;
+
+async function loadStatus(){
+  try{
+    var r = await fetch('/api/contest/status');
+    status = await r.json();
+    if(status.entries_count) document.getElementById('entries-count').textContent = status.entries_count + ' entries so far';
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+  } catch(e){}
+}
+
+function updateCountdown(){
+  if(!status) return;
+  var target = new Date(status.closes_at).getTime();
+  var diff = target - Date.now();
+  if(diff <= 0){
+    document.getElementById('countdown-row').style.display='none';
+    document.getElementById('submit-btn').disabled = true;
+    document.getElementById('submit-btn').textContent = 'CONTEST CLOSED';
+    return;
+  }
+  document.getElementById('countdown-row').style.display = 'grid';
+  var d = Math.floor(diff / 86400000);
+  var h = Math.floor((diff % 86400000) / 3600000);
+  var m = Math.floor((diff % 3600000) / 60000);
+  var s = Math.floor((diff % 60000) / 1000);
+  document.getElementById('cd-d').textContent = d;
+  document.getElementById('cd-h').textContent = h;
+  document.getElementById('cd-m').textContent = m;
+  document.getElementById('cd-s').textContent = s;
+}
+
+function showMsg(text, type){
+  var box = document.getElementById('msg-box');
+  box.innerHTML = '<div class="msg ' + type + '">' + text + '</div>';
+  box.scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+async function submitEntry(){
+  var data = {
+    firstName: document.getElementById('firstName').value.trim(),
+    lastName:  document.getElementById('lastName').value.trim(),
+    email:     document.getElementById('email').value.trim(),
+    phone:     document.getElementById('phone').value.trim(),
+    city:      document.getElementById('city').value.trim(),
+    province:  document.getElementById('province').value,
+    age_confirm:       document.getElementById('age_confirm').checked,
+    consent_rules:     document.getElementById('consent_rules').checked,
+    consent_marketing: document.getElementById('consent_marketing').checked,
+    ig_handle:      document.getElementById('ig_handle').value.trim(),
+    fb_handle:      document.getElementById('fb_handle').value.trim(),
+    tagged_friends: document.getElementById('tagged_friends').value.trim(),
+  };
+
+  // Client validation
+  if(!data.firstName || !data.email || !data.phone || !data.city){
+    showMsg('Please fill in all required fields (marked with *).', 'err'); return;
+  }
+  if(!data.age_confirm){ showMsg('You must confirm you are 18+.', 'err'); return; }
+  if(!data.consent_rules){ showMsg('You must agree to the contest rules to enter.', 'err'); return; }
+  if(data.province !== 'SK'){ showMsg('Sorry — this contest is open to Saskatchewan residents only.', 'err'); return; }
+
+  var btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Sending your entry...';
+
+  try{
+    var r = await fetch('/api/contest/entry', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(data)
+    });
+    var result = await r.json();
+    if(result.success){
+      document.getElementById('form-view').style.display = 'none';
+      document.getElementById('msg-box').innerHTML = '';
+      document.getElementById('success-view').style.display = 'block';
+      document.getElementById('success-view').innerHTML =
+        '<div class="success-card">' +
+          '<div class="icon">🏆</div>' +
+          '<h2>YOU\'RE IN, ' + data.firstName.toUpperCase() + '!</h2>' +
+          '<p>Your entry has been received.</p>' +
+          '<div class="entry-num">' + result.entries + ' ' + (result.entries === 1 ? 'ENTRY' : 'ENTRIES') + '</div>' +
+          '<p>Winner announced ' + (status?status.draw_date_label:'soon') + '. We\'ll contact you by phone if you win.</p>' +
+          '<p style="margin-top:1rem;font-size:.85rem;"><a href="/" style="color:var(--yellow);">← Back to Wing-O</a></p>' +
+        '</div>';
+      window.scrollTo({top:0, behavior:'smooth'});
+    } else {
+      showMsg(result.error || 'Something went wrong. Please try again.', 'err');
+      btn.disabled = false;
+      btn.innerHTML = 'ENTER TO WIN 🏆';
+    }
+  } catch(e){
+    showMsg('Connection error. Please check your internet and try again.', 'err');
+    btn.disabled = false;
+    btn.innerHTML = 'ENTER TO WIN 🏆';
+  }
+}
+
+loadStatus();
+</script>
+</body>
+</html>
