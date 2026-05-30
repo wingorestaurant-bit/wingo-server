@@ -177,21 +177,21 @@ footer a{color:#888;text-decoration:none;}
 </footer>
 
 <script>
-var status = null;
+var contestStatus = null;
 
 async function loadStatus(){
   try{
     var r = await fetch('/api/contest/status');
-    status = await r.json();
-    if(status.entries_count) document.getElementById('entries-count').textContent = status.entries_count + ' entries so far';
+    contestStatus = await r.json();
+    if(contestStatus.entries_count) document.getElementById('entries-count').textContent = contestStatus.entries_count + ' entries so far';
     updateCountdown();
     setInterval(updateCountdown, 1000);
   } catch(e){}
 }
 
 function updateCountdown(){
-  if(!status) return;
-  var target = new Date(status.closes_at).getTime();
+  if(!contestStatus) return;
+  var target = new Date(contestStatus.closes_at).getTime();
   var diff = target - Date.now();
   if(diff <= 0){
     document.getElementById('countdown-row').style.display='none';
@@ -261,7 +261,7 @@ async function submitEntry(){
           '<h2>YOU\'RE IN, ' + data.firstName.toUpperCase() + '!</h2>' +
           '<p>Your entry has been received.</p>' +
           '<div class="entry-num">' + result.entries + ' ' + (result.entries === 1 ? 'ENTRY' : 'ENTRIES') + '</div>' +
-          '<p>Winner announced ' + (status?status.draw_date_label:'soon') + '. We\'ll contact you by phone if you win.</p>' +
+          '<p>Winner announced ' + (contestStatus?contestStatus.draw_date_label:'soon') + '. We\'ll contact you by phone if you win.</p>' +
           '<p style="margin-top:1rem;font-size:.85rem;"><a href="/" style="color:var(--yellow);">← Back to Wing-O</a></p>' +
         '</div>';
       window.scrollTo({top:0, behavior:'smooth'});
