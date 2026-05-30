@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claim Your Prize — Wing-O Free Wings For A Year</title>
+<link rel="icon" type="image/jpeg" href="/images/logo.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;500;600;700&family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:linear-gradient(135deg,#0D0D0D,#1A1208);color:white;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem;}
+.card{background:rgba(255,255,255,.04);border:2px solid #F5A800;border-radius:12px;max-width:520px;width:100%;padding:2.5rem 2rem;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5);}
+.logo{height:60px;margin-bottom:1rem;}
+.tag{display:inline-block;background:rgba(232,25,10,.15);border:1.5px solid #E8190A;color:#F5A800;padding:.4rem 1.2rem;border-radius:50px;font-family:'Oswald',sans-serif;font-size:.7rem;letter-spacing:3px;text-transform:uppercase;font-weight:700;margin-bottom:1rem;}
+h1{font-family:'Bebas Neue',sans-serif;font-size:2.4rem;letter-spacing:3px;color:#F5A800;line-height:1;margin-bottom:.5rem;}
+.subtitle{font-family:'Playfair Display',serif;font-style:italic;color:#CCC;margin-bottom:1.5rem;}
+.stq-box{background:rgba(245,168,0,.06);border:2px solid #F5A800;border-radius:8px;padding:1.5rem;margin:1.5rem 0;}
+.stq-label{font-family:'Oswald',sans-serif;font-size:.7rem;color:#F5A800;letter-spacing:3px;text-transform:uppercase;margin-bottom:.5rem;font-weight:700;}
+.stq-q{font-family:'Bebas Neue',sans-serif;font-size:2.4rem;letter-spacing:3px;color:white;line-height:1;}
+.answer-input{width:100%;background:rgba(255,255,255,.05);border:2px solid rgba(255,255,255,.2);border-radius:6px;padding:1rem;font-family:'Bebas Neue',sans-serif;font-size:2rem;color:white;text-align:center;letter-spacing:3px;outline:none;margin-bottom:1rem;}
+.answer-input:focus{border-color:#F5A800;}
+.btn{width:100%;background:#E8190A;color:white;border:none;padding:1rem;font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:2.5px;cursor:pointer;border-radius:6px;text-transform:uppercase;box-shadow:0 4px 0 #6B0800;}
+.btn:hover{transform:translateY(-2px);}
+.btn:disabled{background:#666;cursor:not-allowed;box-shadow:none;}
+.attempts{font-family:'Oswald',sans-serif;font-size:.78rem;color:#888;letter-spacing:1.5px;margin-top:.85rem;}
+.msg{padding:1rem;border-radius:6px;margin-bottom:1rem;font-family:'Oswald',sans-serif;letter-spacing:.5px;}
+.msg.err{background:rgba(232,25,10,.15);border:1.5px solid #E8190A;color:#FFB3B3;}
+.msg.ok{background:rgba(72,187,120,.15);border:1.5px solid #48BB78;color:#A8E6B8;}
+.disclaimer{font-size:.72rem;color:#666;margin-top:1.5rem;line-height:1.5;}
+</style>
+</head>
+<body>
+<div class="card">
+  <img src="/images/wingo-logo-new.png" alt="Wing-O" class="logo">
+  <div id="content">
+    <div style="text-align:center;color:#888;font-family:'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;">Loading...</div>
+  </div>
+</div>
+<script>
+var token = window.location.pathname.split('/').pop();
+
+async function load(){
+  try{
+    var r = await fetch('/api/contest/claim/' + encodeURIComponent(token));
+    var d = await r.json();
+    if(!d.success){
+      document.getElementById('content').innerHTML =
+        '<div class="tag">⚠️ Cannot Claim</div>' +
+        '<h1>SORRY</h1>' +
+        '<p style="color:#CCC;">' + (d.error || 'This claim link is no longer valid.') + '</p>';
+      return;
+    }
+    render(d);
+  } catch(e){
+    document.getElementById('content').innerHTML = '<p style="color:#E8190A;">Connection error. Please refresh.</p>';
+  }
+}
+
+function render(d){
+  document.getElementById('content').innerHTML =
+    '<div class="tag">🏆 You Were Drawn As The Winner</div>' +
+    '<h1>CONGRATULATIONS, ' + d.firstName.toUpperCase() + '</h1>' +
+    '<p class="subtitle">One last step — Canadian contest law requires a skill-testing question. Solve this without help.</p>' +
+    '<div id="msg-box"></div>' +
+    '<div class="stq-box">' +
+      '<div class="stq-label">Skill-Testing Question</div>' +
+      '<div class="stq-q">' + d.stq_question + '</div>' +
+    '</div>' +
+    '<input type="number" id="answer" class="answer-input" placeholder="Your answer" autofocus>' +
+    '<button id="submit-btn" class="btn" onclick="submitAnswer()">SUBMIT ANSWER 🏆</button>' +
+    '<div class="attempts" id="attempts-row">Attempts remaining: ' + d.attempts_remaining + '</div>' +
+    '<p class="disclaimer">You must answer correctly without any external assistance (no calculator, no help from others). You have 72 hours from notification and up to 3 attempts.</p>';
+}
+
+async function submitAnswer(){
+  var answer = document.getElementById('answer').value.trim();
+  if(!answer){ showMsg('Please enter your answer.', 'err'); return; }
+  var btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Checking...';
+  try{
+    var r = await fetch('/api/contest/claim', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ token: token, answer: answer })
+    });
+    var d = await r.json();
+    if(d.success){
+      document.getElementById('content').innerHTML =
+        '<div style="font-size:5rem;">🏆</div>' +
+        '<h1 style="margin-top:1rem;">YOU WON!</h1>' +
+        '<p class="subtitle">' + d.message + '</p>' +
+        '<p style="color:#F5A800;font-family:\'Oswald\',sans-serif;letter-spacing:2px;margin-top:1.5rem;">SEE YOU AT WING-O 🍗</p>';
+    } else {
+      showMsg(d.error || 'Something went wrong.', 'err');
+      btn.disabled = false;
+      btn.textContent = 'SUBMIT ANSWER 🏆';
+    }
+  } catch(e){
+    showMsg('Connection error. Please try again.', 'err');
+    btn.disabled = false;
+    btn.textContent = 'SUBMIT ANSWER 🏆';
+  }
+}
+
+function showMsg(text, type){
+  document.getElementById('msg-box').innerHTML = '<div class="msg ' + type + '">' + text + '</div>';
+}
+
+load();
+</script>
+</body>
+</html>
