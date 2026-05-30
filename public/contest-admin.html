@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contest Admin — Wing-O</title>
+<link rel="icon" type="image/jpeg" href="/images/logo.jpg">
+<meta name="robots" content="noindex,nofollow">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,-apple-system,sans-serif;background:#0a0a0a;color:#e0e0e0;min-height:100vh;padding:1rem;}
+h1{font-size:1.5rem;color:#F5A800;letter-spacing:2px;margin-bottom:1rem;text-transform:uppercase;}
+.card{background:#1a1a1a;border:1px solid #333;border-radius:6px;padding:1.25rem;margin-bottom:1rem;max-width:900px;margin-left:auto;margin-right:auto;}
+input,button,textarea{font-family:inherit;font-size:.92rem;}
+input[type=password],input[type=text]{background:#0a0a0a;border:1.5px solid #444;color:white;padding:.6rem .85rem;border-radius:4px;width:100%;margin-bottom:.5rem;outline:none;}
+input:focus{border-color:#F5A800;}
+.btn{background:#E8190A;color:white;border:none;padding:.7rem 1.4rem;border-radius:4px;cursor:pointer;font-weight:600;letter-spacing:1px;text-transform:uppercase;font-size:.85rem;}
+.btn:hover{background:#A80F00;}
+.btn:disabled{background:#444;cursor:not-allowed;}
+.btn-gold{background:#F5A800;color:#0D0D0D;}
+.btn-gold:hover{background:#C28200;}
+.btn-ghost{background:transparent;border:1.5px solid #444;color:#888;}
+table{width:100%;border-collapse:collapse;margin-top:1rem;font-size:.85rem;}
+th,td{padding:.5rem .6rem;text-align:left;border-bottom:1px solid #2a2a2a;}
+th{background:#0a0a0a;color:#F5A800;font-weight:600;letter-spacing:1px;text-transform:uppercase;font-size:.7rem;}
+tr:hover{background:#0f0f0f;}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.7rem;margin-bottom:1rem;}
+.stat{background:#0a0a0a;border:1px solid #2a2a2a;padding:.85rem;border-radius:5px;text-align:center;}
+.stat-num{font-size:1.6rem;color:#F5A800;font-weight:700;}
+.stat-lbl{font-size:.65rem;color:#666;letter-spacing:1.5px;text-transform:uppercase;margin-top:3px;}
+.winner-card{background:linear-gradient(135deg,#1a1208,#0D0D0D);border:2px solid #F5A800;border-radius:8px;padding:1.5rem;margin:1rem 0;}
+.winner-card h2{color:#F5A800;font-size:1.2rem;letter-spacing:2px;margin-bottom:.85rem;}
+.winner-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #2a2a2a;font-size:.9rem;}
+.winner-row span:first-child{color:#888;}
+.winner-row span:last-child{color:white;font-weight:600;}
+.url-box{background:#000;border:1.5px dashed #F5A800;border-radius:4px;padding:.7rem;font-family:monospace;font-size:.78rem;color:#F5A800;word-break:break-all;margin:.85rem 0;cursor:pointer;}
+.msg{padding:.7rem 1rem;border-radius:4px;margin-bottom:.85rem;font-size:.85rem;}
+.msg.err{background:rgba(232,25,10,.15);border:1px solid #E8190A;color:#FFB3B3;}
+.msg.ok{background:rgba(72,187,120,.15);border:1px solid #48BB78;color:#A8E6B8;}
+.toolbar{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;}
+</style>
+</head>
+<body>
+
+<h1>🏆 Wing-O Contest Admin</h1>
+
+<div id="login-view" class="card">
+  <h2 style="font-size:1rem;color:#888;margin-bottom:1rem;">Admin Login</h2>
+  <input type="password" id="pw" placeholder="Contest admin password" autocomplete="off">
+  <div id="login-msg"></div>
+  <button class="btn" onclick="login()">LOGIN</button>
+  <p style="margin-top:.85rem;font-size:.78rem;color:#666;">This is a separate password from the regular Wing-O admin tools.</p>
+</div>
+
+<div id="admin-view" style="display:none;">
+
+  <div class="card">
+    <div class="stat-grid" id="stats">
+      <div class="stat"><div class="stat-num" id="stat-total">0</div><div class="stat-lbl">Total Entries</div></div>
+      <div class="stat"><div class="stat-num" id="stat-unique">0</div><div class="stat-lbl">Unique People</div></div>
+      <div class="stat"><div class="stat-num" id="stat-marketing">0</div><div class="stat-lbl">Opted In</div></div>
+      <div class="stat"><div class="stat-num" id="stat-bonus">0</div><div class="stat-lbl">With Bonuses</div></div>
+    </div>
+    <div class="toolbar">
+      <button class="btn" onclick="loadEntries()">🔄 Refresh</button>
+      <button class="btn btn-ghost" onclick="exportCsv()">📥 Export CSV</button>
+      <button class="btn btn-gold" onclick="drawWinner()">🎲 Draw Winner</button>
+    </div>
+    <div id="draw-result"></div>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:1rem;color:#888;margin-bottom:.85rem;">Entries</h2>
+    <div style="overflow-x:auto;">
+      <table id="entries-table">
+        <thead><tr><th>When</th><th>Name</th><th>Email</th><th>Phone</th><th>City</th><th>Entries</th><th>Marketing</th></tr></thead>
+        <tbody id="entries-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+var pw = '';
+var allEntries = [];
+
+async function login(){
+  var p = document.getElementById('pw').value.trim();
+  if(!p) return;
+  try{
+    var r = await fetch('/api/contest/admin/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ password: p }) });
+    var d = await r.json();
+    if(d.success){
+      pw = p;
+      document.getElementById('login-view').style.display = 'none';
+      document.getElementById('admin-view').style.display = 'block';
+      loadEntries();
+    } else {
+      document.getElementById('login-msg').innerHTML = '<div class="msg err">Invalid password.</div>';
+    }
+  } catch(e){
+    document.getElementById('login-msg').innerHTML = '<div class="msg err">Connection error.</div>';
+  }
+}
+
+async function loadEntries(){
+  var r = await fetch('/api/contest/admin/list', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ password: pw }) });
+  var d = await r.json();
+  if(!d.success){ alert('Session expired — refresh and log in again.'); return; }
+  allEntries = d.entries;
+  renderEntries();
+}
+
+function renderEntries(){
+  var totalEntries = 0, marketing = 0, withBonus = 0;
+  var rows = allEntries.map(function(e){
+    totalEntries += e.total_entries || 1;
+    if(e.consent_marketing) marketing++;
+    if(e.bonus_entries && e.bonus_entries.length) withBonus++;
+    return '<tr>' +
+      '<td>' + new Date(e.created_at).toLocaleString('en-CA',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}) + '</td>' +
+      '<td>' + escapeHtml(e.firstName + ' ' + (e.lastName || '')) + '</td>' +
+      '<td>' + escapeHtml(e.email) + '</td>' +
+      '<td>' + escapeHtml(e.phone) + '</td>' +
+      '<td>' + escapeHtml(e.city || '') + '</td>' +
+      '<td>' + (e.total_entries || 1) + (e.bonus_entries && e.bonus_entries.length ? ' <span style="color:#F5A800;font-size:.7rem;">(+' + e.bonus_entries.length + ')</span>' : '') + '</td>' +
+      '<td>' + (e.consent_marketing ? '✓' : '—') + '</td>' +
+    '</tr>';
+  }).join('');
+  document.getElementById('entries-tbody').innerHTML = rows || '<tr><td colspan="7" style="text-align:center;color:#666;padding:1rem;">No entries yet.</td></tr>';
+  document.getElementById('stat-total').textContent = totalEntries;
+  document.getElementById('stat-unique').textContent = allEntries.length;
+  document.getElementById('stat-marketing').textContent = marketing;
+  document.getElementById('stat-bonus').textContent = withBonus;
+}
+
+function escapeHtml(s){return String(s||'').replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));}
+
+function exportCsv(){
+  var header = 'When,FirstName,LastName,Email,Phone,City,TotalEntries,Bonuses,Marketing,IG,FB,TaggedFriends\n';
+  var rows = allEntries.map(function(e){
+    return [
+      new Date(e.created_at).toISOString(),
+      e.firstName, e.lastName || '', e.email, e.phone, e.city || '',
+      e.total_entries || 1,
+      (e.bonus_entries||[]).join(';'),
+      e.consent_marketing ? 'Y' : 'N',
+      e.ig_handle || '', e.fb_handle || '', e.tagged_friends || ''
+    ].map(v => '"' + String(v).replace(/"/g,'""') + '"').join(',');
+  }).join('\n');
+  var blob = new Blob([header + rows], {type:'text/csv'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'wingo-contest-entries-' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+}
+
+async function drawWinner(){
+  if(!confirm('Draw a random winner now? This will randomly select one entrant (weighted by their bonus entries) and generate a claim URL.')) return;
+  var r = await fetch('/api/contest/admin/draw', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ password: pw }) });
+  var d = await r.json();
+  if(!d.success){ document.getElementById('draw-result').innerHTML = '<div class="msg err">' + (d.error || 'Draw failed.') + '</div>'; return; }
+  document.getElementById('draw-result').innerHTML =
+    '<div class="winner-card">' +
+      '<h2>🏆 Potential Winner Drawn</h2>' +
+      '<div class="winner-row"><span>Name</span><span>' + escapeHtml(d.winner.name) + '</span></div>' +
+      '<div class="winner-row"><span>Email</span><span>' + escapeHtml(d.winner.email) + '</span></div>' +
+      '<div class="winner-row"><span>Phone</span><span>' + escapeHtml(d.winner.phone) + '</span></div>' +
+      '<div class="winner-row"><span>City</span><span>' + escapeHtml(d.winner.city || '—') + '</span></div>' +
+      '<div class="winner-row"><span>STQ</span><span>' + escapeHtml(d.stq_question) + '</span></div>' +
+      '<div class="winner-row"><span>Expires</span><span>' + new Date(d.claim_expires_at).toLocaleString() + '</span></div>' +
+      '<p style="margin:.85rem 0 .4rem;color:#888;font-size:.85rem;">📋 <strong>Tap to copy the claim URL — send it to the winner by SMS or email:</strong></p>' +
+      '<div class="url-box" onclick="copyUrl(this)">' + escapeHtml(d.claim_url) + '</div>' +
+      '<p style="font-size:.78rem;color:#666;margin-top:.6rem;">' + escapeHtml(d.message) + '</p>' +
+    '</div>';
+}
+
+function copyUrl(el){
+  if(navigator.clipboard) navigator.clipboard.writeText(el.textContent).then(()=>{ el.style.background='rgba(72,187,120,.15)'; setTimeout(()=>{el.style.background='#000';},1200); });
+}
+
+// Allow Enter key to login
+document.getElementById('pw').addEventListener('keydown', e => { if(e.key==='Enter') login(); });
+</script>
+</body>
+</html>
