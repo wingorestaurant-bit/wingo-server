@@ -4,9 +4,50 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Wing-O Blog — Regina's #1 Wing Spot | Wing-O Restaurants</title>
-<meta name="description" content="Stories, recipes, and sauce wisdom from the Sauce Boss. The best wings in Regina, Saskatchewan — handcrafted with 125+ flavors.">
-<meta name="keywords" content="best wings Regina, wing restaurant Saskatchewan, hot wings Regina, wing flavors, Sauce Boss, Wing-O">
+<meta name="description" content="Stories, recipes, and sauce wisdom from the Sauce Boss. The best wings in Regina, Saskatchewan — handcrafted with 125+ flavors. Winnipeg opening soon.">
+<meta name="keywords" content="best wings Regina, wing restaurant Saskatchewan, hot wings Regina, wing flavors, Sauce Boss, Wing-O, Winnipeg wings">
+<link rel="canonical" href="https://wingorestaurants.com/blog.html">
 <link rel="icon" type="image/jpeg" href="/images/logo.jpg">
+
+<!-- Open Graph -->
+<meta property="og:title" content="The Wing-O Blog — Regina's #1 Wing Spot">
+<meta property="og:description" content="125+ handcrafted flavors, 3 Regina locations, Winnipeg opening soon. Stories from the Sauce Boss.">
+<meta property="og:image" content="/images/logo.jpg">
+<meta property="og:url" content="https://wingorestaurants.com/blog.html">
+<meta property="og:type" content="website">
+
+<!-- Schema.org - Article + Restaurant + FAQ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Restaurant",
+  "name": "WingO Restaurants",
+  "image": "https://wingorestaurants.com/images/logo.jpg",
+  "url": "https://wingorestaurants.com",
+  "priceRange": "$$",
+  "servesCuisine": ["Chicken Wings", "Comfort Food", "Canadian"],
+  "address": [
+    {"@type": "PostalAddress","streetAddress": "#3 - 155 Albert St N","addressLocality": "Regina","addressRegion": "SK","addressCountry": "CA"},
+    {"@type": "PostalAddress","streetAddress": "534 University Park Drive","addressLocality": "Regina","addressRegion": "SK","addressCountry": "CA"},
+    {"@type": "PostalAddress","streetAddress": "110 Centre St","addressLocality": "Regina Beach","addressRegion": "SK","addressCountry": "CA"}
+  ],
+  "areaServed": ["Regina", "Regina Beach", "Winnipeg (Opening Soon)"],
+  "aggregateRating": {"@type": "AggregateRating","ratingValue": "4.7","reviewCount": "850"}
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type": "Question","name": "Where can I find the best wings in Regina?","acceptedAnswer": {"@type": "Answer","text": "WingO is widely recognized as Regina's original wings eatery, offering 125+ handcrafted flavors across three Regina-area locations. Prices start at $7.99 for a half order."}},
+    {"@type": "Question","name": "How many wing flavors does WingO have?","acceptedAnswer": {"@type": "Answer","text": "WingO offers over 125 handcrafted wing flavors ranging from mild classics like Honey Garlic to intense heat picks like Devil's Kiss (Carolina Reaper)."}},
+    {"@type": "Question","name": "Does WingO deliver in Regina?","acceptedAnswer": {"@type": "Answer","text": "Yes. WingO offers online ordering with pickup and delivery across all three Regina-area locations. A Winnipeg location is opening soon."}},
+    {"@type": "Question","name": "When is WingO opening in Winnipeg?","acceptedAnswer": {"@type": "Answer","text": "Our first Manitoba location in Winnipeg is opening soon. Follow @wingorestaurants on Instagram for launch date announcements."}}
+  ]
+}
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;500;600;700&family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -31,10 +72,22 @@ nav{background:var(--black);padding:1rem 1.5rem;border-bottom:3px double var(--y
 .post p{margin-bottom:1rem;color:#444;font-size:1rem;line-height:1.7;}
 .post p strong{color:var(--ink);}
 .post h3{font-family:var(--font-display);font-size:1.4rem;color:var(--ink);letter-spacing:2px;margin:1.5rem 0 .75rem;border-left:4px solid var(--red);padding-left:.85rem;}
-.post a.cta{display:inline-block;background:var(--red);color:white;padding:.7rem 1.5rem;font-family:var(--font-display);font-size:1rem;letter-spacing:2px;text-decoration:none;border-radius:4px;text-transform:uppercase;margin-top:1rem;}
-.post a.cta:hover{background:var(--red-deep);}
+.post h4{font-family:var(--font-head);font-size:1.05rem;color:var(--ink);letter-spacing:1px;margin:1.25rem 0 .5rem;font-weight:700;}
+.post a{color:var(--red);text-decoration:none;font-weight:600;}
+.post a:hover{text-decoration:underline;}
+.post a.cta{display:inline-block;background:var(--red);color:white;padding:.7rem 1.5rem;font-family:var(--font-display);font-size:1rem;letter-spacing:2px;text-decoration:none;border-radius:4px;text-transform:uppercase;margin-top:1rem;box-shadow:0 4px 0 var(--red-deep);}
+.post a.cta:hover{background:var(--red-deep);text-decoration:none;}
+.post blockquote{font-family:var(--font-serif);font-style:italic;font-size:1.2rem;color:var(--ink);border-left:4px solid var(--yellow);padding:.5rem 0 .5rem 1.25rem;margin:1.25rem 0;line-height:1.5;}
 ul.bullet{padding-left:1.5rem;margin-bottom:1rem;}
 ul.bullet li{padding:4px 0;color:#444;}
+.callout{background:var(--paper);border:1px solid var(--paper-line);border-left:4px solid var(--yellow);padding:1rem 1.25rem;border-radius:6px;margin:1.25rem 0;}
+.callout .label{font-family:var(--font-head);font-size:.72rem;color:var(--red);letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:.3rem;}
+.loc-list{background:var(--paper);border:1px solid var(--paper-line);border-radius:6px;padding:1rem 1.25rem;margin:1rem 0;}
+.loc-list div{padding:.35rem 0;color:#333;}
+.loc-list div.wpg{color:var(--red);font-weight:700;border-top:1px dashed var(--paper-line);margin-top:.4rem;padding-top:.65rem;}
+.faq-item{background:var(--paper);border:1px solid var(--paper-line);border-radius:6px;padding:.9rem 1.15rem;margin-bottom:.6rem;}
+.faq-item .q{font-family:var(--font-head);font-weight:700;color:var(--ink);letter-spacing:.5px;margin-bottom:.3rem;font-size:.98rem;}
+.faq-item .a{color:#444;font-size:.94rem;}
 footer{background:var(--black);color:#888;padding:2.5rem 1.5rem;text-align:center;font-family:var(--font-head);font-size:.85rem;letter-spacing:1.5px;}
 footer a{color:var(--yellow);text-decoration:none;}
 </style>
@@ -45,26 +98,164 @@ footer a{color:var(--yellow);text-decoration:none;}
 
 <div class="container">
 
+<!-- ═══════════════════════ ARTICLE 1: NEW COMPREHENSIVE GUIDE ═══════════════════════ -->
 <article class="post" id="best-wings-regina">
-<span class="post-tag">🍗 Local Guide</span>
-<h2>The Best Wings in Regina — A Complete Guide</h2>
-<div class="meta">📅 Published 2026 · ⏱️ 4 min read · 📍 Regina, Saskatchewan</div>
-<p>If you're searching for <strong>the best wings in Regina</strong>, you've probably noticed that the city has options. But options aren't the same as quality. Here's the honest truth about Regina's wing scene — and why Wing-O has earned its spot at the top.</p>
-<h3>Why Regina takes wings seriously</h3>
-<p>Regina is a wing town. Cold winters, hockey nights, big appetites. We grew up on wings. But for years, the only options were chains pumping out frozen, mass-produced product. That's not what wings are supposed to be.</p>
-<h3>What separates great wings from average wings</h3>
-<p>Three things, every time:</p>
+<span class="post-tag">🍗 The Ultimate Guide</span>
+<h2>Best Wings in Regina — The Complete Guide to WingO's 125+ Flavors</h2>
+<div class="meta">📅 Updated June 2026 · ⏱️ 12 min read · 📍 Regina, Saskatchewan</div>
+
+<p>Ask any Regina local where to find <strong>the best wings in Saskatchewan</strong> and you'll hear the same three letters again and again: <strong>WingO</strong>. Since 2019, our small kitchen on Albert Street has grown into <strong>three thriving Regina-area locations</strong>, over a million wings sold, and a menu of <strong>125+ handcrafted flavors</strong>. And now, <strong>we're bringing WingO to Winnipeg</strong> — our first Manitoba location opens soon.</p>
+
+<p>This guide covers everything you need to know: <strong>where to find us, what to order, our story, and why locals keep coming back.</strong></p>
+
+<a href="/" class="cta">Order Online Now 🔥</a>
+
+<div class="callout">
+<div class="label">📌 Quick Answer</div>
+<strong>WingO Restaurants</strong> is Regina's original wings eatery, offering 125+ handcrafted wing flavors across 3 Regina-area locations (Albert Street, East Regina, and Regina Beach). Our first Manitoba location in <strong>Winnipeg is opening soon</strong>. Prices start at $7.99 for a half order.
+</div>
+
+<h3>Why WingO Stands Out in Regina</h3>
+<p>Regina has no shortage of pubs and chains slinging wings, but here's what makes WingO different:</p>
 <ul class="bullet">
-<li><strong>Fresh, never frozen</strong> — Cold storage kills the texture. Real wings are prepped daily.</li>
-<li><strong>Sauce that's actually sauce</strong> — Not a powder mix. Real ingredients, balanced heat, layered flavor.</li>
-<li><strong>Crispy outside, juicy inside</strong> — Achieved through a double-fry technique most places skip.</li>
+<li><strong>125+ handcrafted flavors</strong> — no other wings spot in Saskatchewan comes close on variety. Every sauce is built from scratch in our kitchen.</li>
+<li><strong>Fresh, never frozen</strong> — wings are prepped daily and cooked to order.</li>
+<li><strong>Prairie roots</strong> — we're Regina-born, Saskatchewan-grown, and community-first. Not a franchise brought in from somewhere else.</li>
+<li><strong>Real value</strong> — half orders from $7.99, full orders from $13.99, and a daily $10 lunch special that locals swear by.</li>
 </ul>
-<h3>How Wing-O does it differently</h3>
-<p>We have <strong>125+ handcrafted flavors</strong>. Not 12. Not 25. One hundred and twenty-five. Every sauce is built from scratch by the Sauce Boss himself, tested through 18 months of obsession before we ever opened the doors.</p>
-<p>From <strong>Devil's Kiss</strong> (Carolina Reaper) for the spice warriors, to <strong>Honey Garlic</strong> for the classics, to wild creations like <strong>Tangy Thai</strong> and <strong>Maple Bourbon</strong> — there's a flavor for every mood.</p>
-<a href="/" class="cta">Try the Best Wings 🔥</a>
+<p>Since opening, we've served over <strong>1 million wings</strong> and donated 27,000+ wings to local community fridges.</p>
+
+<h3>The 125+ Flavors — Where Do You Start?</h3>
+<p>Our menu is organized into flavor "families" so you can find something whether you want mellow, mind-melting, or somewhere in between. Here are the standouts locals order most:</p>
+
+<h4>🍯 Sweet &amp; Sticky (The Crowd-Pleasers)</h4>
+<ul class="bullet">
+<li><strong>Honey Garlic</strong> — the universal favorite. Sweet, garlicky, glossy.</li>
+<li><strong>Maple BBQ</strong> — a prairie twist on classic BBQ. Legit local flex.</li>
+<li><strong>Devil's Kiss</strong> — sweet on the front, dangerous on the back.</li>
+</ul>
+
+<h4>🔥 Bring the Heat</h4>
+<ul class="bullet">
+<li><strong>Prairie Heat</strong> — our signature Regina-inspired burn.</li>
+<li><strong>Dead Angel</strong> — full Carolina Reaper. Not a dare, but people take it as one.</li>
+<li><strong>Island On Fire</strong> — tropical fruit sweetness meets serious pepper.</li>
+</ul>
+
+<h4>🧀 Dry Rubs (For the Purists)</h4>
+<ul class="bullet">
+<li><strong>Lemon Pepper</strong> — bright, zesty, endlessly re-orderable.</li>
+<li><strong>Salt &amp; Vinegar</strong> — crispy, punchy, cult favorite.</li>
+<li><strong>Cajun Cream</strong> — smoky, herby, addictive.</li>
+</ul>
+
+<h4>🌶️ Global Flavors</h4>
+<ul class="bullet">
+<li><strong>Tangy Thai</strong> — sweet chili with a lime kick.</li>
+<li><strong>Korean BBQ</strong> — gochujang glaze, sesame finish.</li>
+<li><strong>Mango Habanero</strong> — fruit-forward heat done right.</li>
+</ul>
+
+<blockquote>"I've been coming to WingO for two years and I still haven't tried every flavor. That's the whole point — every visit is a new discovery."</blockquote>
+
+<h3>Our Locations (and How to Order)</h3>
+<p>WingO currently operates <strong>3 Regina-area locations</strong>, with <strong>Winnipeg opening soon</strong>. All Regina locations offer online ordering, pickup, and delivery:</p>
+
+<div class="loc-list">
+<div><strong>Albert Street</strong> — #3 – 155 Albert St N, Regina · 📞 306-522-2111</div>
+<div><strong>East Regina</strong> — 534 University Park Drive · 📞 306-522-2114</div>
+<div><strong>Regina Beach</strong> — 110 Centre St, Regina Beach · 📞 639-997-0553</div>
+<div class="wpg">🚀 Winnipeg — Opening Soon! Manitoba's first WingO.</div>
+</div>
+
+<p>Order online at <a href="/">wingorestaurants.com</a> for pickup or delivery. Kitchens are open <strong>Mon–Wed until 1 AM</strong> and <strong>Thu–Sun until 3 AM</strong> — because good wings shouldn't have a bedtime.</p>
+
+<h3>The Best Wing Deals in Regina</h3>
+<p>We run different deals every day so there's always a reason to come in:</p>
+<ul class="bullet">
+<li><strong>Sunday</strong> — 89¢ per wing (minimum 10)</li>
+<li><strong>Monday</strong> — Boneless wings: buy one, second 50% off</li>
+<li><strong>Tuesday</strong> — All-you-can-eat wings, $28.99</li>
+<li><strong>Wednesday</strong> — Ribs: buy one, second 50% off</li>
+<li><strong>Thursday</strong> — Wings: buy one, second 50% off</li>
+<li><strong>Friday</strong> — 3 orders of wings for $30</li>
+<li><strong>Saturday</strong> — 2 burgers for $20</li>
+<li><strong>Every day, 11 AM – 3:30 PM</strong> — the legendary <strong>$10 Lunch Deal</strong> (wings + fries, any flavor)</li>
+</ul>
+
+<div class="callout">
+<div class="label">🎁 First Order Bonus</div>
+New to WingO? Your <strong>first order gets 15% off automatically</strong> at checkout (min $25). No code needed.
+</div>
+
+<h3>Saucy Stamps — Free Wings for Being a Regular</h3>
+<p>Every order at WingO earns you a stamp. Collect <strong>10 stamps and your next half order of wings is completely free</strong>. No catch, no expiry, no membership fee. Sign up at <a href="/">wingorestaurants.com</a> in about 20 seconds.</p>
+
+<h3>The Story Behind the Sauce Boss</h3>
+<p>WingO didn't start with venture capital or a franchise playbook. It started in 2019 when a 19-year-old from India named Gagandeep Ghuman landed in Regina with <strong>$800, two bags, and a hunger to build something real</strong>.</p>
+<blockquote>"I didn't come here with connections, money, or a plan B. I came with hunger — and that never left."</blockquote>
+<p>The next 18 months were spent obsessively developing flavor combinations nobody had tried. When Wing-O opened on Albert Street, it became <strong>Regina's first local wings eatery with over 125 handcrafted flavors</strong>. Saskatchewan is locked in. <strong>Winnipeg is next</strong>.</p>
+
+<h3>Community &amp; Giving Back</h3>
+<p>WingO is <strong>Proudly Prairie</strong> — that's not marketing, it's how we operate:</p>
+<ul class="bullet">
+<li><strong>27,000+ wings donated</strong> to Regina Community Fridge and other local food security programs</li>
+<li>Regular sponsorships for local sports teams, school events, and fundraisers</li>
+<li>Hiring locally, sourcing locally, and reinvesting profits back into Saskatchewan</li>
+</ul>
+
+<h3>More Than Wings — The Full Menu</h3>
+<p>The name says "WingO," but the menu goes further:</p>
+<ul class="bullet">
+<li><strong>Ribs</strong> — saucy, bone-in, 125+ flavor options, from $7.99</li>
+<li><strong>Boneless &amp; cauliflower wings</strong> — from $7.99</li>
+<li><strong>Chicken fingers</strong> — from $7.99</li>
+<li><strong>Burgers</strong> — The Tough Guy (Carolina Reaper chicken), The Dillinator, Buffalo Stampede, KFC-style Korean Fried Chicken, and the Sunset Crunch — all served with fries and a drink, from $15.99</li>
+<li><strong>Loaded fries, poutines, and nachos</strong></li>
+<li><strong>Midnight Ecstasy 🌙</strong> — desserts for the late crowd, from 99¢</li>
+</ul>
+
+<h3>Winnipeg — You're Next 🚀</h3>
+<p>To every Winnipeg local who's been asking when WingO is coming: <strong>the answer is soon</strong>. Our first Manitoba location is in progress, and it's going to bring the full WingO experience — all 125+ flavors, the daily deals, the Saucy Stamps loyalty program, and late-night hours. Follow <a href="https://www.instagram.com/wingorestaurants" target="_blank" rel="noopener">@wingorestaurants</a> on Instagram for launch date, opening week specials, and grand opening giveaways.</p>
+
+<h3>Frequently Asked Questions</h3>
+
+<div class="faq-item">
+<div class="q">Where can I find the best wings in Regina?</div>
+<div class="a">WingO is widely recognized as Regina's original wings eatery, offering 125+ handcrafted flavors across three Regina-area locations. Prices start at $7.99 for a half order.</div>
+</div>
+
+<div class="faq-item">
+<div class="q">How many wing flavors does WingO have?</div>
+<div class="a">Over 125 handcrafted wing flavors ranging from mild classics like Honey Garlic to intense heat picks like Devil's Kiss (Carolina Reaper) and Dead Angel.</div>
+</div>
+
+<div class="faq-item">
+<div class="q">Does WingO deliver in Regina?</div>
+<div class="a">Yes. WingO offers online ordering with pickup and delivery across all three Regina-area locations: Albert Street, East Regina, and Regina Beach.</div>
+</div>
+
+<div class="faq-item">
+<div class="q">When is WingO opening in Winnipeg?</div>
+<div class="a">Our first Manitoba location is opening in Winnipeg soon. Follow <a href="https://www.instagram.com/wingorestaurants" target="_blank" rel="noopener">@wingorestaurants</a> on Instagram for launch date announcements.</div>
+</div>
+
+<div class="faq-item">
+<div class="q">Is WingO open late?</div>
+<div class="a">Yes. WingO is open until 1 AM Monday to Wednesday and until 3 AM Thursday to Sunday.</div>
+</div>
+
+<div class="faq-item">
+<div class="q">Can I franchise WingO in my city?</div>
+<div class="a">Yes. WingO is actively accepting franchise applications for Canadian markets. Details available at <a href="/#franchise">wingorestaurants.com/#franchise</a>.</div>
+</div>
+
+<a href="/" class="cta">Order Now — 15% Off First Order 🍗</a>
+
+<p style="margin-top:1.5rem;font-style:italic;color:#666;font-size:.9rem;">— The Sauce Boss<br>Founder, WingO Restaurants · Regina, Saskatchewan · Proudly Prairie 🌾</p>
 </article>
 
+<!-- ═══════════════════════ ARTICLE 2: 125 FLAVORS (unchanged) ═══════════════════════ -->
 <article class="post" id="125-flavors">
 <span class="post-tag">🌶️ Behind The Scenes</span>
 <h2>Why Wing-O Has 125+ Flavors (And Why That Matters)</h2>
@@ -89,13 +280,14 @@ footer a{color:var(--yellow);text-decoration:none;}
 <a href="/" class="cta">Explore All 125+ Flavors 🔥</a>
 </article>
 
+<!-- ═══════════════════════ ARTICLE 3: WHY WING-O (UPDATED — closures + Winnipeg) ═══════════════════════ -->
 <article class="post" id="why-wingo">
 <span class="post-tag">🌾 Our Story</span>
 <h2>Why Wing-O is Saskatchewan's #1 Wing Spot</h2>
-<div class="meta">📅 Published 2026 · ⏱️ 6 min read · 🚀 The Movement</div>
+<div class="meta">📅 Updated June 2026 · ⏱️ 6 min read · 🚀 The Movement</div>
 <p>Wing-O didn't start as a restaurant chain plan. It started with one immigrant, $800, and a dream that wings could be art.</p>
-<h3>From one location to five — and counting</h3>
-<p>What started on Albert Street in Regina has now grown to <strong>5 locations across Saskatchewan</strong>: Albert Street, Rochdale, East Regina, Moose Jaw, and seasonal Regina Beach. Next stop: Winnipeg.</p>
+<h3>From Albert Street to Manitoba</h3>
+<p>What started on Albert Street in Regina has grown into <strong>three thriving Regina-area locations</strong>: Albert Street, East Regina, and Regina Beach. And the next chapter is already being written — <strong>Winnipeg is opening soon</strong>, our first Manitoba location and the start of the WingO national expansion.</p>
 <h3>What makes us different</h3>
 <ul class="bullet">
 <li><strong>Local-first roots</strong> — We're proudly Prairie. Born in Regina, built by the community.</li>
@@ -108,6 +300,7 @@ footer a{color:var(--yellow);text-decoration:none;}
 <a href="/" class="cta">Be Part of the Movement 🌾</a>
 </article>
 
+<!-- ═══════════════════════ ARTICLE 4: HOW TO EAT WINGS (unchanged) ═══════════════════════ -->
 <article class="post" id="how-to-eat-wings">
 <span class="post-tag">📖 Wing Wisdom</span>
 <h2>How to Eat Wings Like a Pro (The Sauce Boss Method)</h2>
