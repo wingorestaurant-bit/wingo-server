@@ -57,16 +57,6 @@ const LOCATIONS = {
     onlinePayments: false,
     cloverPrivateKey: process.env.CLOVER_PRIVATE_KEY_ALBERT
   },
-  "rochdale": {
-    name: "Rochdale (Regina)",
-    merchantId: "HWQ8ZY3TTBAZ1",
-    apiToken: process.env.CLOVER_API_TOKEN_ROCHDALE,
-    address: "3881 Rochdale Blvd, Regina, SK",
-    phone: "306-522-2112",
-    hours: "Mon-Wed 11am-1am · Thu-Sun 11am-3am",
-    onlinePayments: false,
-    cloverPrivateKey: process.env.CLOVER_PRIVATE_KEY_ROCHDALE
-  },
   "east-regina": {
     name: "East Regina (Wing-O East)",
     merchantId: "4BB1SFERQNQF1",
@@ -76,16 +66,6 @@ const LOCATIONS = {
     hours: "Mon-Wed 11am-1am · Thu-Sun 11am-3am",
     onlinePayments: false,
     cloverPrivateKey: process.env.CLOVER_PRIVATE_KEY_EAST
-  },
-  "moose-jaw": {
-    name: "Moose Jaw",
-    merchantId: "Z0S7JA8VG9CR1",
-    apiToken: process.env.CLOVER_API_TOKEN_MOOSEJAW,
-    address: "622 Main St N, Moose Jaw, SK",
-    phone: "306-692-2113",
-    hours: "Mon-Wed 11am-1am · Thu-Sun 11am-3am",
-    onlinePayments: false,
-    cloverPrivateKey: process.env.CLOVER_PRIVATE_KEY_MOOSEJAW
   },
   "regina-beach": {
     name: "Regina Beach",
@@ -103,9 +83,7 @@ const LOCATIONS = {
 function getKitchenPassword(loc) {
   switch(loc) {
     case 'albert-st':   return process.env.KITCHEN_PW_ALBERT;
-    case 'rochdale':    return process.env.KITCHEN_PW_ROCHDALE;
     case 'east-regina': return process.env.KITCHEN_PW_EAST;
-    case 'moose-jaw':   return process.env.KITCHEN_PW_MOOSEJAW;
     case 'regina-beach': return process.env.KITCHEN_PW_BEACH;
     default: return null;
   }
@@ -924,7 +902,7 @@ const CONTEST_CONFIG = {
   CLAIM_WINDOW_DAYS: 7,
   WEEKLY_CAP_DOLLARS: null,   // null = no cap. Set a number (e.g. 50) to cap.
   WEEKS: 52,
-  ELIGIBLE_LOCATIONS: ['albert-st','rochdale','east-regina','moose-jaw','regina-beach'],
+  ELIGIBLE_LOCATIONS: ['albert-st','east-regina','regina-beach'],
   ADMIN_PASSWORD: process.env.CONTEST_ADMIN_PASSWORD || 'wingocontest2026',
   ELIGIBLE_PROVINCE: 'SK',
   RATE_LIMIT_PER_MIN: 5
