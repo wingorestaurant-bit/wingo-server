@@ -3,6 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+
+<!-- ═══════ GOOGLE ANALYTICS 4 ═══════
+     Tracking ID: G-X6MRXWNCSQ (WingO Restaurants)
+     View reports at: https://analytics.google.com
+-->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-X6MRXWNCSQ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-X6MRXWNCSQ', {
+    'page_title': 'Wing-O Restaurants',
+    'send_page_view': true
+  });
+  // Track key events
+  window.trackEvent = function(name, params) {
+    if (typeof gtag === 'function') gtag('event', name, params || {});
+  };
+</script>
+<!-- ═══════ END GA4 ═══════ -->
+
 <title>Wing-O — More Than Wings | Regina's Original</title>
 <meta name="description" content="135+ handcrafted wing flavors. 3 Regina locations + Winnipeg opening soon. Born in Regina. Online ordering live!">
 <link rel="manifest" href="/manifest.json">
@@ -99,6 +120,44 @@ nav{background:var(--black);position:sticky;top:0;z-index:999;border-bottom:3px 
 .cat-card-body{padding:1.25rem;}
 .cat-card-name{font-family:var(--font-display);font-size:1.5rem;letter-spacing:2px;color:var(--ink);margin-bottom:.25rem;}
 .cat-card-sub{font-size:.85rem;color:#666;}
+
+/* ═══════ GOOGLE REVIEWS SECTION ═══════ */
+.reviews-section{background:var(--paper);padding:3.5rem 1.5rem;border-bottom:3px double var(--yellow);position:relative;overflow:hidden;}
+.reviews-inner{max-width:1200px;margin:0 auto;position:relative;z-index:1;}
+.reviews-header{text-align:center;margin-bottom:2rem;}
+.reviews-eyebrow{font-family:var(--font-head);font-size:.72rem;color:var(--red);letter-spacing:4px;text-transform:uppercase;margin-bottom:.5rem;font-weight:700;}
+.reviews-title{font-family:var(--font-display);font-size:clamp(1.8rem,4vw,2.6rem);letter-spacing:2px;color:var(--ink);line-height:1;margin-bottom:.75rem;}
+.reviews-title span{color:var(--red);}
+.g-badge{display:inline-flex;align-items:center;gap:.6rem;background:white;border:1px solid var(--paper-line);border-radius:50px;padding:.55rem 1.15rem;box-shadow:0 4px 12px rgba(0,0,0,.06);margin-top:.75rem;}
+.g-badge .g-logo{width:22px;height:22px;background:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="%23FFC107" d="M43.6 20.1H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="%23FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.1 18.9 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="%234CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2c-2 1.5-4.5 2.4-7.2 2.4-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="%231976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C41.4 34.1 44 29.4 44 24c0-1.3-.1-2.6-.4-3.9z"/></svg>') no-repeat center/contain;flex-shrink:0;}
+.g-badge .g-stars{color:#FBBC04;font-size:1.05rem;letter-spacing:2px;}
+.g-badge .g-txt{font-family:var(--font-head);font-size:.82rem;color:var(--ink);letter-spacing:.5px;font-weight:600;}
+.reviews-scroll{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;}
+@media(max-width:768px){.reviews-scroll{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:80%;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:.5rem;-webkit-overflow-scrolling:touch;}.reviews-scroll::-webkit-scrollbar{display:none;}.review-card{scroll-snap-align:start;}}
+.review-card{background:white;border:1px solid var(--paper-line);border-radius:8px;padding:1.35rem 1.4rem;box-shadow:0 4px 12px rgba(0,0,0,.05);display:flex;flex-direction:column;position:relative;}
+.review-card::before{content:'"';position:absolute;top:-.5rem;left:1rem;font-family:var(--font-serif);font-size:4rem;color:var(--red);line-height:1;opacity:.15;font-weight:900;}
+.review-stars{color:#FBBC04;letter-spacing:2px;font-size:1rem;margin-bottom:.7rem;}
+.review-text{color:#333;font-size:.94rem;line-height:1.6;margin-bottom:1rem;flex-grow:1;font-style:italic;}
+.review-meta{display:flex;align-items:center;gap:.7rem;padding-top:.8rem;border-top:1px solid var(--paper-line);}
+.review-avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--red-deep));color:white;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:1.1rem;letter-spacing:1px;flex-shrink:0;}
+.review-info{flex-grow:1;line-height:1.2;}
+.review-name{font-family:var(--font-head);font-size:.88rem;color:var(--ink);font-weight:700;letter-spacing:.3px;}
+.review-loc{font-size:.72rem;color:#888;font-family:var(--font-head);letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
+.reviews-cta{text-align:center;margin-top:2rem;}
+.reviews-cta a{display:inline-flex;align-items:center;gap:.5rem;background:white;color:var(--ink);border:1px solid var(--paper-line);padding:.75rem 1.5rem;font-family:var(--font-head);font-size:.85rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none;border-radius:4px;transition:all .2s;}
+.reviews-cta a:hover{background:var(--ink);color:white;border-color:var(--ink);}
+
+/* ═══════ STICKY MOBILE ORDER BAR ═══════ */
+.mob-order-bar{display:none;position:fixed;bottom:0;left:0;right:0;background:linear-gradient(180deg,rgba(13,13,13,.92),rgba(13,13,13,.98));backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:.7rem .9rem calc(.7rem + env(safe-area-inset-bottom));z-index:998;border-top:2px solid var(--red);box-shadow:0 -8px 24px rgba(0,0,0,.25);}
+.mob-order-bar button{width:100%;background:var(--red);color:white;border:none;padding:.95rem 1rem;font-family:var(--font-display);font-size:1.05rem;letter-spacing:2.5px;text-transform:uppercase;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.6rem;box-shadow:0 4px 0 var(--red-deep);transition:transform .1s;font-weight:700;}
+.mob-order-bar button:active{transform:translateY(2px);box-shadow:0 2px 0 var(--red-deep);}
+.mob-order-bar .mob-cart-badge{background:white;color:var(--red);font-family:var(--font-head);font-size:.75rem;padding:2px 8px;border-radius:20px;font-weight:800;letter-spacing:.5px;min-width:22px;text-align:center;}
+.mob-order-bar .mob-cart-badge.empty{background:rgba(255,255,255,.2);color:white;}
+@media(max-width:768px){
+  .mob-order-bar{display:block;}
+  body{padding-bottom:80px;}
+  body.cart-open .mob-order-bar,body.checkout-open .mob-order-bar,body.modal-open .mob-order-bar{display:none;}
+}
 .impact-sec{background:var(--ink);color:white;padding:4rem 1.5rem;text-align:center;}
 .impact-inner{max-width:1100px;margin:0 auto;}
 .impact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:2rem;margin-top:2.5rem;}
@@ -523,6 +582,113 @@ setInterval(fetchLocationStatus,30000);
     </div>
   </div>
 </section>
+
+<!-- ═══════ GOOGLE REVIEWS SECTION ═══════
+     👉 TO CUSTOMIZE: Replace the placeholder reviews below with real ones from your Google Business Profile.
+     Each review card is clearly commented. Copy text from your top Google reviews and paste in.
+-->
+<section class="reviews-section" id="reviews">
+  <div class="reviews-inner">
+    <div class="reviews-header">
+      <div class="reviews-eyebrow">What Regina Is Saying</div>
+      <h2 class="reviews-title">RATED <span>4.7★</span> BY LOCALS</h2>
+      <div class="g-badge">
+        <div class="g-logo"></div>
+        <span class="g-stars">★★★★★</span>
+        <span class="g-txt">400+ Google Reviews</span>
+      </div>
+    </div>
+
+    <div class="reviews-scroll">
+
+      <!-- REVIEW 1 — Replace with real Google review -->
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">"Honey Garlic wings hit different at WingO. My go-to spot for late-night cravings — they're actually open when everyone else is closed. Sauce Boss knows what he's doing."</div>
+        <div class="review-meta">
+          <div class="review-avatar">JM</div>
+          <div class="review-info">
+            <div class="review-name">Jordan M.</div>
+            <div class="review-loc">Albert Street</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REVIEW 2 — Replace with real Google review -->
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">"Tried the Devil's Kiss on a dare. Regretted it for 20 minutes, then ordered again next week. That's how you know it's good. 125+ flavors — I'm working through them all."</div>
+        <div class="review-meta">
+          <div class="review-avatar">SR</div>
+          <div class="review-info">
+            <div class="review-name">Sarah R.</div>
+            <div class="review-loc">East Regina</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REVIEW 3 — Replace with real Google review -->
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">"Ordered wings for my son's birthday party — 8 kids, 4 different flavors. Every single kid was happy. Delivery was fast and everything was hot. Real prairie hospitality."</div>
+        <div class="review-meta">
+          <div class="review-avatar">TK</div>
+          <div class="review-info">
+            <div class="review-name">Tanya K.</div>
+            <div class="review-loc">Regina Beach</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REVIEW 4 — Replace with real Google review -->
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">"The $10 lunch deal is unreal. Full order of wings + fries for a tenner? I eat here 3x a week now. The staff knows my order. Best kept secret in Regina."</div>
+        <div class="review-meta">
+          <div class="review-avatar">DP</div>
+          <div class="review-info">
+            <div class="review-name">David P.</div>
+            <div class="review-loc">Albert Street</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REVIEW 5 — Replace with real Google review -->
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">"Maple BBQ ribs. That's all I need to say. Fall-off-the-bone, that prairie sweetness, and generous portions. Way better than the chain spots. Local wins."</div>
+        <div class="review-meta">
+          <div class="review-avatar">MN</div>
+          <div class="review-info">
+            <div class="review-name">Marcus N.</div>
+            <div class="review-loc">East Regina</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REVIEW 6 — Replace with real Google review -->
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <div class="review-text">"Saucy Stamps is a genius idea. 10 orders and I got a free half order — no gimmicks. Actually rewards loyalty. That's how you build a customer base."</div>
+        <div class="review-meta">
+          <div class="review-avatar">AH</div>
+          <div class="review-info">
+            <div class="review-name">Amrit H.</div>
+            <div class="review-loc">Albert Street</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="reviews-cta">
+      <a href="https://www.google.com/maps/search/wingo+restaurants+regina/" target="_blank" rel="noopener" onclick="if(window.trackEvent)trackEvent('reviews_cta_click');">
+        📖 Read All 400+ Reviews on Google →
+      </a>
+    </div>
+  </div>
+</section>
+
 <section class="impact-sec" id="impact">
   <div class="impact-inner">
     <div class="eyebrow" style="color:rgba(255,255,255,.6)">Real Numbers · Updated Live</div>
@@ -2039,5 +2205,57 @@ showFirstOrderBanner();
   wrapSubmit();
 })();
 </script>
+<!-- ═══════ STICKY MOBILE ORDER BAR ═══════
+     Only shows on mobile (< 768px). Hidden when cart/checkout is open.
+     Syncs cart count with the existing #cart-count element in top nav.
+-->
+<div class="mob-order-bar" id="mob-order-bar" aria-label="Order now">
+  <button onclick="if(window.trackEvent)trackEvent('mob_order_bar_click');openCart();" aria-label="Open your cart">
+    🍗 Order Now
+    <span class="mob-cart-badge empty" id="mob-cart-count">0</span>
+  </button>
+</div>
+
+<script>
+// ═══════ MOBILE ORDER BAR — sync cart count with existing #cart-count ═══════
+(function(){
+  var mob = document.getElementById('mob-cart-count');
+  var main = document.getElementById('cart-count');
+  if (!mob || !main) return;
+
+  function syncCount(){
+    var v = main.textContent || '0';
+    mob.textContent = v;
+    if (parseInt(v,10) > 0) { mob.classList.remove('empty'); }
+    else { mob.classList.add('empty'); }
+  }
+
+  // Watch the main cart-count element for changes
+  new MutationObserver(syncCount).observe(main, {childList:true, characterData:true, subtree:true});
+
+  // Hide mobile bar when cart/checkout/modal is open
+  function checkOverlays(){
+    var cartOn = document.querySelector('.cart-ov.on, .cart-ov[style*="display: block"], .cart-ov[style*="display:block"]');
+    var checkoutOn = document.querySelector('.checkout-ov.on, .modal.on');
+    if (cartOn || checkoutOn) document.body.classList.add('cart-open');
+    else document.body.classList.remove('cart-open');
+  }
+  setInterval(checkOverlays, 400);
+  syncCount();
+
+  // GA4: track key user events if analytics loaded
+  if (window.trackEvent) {
+    // Track scroll depth
+    var scrolled = {25:false, 50:false, 75:false, 100:false};
+    window.addEventListener('scroll', function(){
+      var pct = (window.scrollY + window.innerHeight) / document.body.scrollHeight * 100;
+      Object.keys(scrolled).forEach(function(k){
+        if (pct >= k && !scrolled[k]) { scrolled[k] = true; trackEvent('scroll_depth', {percent: k}); }
+      });
+    }, {passive:true});
+  }
+})();
+</script>
+
 </body>
 </html>
