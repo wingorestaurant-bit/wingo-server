@@ -4,25 +4,29 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 
-<!-- ═══════ GOOGLE ANALYTICS 4 ═══════
-     Tracking ID: G-X6MRXWNCSQ (WingO Restaurants)
-     View reports at: https://analytics.google.com
+<!-- ═══════ GOOGLE TAGS (Analytics + Ads) ═══════
+     GA4 Analytics:  G-X6MRXWNCSQ
+     Google Ads:     AW-18371436792
+     Both services share one gtag.js load with two config calls.
 -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-X6MRXWNCSQ"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
+  // GA4 — analytics tracking
   gtag('config', 'G-X6MRXWNCSQ', {
     'page_title': 'Wing-O Restaurants',
     'send_page_view': true
   });
-  // Track key events
+  // Google Ads — conversion tracking
+  gtag('config', 'AW-18371436792');
+  // Track key events (fires to both GA4 + Ads)
   window.trackEvent = function(name, params) {
     if (typeof gtag === 'function') gtag('event', name, params || {});
   };
 </script>
-<!-- ═══════ END GA4 ═══════ -->
+<!-- ═══════ END GOOGLE TAGS ═══════ -->
 
 <title>Wing-O — More Than Wings | Regina's Original</title>
 <meta name="description" content="135+ handcrafted wing flavors. 3 Regina locations + Winnipeg opening soon. Born in Regina. Online ordering live!">
