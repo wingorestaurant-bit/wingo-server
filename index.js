@@ -552,6 +552,7 @@ app.get('/api/kitchen/orders', async (req, res) => {
       phone: o.customer?.phone || '', address: o.customer?.address || '',
       orderType: o.orderType || 'pickup', items: o.items || [], notes: o.notes || '',
       kitchenStatus: o.kitchenStatus || 'pending',
+      readyNotifiedAt: o.readyNotifiedAt ? o.readyNotifiedAt.toISOString() : null,
       timeAgo: formatTimeAgo(now - new Date(o.createdAt).getTime())
     }));
     res.json({
@@ -588,6 +589,99 @@ app.post('/api/kitchen/order/:id/status', async (req, res) => {
     res.json({ ok: true });
   } catch (e) {
     console.error('[kitchen] status update error', e.message);
+    res.status(500).json({ error: 'server error' });
+  }
+});
+
+// ── NOTIFY CUSTOMER READY / OUT-FOR-DELIVERY ────────────────
+// Called from kitchen display "🔥 Notify Ready" button.
+// Fires customer email but does NOT change order status.
+// Can be called multiple times if kitchen needs to re-notify.
+app.post('/api/kitchen/order/:id/notify-ready', async (req, res) => {
+  const { loc, pw } = req.body;
+  if (!checkKitchenAuth(loc, pw)) return res.status(401).json({ error: 'unauthorized' });
+  try {
+    const database = await connectDB();
+    if (!database) return res.status(500).json({ error: 'db unavailable' });
+
+    const order = await database.collection('orders').findOne(
+      { _id: new ObjectId(req.params.id), locationId: loc }
+    );
+    if (!order) return res.status(404).json({ error: 'order not found' });
+
+    // No email on file — nothing to send, but return success so button feels responsive
+    if (!order.customer?.email || !order.customer.email.includes('@')) {
+      console.log(`[kitchen] notify-ready skipped for ${order.orderNum}: no customer email`);
+      return res.json({ ok: true, notified: false, reason: 'no-email' });
+    }
+
+    const locData = LOCATIONS[loc] || { name: loc, phone: '', address: '' };
+    const isDelivery = order.orderType === 'delivery';
+
+    const subject = isDelivery
+      ? `🛵 Your WingO is On the Way — ${order.orderNum}`
+      : `🍗 Order Ready for Pickup — ${order.orderNum}`;
+    const headline = isDelivery ? 'OUT FOR DELIVERY 🛵' : 'READY FOR PICKUP 🍗';
+    const headlineColor = isDelivery ? '#F5A800' : '#2D8A3E';
+    const bodyIntro = isDelivery
+      ? `Your food is packed up and on the way to <strong>${order.customer?.address || 'your address'}</strong>. Have cash or card ready when the driver arrives.`
+      : `Your order is hot and ready! Come pick it up at <strong>${locData.name}</strong> — the sooner the better while it's fresh out of the fryer.`;
+    const bigInfo = isDelivery
+      ? `<div style="background:#0D0D0D;color:white;padding:22px 20px;border-radius:8px;text-align:center;margin-bottom:20px;">
+           <div style="font-size:11px;color:#F5A800;letter-spacing:2.5px;margin-bottom:8px;font-weight:bold;">DELIVERING TO</div>
+           <div style="font-size:18px;line-height:1.4;font-weight:bold;">${order.customer?.address || ''}</div>
+           <div style="font-size:12px;color:#CCC;margin-top:10px;">ETA: 15–25 minutes</div>
+         </div>`
+      : `<div style="background:#0D0D0D;color:white;padding:22px 20px;border-radius:8px;text-align:center;margin-bottom:20px;">
+           <div style="font-size:11px;color:#F5A800;letter-spacing:2.5px;margin-bottom:8px;font-weight:bold;">PICK UP AT</div>
+           <div style="font-size:18px;line-height:1.4;font-weight:bold;">${locData.name}</div>
+           <div style="font-size:14px;color:#CCC;margin-top:8px;">${locData.address || ''}</div>
+           <div style="margin-top:14px;"><a href="tel:${(locData.phone || '').replace(/\D/g, '')}" style="color:#F5A800;text-decoration:none;font-weight:bold;font-size:14px;">📞 ${locData.phone || ''}</a></div>
+         </div>`;
+
+    sendEmail({
+      to: order.customer.email,
+      subject: subject,
+      html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#F4EBD7;">
+        <div style="background:#0D0D0D;padding:24px;text-align:center;border-bottom:3px double #F5A800;">
+          <h1 style="color:#E8190A;font-size:32px;margin:0;letter-spacing:2px;font-weight:900;">WING<span style="color:white;">-O</span></h1>
+          <p style="color:${headlineColor};margin:8px 0 0;font-size:13px;letter-spacing:3px;font-weight:bold;">${headline}</p>
+        </div>
+        <div style="padding:28px 24px;">
+          <p style="font-size:18px;color:#1A1208;margin:0 0 6px;font-weight:bold;">Hey ${order.customer.firstName}! 👋</p>
+          <p style="font-size:15px;color:#333;line-height:1.6;margin:0 0 20px;">${bodyIntro}</p>
+          ${bigInfo}
+          <div style="background:white;border:1px solid #C8B89A;border-radius:8px;padding:14px 18px;margin-bottom:16px;text-align:center;">
+            <div style="font-size:10px;color:#888;letter-spacing:1.5px;margin-bottom:4px;">ORDER #</div>
+            <div style="font-size:24px;color:#E8190A;font-weight:900;letter-spacing:2px;">${order.orderNum}</div>
+          </div>
+          <div style="text-align:center;padding:12px 0 4px;font-size:13px;color:#666;line-height:1.7;">
+            ${isDelivery ? 'Delivery running late or something wrong?' : 'Any issues with your order?'}<br>
+            <a href="tel:${(locData.phone || '').replace(/\D/g, '')}" style="color:#E8190A;text-decoration:none;font-weight:bold;">📞 ${locData.phone || ''}</a>
+          </div>
+        </div>
+        <div style="background:#0D0D0D;padding:22px 20px;text-align:center;">
+          <p style="color:#F5A800;font-family:Georgia,serif;font-style:italic;font-size:14px;margin:0 0 8px;">— The Sauce Boss 🌾</p>
+          <p style="color:#666;font-size:10px;letter-spacing:2px;margin:0;">PROUDLY PRAIRIE · REGINA, SASKATCHEWAN</p>
+        </div>
+      </div>`
+    });
+
+    // Mark notified — kitchen display shows green "✅ Customer notified" tag
+    await database.collection('orders').updateOne(
+      { _id: order._id },
+      { $set: { readyNotifiedAt: new Date() } }
+    );
+
+    console.log(`✉️ Customer notified: ${order.orderNum} → ${isDelivery ? 'out for delivery' : 'ready for pickup'}`);
+    res.json({
+      ok: true,
+      notified: true,
+      customerName: order.customer.firstName,
+      mode: isDelivery ? 'delivery' : 'pickup'
+    });
+  } catch (e) {
+    console.error('[kitchen] notify-ready error', e.message);
     res.status(500).json({ error: 'server error' });
   }
 });
