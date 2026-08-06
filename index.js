@@ -101,7 +101,7 @@ async function sendEmail({ to, subject, html }) {
     const r = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ from: 'Wing-O <besaucy@wingorestaurants.com>', to, subject, html })
+      body: JSON.stringify({ from: 'Wing-O Orders <orders@wingorestaurants.com>', to, subject, html })
     });
     const d = await r.json();
     if (d.id) console.log(`✉️ Email sent: ${subject}`);
@@ -444,6 +444,77 @@ app.post('/api/orders', async (req, res) => {
       </div>
     </div>`
   });
+
+  // ── CUSTOMER CONFIRMATION EMAIL ─────────────────────────────
+  // Fires only if customer provided their email at checkout
+  if (customer.email && customer.email.includes('@')) {
+    const etaText = preOrder
+      ? `Since we're closed right now, your order will be prepared when we open at <strong>${openTime}</strong>.`
+      : `Should be ready in about <strong>${orderType === 'delivery' ? '30–45' : '15–20'} minutes</strong>.`;
+    const whatsNext = orderType === 'delivery'
+      ? `Sit tight — your food is being prepared. Have cash or card ready for the driver.`
+      : `Come pick up at <strong style="color:#F5A800;">${loc.address}</strong>. Look for the Wing-O logo.`;
+    const tipAmt = Number(req.body.tip || 0);
+    const delFee = orderType === 'delivery' ? 5.50 : 0;
+
+    sendEmail({
+      to: customer.email,
+      subject: `🍗 Order Confirmed — ${orderNum} · Wing-O Restaurants`,
+      html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#F4EBD7;">
+        <div style="background:#0D0D0D;padding:24px;text-align:center;border-bottom:3px double #F5A800;">
+          <h1 style="color:#E8190A;font-size:32px;margin:0;letter-spacing:2px;font-weight:900;">WING<span style="color:white;">-O</span></h1>
+          <p style="color:#F5A800;margin:8px 0 0;font-size:12px;letter-spacing:3px;">${preOrder ? '⏰ PRE-ORDER CONFIRMED' : '✅ ORDER CONFIRMED'}</p>
+        </div>
+
+        <div style="padding:28px 24px;">
+          <p style="font-size:18px;color:#1A1208;margin:0 0 6px;font-weight:bold;">Hey ${customer.firstName}! 👋</p>
+          <p style="font-size:15px;color:#333;line-height:1.6;margin:0 0 20px;">Thanks for ordering with Wing-O. Your ${orderType === 'delivery' ? 'delivery' : 'pickup'} order is confirmed and heading to the kitchen. ${etaText}</p>
+
+          <div style="background:white;border:1px solid #C8B89A;border-radius:8px;padding:18px 20px;margin-bottom:16px;">
+            <table style="width:100%;border-collapse:collapse;">
+              <tr><td style="padding:4px 0;color:#888;font-size:11px;letter-spacing:1.5px;">ORDER #</td><td style="padding:4px 0;font-weight:bold;font-size:20px;color:#E8190A;text-align:right;font-family:Arial;">${orderNum}</td></tr>
+              <tr><td style="padding:4px 0;color:#888;font-size:11px;letter-spacing:1.5px;">LOCATION</td><td style="padding:4px 0;font-weight:bold;text-align:right;">${loc.name}</td></tr>
+              <tr><td style="padding:4px 0;color:#888;font-size:11px;letter-spacing:1.5px;">${orderType === 'delivery' ? 'DELIVER TO' : 'PICKUP AT'}</td><td style="padding:4px 0;text-align:right;font-size:13px;">${orderType === 'delivery' ? customer.address : loc.address}</td></tr>
+              <tr><td style="padding:4px 0;color:#888;font-size:11px;letter-spacing:1.5px;">${orderType === 'delivery' ? 'CALL US' : 'STORE PHONE'}</td><td style="padding:4px 0;text-align:right;"><a href="tel:${loc.phone.replace(/\D/g, '')}" style="color:#E8190A;text-decoration:none;font-weight:bold;">${loc.phone}</a></td></tr>
+            </table>
+          </div>
+
+          <div style="background:white;border:1px solid #C8B89A;border-radius:8px;padding:18px 20px;margin-bottom:16px;">
+            <div style="font-size:11px;color:#888;letter-spacing:2px;margin-bottom:12px;font-weight:bold;">YOUR ORDER</div>
+            ${items.map(i => `<div style="padding:10px 0;border-bottom:1px solid #E8DCC1;"><div style="display:flex;justify-content:space-between;align-items:flex-start;"><div style="flex:1;"><div style="font-weight:bold;font-size:14px;color:#1A1208;">${i.name} <span style="color:#888;font-weight:normal;">×${i.qty}</span></div>${i.flavor ? `<div style="color:#E8190A;font-size:12px;margin-top:3px;">${i.flavor}</div>` : ''}</div><div style="font-weight:bold;color:#1A1208;font-size:14px;margin-left:12px;">$${(i.price * i.qty).toFixed(2)}</div></div></div>`).join('')}
+            <div style="padding-top:14px;">
+              <div style="display:flex;justify-content:space-between;padding:3px 0;color:#666;font-size:13px;"><span>Subtotal</span><span>$${Number(subtotal).toFixed(2)}</span></div>
+              <div style="display:flex;justify-content:space-between;padding:3px 0;color:#666;font-size:13px;"><span>Tax (GST + PST)</span><span>$${Number(tax || 0).toFixed(2)}</span></div>
+              ${delFee > 0 ? `<div style="display:flex;justify-content:space-between;padding:3px 0;color:#666;font-size:13px;"><span>Delivery</span><span>$${delFee.toFixed(2)}</span></div>` : ''}
+              ${tipAmt > 0 ? `<div style="display:flex;justify-content:space-between;padding:3px 0;color:#2D8A3E;font-size:13px;font-weight:bold;"><span>💸 Tip</span><span>$${tipAmt.toFixed(2)}</span></div>` : ''}
+              <div style="display:flex;justify-content:space-between;padding:10px 0 4px;font-weight:bold;font-size:18px;border-top:2px solid #1A1208;margin-top:8px;"><span>TOTAL</span><span style="color:#E8190A;">$${Number(total).toFixed(2)}</span></div>
+              <div style="text-align:center;font-size:11px;color:#F5A800;letter-spacing:2px;margin-top:8px;font-weight:bold;">💰 PAY AT ${orderType === 'delivery' ? 'DELIVERY' : 'PICKUP'}</div>
+            </div>
+          </div>
+
+          <div style="background:#0D0D0D;color:white;padding:18px 20px;border-radius:8px;text-align:center;margin-bottom:20px;">
+            <div style="font-size:11px;color:#F5A800;letter-spacing:2.5px;margin-bottom:8px;font-weight:bold;">WHAT'S NEXT?</div>
+            <div style="font-size:14px;line-height:1.6;">${whatsNext}</div>
+          </div>
+
+          ${notes ? `<div style="background:#FFF8EE;border-left:4px solid #F5A800;border-radius:6px;padding:12px 14px;margin-bottom:16px;font-size:13px;color:#555;"><strong style="color:#1A1208;">Your note to kitchen:</strong> ${notes}</div>` : ''}
+
+          <div style="text-align:center;padding:12px 0 20px;font-size:13px;color:#666;line-height:1.7;">
+            Questions or need to change something?<br>
+            <a href="tel:${loc.phone.replace(/\D/g, '')}" style="color:#E8190A;text-decoration:none;font-weight:bold;">📞 ${loc.phone}</a>
+            &nbsp;·&nbsp;
+            <a href="mailto:besaucy@wingorestaurants.com" style="color:#E8190A;text-decoration:none;font-weight:bold;">📧 Email us</a>
+          </div>
+        </div>
+
+        <div style="background:#0D0D0D;padding:22px 20px;text-align:center;">
+          <p style="color:#F5A800;font-family:Georgia,serif;font-style:italic;font-size:14px;margin:0 0 8px;">— The Sauce Boss 🌾</p>
+          <p style="color:#666;font-size:10px;letter-spacing:2px;margin:0 0 4px;">PROUDLY PRAIRIE · REGINA, SASKATCHEWAN</p>
+          <p style="margin:6px 0 0;"><a href="https://wingorestaurants.com" style="color:#F5A800;text-decoration:none;font-size:11px;letter-spacing:1px;">wingorestaurants.com</a></p>
+        </div>
+      </div>`
+    });
+  }
 
   res.json({
     success: true, orderNum, cloverId, cloverSuccess,
