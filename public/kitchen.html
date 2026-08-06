@@ -101,6 +101,7 @@ main{flex:1;display:grid;grid-template-rows:1fr auto;overflow:hidden}
 .btn-ack:hover{background:var(--red-deep)}
 .btn-ready{background:var(--yellow);color:var(--black)}
 .btn-ready:hover{background:#c28200;color:white}
+.notified-tag{background:rgba(45,138,62,.15);border:1px solid #2D8A3E;color:#2D8A3E;font-family:var(--font-head,sans-serif);font-size:.72rem;letter-spacing:1px;padding:.35rem .6rem;border-radius:4px;margin-bottom:.5rem;text-align:center;font-weight:700;text-transform:uppercase;}
 .btn-done{background:var(--green);color:white}
 .btn-done:hover{background:#2d7a4f}
 
@@ -417,12 +418,18 @@ function renderOrder(o, lane){
   var phone = o.phone ? ' · ' + escapeHtml(o.phone) : '';
   var btns;
   if(lane === 'pending'){
-    btns = '<div class="o-btns">'+
-      '<button class="btn btn-ack" onclick="moveToProgress(\''+o.id+'\')">✓ Acknowledge</button>'+
-      '<button class="btn btn-ready" onclick="markReady(\''+o.id+'\')">🔥 Ready</button>'+
+    btns = '<div class="o-btns single">'+
+      '<button class="btn btn-ack" onclick="moveToProgress(\''+o.id+'\')">✓ Acknowledge · Start Cooking</button>'+
     '</div>';
   } else {
-    btns = '<div class="o-btns single">'+
+    var notifiedTag = o.readyNotifiedAt
+      ? '<div class="notified-tag">✅ Customer notified '+formatNotifiedTime(o.readyNotifiedAt)+'</div>'
+      : '';
+    var notifyBtnLabel = o.readyNotifiedAt
+      ? '🔄 Re-Notify Customer'
+      : (o.orderType === 'delivery' ? '🛵 Notify Out for Delivery' : '🔥 Notify Ready for Pickup');
+    btns = notifiedTag + '<div class="o-btns">'+
+      '<button class="btn btn-ready" onclick="notifyReady(\''+o.id+'\')">'+notifyBtnLabel+'</button>'+
       '<button class="btn btn-done" onclick="completeOrder(\''+o.id+'\')">✓ Complete & Hand Off</button>'+
     '</div>';
   }
@@ -466,14 +473,54 @@ async function moveToProgress(id){
   fetchOrders();
 }
 
-async function markReady(id){
+async function notifyReady(id){
   stopBellLoop();
-  await fetch(API_BASE + '/api/kitchen/order/' + id + '/status', {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({status:'progress', loc:LOCATION, pw:PASSWORD})
-  });
+  try {
+    var resp = await fetch(API_BASE + '/api/kitchen/order/' + id + '/notify-ready', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({loc:LOCATION, pw:PASSWORD})
+    });
+    var data = await resp.json();
+    if (data.ok) {
+      if (data.notified) {
+        showToast('✉️ Customer notified: ' + (data.customerName || 'them') + ' — ' + (data.mode === 'delivery' ? 'out for delivery' : 'ready for pickup'));
+      } else {
+        showToast('⚠️ No customer email on file — could not notify');
+      }
+    } else {
+      showToast('❌ Failed: ' + (data.error || 'unknown error'));
+    }
+  } catch(e) {
+    showToast('❌ Network error — try again');
+  }
   fetchOrders();
+}
+
+function formatNotifiedTime(iso){
+  try{
+    var mins = Math.floor((Date.now() - new Date(iso).getTime())/60000);
+    if(mins < 1) return 'just now';
+    if(mins === 1) return '1 min ago';
+    if(mins < 60) return mins + ' mins ago';
+    var hrs = Math.floor(mins/60);
+    return hrs + ' hr' + (hrs > 1 ? 's' : '') + ' ago';
+  } catch(e){ return ''; }
+}
+
+function showToast(msg){
+  var t = document.getElementById('kt-toast');
+  if(!t){
+    t = document.createElement('div');
+    t.id = 'kt-toast';
+    t.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0D0D0D;color:#F5A800;padding:14px 22px;border-radius:8px;font-family:var(--font-head,sans-serif);font-size:14px;letter-spacing:1px;box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:9999;border:1px solid #F5A800;max-width:90%;text-align:center;';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.display = 'block';
+  t.style.opacity = '1';
+  clearTimeout(t._hideTimer);
+  t._hideTimer = setTimeout(function(){t.style.opacity='0';setTimeout(function(){t.style.display='none';},300);}, 4000);
 }
 
 async function completeOrder(id){
