@@ -1500,15 +1500,15 @@ checkPickledLTO();
 setInterval(checkPickledLTO, 60*60*1000); // re-check hourly
 
 function openPickledLTO(){
-  if(new Date() >= PICKLED_LTO_END){toast('Sorry — the Pickle\\'d Poutine BOGO deal ended 🥒');return;}
+  if(new Date() >= PICKLED_LTO_END){toast('Sorry — the Pickle\'d Poutine BOGO deal ended 🥒');return;}
   var bd = document.getElementById('pickled-bd');
   bd.innerHTML =
     '<div style="background:linear-gradient(135deg,#2D8A3E,#1a5a26);border-radius:6px;padding:1rem;text-align:center;color:white;margin-bottom:1.25rem;border:2px solid var(--ink);">'+
       '<div style="font-family:var(--font-display);font-size:2.2rem;letter-spacing:2px;line-height:1;">BUY 1 · GET 1 FREE</div>'+
-      '<div style="font-family:var(--font-head);font-size:.78rem;letter-spacing:2px;text-transform:uppercase;margin-top:.4rem;">2 Pickle\\'d Poutines for $'+PICKLED_LTO_PRICE.toFixed(2)+'</div>'+
+      '<div style="font-family:var(--font-head);font-size:.78rem;letter-spacing:2px;text-transform:uppercase;margin-top:.4rem;">2 Pickle\'d Poutines for $'+PICKLED_LTO_PRICE.toFixed(2)+'</div>'+
     '</div>'+
     '<div style="background:rgba(72,187,120,.1);border:1.5px solid #48BB78;color:#276749;padding:.6rem .85rem;border-radius:4px;font-family:var(--font-head);font-size:.8rem;letter-spacing:1px;margin-bottom:1rem;text-align:center;font-weight:700;">💰 You save $'+PICKLED_LTO_PRICE.toFixed(2)+' — August only</div>'+
-    '<img src="/images/Pickled-Poutine.png" alt="Pickle\\'d Poutine" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;margin-bottom:1rem;border:2px solid var(--paper-line);">'+
+    '<img src="/images/Pickled-Poutine.png" alt="Pickle\'d Poutine" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;margin-bottom:1rem;border:2px solid var(--paper-line);">'+
     '<div class="lunch-includes">'+
       '<div class="lunch-includes-row">🍟 <span><strong>Golden Fries</strong> · Crispy prairie-style</span></div>'+
       '<div class="lunch-includes-row">🧀 <span><strong>Cheese Curds</strong> · Fresh Saskatchewan curds</span></div>'+
