@@ -125,6 +125,32 @@ nav{background:var(--black);position:sticky;top:0;z-index:999;border-bottom:3px 
 .cat-card-name{font-family:var(--font-display);font-size:1.5rem;letter-spacing:2px;color:var(--ink);margin-bottom:.25rem;}
 .cat-card-sub{font-size:.85rem;color:#666;}
 
+/* ═══════ LIMITED TIME OFFER: PICKLE'D POUTINE ═══════ */
+.lto-section{background:linear-gradient(135deg,#1a3a1a 0%,#0D0D0D 50%,#1a3a1a 100%);padding:3.5rem 1.5rem;border-bottom:3px double var(--yellow);position:relative;overflow:hidden;}
+.lto-section::before{content:"🥒 🥒 🥒 🥒 🥒 🥒 🥒 🥒 🥒 🥒 🥒 🥒 🥒 🥒";position:absolute;top:0;left:0;right:0;font-size:1.5rem;opacity:.05;letter-spacing:12px;pointer-events:none;text-align:center;line-height:2;transform:rotate(-5deg);}
+.lto-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;align-items:center;position:relative;z-index:1;}
+@media(max-width:768px){.lto-inner{grid-template-columns:1fr;gap:1.5rem;text-align:center;}}
+.lto-media{position:relative;}
+.lto-img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.4);border:4px solid var(--yellow);}
+.lto-price-tag{position:absolute;top:-15px;right:-15px;background:var(--red);color:white;width:90px;height:90px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:1.6rem;letter-spacing:1px;transform:rotate(12deg);box-shadow:0 6px 20px rgba(232,25,10,.5);border:3px solid white;font-weight:700;line-height:1;}
+@media(max-width:768px){.lto-price-tag{width:75px;height:75px;font-size:1.35rem;top:-10px;right:-10px;}}
+.lto-content{color:white;}
+.lto-eyebrow{font-family:var(--font-head);font-size:.78rem;color:var(--yellow);letter-spacing:3px;text-transform:uppercase;margin-bottom:.6rem;font-weight:700;}
+.lto-pulse{display:inline-block;animation:lto-pulse 1.5s ease-in-out infinite;}
+@keyframes lto-pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.25) rotate(-5deg);}}
+.lto-title{font-family:var(--font-display);font-size:clamp(2.5rem,6vw,4rem);letter-spacing:2px;line-height:.95;margin-bottom:1rem;color:white;}
+.lto-title span{color:#7ED956;}
+.lto-desc{color:#DDD;font-size:1rem;line-height:1.65;margin-bottom:1.5rem;}
+.lto-bogo{background:linear-gradient(135deg,rgba(245,168,0,.15),rgba(232,25,10,.1));border:2px solid var(--yellow);border-radius:8px;padding:1.15rem;margin-bottom:1.25rem;text-align:center;}
+.lto-bogo-badge{display:inline-block;background:var(--yellow);color:var(--ink);font-family:var(--font-head);font-size:.72rem;letter-spacing:2.5px;padding:.3rem .75rem;border-radius:20px;margin-bottom:.6rem;font-weight:800;}
+.lto-bogo-text{font-family:var(--font-display);font-size:1.65rem;letter-spacing:2px;color:white;line-height:1.1;}
+.lto-bogo-text strong{color:#7ED956;}
+.lto-bogo-sub{font-size:.82rem;color:#CCC;margin-top:.4rem;letter-spacing:.5px;}
+.lto-cta{width:100%;background:var(--red);color:white;padding:1rem 2rem;font-family:var(--font-display);font-size:1.25rem;letter-spacing:2.5px;border:none;border-radius:6px;cursor:pointer;text-transform:uppercase;font-weight:700;box-shadow:0 6px 0 var(--red-deep);transition:all .15s;}
+.lto-cta:hover{transform:translateY(-2px);box-shadow:0 8px 0 var(--red-deep);}
+.lto-cta:active{transform:translateY(2px);box-shadow:0 2px 0 var(--red-deep);}
+.lto-fine{text-align:center;font-size:.72rem;color:#888;font-style:italic;margin-top:.85rem;letter-spacing:.5px;}
+
 /* ═══════ GOOGLE REVIEWS SECTION ═══════ */
 .reviews-section{background:var(--paper);padding:3.5rem 1.5rem;border-bottom:3px double var(--yellow);position:relative;overflow:hidden;}
 .reviews-inner{max-width:1200px;margin:0 auto;position:relative;z-index:1;}
@@ -589,6 +615,43 @@ setInterval(fetchLocationStatus,30000);
     </div>
   </div>
 </section>
+
+<!-- ═══════ LIMITED TIME OFFER: PICKLE'D POUTINE ═══════
+     Auto-hides after August 31, 2026 via inline JS.
+     BOGO logic: 1 poutine at $12.99 + 2nd FREE.
+     Photo: /public/images/Pickled-Poutine.png
+-->
+<section class="lto-section" id="lto-pickled" style="display:none;">
+  <div class="lto-inner">
+    <div class="lto-media">
+      <img src="/images/Pickled-Poutine.png" alt="Pickle'd Poutine — dill pickle poutine limited time offer" class="lto-img" loading="lazy">
+      <div class="lto-price-tag">$12.99</div>
+    </div>
+    <div class="lto-content">
+      <div class="lto-eyebrow"><span class="lto-pulse">🥒</span> AUGUST ONLY · LIMITED TIME</div>
+      <h2 class="lto-title">PICKLE'D <span>POUTINE</span></h2>
+      <p class="lto-desc">Our signature poutine gets the prairie treatment. Crispy golden fries · rich house-made gravy · fresh Saskatchewan cheese curds · crunchy dill pickle bites · a drizzle of our secret dill sauce. It's the poutine you didn't know you needed.</p>
+      <div class="lto-bogo">
+        <div class="lto-bogo-badge">🎁 BOGO DEAL</div>
+        <div class="lto-bogo-text">BUY ONE · GET ONE <strong>FREE</strong></div>
+        <div class="lto-bogo-sub">Order 2 for the price of 1 · Pickup or Delivery</div>
+      </div>
+      <button class="lto-cta" onclick="openPickledLTO();if(window.trackEvent)trackEvent('lto_pickled_click');">🥒 Order 2 for $12.99 →</button>
+      <div class="lto-fine">Available August 2026 only · While supplies last</div>
+    </div>
+  </div>
+</section>
+
+<!-- Pickle'd Poutine BOGO Modal -->
+<div class="lunch-modal-ov" id="pickled-ov" onclick="if(event.target===this)closePickledLTO()">
+  <div class="lunch-modal">
+    <div class="lunch-modal-hd" style="border-bottom-color:#2D8A3E;">
+      <h2 style="color:#2D8A3E;">🥒 PICKLE'D POUTINE — BOGO</h2>
+      <button onclick="closePickledLTO()" style="color:#888;background:none;border:none;font-size:1.4rem;cursor:pointer;">✕</button>
+    </div>
+    <div style="padding:1.5rem;" id="pickled-bd"></div>
+  </div>
+</div>
 
 <!-- ═══════ GOOGLE REVIEWS SECTION ═══════
      👉 TO CUSTOMIZE: Replace the placeholder reviews below with real ones from your Google Business Profile.
@@ -1421,6 +1484,75 @@ var WING_NIGHT_DISCOUNT=7.00;
 function openWingNight(){if(!isToday(4)){toast('Wing Night is Thursdays only 🌶️');return;}var bd=document.getElementById('wing-night-bd');var totalDeal=(WING_NIGHT_FULL+WING_NIGHT_DISCOUNT).toFixed(2);var save=(WING_NIGHT_FULL-WING_NIGHT_DISCOUNT).toFixed(2);bd.innerHTML='<div style="background:linear-gradient(135deg,#E8190A,#A80F00);border-radius:6px;padding:1rem;text-align:center;color:white;margin-bottom:1.25rem;border:2px solid var(--ink);"><div style="font-family:var(--font-display);font-size:2.2rem;letter-spacing:2px;line-height:1;">BUY 1 · 2ND 50% OFF</div><div style="font-family:var(--font-head);font-size:.78rem;letter-spacing:2px;text-transform:uppercase;margin-top:.4rem;">2 Orders of Wings · Pick 2 Flavors</div></div>'+'<div style="background:rgba(72,187,120,.1);border:1.5px solid #48BB78;color:#276749;padding:.6rem .85rem;border-radius:4px;font-family:var(--font-head);font-size:.8rem;letter-spacing:1px;margin-bottom:1rem;text-align:center;font-weight:700;">💰 You save $'+save+' tonight only</div>'+'<div class="lunch-pickup-only">🏃 Pickup Only · No Delivery</div>'+'<div class="lunch-includes"><div class="lunch-includes-row">🍗 <span><strong>Order #1 — Full Price</strong> · $'+WING_NIGHT_FULL.toFixed(2)+'</span></div><div class="lunch-includes-row">🍗 <span><strong>Order #2 — 50% Off</strong> · $'+WING_NIGHT_DISCOUNT.toFixed(2)+'</span></div><div class="lunch-includes-row" style="color:#7A6545;font-size:.78rem;border-top:1px dashed var(--paper-line);padding-top:6px;margin-top:4px;">Tonight: $'+totalDeal+'</div></div>'+buildFlavorSelect('wn-flavor-1','🔥 Order #1 Flavor')+buildFlavorSelect('wn-flavor-2','🔥 Order #2 Flavor (50% off)')+'<label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.35rem;">Special Instructions</label><textarea id="wn-notes" placeholder="Extra sauce, well done..." style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.5rem .75rem;font-size:.83rem;resize:vertical;min-height:55px;outline:none;margin-bottom:1rem;"></textarea>'+'<button class="btn-place" onclick="proceedWingNightCheckout()" style="background:var(--red);">CHECKOUT — $'+totalDeal+' →</button><button onclick="closeWingNight()" style="width:100%;background:none;border:1.5px solid var(--paper-line);color:#888;padding:.65rem;font-family:var(--font-head);font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:4px;margin-top:.5rem;">✕ Cancel</button>';document.getElementById('wing-night-ov').classList.add('open');document.body.style.overflow='hidden';}
 function closeWingNight(){document.getElementById('wing-night-ov').classList.remove('open');document.body.style.overflow='';}
 function proceedWingNightCheckout(){var f1=document.getElementById('wn-flavor-1').value;var f2=document.getElementById('wn-flavor-2').value;if(!f1||!f2){toast('Pick a flavor for both orders!');return;}var notes=document.getElementById('wn-notes').value.trim();cart=cart.filter(function(it){return !it.wingNight;});cart.push({id:'wn-1',key:'WN1|'+f1+'|'+notes,qty:1,name:'🌶️ WING NIGHT — Order #1',price:WING_NIGHT_FULL,details:f1+' · Full price',notes:notes,flavors:[f1],cookieFl:'',sizeName:'',upgradeName:'',upgradePrice:0,wingNight:true});cart.push({id:'wn-2',key:'WN2|'+f2+'|'+notes,qty:1,name:'🌶️ WING NIGHT — Order #2 (50% OFF)',price:WING_NIGHT_DISCOUNT,details:f2+' · 50% off Thursday special',notes:'',flavors:[f2],cookieFl:'',sizeName:'',upgradeName:'',upgradePrice:0,wingNight:true});orderType='pickup';updateCart();closeWingNight();closeCart();renderCheckoutForm();document.getElementById('modal-ov').classList.add('open');setTimeout(function(){var dBtn=document.getElementById('ot-d');if(dBtn){dBtn.style.opacity='.4';dBtn.style.cursor='not-allowed';dBtn.onclick=function(){toast('Wing Night is pickup only 🌶️');};}},100);}
+
+// ═══════ PICKLE'D POUTINE — LIMITED TIME OFFER (August 2026) ═══════
+// LTO ends Sep 1, 2026 · BOGO logic: 1st at $12.99, 2nd FREE
+var PICKLED_LTO_PRICE = 12.99;
+var PICKLED_LTO_END = new Date('2026-09-01T00:00:00-06:00'); // Sep 1 midnight Regina time
+
+function checkPickledLTO(){
+  var section = document.getElementById('lto-pickled');
+  if(!section) return;
+  var now = new Date();
+  section.style.display = (now < PICKLED_LTO_END) ? 'block' : 'none';
+}
+checkPickledLTO();
+setInterval(checkPickledLTO, 60*60*1000); // re-check hourly
+
+function openPickledLTO(){
+  if(new Date() >= PICKLED_LTO_END){toast('Sorry — the Pickle\\'d Poutine BOGO deal ended 🥒');return;}
+  var bd = document.getElementById('pickled-bd');
+  bd.innerHTML =
+    '<div style="background:linear-gradient(135deg,#2D8A3E,#1a5a26);border-radius:6px;padding:1rem;text-align:center;color:white;margin-bottom:1.25rem;border:2px solid var(--ink);">'+
+      '<div style="font-family:var(--font-display);font-size:2.2rem;letter-spacing:2px;line-height:1;">BUY 1 · GET 1 FREE</div>'+
+      '<div style="font-family:var(--font-head);font-size:.78rem;letter-spacing:2px;text-transform:uppercase;margin-top:.4rem;">2 Pickle\\'d Poutines for $'+PICKLED_LTO_PRICE.toFixed(2)+'</div>'+
+    '</div>'+
+    '<div style="background:rgba(72,187,120,.1);border:1.5px solid #48BB78;color:#276749;padding:.6rem .85rem;border-radius:4px;font-family:var(--font-head);font-size:.8rem;letter-spacing:1px;margin-bottom:1rem;text-align:center;font-weight:700;">💰 You save $'+PICKLED_LTO_PRICE.toFixed(2)+' — August only</div>'+
+    '<img src="/images/Pickled-Poutine.png" alt="Pickle\\'d Poutine" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;margin-bottom:1rem;border:2px solid var(--paper-line);">'+
+    '<div class="lunch-includes">'+
+      '<div class="lunch-includes-row">🍟 <span><strong>Golden Fries</strong> · Crispy prairie-style</span></div>'+
+      '<div class="lunch-includes-row">🧀 <span><strong>Cheese Curds</strong> · Fresh Saskatchewan curds</span></div>'+
+      '<div class="lunch-includes-row">🥒 <span><strong>Dill Pickle Bites</strong> · Crunchy, tangy, house-cut</span></div>'+
+      '<div class="lunch-includes-row">💚 <span><strong>Signature Dill Sauce</strong> · The secret ingredient</span></div>'+
+      '<div class="lunch-includes-row">🍯 <span><strong>House Gravy</strong> · Rich, savory, hot</span></div>'+
+    '</div>'+
+    '<label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.35rem;">Special Instructions</label>'+
+    '<textarea id="pickled-notes" placeholder="Extra pickles, extra gravy, allergies..." style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.5rem .75rem;font-size:.83rem;resize:vertical;min-height:55px;outline:none;margin-bottom:1rem;"></textarea>'+
+    '<button class="btn-place" onclick="proceedPickledCheckout()" style="background:#2D8A3E;">CHECKOUT · $'+PICKLED_LTO_PRICE.toFixed(2)+' FOR 2 →</button>'+
+    '<button onclick="closePickledLTO()" style="width:100%;background:none;border:1.5px solid var(--paper-line);color:#888;padding:.65rem;font-family:var(--font-head);font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:4px;margin-top:.5rem;">✕ Cancel</button>';
+  document.getElementById('pickled-ov').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function closePickledLTO(){
+  document.getElementById('pickled-ov').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+function proceedPickledCheckout(){
+  var notes = document.getElementById('pickled-notes') ? document.getElementById('pickled-notes').value.trim() : '';
+  // Remove any existing pickled items (prevents double-add if reopened)
+  cart = cart.filter(function(it){return !it.pickledLto;});
+  cart.push({
+    id:'pickled-1',key:'PICKLED-1|'+notes,qty:1,
+    name:'🥒 Pickle\'d Poutine (LTO)',price:PICKLED_LTO_PRICE,
+    details:'Full price · August LTO',
+    notes:notes,flavors:[],cookieFl:'',sizeName:'',upgradeName:'',upgradePrice:0,
+    pickledLto:true
+  });
+  cart.push({
+    id:'pickled-2',key:'PICKLED-2|'+notes,qty:1,
+    name:'🥒 Pickle\'d Poutine — FREE (BOGO)',price:0,
+    details:'2nd poutine FREE · August LTO BOGO',
+    notes:'',flavors:[],cookieFl:'',sizeName:'',upgradeName:'',upgradePrice:0,
+    pickledLto:true
+  });
+  updateCart();
+  closePickledLTO();
+  closeCart();
+  renderCheckoutForm();
+  document.getElementById('modal-ov').classList.add('open');
+}
 var AYCE_PRICE=28.99;
 function openAYCE(){if(!isToday(2)){toast('AYCE is Tuesdays only 🍗');return;}var bd=document.getElementById('ayce-bd');bd.innerHTML='<div class="lunch-banner-deal" style="background:linear-gradient(135deg,#F5A800,#E8190A);"><div class="lunch-banner-deal-price">$28.99</div><div style="font-family:var(--font-head);font-size:.78rem;letter-spacing:2px;text-transform:uppercase;font-weight:600;margin-top:.2rem;">All You Can Eat Wings</div></div>'+'<div class="ayce-portions">🍽️ <strong>DINE-IN ONLY</strong> · Reserve and come eat with us<br>Pick your starting flavor — refills brought to your table</div>'+'<div class="ayce-record">🏆 CURRENT RECORD: <span class="ayce-blink">91 WINGS</span> — CAN YOU BEAT IT?</div>'+'<div class="lunch-includes"><div class="lunch-includes-row">🍗 <span><strong>Unlimited wings</strong> · 135+ flavors available</span></div><div class="lunch-includes-row">⏱️ <span><strong>Tuesdays 5 PM – 10 PM</strong> · Dine-in only</span></div><div class="lunch-includes-row">📋 <span><strong>One person per ticket</strong> · No sharing</span></div></div>'+buildFlavorSelect('ayce-flavor','🔥 Pick Your Starting Flavor')+'<label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.35rem;">Number of People</label><select id="ayce-people" style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.55rem .85rem;font-size:.9rem;background:white;outline:none;margin-bottom:1rem;"><option value="1">1 person — $28.99</option><option value="2">2 people — $57.98</option><option value="3">3 people — $86.97</option><option value="4">4 people — $115.96</option></select>'+'<label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.35rem;">Special Instructions</label><textarea id="ayce-notes" placeholder="Allergies, group name..." style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.5rem .75rem;font-size:.83rem;resize:vertical;min-height:55px;outline:none;margin-bottom:1rem;"></textarea>'+'<button class="btn-place" onclick="proceedAYCECheckout()" style="background:var(--yellow);color:var(--black);">RESERVE AYCE 🍗</button><button onclick="closeAYCE()" style="width:100%;background:none;border:1.5px solid var(--paper-line);color:#888;padding:.65rem;font-family:var(--font-head);font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:4px;margin-top:.5rem;">✕ Cancel</button>';document.getElementById('ayce-ov').classList.add('open');document.body.style.overflow='hidden';}
 function closeAYCE(){document.getElementById('ayce-ov').classList.remove('open');document.body.style.overflow='';}
