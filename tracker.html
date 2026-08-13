@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WingO Albert Street — Profit Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --ink:#201c18;
+    --paper:#F7F4EE;
+    --paper-2:#FFFFFF;
+    --line:#E4DDD0;
+    --muted:#8A8074;
+    --wingo-red:#C81E1E;
+    --wingo-red-dark:#8F1414;
+    --good:#2E7D4F;
+    --good-bg:#E7F3EB;
+    --bad:#B23A2E;
+    --bad-bg:#FBEAE7;
+    --warn:#9A6B12;
+    --warn-bg:#FBF1DD;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;padding:0;background:transparent;}
+  .app{
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+    background:var(--paper);
+    min-height:100%;
+    border-radius:16px;
+    overflow:hidden;
+    border:1px solid var(--line);
+  }
+  .mono{font-family:'IBM Plex Mono',monospace; font-variant-numeric: tabular-nums;}
+  .display{font-family:'Oswald',sans-serif; text-transform:uppercase; letter-spacing:0.02em;}
+
+  /* Header ticket strip */
+  .ticket{
+    background:var(--ink);
+    color:#fff;
+    padding:22px 28px 18px;
+    position:relative;
+  }
+  .ticket-top{display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap;}
+  .ticket-title{display:flex; align-items:baseline; gap:10px;}
+  .ticket-title .brand{font-family:'Oswald',sans-serif; font-weight:700; font-size:22px; letter-spacing:0.03em; color:var(--wingo-red);}
+  .ticket-title .loc{font-family:'Oswald',sans-serif; font-weight:500; font-size:15px; color:#EFE9DD; text-transform:uppercase; letter-spacing:0.08em;}
+  .ticket-sub{font-size:12px; color:#B8AF9E; margin-top:2px;}
+  .ticket-stats{display:flex; gap:24px; margin-top:16px; flex-wrap:wrap;}
+  .tstat{min-width:96px;}
+  .tstat .lbl{font-size:10px; text-transform:uppercase; letter-spacing:0.09em; color:#9A9184;}
+  .tstat .val{font-family:'IBM Plex Mono',monospace; font-size:20px; font-weight:600; margin-top:2px;}
+  .tstat .val.pos{color:#7CD9A0;}
+  .tstat .val.neg{color:#F0A399;}
+  .perf-tag{margin-top:2px; font-size:10px; text-transform:uppercase; letter-spacing:0.06em; color:#9A9184;}
+  .ticket::after{
+    content:"";
+    position:absolute; left:0; right:0; bottom:-1px; height:8px;
+    background-image: radial-gradient(circle at 8px 0, transparent 7px, var(--paper) 7px);
+    background-size: 16px 8px;
+    background-repeat: repeat-x;
+  }
+
+  /* Nav */
+  .nav{
+    display:flex; gap:2px; padding:10px 24px 0; background:var(--paper);
+    border-bottom:1px solid var(--line);
+  }
+  .nav button{
+    font-family:'Oswald',sans-serif; font-weight:500; font-size:13px; text-transform:uppercase; letter-spacing:0.05em;
+    background:none; border:none; padding:10px 14px 12px; cursor:pointer; color:var(--muted);
+    border-bottom:2px solid transparent; margin-bottom:-1px;
+  }
+  .nav button.active{color:var(--wingo-red); border-bottom-color:var(--wingo-red);}
+  .nav button:hover:not(.active){color:var(--ink);}
+
+  .content{padding:22px 24px 30px; background:var(--paper);}
+  .view{display:none;}
+  .view.active{display:block;}
+
+  .card{
+    background:var(--paper-2); border:1px solid var(--line); border-radius:var(--radius);
+    padding:18px 20px; margin-bottom:16px;
+  }
+  .card h3{margin:0 0 12px; font-family:'Oswald',sans-serif; font-size:14px; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted); font-weight:600;}
+
+  .row{display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end;}
+  .field{display:flex; flex-direction:column; gap:4px;}
+  .field label{font-size:11px; text-transform:uppercase; letter-spacing:0.05em; color:var(--muted); font-weight:600;}
+  input, select, textarea{
+    font-family:'Inter',sans-serif; font-size:14px; padding:8px 10px; border:1px solid var(--line);
+    border-radius:6px; background:#fff; color:var(--ink);
+  }
+  input:focus, select:focus, textarea:focus{outline:2px solid var(--wingo-red); outline-offset:0; border-color:var(--wingo-red);}
+  input[type=number]{font-family:'IBM Plex Mono',monospace;}
+
+  button.btn{
+    font-family:'Oswald',sans-serif; font-weight:600; font-size:12.5px; text-transform:uppercase; letter-spacing:0.05em;
+    background:var(--wingo-red); color:#fff; border:none; border-radius:6px; padding:9px 16px; cursor:pointer;
+  }
+  button.btn:hover{background:var(--wingo-red-dark);}
+  button.btn.ghost{background:none; color:var(--wingo-red); border:1px solid var(--wingo-red);}
+  button.btn.ghost:hover{background:var(--bad-bg);}
+  button.btn.small{padding:5px 10px; font-size:11px;}
+  button.icon-btn{background:none; border:none; cursor:pointer; color:var(--muted); font-size:15px; padding:2px 6px;}
+  button.icon-btn:hover{color:var(--bad);}
+
+  table{width:100%; border-collapse:collapse; font-size:13.5px;}
+  th{
+    text-align:left; font-family:'Oswald',sans-serif; font-size:11px; text-transform:uppercase;
+    letter-spacing:0.05em; color:var(--muted); font-weight:600; padding:8px 8px; border-bottom:1px solid var(--line);
+  }
+  td{padding:8px 8px; border-bottom:1px solid #EFEAE0; vertical-align:middle;}
+  tr:last-child td{border-bottom:none;}
+  td.num, th.num{text-align:right; font-family:'IBM Plex Mono',monospace;}
+  tr:hover td{background:#FBF9F4;}
+
+  .pill{display:inline-block; padding:2px 8px; border-radius:20px; font-size:10.5px; font-weight:600; text-transform:uppercase; letter-spacing:0.03em;}
+  .pill.good{background:var(--good-bg); color:var(--good);}
+  .pill.bad{background:var(--bad-bg); color:var(--bad);}
+  .pill.warn{background:var(--warn-bg); color:var(--warn);}
+
+  .empty{color:var(--muted); font-size:13px; padding:20px 4px; text-align:center;}
+  .helptext{font-size:12px; color:var(--muted); margin-top:6px; line-height:1.5;}
+  .divider{height:1px; background:var(--line); margin:16px 0;}
+
+  .summary-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:14px;}
+  .sg-item .lbl{font-size:11px; text-transform:uppercase; color:var(--muted); letter-spacing:0.04em;}
+  .sg-item .val{font-family:'IBM Plex Mono',monospace; font-size:22px; font-weight:600; margin-top:4px;}
+
+  .bars{display:flex; align-items:flex-end; gap:6px; height:110px; padding-top:10px;}
+  .bar-wrap{flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; min-width:0;}
+  .bar{width:100%; max-width:26px; border-radius:3px 3px 0 0; background:var(--wingo-red); position:relative;}
+  .bar.neg{background:var(--bad);}
+  .bar-lbl{font-size:9.5px; color:var(--muted); font-family:'IBM Plex Mono',monospace; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:34px;}
+
+  select.range{width:auto;}
+  .item-row-grid{display:grid; grid-template-columns:2fr 90px 100px 100px 32px; gap:8px; align-items:center; margin-bottom:6px;}
+  .item-row-grid.head{font-size:10.5px; text-transform:uppercase; color:var(--muted); font-weight:600;}
+  .exp-row-grid{display:grid; grid-template-columns:1.2fr 2fr 110px 32px; gap:8px; align-items:center; margin-bottom:6px;}
+  .exp-row-grid.head{font-size:10.5px; text-transform:uppercase; color:var(--muted); font-weight:600;}
+
+  ::placeholder{color:#B8AF9E;}
+  .save-toast{
+    position:fixed; bottom:16px; right:16px; background:var(--ink); color:#fff; padding:10px 16px;
+    border-radius:8px; font-size:13px; font-family:'Inter'; opacity:0; transform:translateY(6px);
+    transition:opacity .2s, transform .2s; pointer-events:none; z-index:50;
+  }
+  .save-toast.show{opacity:1; transform:translateY(0);}
+
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+  <div id="storageErrorBanner" style="display:none; background:#B23A2E; color:#fff; padding:10px 20px; font-family:'Inter',sans-serif; font-size:13px; line-height:1.5;"></div>
+  <div class="ticket">
+    <div class="ticket-top">
+      <div>
+        <div class="ticket-title">
+          <span class="brand">WingO</span>
+          <span class="loc">Albert Street — Profit Tracker</span>
+        </div>
+        <div class="ticket-sub" id="headerSub">Loading…</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="ticket-sub">Range</div>
+        <select class="range mono" id="rangeSelect" style="background:#2b2622; color:#fff; border-color:#453f38;">
+          <option value="7">Last 7 days</option>
+          <option value="30" selected>Last 30 days</option>
+          <option value="90">Last 90 days</option>
+          <option value="all">All time</option>
+        </select>
+      </div>
+    </div>
+    <div class="ticket-stats" id="ticketStats"></div>
+  </div>
+
+  <div class="nav">
+    <button class="active" data-view="dashboard">Dashboard</button>
+    <button data-view="entry">Daily Entry</button>
+    <button data-view="catalog">Item Catalog</button>
+    <button data-view="fixed">Fixed Costs</button>
+    <button data-view="history">History</button>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="view active" id="view-dashboard">
+      <div class="card">
+        <h3>Summary — selected range</h3>
+        <div class="summary-grid" id="dashSummary"></div>
+      </div>
+      <div class="card">
+        <h3>Payment channels (selected range)</h3>
+        <div class="summary-grid" id="dashTenders"></div>
+      </div>
+      <div class="card">
+        <h3>Net profit by day</h3>
+        <div class="bars" id="dashBars"></div>
+      </div>
+      <div class="card">
+        <h3>Top items by revenue (selected range)</h3>
+        <table>
+          <thead><tr><th>Item</th><th class="num">Qty Sold</th><th class="num">Revenue</th><th class="num">Est. COGS</th></tr></thead>
+          <tbody id="dashTopItems"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- DAILY ENTRY -->
+    <div class="view" id="view-entry">
+      <div class="card">
+        <h3>Day</h3>
+        <div class="row">
+          <div class="field">
+            <label>Date</label>
+            <input type="date" id="entryDate">
+          </div>
+          <button class="btn ghost small" id="loadDayBtn">Load existing day</button>
+          <button class="btn ghost small" id="importAug12Btn">Import Aug 12 (from Clover report)</button>
+          <button class="btn ghost small" id="loadSampleBtn" style="border-color:var(--muted); color:var(--muted);">Load sample day (demo)</button>
+        </div>
+        <div class="helptext">Pick the date the POS report covers, then log item sales and expenses below. Saving overwrites any existing entry for that date. The sample day writes to <b>2026-08-01</b> so it never overlaps a real entry — delete it from the History tab whenever you're done looking.</div>
+      </div>
+
+      <div class="card">
+        <h3>Item sales</h3>
+        <div class="item-row-grid head">
+          <div>Item</div><div>Qty Sold</div><div>Unit Price</div><div>Revenue</div><div></div>
+        </div>
+        <div id="entryItemRows"></div>
+        <button class="btn ghost small" id="addItemRowBtn" style="margin-top:6px;">+ Add item</button>
+        <div class="helptext">Pick from your catalog. Revenue auto-fills from catalog price but you can overwrite it (for discounts, BOGO, combos priced differently that day).</div>
+      </div>
+
+      <div class="card">
+        <h3>Expenses</h3>
+        <div class="exp-row-grid head">
+          <div>Category</div><div>Note</div><div>Amount</div><div></div>
+        </div>
+        <div id="entryExpenseRows"></div>
+        <button class="btn ghost small" id="addExpenseRowBtn" style="margin-top:6px;">+ Add expense</button>
+      </div>
+
+      <div class="card">
+        <h3>Payment channels (amount collected)</h3>
+        <div class="row">
+          <div class="field"><label>Credit/Debit</label><input type="number" step="0.01" id="tenderCard" class="mono" placeholder="0.00"></div>
+          <div class="field"><label>Cash</label><input type="number" step="0.01" id="tenderCash" class="mono" placeholder="0.00"></div>
+          <div class="field"><label>Uber Eats</label><input type="number" step="0.01" id="tenderUber" class="mono" placeholder="0.00"></div>
+          <div class="field"><label>SkipTheDishes</label><input type="number" step="0.01" id="tenderSkip" class="mono" placeholder="0.00"></div>
+          <div class="field"><label>DoorDash</label><input type="number" step="0.01" id="tenderDoordash" class="mono" placeholder="0.00"></div>
+        </div>
+        <div class="helptext">From your Clover "Amount collected" tender breakdown — for reconciliation, doesn't affect the profit math.</div>
+      </div>
+
+      <div class="card" style="background:#FBF9F4;">
+        <h3>Preview</h3>
+        <div class="summary-grid" id="entryPreview"></div>
+      </div>
+
+      <button class="btn" id="saveDayBtn">Save day</button>
+    </div>
+
+    <!-- CATALOG -->
+    <div class="view" id="view-catalog">
+      <div class="card">
+        <h3>Item catalog — price &amp; cost per unit</h3>
+        <div class="helptext" style="margin-bottom:10px;">
+          Prices were seeded from your Clover report on Aug 12, 2026. Costs for wings, boneless, fingers, combos, platters, poutine, and the Tough Guy burger are pulled from real recipes in the Winnipeg franchise gross margin workbook. Drinks, Caesar Salad, Deep Fried Oreos, and Lunch Deal use rougher estimates (no supplier invoice for those) — worth double-checking against your actual costs. Items with no cost set show a <span class="pill warn">no cost</span> tag.
+        </div>
+        <table>
+          <thead><tr><th>Item</th><th>Category</th><th class="num">Price</th><th class="num">Cost</th><th class="num">Margin</th><th></th></tr></thead>
+          <tbody id="catalogRows"></tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3>Add item</h3>
+        <div class="row">
+          <div class="field"><label>Name</label><input id="newItemName" placeholder="e.g. Rib Poutine"></div>
+          <div class="field"><label>Category</label>
+            <select id="newItemCategory">
+              <option>Wings</option><option>Boneless &amp; Fingers</option><option>Ribs</option>
+              <option>Combos &amp; Platters</option><option>Sides</option><option>Drinks</option>
+              <option>Desserts</option><option>Other</option>
+            </select>
+          </div>
+          <div class="field"><label>Price ($)</label><input id="newItemPrice" type="number" step="0.01" placeholder="0.00"></div>
+          <div class="field"><label>Cost ($)</label><input id="newItemCost" type="number" step="0.01" placeholder="0.00"></div>
+          <button class="btn" id="addCatalogItemBtn">Add</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- FIXED COSTS -->
+    <div class="view" id="view-fixed">
+      <div class="card">
+        <h3>Fixed monthly costs</h3>
+        <div class="helptext" style="margin-bottom:12px;">
+          These run every month regardless of sales — rent, utilities, wifi, etc. Set the monthly amount once and the tracker automatically spreads it across each day (monthly ÷ days in that month) and folds it into every day's expenses and profit, so you don't have to re-enter it. Add labour yourself each day on the Daily Entry tab since it changes daily.
+        </div>
+        <table>
+          <thead><tr><th>Fixed cost</th><th class="num">Monthly amount</th><th class="num">Daily allocation (this month)</th><th></th></tr></thead>
+          <tbody id="fixedRows"></tbody>
+        </table>
+        <div class="row" style="margin-top:14px;">
+          <div class="field"><label>New fixed cost name</label><input id="newFixedName" placeholder="e.g. Insurance"></div>
+          <div class="field"><label>Monthly amount ($)</label><input id="newFixedAmount" type="number" step="0.01" placeholder="0.00"></div>
+          <button class="btn" id="addFixedBtn">Add</button>
+        </div>
+      </div>
+      <div class="card" style="background:#FBF9F4;">
+        <h3>Total</h3>
+        <div class="summary-grid" id="fixedTotals"></div>
+      </div>
+    </div>
+
+    <!-- HISTORY -->
+    <div class="view" id="view-history">
+      <div class="card">
+        <h3>All logged days</h3>
+        <table>
+          <thead><tr><th>Date</th><th class="num">Revenue</th><th class="num">COGS</th><th class="num">Gross Profit</th><th class="num">Logged Exp.</th><th class="num">Fixed Costs</th><th class="num">Net Profit</th><th class="num">Margin</th><th></th></tr></thead>
+          <tbody id="historyRows"></tbody>
+        </table>
+        <div class="empty" id="historyEmpty" style="display:none;">No days logged yet. Head to Daily Entry to add your first one.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<div class="save-toast" id="saveToast">Saved</div>
+
+<script>
+const EXPENSE_CATEGORIES = ["Food & Supplies","Labor","Delivery Commission (Skip/Uber/Door Dash)","Marketing","Repairs & Maintenance","Other"];
+
+const SEED_FIXED_COSTS = [
+  {name:"Rent", monthly:4300},
+  {name:"Utilities", monthly:2000},
+  {name:"WiFi", monthly:160},
+];
+
+const SEED_CATALOG = [
+  {name:"Half Order Wings", category:"Wings", price:7.99, cost:2.05},
+  {name:"One Order Wings", category:"Wings", price:13.99, cost:3.69},
+  {name:"Two Order Wings", category:"Wings", price:25.99, cost:7.38},
+  {name:"Three Order Wings", category:"Wings", price:37.99, cost:11.07},
+  {name:"Four Order Wings", category:"Wings", price:49.99, cost:14.76},
+  {name:"Half Order Boneless Wings", category:"Boneless & Fingers", price:7.00, cost:2.40},
+  {name:"Full Order Chicken Fingers", category:"Boneless & Fingers", price:13.99, cost:4.00},
+  {name:"Combo for 1", category:"Combos & Platters", price:17.45, cost:4.91},
+  {name:"Combo for 2", category:"Combos & Platters", price:42.48, cost:9.10},
+  {name:"Combo for 3", category:"Combos & Platters", price:57.49, cost:17.51},
+  {name:"The Tough Guy", category:"Combos & Platters", price:18.99, cost:5.49},
+  {name:"A Bit of Other Platter", category:"Combos & Platters", price:32.99, cost:12.64},
+  {name:"Tinseltown Nacho", category:"Combos & Platters", price:29.99, cost:8.76},
+  {name:"Chicken Poutine", category:"Combos & Platters", price:14.99, cost:4.41},
+  {name:"Lunch Deal", category:"Combos & Platters", price:10.00, cost:3.18},
+  {name:"Side Sauce", category:"Sides", price:0.99, cost:0.10},
+  {name:"Caesar Salad (sm)", category:"Sides", price:6.99, cost:1.50},
+  {name:"Cans", category:"Drinks", price:1.99, cost:0.50},
+  {name:"Mango Breeze", category:"Drinks", price:5.95, cost:1.25},
+  {name:"Glow Lemonade", category:"Drinks", price:4.95, cost:1.00},
+  {name:"Watermelon Lemonade", category:"Drinks", price:4.95, cost:1.00},
+  {name:"Deep Fried Oreos 6pc", category:"Desserts", price:5.99, cost:1.50},
+];
+
+let catalog = [];
+let fixedCosts = [];
+let dayIndex = []; // array of date strings
+let entryItems = []; // working rows for entry form
+let entryExpenses = [];
+
+function uid(){ return Math.random().toString(36).slice(2,10); }
+function fmt(n){ return "$" + (Math.round((n||0)*100)/100).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function todayStr(){ const d=new Date(); return d.toISOString().slice(0,10); }
+
+let storageErrorShown = false;
+function showStorageError(action, key, err){
+  console.error(`storage ${action} failed`, key, err);
+  storageErrorShown = true;
+  const banner = document.getElementById('storageErrorBanner');
+  if(banner){
+    banner.style.display = 'block';
+    banner.textContent = `Storage error on "${action}" for "${key}": ${err && err.message ? err.message : String(err)}. Your data may not be saving — screenshot this message.`;
+  }
+}
+
+const LS_PREFIX = "wingo-albert:";
+async function storageGet(key){
+  try{
+    const raw = localStorage.getItem(LS_PREFIX+key);
+    return raw === null ? null : JSON.parse(raw);
+  } catch(e){ return null; } // missing key or parse issue — normal "not set yet" case, not an error
+}
+async function storageSet(key,val){
+  try{ localStorage.setItem(LS_PREFIX+key, JSON.stringify(val)); return true; }
+  catch(e){ showStorageError('set', key, e); return false; }
+}
+async function storageDelete(key){
+  try{ localStorage.removeItem(LS_PREFIX+key); return true; }
+  catch(e){ showStorageError('delete', key, e); return false; }
+}
+
+async function loadCatalog(){
+  const stored = await storageGet('catalog');
+  if(stored && Array.isArray(stored) && stored.length){
+    catalog = stored;
+  } else {
+    catalog = SEED_CATALOG.map(i => ({id:uid(), ...i}));
+    await storageSet('catalog', catalog);
+  }
+}
+async function saveCatalog(){ await storageSet('catalog', catalog); }
+
+async function loadFixedCosts(){
+  const stored = await storageGet('fixed-costs');
+  if(stored && Array.isArray(stored) && stored.length){
+    fixedCosts = stored;
+  } else {
+    fixedCosts = SEED_FIXED_COSTS.map(i => ({id:uid(), ...i}));
+    await storageSet('fixed-costs', fixedCosts);
+  }
+}
+async function saveFixedCosts(){ await storageSet('fixed-costs', fixedCosts); }
+
+function daysInMonth(dateStr){
+  const [y,m] = dateStr.split('-').map(Number);
+  return new Date(y, m, 0).getDate();
+}
+function fixedDailyAllocation(dateStr){
+  const totalMonthly = fixedCosts.reduce((s,f)=> s+(Number(f.monthly)||0), 0);
+  const dim = daysInMonth(dateStr || todayStr());
+  return totalMonthly / dim;
+}
+
+async function loadDayIndex(){
+  const stored = await storageGet('day-index');
+  dayIndex = stored && Array.isArray(stored) ? stored : [];
+}
+async function saveDayIndex(){ await storageSet('day-index', dayIndex); }
+
+async function loadDay(date){ return await storageGet('day:'+date); }
+async function saveDay(date, data){
+  await storageSet('day:'+date, data);
+  if(!dayIndex.includes(date)){
+    dayIndex.push(date);
+    dayIndex.sort();
+    await saveDayIndex();
+  }
+}
+
+function computeDayTotals(day, dateStr){
+  const revenue = day.items.reduce((s,i)=> s + (Number(i.revenue)||0), 0);
+  const cogs = day.items.reduce((s,i)=> s + (Number(i.qty)||0) * (Number(i.cost)||0), 0);
+  const grossProfit = revenue - cogs;
+  const loggedExpenses = (day.expenses||[]).reduce((s,e)=> s + (Number(e.amount)||0), 0);
+  const fixedExpenses = fixedDailyAllocation(dateStr);
+  const expenses = loggedExpenses + fixedExpenses;
+  const netProfit = grossProfit - expenses;
+  const margin = revenue > 0 ? (netProfit/revenue*100) : 0;
+  return {revenue, cogs, grossProfit, loggedExpenses, fixedExpenses, expenses, netProfit, margin};
+}
+
+function showToast(msg){
+  const t = document.getElementById('saveToast');
+  t.textContent = msg || "Saved";
+  t.classList.add('show');
+  setTimeout(()=> t.classList.remove('show'), 1600);
+}
+
+/* ---------- NAV ---------- */
+function switchView(view){
+  document.querySelectorAll('.nav button').forEach(b=> b.classList.toggle('active', b.dataset.view===view));
+  document.querySelectorAll('.view').forEach(v=> v.classList.remove('active'));
+  document.getElementById('view-'+view).classList.add('active');
+  if(view==='dashboard') renderDashboard();
+  if(view==='catalog') renderCatalog();
+  if(view==='fixed') renderFixedCosts();
+  if(view==='history') renderHistory();
+}
+document.querySelectorAll('.nav button').forEach(b=>{
+  b.addEventListener('click', ()=> switchView(b.dataset.view));
+});
+document.getElementById('rangeSelect').addEventListener('change', renderDashboard);
+
+/* ---------- HEADER ---------- */
+async function renderHeader(){
+  const days = await getAllDays();
+  document.getElementById('headerSub').textContent =
+    days.length ? `${days.length} day${days.length===1?'':'s'} logged` : 'No days logged yet';
+  if(days.length){
+    const last = days[days.length-1];
+    const t = computeDayTotals(last.data, last.date);
+    document.getElementById('ticketStats').innerHTML = `
+      <div class="tstat"><div class="lbl">Last day (${last.date})</div><div class="val">${fmt(t.revenue)}</div></div>
+      <div class="tstat"><div class="lbl">Net Profit</div><div class="val ${t.netProfit>=0?'pos':'neg'}">${fmt(t.netProfit)}</div></div>
+      <div class="tstat"><div class="lbl">Margin</div><div class="val">${t.margin.toFixed(1)}%</div></div>
+    `;
+  } else {
+    document.getElementById('ticketStats').innerHTML = `<div class="tstat"><div class="lbl">Get started</div><div class="val" style="font-size:14px;">Log your first day →</div></div>`;
+  }
+}
+
+async function getAllDays(){
+  const out = [];
+  for(const date of dayIndex){
+    const data = await loadDay(date);
+    if(data) out.push({date, data});
+  }
+  out.sort((a,b)=> a.date.localeCompare(b.date));
+  return out;
+}
+
+function daysInRange(days, rangeVal){
+  if(rangeVal==='all') return days;
+  const n = Number(rangeVal);
+  const cutoff = new Date(); cutoff.setDate(cutoff.getDate()-n);
+  const cutoffStr = cutoff.toISOString().slice(0,10);
+  return days.filter(d => d.date >= cutoffStr);
+}
+
+/* ---------- DASHBOARD ---------- */
+async function renderDashboard(){
+  const all = await getAllDays();
+  const range = document.getElementById('rangeSelect').value;
+  const days = daysInRange(all, range);
+
+  const totals = days.reduce((acc,d)=>{
+    const t = computeDayTotals(d.data, d.date);
+    acc.revenue+=t.revenue; acc.cogs+=t.cogs; acc.grossProfit+=t.grossProfit;
+    acc.loggedExpenses+=t.loggedExpenses; acc.fixedExpenses+=t.fixedExpenses;
+    acc.expenses+=t.expenses; acc.netProfit+=t.netProfit;
+    return acc;
+  }, {revenue:0,cogs:0,grossProfit:0,loggedExpenses:0,fixedExpenses:0,expenses:0,netProfit:0});
+  const margin = totals.revenue>0 ? (totals.netProfit/totals.revenue*100) : 0;
+
+  const tenderTotals = days.reduce((acc,d)=>{
+    const t = (d.data.tenders)||{};
+    acc.card+=Number(t.card)||0; acc.cash+=Number(t.cash)||0; acc.uberEats+=Number(t.uberEats)||0;
+    acc.skip+=Number(t.skip)||0; acc.doorDash+=Number(t.doorDash)||0;
+    return acc;
+  }, {card:0,cash:0,uberEats:0,skip:0,doorDash:0});
+  const dashTenders = document.getElementById('dashTenders');
+  const tenderSum = tenderTotals.card+tenderTotals.cash+tenderTotals.uberEats+tenderTotals.skip+tenderTotals.doorDash;
+  if(!tenderSum){
+    dashTenders.innerHTML = `<div class="empty" style="grid-column:1/-1;">No payment channel data logged yet.</div>`;
+  } else {
+    dashTenders.innerHTML = [
+      ['Credit/Debit', fmt(tenderTotals.card)],
+      ['Cash', fmt(tenderTotals.cash)],
+      ['Uber Eats', fmt(tenderTotals.uberEats)],
+      ['SkipTheDishes', fmt(tenderTotals.skip)],
+      ['DoorDash', fmt(tenderTotals.doorDash)],
+      ['Total Collected', fmt(tenderSum)],
+    ].map(([lbl,val])=> `<div class="sg-item"><div class="lbl">${lbl}</div><div class="val" style="font-size:18px;">${val}</div></div>`).join('');
+  }
+
+  const sg = document.getElementById('dashSummary');
+  if(!days.length){
+    sg.innerHTML = `<div class="empty" style="grid-column:1/-1;">No days in this range yet.</div>`;
+  } else {
+    sg.innerHTML = [
+      ['Revenue', fmt(totals.revenue), ''],
+      ['COGS', fmt(totals.cogs), ''],
+      ['Gross Profit', fmt(totals.grossProfit), ''],
+      ['Logged Expenses', fmt(totals.loggedExpenses), ''],
+      ['Fixed Costs', fmt(totals.fixedExpenses), ''],
+      ['Net Profit', fmt(totals.netProfit), totals.netProfit>=0?'pos':'neg'],
+      ['Margin', margin.toFixed(1)+'%', ''],
+    ].map(([lbl,val,cls])=> `<div class="sg-item"><div class="lbl">${lbl}</div><div class="val" style="color:${cls==='pos'?'var(--good)':cls==='neg'?'var(--bad)':'inherit'}">${val}</div></div>`).join('');
+  }
+
+  // bars: net profit by day
+  const bars = document.getElementById('dashBars');
+  if(!days.length){
+    bars.innerHTML = `<div class="empty">Nothing to chart yet.</div>`;
+  } else {
+    const shown = days.slice(-14);
+    const vals = shown.map(d=> computeDayTotals(d.data, d.date).netProfit);
+    const maxAbs = Math.max(1, ...vals.map(v=>Math.abs(v)));
+    bars.innerHTML = shown.map((d,i)=>{
+      const v = vals[i];
+      const h = Math.max(4, Math.round(Math.abs(v)/maxAbs*90));
+      const label = d.date.slice(5);
+      return `<div class="bar-wrap">
+        <div class="bar ${v<0?'neg':''}" style="height:${h}px;" title="${d.date}: ${fmt(v)}"></div>
+        <div class="bar-lbl">${label}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // top items
+  const itemAgg = {};
+  days.forEach(d=>{
+    d.data.items.forEach(it=>{
+      if(!itemAgg[it.name]) itemAgg[it.name] = {qty:0, revenue:0, cogs:0};
+      itemAgg[it.name].qty += Number(it.qty)||0;
+      itemAgg[it.name].revenue += Number(it.revenue)||0;
+      itemAgg[it.name].cogs += (Number(it.qty)||0)*(Number(it.cost)||0);
+    });
+  });
+  const rows = Object.entries(itemAgg).sort((a,b)=> b[1].revenue-a[1].revenue).slice(0,10);
+  const tbody = document.getElementById('dashTopItems');
+  tbody.innerHTML = rows.length ? rows.map(([name,v])=> `
+    <tr><td>${name}</td><td class="num">${v.qty}</td><td class="num">${fmt(v.revenue)}</td><td class="num">${fmt(v.cogs)}</td></tr>
+  `).join('') : `<tr><td colspan="4" class="empty">No item sales logged yet.</td></tr>`;
+
+  await renderHeader();
+}
+
+/* ---------- CATALOG ---------- */
+function renderCatalog(){
+  const tbody = document.getElementById('catalogRows');
+  const sorted = [...catalog].sort((a,b)=> a.category.localeCompare(b.category) || a.name.localeCompare(b.name));
+  tbody.innerHTML = sorted.map(item=>{
+    const hasCost = item.cost !== null && item.cost !== undefined && item.cost !== '';
+    const margin = hasCost && item.price>0 ? (((item.price-item.cost)/item.price)*100).toFixed(1)+'%' : '—';
+    return `<tr data-id="${item.id}">
+      <td><input class="mono cat-name" value="${item.name}" style="border:none; background:none; padding:2px 0; width:100%;"></td>
+      <td>
+        <select class="cat-category" style="border:none; background:none; padding:2px 0;">
+          ${["Wings","Boneless & Fingers","Ribs","Combos & Platters","Sides","Drinks","Desserts","Other"].map(c=>`<option ${c===item.category?'selected':''}>${c}</option>`).join('')}
+        </select>
+      </td>
+      <td class="num"><input type="number" step="0.01" class="cat-price mono" value="${item.price}" style="width:80px; border:none; background:none; text-align:right; padding:2px 0;"></td>
+      <td class="num">
+        <input type="number" step="0.01" class="cat-cost mono" value="${hasCost?item.cost:''}" placeholder="—" style="width:80px; border:none; background:none; text-align:right; padding:2px 0;">
+        ${hasCost?'':'<span class="pill warn">no cost</span>'}
+      </td>
+      <td class="num mono">${margin}</td>
+      <td><button class="icon-btn del-item" title="Delete">✕</button></td>
+    </tr>`;
+  }).join('');
+
+  tbody.querySelectorAll('tr').forEach(tr=>{
+    const id = tr.dataset.id;
+    const item = catalog.find(i=>i.id===id);
+    tr.querySelector('.cat-name').addEventListener('change', e=>{ item.name=e.target.value; saveCatalog(); });
+    tr.querySelector('.cat-category').addEventListener('change', e=>{ item.category=e.target.value; saveCatalog(); renderCatalog(); });
+    tr.querySelector('.cat-price').addEventListener('change', e=>{ item.price=Number(e.target.value)||0; saveCatalog(); renderCatalog(); });
+    tr.querySelector('.cat-cost').addEventListener('change', e=>{
+      item.cost = e.target.value===''? null : Number(e.target.value);
+      saveCatalog(); renderCatalog();
+    });
+    tr.querySelector('.del-item').addEventListener('click', ()=>{
+      if(confirm(`Remove "${item.name}" from the catalog?`)){
+        catalog = catalog.filter(i=>i.id!==id);
+        saveCatalog(); renderCatalog();
+      }
+    });
+  });
+}
+
+document.getElementById('addCatalogItemBtn').addEventListener('click', async ()=>{
+  const name = document.getElementById('newItemName').value.trim();
+  if(!name){ alert('Enter an item name first.'); return; }
+  const category = document.getElementById('newItemCategory').value;
+  const price = Number(document.getElementById('newItemPrice').value)||0;
+  const costVal = document.getElementById('newItemCost').value;
+  const cost = costVal===''? null : Number(costVal);
+  catalog.push({id:uid(), name, category, price, cost});
+  await saveCatalog();
+  document.getElementById('newItemName').value='';
+  document.getElementById('newItemPrice').value='';
+  document.getElementById('newItemCost').value='';
+  renderCatalog();
+  showToast('Item added');
+});
+
+/* ---------- FIXED COSTS ---------- */
+function renderFixedCosts(){
+  const today = todayStr();
+  const dim = daysInMonth(today);
+  const tbody = document.getElementById('fixedRows');
+  tbody.innerHTML = fixedCosts.map(f=> `
+    <tr data-id="${f.id}">
+      <td><input class="fx-name" value="${f.name}" style="border:none; background:none; padding:2px 0; width:100%;"></td>
+      <td class="num"><input type="number" step="0.01" class="fx-amount mono" value="${f.monthly}" style="width:100px; border:none; background:none; text-align:right; padding:2px 0;"></td>
+      <td class="num mono">${fmt((Number(f.monthly)||0)/dim)}</td>
+      <td><button class="icon-btn fx-del" title="Delete">✕</button></td>
+    </tr>
+  `).join('');
+
+  tbody.querySelectorAll('tr').forEach(tr=>{
+    const id = tr.dataset.id;
+    const f = fixedCosts.find(x=>x.id===id);
+    tr.querySelector('.fx-name').addEventListener('change', e=>{ f.name=e.target.value; saveFixedCosts(); });
+    tr.querySelector('.fx-amount').addEventListener('change', e=>{
+      f.monthly = Number(e.target.value)||0; saveFixedCosts(); renderFixedCosts(); renderEntryPreview();
+    });
+    tr.querySelector('.fx-del').addEventListener('click', ()=>{
+      if(confirm(`Remove "${f.name}" from fixed costs?`)){
+        fixedCosts = fixedCosts.filter(x=>x.id!==id);
+        saveFixedCosts(); renderFixedCosts(); renderEntryPreview();
+      }
+    });
+  });
+
+  const totalMonthly = fixedCosts.reduce((s,f)=> s+(Number(f.monthly)||0), 0);
+  document.getElementById('fixedTotals').innerHTML = [
+    ['Total monthly', fmt(totalMonthly), ''],
+    [`Daily allocation (${today.slice(0,7)}, ${dim} days)`, fmt(totalMonthly/dim), ''],
+  ].map(([lbl,val])=> `<div class="sg-item"><div class="lbl">${lbl}</div><div class="val">${val}</div></div>`).join('');
+}
+
+document.getElementById('addFixedBtn').addEventListener('click', async ()=>{
+  const name = document.getElementById('newFixedName').value.trim();
+  const amount = Number(document.getElementById('newFixedAmount').value)||0;
+  if(!name){ alert('Enter a name for this fixed cost.'); return; }
+  fixedCosts.push({id:uid(), name, monthly:amount});
+  await saveFixedCosts();
+  document.getElementById('newFixedName').value='';
+  document.getElementById('newFixedAmount').value='';
+  renderFixedCosts();
+  renderEntryPreview();
+  showToast('Fixed cost added');
+});
+
+/* ---------- DAILY ENTRY ---------- */
+function catalogOptions(selectedName){
+  return catalog.map(c=> `<option value="${c.name}" ${c.name===selectedName?'selected':''}>${c.name}</option>`).join('');
+}
+
+function renderEntryItemRows(){
+  const wrap = document.getElementById('entryItemRows');
+  wrap.innerHTML = entryItems.map(row=> `
+    <div class="item-row-grid" data-rid="${row.rid}">
+      <select class="er-item">
+        <option value="">Select item…</option>
+        ${catalogOptions(row.name)}
+      </select>
+      <input type="number" class="er-qty mono" value="${row.qty}" min="0" step="1">
+      <input type="number" class="er-price mono" value="${row.unitPrice}" step="0.01">
+      <input type="number" class="er-revenue mono" value="${row.revenue}" step="0.01">
+      <button class="icon-btn er-del">✕</button>
+    </div>
+  `).join('');
+
+  wrap.querySelectorAll('.item-row-grid').forEach(el=>{
+    const rid = el.dataset.rid;
+    const row = entryItems.find(r=>r.rid===rid);
+    const itemSel = el.querySelector('.er-item');
+    const qtyInp = el.querySelector('.er-qty');
+    const priceInp = el.querySelector('.er-price');
+    const revInp = el.querySelector('.er-revenue');
+
+    itemSel.addEventListener('change', e=>{
+      const cat = catalog.find(c=>c.name===e.target.value);
+      row.name = e.target.value;
+      row.unitPrice = cat ? cat.price : 0;
+      row.cost = cat ? cat.cost : null;
+      row.revenue = (Number(row.qty)||0) * row.unitPrice;
+      renderEntryItemRows(); renderEntryPreview();
+    });
+    qtyInp.addEventListener('input', e=>{
+      row.qty = Number(e.target.value)||0;
+      row.revenue = row.qty * (Number(row.unitPrice)||0);
+      revInp.value = row.revenue.toFixed(2);
+      renderEntryPreview();
+    });
+    priceInp.addEventListener('input', e=>{
+      row.unitPrice = Number(e.target.value)||0;
+      row.revenue = row.qty * row.unitPrice;
+      revInp.value = row.revenue.toFixed(2);
+      renderEntryPreview();
+    });
+    revInp.addEventListener('input', e=>{
+      row.revenue = Number(e.target.value)||0;
+      renderEntryPreview();
+    });
+    el.querySelector('.er-del').addEventListener('click', ()=>{
+      entryItems = entryItems.filter(r=>r.rid!==rid);
+      renderEntryItemRows(); renderEntryPreview();
+    });
+  });
+}
+
+function renderEntryExpenseRows(){
+  const wrap = document.getElementById('entryExpenseRows');
+  wrap.innerHTML = entryExpenses.map(row=> `
+    <div class="exp-row-grid" data-rid="${row.rid}">
+      <select class="ex-cat">
+        ${EXPENSE_CATEGORIES.map(c=>`<option ${c===row.category?'selected':''}>${c}</option>`).join('')}
+      </select>
+      <input type="text" class="ex-note" value="${row.note||''}" placeholder="e.g. Hallmark Poultry invoice">
+      <input type="number" class="ex-amount mono" value="${row.amount}" step="0.01">
+      <button class="icon-btn ex-del">✕</button>
+    </div>
+  `).join('');
+
+  wrap.querySelectorAll('.exp-row-grid').forEach(el=>{
+    const rid = el.dataset.rid;
+    const row = entryExpenses.find(r=>r.rid===rid);
+    el.querySelector('.ex-cat').addEventListener('change', e=>{ row.category=e.target.value; });
+    el.querySelector('.ex-note').addEventListener('input', e=>{ row.note=e.target.value; });
+    el.querySelector('.ex-amount').addEventListener('input', e=>{ row.amount=Number(e.target.value)||0; renderEntryPreview(); });
+    el.querySelector('.ex-del').addEventListener('click', ()=>{
+      entryExpenses = entryExpenses.filter(r=>r.rid!==rid);
+      renderEntryExpenseRows(); renderEntryPreview();
+    });
+  });
+}
+
+function renderEntryPreview(){
+  const revenue = entryItems.reduce((s,r)=> s+(Number(r.revenue)||0), 0);
+  const cogs = entryItems.reduce((s,r)=> s+(Number(r.qty)||0)*(Number(r.cost)||0), 0);
+  const grossProfit = revenue-cogs;
+  const loggedExpenses = entryExpenses.reduce((s,r)=> s+(Number(r.amount)||0), 0);
+  const dateVal = document.getElementById('entryDate').value || todayStr();
+  const fixedExpenses = fixedDailyAllocation(dateVal);
+  const expenses = loggedExpenses + fixedExpenses;
+  const netProfit = grossProfit-expenses;
+  const margin = revenue>0 ? (netProfit/revenue*100) : 0;
+  document.getElementById('entryPreview').innerHTML = [
+    ['Revenue', fmt(revenue), ''],
+    ['Est. COGS', fmt(cogs), ''],
+    ['Gross Profit', fmt(grossProfit), ''],
+    ['Logged Expenses', fmt(loggedExpenses), ''],
+    ['Fixed Costs (daily)', fmt(fixedExpenses), ''],
+    ['Net Profit', fmt(netProfit), netProfit>=0?'pos':'neg'],
+    ['Margin', margin.toFixed(1)+'%', ''],
+  ].map(([lbl,val,cls])=> `<div class="sg-item"><div class="lbl">${lbl}</div><div class="val" style="font-size:18px; color:${cls==='pos'?'var(--good)':cls==='neg'?'var(--bad)':'inherit'}">${val}</div></div>`).join('');
+}
+document.getElementById('entryDate').addEventListener('change', renderEntryPreview);
+
+document.getElementById('addItemRowBtn').addEventListener('click', ()=>{
+  entryItems.push({rid:uid(), name:'', qty:0, unitPrice:0, revenue:0, cost:null});
+  renderEntryItemRows(); renderEntryPreview();
+});
+document.getElementById('addExpenseRowBtn').addEventListener('click', ()=>{
+  entryExpenses.push({rid:uid(), category:EXPENSE_CATEGORIES[0], note:'', amount:0});
+  renderEntryExpenseRows(); renderEntryPreview();
+});
+
+function getTenderInputs(){
+  return {
+    card: Number(document.getElementById('tenderCard').value)||0,
+    cash: Number(document.getElementById('tenderCash').value)||0,
+    uberEats: Number(document.getElementById('tenderUber').value)||0,
+    skip: Number(document.getElementById('tenderSkip').value)||0,
+    doorDash: Number(document.getElementById('tenderDoordash').value)||0,
+  };
+}
+function setTenderInputs(t){
+  t = t || {};
+  document.getElementById('tenderCard').value = t.card || '';
+  document.getElementById('tenderCash').value = t.cash || '';
+  document.getElementById('tenderUber').value = t.uberEats || '';
+  document.getElementById('tenderSkip').value = t.skip || '';
+  document.getElementById('tenderDoordash').value = t.doorDash || '';
+}
+
+document.getElementById('loadDayBtn').addEventListener('click', async ()=>{
+  const date = document.getElementById('entryDate').value;
+  if(!date){ alert('Pick a date first.'); return; }
+  const data = await loadDay(date);
+  if(!data){ alert('No entry saved for that date yet — starting fresh.'); entryItems=[]; entryExpenses=[]; setTenderInputs(null); }
+  else {
+    entryItems = data.items.map(i=> ({rid:uid(), name:i.name, qty:i.qty, unitPrice:i.unitPrice, revenue:i.revenue, cost:i.cost}));
+    entryExpenses = (data.expenses||[]).map(e=> ({rid:uid(), category:e.category, note:e.note, amount:e.amount}));
+    setTenderInputs(data.tenders);
+  }
+  renderEntryItemRows(); renderEntryExpenseRows(); renderEntryPreview();
+});
+
+const SAMPLE_DATE = "2026-08-01";
+function catalogItem(name){ return catalog.find(c=>c.name===name); }
+document.getElementById('loadSampleBtn').addEventListener('click', async ()=>{
+  const picks = [
+    ["One Order Wings", 14], ["Half Order Wings", 6], ["Full Order Chicken Fingers", 5],
+    ["Combo for 2", 4], ["Chicken Poutine", 3], ["The Tough Guy", 2],
+    ["Cans", 10], ["Side Sauce", 6],
+  ];
+  entryItems = picks.map(([name,qty])=>{
+    const c = catalogItem(name);
+    const unitPrice = c ? c.price : 0;
+    const cost = c ? c.cost : null;
+    return {rid:uid(), name, qty, unitPrice, revenue: qty*unitPrice, cost};
+  });
+  entryExpenses = [
+    {rid:uid(), category:"Food & Supplies", note:"Weekly poultry + produce order (allocated)", amount:850},
+    {rid:uid(), category:"Labor", note:"Day shift wages", amount:420},
+    {rid:uid(), category:"Delivery Commission (Skip/Uber/Door Dash)", note:"Uber Eats + DoorDash fees", amount:65},
+  ];
+  document.getElementById('entryDate').value = SAMPLE_DATE;
+  setTenderInputs({card:850, cash:210, uberEats:180, skip:0, doorDash:130});
+  renderEntryItemRows(); renderEntryExpenseRows(); renderEntryPreview();
+  await saveCurrentEntry(SAMPLE_DATE);
+  showToast('Sample day loaded — check the Dashboard');
+  switchView('dashboard');
+});
+
+const AUG12_DATE = "2026-08-12";
+document.getElementById('importAug12Btn').addEventListener('click', async ()=>{
+  // Sourced from the Clover "Item sales" category report + Sales report tender breakdown, Aug 12, 2026.
+  // Revenue uses Net Sales per category (post-refund/discount). Cost uses exact catalog costs where the
+  // category maps to one known item; otherwise a blended margin estimate from the gross margin workbook (flagged).
+  const rows = [
+    {name:"WINGS (category total)",            qty:19, revenue:319.81, cost:101.38, note:"est. 68.3% margin (bone-in, incl. flour)"},
+    {name:"Combos/Platters (category total)",  qty:8,  revenue:284.82, cost:85.45,  note:"est. ~70% blended margin"},
+    {name:"Uncategorized (category total)",    qty:9,  revenue:82.95,  cost:41.48,  note:"UNCERTAIN — composition unknown, 50% assumed"},
+    {name:"Ribs (category total)",             qty:6,  revenue:62.94,  cost:20.14,  note:"net of discount; est. 32% cost ratio"},
+    {name:"Drinks (category total)",           qty:7,  revenue:23.81,  cost:5.95,   note:"est. 25% cost ratio"},
+    {name:"The Tough Guy",                     qty:1,  revenue:18.99,  cost:5.49,   note:"catalog cost"},
+    {name:"Full Order Chicken Fingers",        qty:1,  revenue:13.99,  cost:4.00,   note:"catalog cost"},
+    {name:"Caesar Salad (sm)",                 qty:1,  revenue:6.99,   cost:1.50,   note:"catalog cost"},
+    {name:"Deep Fried Oreos 6pc",              qty:1,  revenue:5.99,   cost:1.50,   note:"catalog cost"},
+    {name:"Chicken Poutine (refunded)",        qty:1,  revenue:0.00,   cost:4.41,   note:"refunded — $0 revenue, food cost still incurred"},
+  ];
+  entryItems = rows.map(r=> ({rid:uid(), name:r.name, qty:r.qty, unitPrice: r.qty? r.revenue/r.qty : 0, revenue:r.revenue, cost: r.qty? (r.cost/r.qty) : r.cost}));
+  entryExpenses = [];
+  document.getElementById('entryDate').value = AUG12_DATE;
+  setTenderInputs({card:516.13, cash:137.64, uberEats:159.78, skip:0, doorDash:112.61});
+  renderEntryItemRows(); renderEntryExpenseRows(); renderEntryPreview();
+  await saveCurrentEntry(AUG12_DATE);
+  showToast('Aug 12 imported');
+  switchView('dashboard');
+});
+
+async function saveCurrentEntry(date){
+  const cleanItems = entryItems.filter(r=>r.name).map(r=> ({
+    name:r.name, qty:Number(r.qty)||0, unitPrice:Number(r.unitPrice)||0,
+    revenue:Number(r.revenue)||0, cost: (r.cost===null||r.cost===undefined)? null : Number(r.cost)
+  }));
+  const cleanExpenses = entryExpenses.filter(r=>r.amount).map(r=> ({
+    category:r.category, note:r.note||'', amount:Number(r.amount)||0
+  }));
+  const tenders = getTenderInputs();
+  await saveDay(date, {items:cleanItems, expenses:cleanExpenses, tenders});
+}
+
+document.getElementById('saveDayBtn').addEventListener('click', async ()=>{
+  const date = document.getElementById('entryDate').value;
+  if(!date){ alert('Pick a date first.'); return; }
+  await saveCurrentEntry(date);
+  showToast('Day saved');
+  renderHeader();
+});
+
+/* ---------- HISTORY ---------- */
+async function renderHistory(){
+  const days = await getAllDays();
+  const tbody = document.getElementById('historyRows');
+  const emptyEl = document.getElementById('historyEmpty');
+  if(!days.length){
+    tbody.innerHTML=''; emptyEl.style.display='block'; return;
+  }
+  emptyEl.style.display='none';
+  tbody.innerHTML = [...days].reverse().map(d=>{
+    const t = computeDayTotals(d.data, d.date);
+    return `<tr data-date="${d.date}">
+      <td class="mono">${d.date}</td>
+      <td class="num">${fmt(t.revenue)}</td>
+      <td class="num">${fmt(t.cogs)}</td>
+      <td class="num">${fmt(t.grossProfit)}</td>
+      <td class="num">${fmt(t.loggedExpenses)}</td>
+      <td class="num">${fmt(t.fixedExpenses)}</td>
+      <td class="num"><span class="pill ${t.netProfit>=0?'good':'bad'}">${fmt(t.netProfit)}</span></td>
+      <td class="num">${t.margin.toFixed(1)}%</td>
+      <td>
+        <button class="icon-btn hist-edit" title="Edit in Daily Entry">✎</button>
+        <button class="icon-btn hist-del" title="Delete this day">✕</button>
+      </td>
+    </tr>`;
+  }).join('');
+  tbody.querySelectorAll('.hist-edit').forEach(btn=>{
+    btn.addEventListener('click', async (e)=>{
+      const date = e.target.closest('tr').dataset.date;
+      switchView('entry');
+      document.getElementById('entryDate').value = date;
+      const data = await loadDay(date);
+      entryItems = data.items.map(i=> ({rid:uid(), name:i.name, qty:i.qty, unitPrice:i.unitPrice, revenue:i.revenue, cost:i.cost}));
+      entryExpenses = (data.expenses||[]).map(x=> ({rid:uid(), category:x.category, note:x.note, amount:x.amount}));
+      renderEntryItemRows(); renderEntryExpenseRows(); renderEntryPreview();
+    });
+  });
+  tbody.querySelectorAll('.hist-del').forEach(btn=>{
+    btn.addEventListener('click', async (e)=>{
+      const date = e.target.closest('tr').dataset.date;
+      if(!confirm(`Delete the entry for ${date}? This can't be undone.`)) return;
+      try{ await storageDelete('day:'+date); } catch(err){}
+      dayIndex = dayIndex.filter(d=>d!==date);
+      await saveDayIndex();
+      showToast('Day deleted');
+      renderHistory();
+      renderHeader();
+    });
+  });
+}
+
+/* ---------- INIT ---------- */
+async function init(){
+  if(typeof Storage === 'undefined' || typeof localStorage === 'undefined'){
+    document.getElementById('app').innerHTML = `
+      <div style="padding:40px 28px; font-family:'Inter',sans-serif; max-width:520px; margin:0 auto;">
+        <div style="font-family:'Oswald',sans-serif; font-size:20px; font-weight:600; color:#C81E1E; text-transform:uppercase; letter-spacing:0.03em; margin-bottom:12px;">This browser doesn't support local storage</div>
+        <p style="font-size:14.5px; line-height:1.6; color:#201c18;">
+          Try a different browser, or turn off private/incognito browsing — some browsers disable local storage in that mode.
+        </p>
+      </div>`;
+    return;
+  }
+
+  // Self-test: confirm storage actually round-trips before doing anything else.
+  try{
+    const testVal = {t: Date.now()};
+    const setOk = await storageSet('__storage_test__', testVal);
+    if(!setOk){
+      showStorageError('self-test set', '__storage_test__', 'localStorage.setItem failed — storage is not writable here (private browsing mode can cause this).');
+    } else {
+      const getResult = await storageGet('__storage_test__');
+      if(!getResult || getResult.t !== testVal.t){
+        showStorageError('self-test verify', '__storage_test__', 'wrote successfully but read back did not match — storage may not be persisting.');
+      }
+    }
+  } catch(e){
+    showStorageError('self-test', '__storage_test__', e);
+  }
+
+  await loadCatalog();
+  await loadFixedCosts();
+  await loadDayIndex();
+  document.getElementById('entryDate').value = todayStr();
+  entryItems = [{rid:uid(), name:'', qty:0, unitPrice:0, revenue:0, cost:null}];
+  entryExpenses = [];
+  renderEntryItemRows();
+  renderEntryExpenseRows();
+  renderEntryPreview();
+  await renderDashboard();
+}
+init();
+</script>
+</body>
+</html>
