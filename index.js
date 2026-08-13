@@ -3,6 +3,7 @@ const cors = require('cors');
 const fetch = require('node-fetch');
 const path = require('path');
 const { MongoClient, ObjectId } = require('mongodb');
+const trackerAuth = require('./tracker-auth');
 let webpush = null;
 try {
   webpush = require('web-push');
@@ -19,6 +20,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// ── PROFIT TRACKER (password-protected, file lives outside public/) ──
+app.get('/tracker', trackerAuth, (req, res) => {
+  res.sendFile(path.join(__dirname, 'tracker.html'));
+});
 
 // ── MONGODB CONNECTION ────────────────────────────────────────
 const MONGO_URI = process.env.MONGODB_URI;
