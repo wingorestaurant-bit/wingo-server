@@ -36,38 +36,3 @@ function trackerAuth(req, res, next) {
 }
 
 module.exports = trackerAuth;
-
-/* ---------------------------------------------------------------------
-   HOW TO WIRE THIS INTO YOUR EXISTING index.js
-   ---------------------------------------------------------------------
-
-   1. Save this file as tracker-auth.js in the same folder as index.js.
-
-   2. In index.js, near your other requires:
-        const trackerAuth = require('./tracker-auth');
-        const path = require('path'); // if not already imported
-
-   3. Add a protected route BEFORE any general static file middleware
-      that might otherwise serve the tracker unprotected:
-        app.get('/tracker', trackerAuth, (req, res) => {
-          res.sendFile(path.join(__dirname, 'tracker.html'));
-        });
-
-   4. Put the tracker HTML file (Albert_Street_Profit_Tracker_Server.html,
-      renamed to tracker.html) in the same folder as index.js — NOT in
-      your public/ static folder, so it can't be reached by a direct
-      guessable URL without going through the /tracker route above.
-
-   5. On Railway, add two environment variables to this service:
-        TRACKER_USER      = wingo
-        TRACKER_PASSWORD  = Gur@mehar$$
-      (Pick any username you like for TRACKER_USER — it's just the
-      first field of the login prompt, not a real user account.)
-
-   6. Deploy. Visiting https://yourdomain.com/tracker will now show
-      your browser's native login popup before anything loads. Wrong
-      password = 401, no page content sent at all.
-
-   To change the password later: update TRACKER_PASSWORD on Railway
-   and redeploy — nothing in the HTML file needs to change.
---------------------------------------------------------------------- */
