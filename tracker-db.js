@@ -89,6 +89,22 @@ function makeTrackerDb(db) {
     return clean;
   }
 
+  // Packaging (box) cost per order — applied to every order EXCEPT platters
+  // (platters use bigger containers, tracked separately if ever needed).
+  async function getPackagingCost() {
+    const doc = await settings().findOne({ _id: 'packaging-cost' });
+    if (doc && typeof doc.perOrder === 'number') return doc.perOrder;
+    const seeded = 0.42; // $42/case of 100 boxes
+    await settings().updateOne({ _id: 'packaging-cost' }, { $set: { perOrder: seeded } }, { upsert: true });
+    return seeded;
+  }
+
+  async function savePackagingCost(perOrder) {
+    const clean = Number(perOrder) || 0;
+    await settings().updateOne({ _id: 'packaging-cost' }, { $set: { perOrder: clean } }, { upsert: true });
+    return clean;
+  }
+
   async function getDay(date) {
     const doc = await days().findOne({ _id: date });
     if (!doc) return null;
@@ -113,7 +129,7 @@ function makeTrackerDb(db) {
     });
   }
 
-  return { getCatalog, saveCatalog, getFixedCosts, saveFixedCosts, getCommissionRate, saveCommissionRate, getDay, saveDay, deleteDay, listDays };
+  return { getCatalog, saveCatalog, getFixedCosts, saveFixedCosts, getCommissionRate, saveCommissionRate, getPackagingCost, savePackagingCost, getDay, saveDay, deleteDay, listDays };
 }
 
 module.exports = { makeTrackerDb, SEED_CATALOG, SEED_FIXED_COSTS };
