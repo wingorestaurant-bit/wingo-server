@@ -224,10 +224,10 @@
             <input type="date" id="entryDate">
           </div>
           <button class="btn ghost small" id="loadDayBtn">Load existing day</button>
-          <button class="btn ghost small" id="importAug12Btn">Import Aug 12 (from Clover report)</button>
+          <button class="btn ghost small" id="syncCloverBtn">Sync from Clover</button>
           <button class="btn ghost small" id="loadSampleBtn" style="border-color:var(--muted); color:var(--muted);">Load sample day (demo)</button>
         </div>
-        <div class="helptext">Pick the date the POS report covers, then log item sales and expenses below. Saving overwrites any existing entry for that date. The sample day writes to <b>2026-08-01</b> so it never overlaps a real entry — delete it from the History tab whenever you're done looking.</div>
+        <div class="helptext">Pick a date and click "Sync from Clover" to pull real orders for that day automatically — this also runs on its own every morning at 5am for the previous day, so most days you won't need to touch this. Manually-added expenses are never overwritten by a sync. The sample day writes to <b>2026-08-01</b> so it never overlaps a real entry — delete it from the History tab whenever you're done looking.</div>
       </div>
 
       <div class="card">
@@ -340,41 +340,11 @@
 
 <script>
 const EXPENSE_CATEGORIES = ["Food & Supplies","Labor","Delivery Commission (Skip/Uber/Door Dash)","Marketing","Repairs & Maintenance","Other"];
-
-const SEED_FIXED_COSTS = [
-  {name:"Rent", monthly:4300},
-  {name:"Utilities", monthly:2000},
-  {name:"WiFi", monthly:160},
-];
-
-const SEED_CATALOG = [
-  {name:"Half Order Wings", category:"Wings", price:7.99, cost:2.05},
-  {name:"One Order Wings", category:"Wings", price:13.99, cost:3.69},
-  {name:"Two Order Wings", category:"Wings", price:25.99, cost:7.38},
-  {name:"Three Order Wings", category:"Wings", price:37.99, cost:11.07},
-  {name:"Four Order Wings", category:"Wings", price:49.99, cost:14.76},
-  {name:"Half Order Boneless Wings", category:"Boneless & Fingers", price:7.00, cost:2.40},
-  {name:"Full Order Chicken Fingers", category:"Boneless & Fingers", price:13.99, cost:4.00},
-  {name:"Combo for 1", category:"Combos & Platters", price:17.45, cost:4.91},
-  {name:"Combo for 2", category:"Combos & Platters", price:42.48, cost:9.10},
-  {name:"Combo for 3", category:"Combos & Platters", price:57.49, cost:17.51},
-  {name:"The Tough Guy", category:"Combos & Platters", price:18.99, cost:5.49},
-  {name:"A Bit of Other Platter", category:"Combos & Platters", price:32.99, cost:12.64},
-  {name:"Tinseltown Nacho", category:"Combos & Platters", price:29.99, cost:8.76},
-  {name:"Chicken Poutine", category:"Combos & Platters", price:14.99, cost:4.41},
-  {name:"Lunch Deal", category:"Combos & Platters", price:10.00, cost:3.18},
-  {name:"Side Sauce", category:"Sides", price:0.99, cost:0.10},
-  {name:"Caesar Salad (sm)", category:"Sides", price:6.99, cost:1.50},
-  {name:"Cans", category:"Drinks", price:1.99, cost:0.50},
-  {name:"Mango Breeze", category:"Drinks", price:5.95, cost:1.25},
-  {name:"Glow Lemonade", category:"Drinks", price:4.95, cost:1.00},
-  {name:"Watermelon Lemonade", category:"Drinks", price:4.95, cost:1.00},
-  {name:"Deep Fried Oreos 6pc", category:"Desserts", price:5.99, cost:1.50},
-];
+// Catalog and fixed-cost defaults now live server-side (tracker-db.js) and
+// are seeded into MongoDB automatically on first request — nothing to seed here.
 
 let catalog = [];
 let fixedCosts = [];
-let dayIndex = []; // array of date strings
 let entryItems = []; // working rows for entry form
 let entryExpenses = [];
 
@@ -382,54 +352,58 @@ function uid(){ return Math.random().toString(36).slice(2,10); }
 function fmt(n){ return "$" + (Math.round((n||0)*100)/100).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
 function todayStr(){ const d=new Date(); return d.toISOString().slice(0,10); }
 
-let storageErrorShown = false;
-function showStorageError(action, key, err){
-  console.error(`storage ${action} failed`, key, err);
-  storageErrorShown = true;
+let apiErrorShown = false;
+function showApiError(action, err){
+  console.error(`API ${action} failed`, err);
+  apiErrorShown = true;
   const banner = document.getElementById('storageErrorBanner');
   if(banner){
     banner.style.display = 'block';
-    banner.textContent = `Storage error on "${action}" for "${key}": ${err && err.message ? err.message : String(err)}. Your data may not be saving — screenshot this message.`;
+    banner.textContent = `Server error on "${action}": ${err && err.message ? err.message : String(err)}. Your data may not be saving — screenshot this message.`;
   }
 }
 
-const LS_PREFIX = "wingo-albert:";
-async function storageGet(key){
-  try{
-    const raw = localStorage.getItem(LS_PREFIX+key);
-    return raw === null ? null : JSON.parse(raw);
-  } catch(e){ return null; } // missing key or parse issue — normal "not set yet" case, not an error
+const API_BASE = '/api/tracker';
+async function apiGet(path){
+  const res = await fetch(API_BASE+path, { credentials: 'same-origin' });
+  if(!res.ok) throw new Error(`GET ${path} → ${res.status}`);
+  return res.json();
 }
-async function storageSet(key,val){
-  try{ localStorage.setItem(LS_PREFIX+key, JSON.stringify(val)); return true; }
-  catch(e){ showStorageError('set', key, e); return false; }
+async function apiPost(path, body){
+  const res = await fetch(API_BASE+path, {
+    method: 'POST', credentials: 'same-origin',
+    headers: {'Content-Type':'application/json'}, body: JSON.stringify(body||{})
+  });
+  if(!res.ok) throw new Error(`POST ${path} → ${res.status}`);
+  return res.json();
 }
-async function storageDelete(key){
-  try{ localStorage.removeItem(LS_PREFIX+key); return true; }
-  catch(e){ showStorageError('delete', key, e); return false; }
+async function apiDelete(path){
+  const res = await fetch(API_BASE+path, { method:'DELETE', credentials:'same-origin' });
+  if(!res.ok) throw new Error(`DELETE ${path} → ${res.status}`);
+  return res.json();
 }
 
 async function loadCatalog(){
-  const stored = await storageGet('catalog');
-  if(stored && Array.isArray(stored) && stored.length){
-    catalog = stored;
-  } else {
-    catalog = SEED_CATALOG.map(i => ({id:uid(), ...i}));
-    await storageSet('catalog', catalog);
-  }
+  try{
+    const r = await apiGet('/catalog');
+    catalog = r.items || [];
+  } catch(e){ showApiError('load catalog', e); catalog = []; }
 }
-async function saveCatalog(){ await storageSet('catalog', catalog); }
+async function saveCatalog(){
+  try{ await apiPost('/catalog', {items: catalog}); }
+  catch(e){ showApiError('save catalog', e); }
+}
 
 async function loadFixedCosts(){
-  const stored = await storageGet('fixed-costs');
-  if(stored && Array.isArray(stored) && stored.length){
-    fixedCosts = stored;
-  } else {
-    fixedCosts = SEED_FIXED_COSTS.map(i => ({id:uid(), ...i}));
-    await storageSet('fixed-costs', fixedCosts);
-  }
+  try{
+    const r = await apiGet('/fixed-costs');
+    fixedCosts = r.items || [];
+  } catch(e){ showApiError('load fixed costs', e); fixedCosts = []; }
 }
-async function saveFixedCosts(){ await storageSet('fixed-costs', fixedCosts); }
+async function saveFixedCosts(){
+  try{ await apiPost('/fixed-costs', {items: fixedCosts}); }
+  catch(e){ showApiError('save fixed costs', e); }
+}
 
 function daysInMonth(dateStr){
   const [y,m] = dateStr.split('-').map(Number);
@@ -441,20 +415,15 @@ function fixedDailyAllocation(dateStr){
   return totalMonthly / dim;
 }
 
-async function loadDayIndex(){
-  const stored = await storageGet('day-index');
-  dayIndex = stored && Array.isArray(stored) ? stored : [];
+async function loadDay(date){
+  try{
+    const r = await apiGet('/day/'+date);
+    return r.day || null;
+  } catch(e){ showApiError('load day '+date, e); return null; }
 }
-async function saveDayIndex(){ await storageSet('day-index', dayIndex); }
-
-async function loadDay(date){ return await storageGet('day:'+date); }
 async function saveDay(date, data){
-  await storageSet('day:'+date, data);
-  if(!dayIndex.includes(date)){
-    dayIndex.push(date);
-    dayIndex.sort();
-    await saveDayIndex();
-  }
+  try{ await apiPost('/day/'+date, data); }
+  catch(e){ showApiError('save day '+date, e); }
 }
 
 function computeDayTotals(day, dateStr){
@@ -510,13 +479,12 @@ async function renderHeader(){
 }
 
 async function getAllDays(){
-  const out = [];
-  for(const date of dayIndex){
-    const data = await loadDay(date);
-    if(data) out.push({date, data});
-  }
-  out.sort((a,b)=> a.date.localeCompare(b.date));
-  return out;
+  try{
+    const r = await apiGet('/days');
+    const out = (r.days || []).map(d => ({ date: d.date, data: d }));
+    out.sort((a,b)=> a.date.localeCompare(b.date));
+    return out;
+  } catch(e){ showApiError('load days', e); return []; }
 }
 
 function daysInRange(days, rangeVal){
@@ -898,31 +866,28 @@ document.getElementById('loadSampleBtn').addEventListener('click', async ()=>{
   switchView('dashboard');
 });
 
-const AUG12_DATE = "2026-08-12";
-document.getElementById('importAug12Btn').addEventListener('click', async ()=>{
-  // Sourced from the Clover "Item sales" category report + Sales report tender breakdown, Aug 12, 2026.
-  // Revenue uses Net Sales per category (post-refund/discount). Cost uses exact catalog costs where the
-  // category maps to one known item; otherwise a blended margin estimate from the gross margin workbook (flagged).
-  const rows = [
-    {name:"WINGS (category total)",            qty:19, revenue:319.81, cost:101.38, note:"est. 68.3% margin (bone-in, incl. flour)"},
-    {name:"Combos/Platters (category total)",  qty:8,  revenue:284.82, cost:85.45,  note:"est. ~70% blended margin"},
-    {name:"Uncategorized (category total)",    qty:9,  revenue:82.95,  cost:41.48,  note:"UNCERTAIN — composition unknown, 50% assumed"},
-    {name:"Ribs (category total)",             qty:6,  revenue:62.94,  cost:20.14,  note:"net of discount; est. 32% cost ratio"},
-    {name:"Drinks (category total)",           qty:7,  revenue:23.81,  cost:5.95,   note:"est. 25% cost ratio"},
-    {name:"The Tough Guy",                     qty:1,  revenue:18.99,  cost:5.49,   note:"catalog cost"},
-    {name:"Full Order Chicken Fingers",        qty:1,  revenue:13.99,  cost:4.00,   note:"catalog cost"},
-    {name:"Caesar Salad (sm)",                 qty:1,  revenue:6.99,   cost:1.50,   note:"catalog cost"},
-    {name:"Deep Fried Oreos 6pc",              qty:1,  revenue:5.99,   cost:1.50,   note:"catalog cost"},
-    {name:"Chicken Poutine (refunded)",        qty:1,  revenue:0.00,   cost:4.41,   note:"refunded — $0 revenue, food cost still incurred"},
-  ];
-  entryItems = rows.map(r=> ({rid:uid(), name:r.name, qty:r.qty, unitPrice: r.qty? r.revenue/r.qty : 0, revenue:r.revenue, cost: r.qty? (r.cost/r.qty) : r.cost}));
-  entryExpenses = [];
-  document.getElementById('entryDate').value = AUG12_DATE;
-  setTenderInputs({card:516.13, cash:137.64, uberEats:159.78, skip:0, doorDash:112.61});
-  renderEntryItemRows(); renderEntryExpenseRows(); renderEntryPreview();
-  await saveCurrentEntry(AUG12_DATE);
-  showToast('Aug 12 imported');
-  switchView('dashboard');
+document.getElementById('syncCloverBtn').addEventListener('click', async ()=>{
+  const date = document.getElementById('entryDate').value;
+  if(!date){ alert('Pick a date first.'); return; }
+  const btn = document.getElementById('syncCloverBtn');
+  const originalLabel = btn.textContent;
+  btn.textContent = 'Syncing…'; btn.disabled = true;
+  try{
+    const r = await apiPost('/sync/'+date, {});
+    if(!r.success) throw new Error(r.error || 'sync failed');
+    const data = r.day;
+    entryItems = data.items.map(i=> ({rid:uid(), name:i.name, qty:i.qty, unitPrice:i.unitPrice, revenue:i.revenue, cost:i.cost}));
+    entryExpenses = (data.expenses||[]).map(e=> ({rid:uid(), category:e.category, note:e.note, amount:e.amount}));
+    setTenderInputs(data.tenders);
+    renderEntryItemRows(); renderEntryExpenseRows(); renderEntryPreview();
+    showToast(`Synced ${date} from Clover — ${data.ordersCount||0} orders`);
+    switchView('dashboard');
+  } catch(e){
+    showApiError('sync from Clover for '+date, e);
+    alert(`Clover sync failed for ${date}: ${e.message}\n\nCheck the Railway logs for details — this usually means the date is out of range, or the Clover API token/merchant ID needs checking.`);
+  } finally {
+    btn.textContent = originalLabel; btn.disabled = false;
+  }
 });
 
 async function saveCurrentEntry(date){
@@ -986,9 +951,7 @@ async function renderHistory(){
     btn.addEventListener('click', async (e)=>{
       const date = e.target.closest('tr').dataset.date;
       if(!confirm(`Delete the entry for ${date}? This can't be undone.`)) return;
-      try{ await storageDelete('day:'+date); } catch(err){}
-      dayIndex = dayIndex.filter(d=>d!==date);
-      await saveDayIndex();
+      try{ await apiDelete('/day/'+date); } catch(err){ showApiError('delete day '+date, err); }
       showToast('Day deleted');
       renderHistory();
       renderHeader();
@@ -998,36 +961,16 @@ async function renderHistory(){
 
 /* ---------- INIT ---------- */
 async function init(){
-  if(typeof Storage === 'undefined' || typeof localStorage === 'undefined'){
-    document.getElementById('app').innerHTML = `
-      <div style="padding:40px 28px; font-family:'Inter',sans-serif; max-width:520px; margin:0 auto;">
-        <div style="font-family:'Oswald',sans-serif; font-size:20px; font-weight:600; color:#C81E1E; text-transform:uppercase; letter-spacing:0.03em; margin-bottom:12px;">This browser doesn't support local storage</div>
-        <p style="font-size:14.5px; line-height:1.6; color:#201c18;">
-          Try a different browser, or turn off private/incognito browsing — some browsers disable local storage in that mode.
-        </p>
-      </div>`;
-    return;
-  }
-
-  // Self-test: confirm storage actually round-trips before doing anything else.
+  // Self-test: confirm the server API is actually reachable before doing anything else.
   try{
-    const testVal = {t: Date.now()};
-    const setOk = await storageSet('__storage_test__', testVal);
-    if(!setOk){
-      showStorageError('self-test set', '__storage_test__', 'localStorage.setItem failed — storage is not writable here (private browsing mode can cause this).');
-    } else {
-      const getResult = await storageGet('__storage_test__');
-      if(!getResult || getResult.t !== testVal.t){
-        showStorageError('self-test verify', '__storage_test__', 'wrote successfully but read back did not match — storage may not be persisting.');
-      }
-    }
+    const r = await apiGet('/catalog');
+    if(!r || !r.success) showApiError('startup connectivity check', 'unexpected response from /api/tracker/catalog');
   } catch(e){
-    showStorageError('self-test', '__storage_test__', e);
+    showApiError('startup connectivity check', e);
   }
 
   await loadCatalog();
   await loadFixedCosts();
-  await loadDayIndex();
   document.getElementById('entryDate').value = todayStr();
   entryItems = [{rid:uid(), name:'', qty:0, unitPrice:0, revenue:0, cost:null}];
   entryExpenses = [];
