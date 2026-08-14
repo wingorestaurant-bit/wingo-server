@@ -87,17 +87,34 @@ async function fetchDaySales(location, dateStr) {
     `${timeFilter}&expand=lineItems`
   );
 
-  const itemAgg = {}; // name -> {qty, revenue, refundedQty, refundedRevenue}
+  const itemAgg = {}; // cleanName -> {qty, revenue, refundedQty, refundedRevenue}
   let ordersCount = 0;
+
+  // Tax lines (GST/PST/HST) sometimes come through as pseudo line items — never real food, always excluded.
+  const TAX_LINE_RE = /^(GST|PST|HST|QST|Tax)\b/i;
+
+  function cleanItemName(rawName){
+    let n = (rawName || 'Unnamed item').trim();
+    n = n.replace(/^\?\s*/, '');           // strip leading "? " (Clover's unlinked-item marker)
+    n = n.replace(/\s*\[[^\]]*\]\s*$/, ''); // strip trailing "[Sauce Choice]" modifier suffix
+    n = n.replace(/\s*—\s*Order\s*#\d+\s*(\(\d+%\s*OFF\))?\s*$/i, ''); // strip "— Order #2 (50% OFF)"
+    return n.trim();
+  }
 
   for (const order of orders) {
     if (order.state !== 'locked') continue; // skip open/unfinished orders
     ordersCount++;
     const lineItems = (order.lineItems && order.lineItems.elements) || [];
     for (const li of lineItems) {
-      const name = li.name || 'Unnamed item';
+      const rawName = li.name || 'Unnamed item';
+      if (TAX_LINE_RE.test(rawName)) continue; // not a real item — skip entirely
+      const name = cleanItemName(rawName);
       const priceDollars = (Number(li.price) || 0) / 100;
-      const qty = Number(li.unitQty) > 0 ? Number(li.unitQty) : 1;
+      // Clover reports unitQty in THOUSANDTHS when the field is present at all (custom/ad-hoc
+      // line items, mainly) — but regular catalog-linked items often omit it entirely, in which
+      // case each line item represents exactly 1 unit. Dividing an absent field would be wrong,
+      // so only divide when Clover actually sent a value.
+      const qty = (li.unitQty != null && Number(li.unitQty) > 0) ? Number(li.unitQty) / 1000 : 1;
       if (!itemAgg[name]) {
         itemAgg[name] = { qty: 0, revenue: 0, refundedQty: 0, refundedRevenue: 0 };
       }
