@@ -496,7 +496,15 @@ function safeQty(item){
   }
   return q;
 }
-function packagingCostForItems(items){
+function packagingCostForItems(items, ordersCount){
+  // Prefer real order count when we have it (from Clover sync) — a single order
+  // often explodes into several line items (entree + sides + drinks + sauces),
+  // and this is priced per ORDER, not per line item, so summing item quantities
+  // overcounts badly. Quantity-sum is only a fallback for manually-entered days
+  // where no order count exists.
+  if(typeof ordersCount === 'number' && ordersCount > 0){
+    return ordersCount * packagingCostPerOrder;
+  }
   const boxableQty = (items||[]).reduce((s,i)=> s + (isPlatterItem(i.name) ? 0 : safeQty(i)), 0);
   return boxableQty * packagingCostPerOrder;
 }
@@ -519,7 +527,7 @@ function computeDayTotals(day, dateStr){
   const loggedExpenses = (day.expenses||[]).reduce((s,e)=> s + (Number(e.amount)||0), 0);
   const fixedExpenses = fixedDailyAllocation(dateStr);
   const commissionExpense = deliveryCommission(day.tenders);
-  const packagingExpense = packagingCostForItems(day.items);
+  const packagingExpense = packagingCostForItems(day.items, day.ordersCount);
   const expenses = loggedExpenses + fixedExpenses + commissionExpense + packagingExpense;
   const netProfit = grossProfit - expenses;
   const margin = revenue > 0 ? (netProfit/revenue*100) : 0;
