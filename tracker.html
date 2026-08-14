@@ -271,13 +271,23 @@
 
     <!-- CATALOG -->
     <div class="view" id="view-catalog">
+      <div class="card" id="unmatchedCard" style="display:none;">
+        <h3>⚠ Items seen from Clover with no cost matched</h3>
+        <div class="helptext" style="margin-bottom:10px;">
+          These are real item names pulled from your synced days that don't match anything in your catalog by name — so their COGS is being counted as $0, which understates your food cost. Give me the actual cost per unit for each and I'll add them to the catalog.
+        </div>
+        <table>
+          <thead><tr><th>Item name (from Clover)</th><th class="num">Times seen</th><th class="num">Total revenue affected</th><th></th></tr></thead>
+          <tbody id="unmatchedRows"></tbody>
+        </table>
+      </div>
       <div class="card">
         <h3>Item catalog — price &amp; cost per unit</h3>
         <div class="helptext" style="margin-bottom:10px;">
           Prices were seeded from your Clover report on Aug 12, 2026. Costs for wings, boneless, fingers, combos, platters, poutine, and the Tough Guy burger are pulled from real recipes in the Winnipeg franchise gross margin workbook. Drinks, Caesar Salad, Deep Fried Oreos, and Lunch Deal use rougher estimates (no supplier invoice for those) — worth double-checking against your actual costs. Items with no cost set show a <span class="pill warn">no cost</span> tag.
         </div>
         <table>
-          <thead><tr><th>Item</th><th>Category</th><th class="num">Price</th><th class="num">Cost</th><th class="num">Margin</th><th></th></tr></thead>
+          <thead><tr><th>Item</th><th>Category</th><th class="num">Price</th><th class="num">Cost</th><th class="num">Margin</th><th>Platter?</th><th></th></tr></thead>
           <tbody id="catalogRows"></tbody>
         </table>
       </div>
@@ -294,8 +304,10 @@
           </div>
           <div class="field"><label>Price ($)</label><input id="newItemPrice" type="number" step="0.01" placeholder="0.00"></div>
           <div class="field"><label>Cost ($)</label><input id="newItemCost" type="number" step="0.01" placeholder="0.00"></div>
+          <div class="field"><label>Platter?</label><input type="checkbox" id="newItemIsPlatter" style="width:20px; height:20px; margin-top:4px;"></div>
           <button class="btn" id="addCatalogItemBtn">Add</button>
         </div>
+        <div class="helptext" style="margin-top:8px;">Check "Platter?" for items that use a bigger container instead of the standard box (excludes them from the per-order packaging cost).</div>
       </div>
     </div>
 
@@ -331,6 +343,17 @@
           <button class="btn small" id="saveCommissionRateBtn">Save</button>
         </div>
       </div>
+
+      <div class="card">
+        <h3>Packaging (box) cost</h3>
+        <div class="helptext" style="margin-bottom:12px;">
+          Applied per order sold, except items marked "Platter" in the Item Catalog (those use a different container, tracked separately if you ever need to). Based on $42/case of 100 boxes.
+        </div>
+        <div class="row">
+          <div class="field"><label>Cost per order ($)</label><input type="number" step="0.01" id="packagingCostInput" style="width:100px;"></div>
+          <button class="btn small" id="savePackagingCostBtn">Save</button>
+        </div>
+      </div>
     </div>
 
     <!-- HISTORY -->
@@ -338,7 +361,7 @@
       <div class="card">
         <h3>All logged days</h3>
         <table>
-          <thead><tr><th>Date</th><th class="num">Revenue</th><th class="num">COGS</th><th class="num">Gross Profit</th><th class="num">Logged Exp.</th><th class="num">Fixed Costs</th><th class="num">Commission</th><th class="num">Net Profit</th><th class="num">Margin</th><th></th></tr></thead>
+          <thead><tr><th>Date</th><th class="num">Revenue</th><th class="num">COGS</th><th class="num">Gross Profit</th><th class="num">Logged Exp.</th><th class="num">Fixed Costs</th><th class="num">Commission</th><th class="num">Packaging</th><th class="num">Net Profit</th><th class="num">Margin</th><th></th></tr></thead>
           <tbody id="historyRows"></tbody>
         </table>
         <div class="empty" id="historyEmpty" style="display:none;">No days logged yet. Head to Daily Entry to add your first one.</div>
@@ -357,6 +380,7 @@ const EXPENSE_CATEGORIES = ["Food & Supplies","Labor","Delivery Commission (Skip
 let catalog = [];
 let fixedCosts = [];
 let commissionRate = 30; // % applied to Uber Eats/DoorDash/Skip revenue
+let packagingCostPerOrder = 0.42; // box cost per order, excludes platters
 let entryItems = []; // working rows for entry form
 let entryExpenses = [];
 
@@ -428,6 +452,17 @@ async function saveCommissionRate(){
   catch(e){ showApiError('save commission rate', e); }
 }
 
+async function loadPackagingCost(){
+  try{
+    const r = await apiGet('/packaging-cost');
+    packagingCostPerOrder = typeof r.perOrder === 'number' ? r.perOrder : 0.42;
+  } catch(e){ showApiError('load packaging cost', e); packagingCostPerOrder = 0.42; }
+}
+async function savePackagingCost(){
+  try{ await apiPost('/packaging-cost', {perOrder: packagingCostPerOrder}); }
+  catch(e){ showApiError('save packaging cost', e); }
+}
+
 function daysInMonth(dateStr){
   const [y,m] = dateStr.split('-').map(Number);
   return new Date(y, m, 0).getDate();
@@ -441,6 +476,14 @@ function deliveryCommission(tenders){
   const t = tenders || {};
   const deliveryRevenue = (Number(t.uberEats)||0) + (Number(t.doorDash)||0) + (Number(t.skip)||0);
   return deliveryRevenue * (commissionRate/100);
+}
+function isPlatterItem(name){
+  const c = catalog.find(x => (x.name||'').trim().toLowerCase() === (name||'').trim().toLowerCase());
+  return c ? !!c.isPlatter : false;
+}
+function packagingCostForItems(items){
+  const boxableQty = (items||[]).reduce((s,i)=> s + (isPlatterItem(i.name) ? 0 : (Number(i.qty)||0)), 0);
+  return boxableQty * packagingCostPerOrder;
 }
 
 async function loadDay(date){
@@ -461,10 +504,11 @@ function computeDayTotals(day, dateStr){
   const loggedExpenses = (day.expenses||[]).reduce((s,e)=> s + (Number(e.amount)||0), 0);
   const fixedExpenses = fixedDailyAllocation(dateStr);
   const commissionExpense = deliveryCommission(day.tenders);
-  const expenses = loggedExpenses + fixedExpenses + commissionExpense;
+  const packagingExpense = packagingCostForItems(day.items);
+  const expenses = loggedExpenses + fixedExpenses + commissionExpense + packagingExpense;
   const netProfit = grossProfit - expenses;
   const margin = revenue > 0 ? (netProfit/revenue*100) : 0;
-  return {revenue, cogs, grossProfit, loggedExpenses, fixedExpenses, commissionExpense, expenses, netProfit, margin};
+  return {revenue, cogs, grossProfit, loggedExpenses, fixedExpenses, commissionExpense, packagingExpense, expenses, netProfit, margin};
 }
 
 function showToast(msg){
@@ -534,10 +578,10 @@ async function renderDashboard(){
     const t = computeDayTotals(d.data, d.date);
     acc.revenue+=t.revenue; acc.cogs+=t.cogs; acc.grossProfit+=t.grossProfit;
     acc.loggedExpenses+=t.loggedExpenses; acc.fixedExpenses+=t.fixedExpenses;
-    acc.commissionExpense+=t.commissionExpense;
+    acc.commissionExpense+=t.commissionExpense; acc.packagingExpense+=t.packagingExpense;
     acc.expenses+=t.expenses; acc.netProfit+=t.netProfit;
     return acc;
-  }, {revenue:0,cogs:0,grossProfit:0,loggedExpenses:0,fixedExpenses:0,commissionExpense:0,expenses:0,netProfit:0});
+  }, {revenue:0,cogs:0,grossProfit:0,loggedExpenses:0,fixedExpenses:0,commissionExpense:0,packagingExpense:0,expenses:0,netProfit:0});
   const margin = totals.revenue>0 ? (totals.netProfit/totals.revenue*100) : 0;
 
   const tenderTotals = days.reduce((acc,d)=>{
@@ -572,6 +616,7 @@ async function renderDashboard(){
       ['Logged Expenses', fmt(totals.loggedExpenses), ''],
       ['Fixed Costs', fmt(totals.fixedExpenses), ''],
       [`Delivery Commission (${commissionRate}%)`, fmt(totals.commissionExpense), ''],
+      ['Packaging', fmt(totals.packagingExpense), ''],
       ['Net Profit', fmt(totals.netProfit), totals.netProfit>=0?'pos':'neg'],
       ['Margin', margin.toFixed(1)+'%', ''],
     ].map(([lbl,val,cls])=> `<div class="sg-item"><div class="lbl">${lbl}</div><div class="val" style="color:${cls==='pos'?'var(--good)':cls==='neg'?'var(--bad)':'inherit'}">${val}</div></div>`).join('');
@@ -616,7 +661,52 @@ async function renderDashboard(){
 }
 
 /* ---------- CATALOG ---------- */
+async function renderUnmatchedItems(){
+  const card = document.getElementById('unmatchedCard');
+  const tbody = document.getElementById('unmatchedRows');
+  let days;
+  try{
+    const r = await apiGet('/days');
+    days = r.days || [];
+  } catch(e){ showApiError('load days for unmatched-item check', e); return; }
+
+  const catalogNames = new Set(catalog.map(c => (c.name||'').trim().toLowerCase()));
+  const agg = {}; // name -> {count, revenue}
+  days.forEach(d=>{
+    (d.items||[]).forEach(it=>{
+      const key = (it.name||'').trim().toLowerCase();
+      if(!key || catalogNames.has(key)) return; // matched or blank — skip
+      if(it.cost !== null && it.cost !== undefined) return; // has a cost some other way — skip
+      if(!agg[key]) agg[key] = { name: it.name, count:0, revenue:0 };
+      agg[key].count += 1;
+      agg[key].revenue += Number(it.revenue)||0;
+    });
+  });
+
+  const rows = Object.values(agg).sort((a,b)=> b.revenue-a.revenue);
+  if(!rows.length){
+    card.style.display = 'none';
+    return;
+  }
+  card.style.display = 'block';
+  tbody.innerHTML = rows.map(r=> `
+    <tr>
+      <td>${r.name}</td>
+      <td class="num">${r.count}</td>
+      <td class="num">${fmt(r.revenue)}</td>
+      <td><button class="btn ghost small unmatched-fill" data-name="${r.name.replace(/"/g,'&quot;')}">Fill in cost →</button></td>
+    </tr>
+  `).join('');
+  tbody.querySelectorAll('.unmatched-fill').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.getElementById('newItemName').value = btn.dataset.name;
+      document.getElementById('newItemPrice').focus();
+    });
+  });
+}
+
 function renderCatalog(){
+  renderUnmatchedItems();
   const tbody = document.getElementById('catalogRows');
   const sorted = [...catalog].sort((a,b)=> a.category.localeCompare(b.category) || a.name.localeCompare(b.name));
   tbody.innerHTML = sorted.map(item=>{
@@ -635,6 +725,7 @@ function renderCatalog(){
         ${hasCost?'':'<span class="pill warn">no cost</span>'}
       </td>
       <td class="num mono">${margin}</td>
+      <td style="text-align:center;"><input type="checkbox" class="cat-platter" ${item.isPlatter?'checked':''} style="width:18px; height:18px;"></td>
       <td><button class="icon-btn del-item" title="Delete">✕</button></td>
     </tr>`;
   }).join('');
@@ -648,6 +739,10 @@ function renderCatalog(){
     tr.querySelector('.cat-cost').addEventListener('change', e=>{
       item.cost = e.target.value===''? null : Number(e.target.value);
       saveCatalog(); renderCatalog();
+    });
+    tr.querySelector('.cat-platter').addEventListener('change', e=>{
+      item.isPlatter = e.target.checked;
+      saveCatalog(); renderEntryPreview();
     });
     tr.querySelector('.del-item').addEventListener('click', ()=>{
       if(confirm(`Remove "${item.name}" from the catalog?`)){
@@ -665,11 +760,13 @@ document.getElementById('addCatalogItemBtn').addEventListener('click', async ()=
   const price = Number(document.getElementById('newItemPrice').value)||0;
   const costVal = document.getElementById('newItemCost').value;
   const cost = costVal===''? null : Number(costVal);
-  catalog.push({id:uid(), name, category, price, cost});
+  const isPlatter = document.getElementById('newItemIsPlatter').checked;
+  catalog.push({id:uid(), name, category, price, cost, isPlatter});
   await saveCatalog();
   document.getElementById('newItemName').value='';
   document.getElementById('newItemPrice').value='';
   document.getElementById('newItemCost').value='';
+  document.getElementById('newItemIsPlatter').checked=false;
   renderCatalog();
   showToast('Item added');
 });
@@ -710,6 +807,7 @@ function renderFixedCosts(){
   ].map(([lbl,val])=> `<div class="sg-item"><div class="lbl">${lbl}</div><div class="val">${val}</div></div>`).join('');
 
   document.getElementById('commissionRateInput').value = commissionRate;
+  document.getElementById('packagingCostInput').value = packagingCostPerOrder;
 }
 
 document.getElementById('saveCommissionRateBtn').addEventListener('click', async ()=>{
@@ -718,6 +816,14 @@ document.getElementById('saveCommissionRateBtn').addEventListener('click', async
   renderFixedCosts();
   renderEntryPreview();
   showToast('Commission rate saved');
+});
+
+document.getElementById('savePackagingCostBtn').addEventListener('click', async ()=>{
+  packagingCostPerOrder = Number(document.getElementById('packagingCostInput').value)||0;
+  await savePackagingCost();
+  renderFixedCosts();
+  renderEntryPreview();
+  showToast('Packaging cost saved');
 });
 
 document.getElementById('addFixedBtn').addEventListener('click', async ()=>{
@@ -826,7 +932,8 @@ function renderEntryPreview(){
   const dateVal = document.getElementById('entryDate').value || todayStr();
   const fixedExpenses = fixedDailyAllocation(dateVal);
   const commissionExpense = deliveryCommission(getTenderInputs());
-  const expenses = loggedExpenses + fixedExpenses + commissionExpense;
+  const packagingExpense = packagingCostForItems(entryItems);
+  const expenses = loggedExpenses + fixedExpenses + commissionExpense + packagingExpense;
   const netProfit = grossProfit-expenses;
   const margin = revenue>0 ? (netProfit/revenue*100) : 0;
   document.getElementById('entryPreview').innerHTML = [
@@ -836,6 +943,7 @@ function renderEntryPreview(){
     ['Logged Expenses', fmt(loggedExpenses), ''],
     ['Fixed Costs (daily)', fmt(fixedExpenses), ''],
     [`Delivery Commission (${commissionRate}%)`, fmt(commissionExpense), ''],
+    ['Packaging', fmt(packagingExpense), ''],
     ['Net Profit', fmt(netProfit), netProfit>=0?'pos':'neg'],
     ['Margin', margin.toFixed(1)+'%', ''],
   ].map(([lbl,val,cls])=> `<div class="sg-item"><div class="lbl">${lbl}</div><div class="val" style="font-size:18px; color:${cls==='pos'?'var(--good)':cls==='neg'?'var(--bad)':'inherit'}">${val}</div></div>`).join('');
@@ -975,6 +1083,7 @@ async function renderHistory(){
       <td class="num">${fmt(t.loggedExpenses)}</td>
       <td class="num">${fmt(t.fixedExpenses)}</td>
       <td class="num">${fmt(t.commissionExpense)}</td>
+      <td class="num">${fmt(t.packagingExpense)}</td>
       <td class="num"><span class="pill ${t.netProfit>=0?'good':'bad'}">${fmt(t.netProfit)}</span></td>
       <td class="num">${t.margin.toFixed(1)}%</td>
       <td>
@@ -1019,6 +1128,7 @@ async function init(){
   await loadCatalog();
   await loadFixedCosts();
   await loadCommissionRate();
+  await loadPackagingCost();
   document.getElementById('entryDate').value = todayStr();
   entryItems = [{rid:uid(), name:'', qty:0, unitPrice:0, revenue:0, cost:null}];
   entryExpenses = [];
