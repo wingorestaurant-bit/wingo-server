@@ -320,6 +320,17 @@
         <h3>Total</h3>
         <div class="summary-grid" id="fixedTotals"></div>
       </div>
+
+      <div class="card">
+        <h3>Delivery commission rate</h3>
+        <div class="helptext" style="margin-bottom:12px;">
+          Uber Eats, DoorDash, and Skip take a cut of every order. This applies one flat rate to all revenue collected through those three channels (from the Payment Channels numbers) — it doesn't currently distinguish delivery vs. pickup orders within an app, so it's a conservative estimate on days with pickup-through-app orders.
+        </div>
+        <div class="row">
+          <div class="field"><label>Rate (%)</label><input type="number" step="0.1" id="commissionRateInput" style="width:100px;"></div>
+          <button class="btn small" id="saveCommissionRateBtn">Save</button>
+        </div>
+      </div>
     </div>
 
     <!-- HISTORY -->
@@ -327,7 +338,7 @@
       <div class="card">
         <h3>All logged days</h3>
         <table>
-          <thead><tr><th>Date</th><th class="num">Revenue</th><th class="num">COGS</th><th class="num">Gross Profit</th><th class="num">Logged Exp.</th><th class="num">Fixed Costs</th><th class="num">Net Profit</th><th class="num">Margin</th><th></th></tr></thead>
+          <thead><tr><th>Date</th><th class="num">Revenue</th><th class="num">COGS</th><th class="num">Gross Profit</th><th class="num">Logged Exp.</th><th class="num">Fixed Costs</th><th class="num">Commission</th><th class="num">Net Profit</th><th class="num">Margin</th><th></th></tr></thead>
           <tbody id="historyRows"></tbody>
         </table>
         <div class="empty" id="historyEmpty" style="display:none;">No days logged yet. Head to Daily Entry to add your first one.</div>
@@ -345,6 +356,7 @@ const EXPENSE_CATEGORIES = ["Food & Supplies","Labor","Delivery Commission (Skip
 
 let catalog = [];
 let fixedCosts = [];
+let commissionRate = 30; // % applied to Uber Eats/DoorDash/Skip revenue
 let entryItems = []; // working rows for entry form
 let entryExpenses = [];
 
@@ -405,6 +417,17 @@ async function saveFixedCosts(){
   catch(e){ showApiError('save fixed costs', e); }
 }
 
+async function loadCommissionRate(){
+  try{
+    const r = await apiGet('/commission-rate');
+    commissionRate = typeof r.rate === 'number' ? r.rate : 30;
+  } catch(e){ showApiError('load commission rate', e); commissionRate = 30; }
+}
+async function saveCommissionRate(){
+  try{ await apiPost('/commission-rate', {rate: commissionRate}); }
+  catch(e){ showApiError('save commission rate', e); }
+}
+
 function daysInMonth(dateStr){
   const [y,m] = dateStr.split('-').map(Number);
   return new Date(y, m, 0).getDate();
@@ -413,6 +436,11 @@ function fixedDailyAllocation(dateStr){
   const totalMonthly = fixedCosts.reduce((s,f)=> s+(Number(f.monthly)||0), 0);
   const dim = daysInMonth(dateStr || todayStr());
   return totalMonthly / dim;
+}
+function deliveryCommission(tenders){
+  const t = tenders || {};
+  const deliveryRevenue = (Number(t.uberEats)||0) + (Number(t.doorDash)||0) + (Number(t.skip)||0);
+  return deliveryRevenue * (commissionRate/100);
 }
 
 async function loadDay(date){
@@ -432,10 +460,11 @@ function computeDayTotals(day, dateStr){
   const grossProfit = revenue - cogs;
   const loggedExpenses = (day.expenses||[]).reduce((s,e)=> s + (Number(e.amount)||0), 0);
   const fixedExpenses = fixedDailyAllocation(dateStr);
-  const expenses = loggedExpenses + fixedExpenses;
+  const commissionExpense = deliveryCommission(day.tenders);
+  const expenses = loggedExpenses + fixedExpenses + commissionExpense;
   const netProfit = grossProfit - expenses;
   const margin = revenue > 0 ? (netProfit/revenue*100) : 0;
-  return {revenue, cogs, grossProfit, loggedExpenses, fixedExpenses, expenses, netProfit, margin};
+  return {revenue, cogs, grossProfit, loggedExpenses, fixedExpenses, commissionExpense, expenses, netProfit, margin};
 }
 
 function showToast(msg){
@@ -505,9 +534,10 @@ async function renderDashboard(){
     const t = computeDayTotals(d.data, d.date);
     acc.revenue+=t.revenue; acc.cogs+=t.cogs; acc.grossProfit+=t.grossProfit;
     acc.loggedExpenses+=t.loggedExpenses; acc.fixedExpenses+=t.fixedExpenses;
+    acc.commissionExpense+=t.commissionExpense;
     acc.expenses+=t.expenses; acc.netProfit+=t.netProfit;
     return acc;
-  }, {revenue:0,cogs:0,grossProfit:0,loggedExpenses:0,fixedExpenses:0,expenses:0,netProfit:0});
+  }, {revenue:0,cogs:0,grossProfit:0,loggedExpenses:0,fixedExpenses:0,commissionExpense:0,expenses:0,netProfit:0});
   const margin = totals.revenue>0 ? (totals.netProfit/totals.revenue*100) : 0;
 
   const tenderTotals = days.reduce((acc,d)=>{
@@ -541,6 +571,7 @@ async function renderDashboard(){
       ['Gross Profit', fmt(totals.grossProfit), ''],
       ['Logged Expenses', fmt(totals.loggedExpenses), ''],
       ['Fixed Costs', fmt(totals.fixedExpenses), ''],
+      [`Delivery Commission (${commissionRate}%)`, fmt(totals.commissionExpense), ''],
       ['Net Profit', fmt(totals.netProfit), totals.netProfit>=0?'pos':'neg'],
       ['Margin', margin.toFixed(1)+'%', ''],
     ].map(([lbl,val,cls])=> `<div class="sg-item"><div class="lbl">${lbl}</div><div class="val" style="color:${cls==='pos'?'var(--good)':cls==='neg'?'var(--bad)':'inherit'}">${val}</div></div>`).join('');
@@ -677,7 +708,17 @@ function renderFixedCosts(){
     ['Total monthly', fmt(totalMonthly), ''],
     [`Daily allocation (${today.slice(0,7)}, ${dim} days)`, fmt(totalMonthly/dim), ''],
   ].map(([lbl,val])=> `<div class="sg-item"><div class="lbl">${lbl}</div><div class="val">${val}</div></div>`).join('');
+
+  document.getElementById('commissionRateInput').value = commissionRate;
 }
+
+document.getElementById('saveCommissionRateBtn').addEventListener('click', async ()=>{
+  commissionRate = Number(document.getElementById('commissionRateInput').value)||0;
+  await saveCommissionRate();
+  renderFixedCosts();
+  renderEntryPreview();
+  showToast('Commission rate saved');
+});
 
 document.getElementById('addFixedBtn').addEventListener('click', async ()=>{
   const name = document.getElementById('newFixedName').value.trim();
@@ -784,7 +825,8 @@ function renderEntryPreview(){
   const loggedExpenses = entryExpenses.reduce((s,r)=> s+(Number(r.amount)||0), 0);
   const dateVal = document.getElementById('entryDate').value || todayStr();
   const fixedExpenses = fixedDailyAllocation(dateVal);
-  const expenses = loggedExpenses + fixedExpenses;
+  const commissionExpense = deliveryCommission(getTenderInputs());
+  const expenses = loggedExpenses + fixedExpenses + commissionExpense;
   const netProfit = grossProfit-expenses;
   const margin = revenue>0 ? (netProfit/revenue*100) : 0;
   document.getElementById('entryPreview').innerHTML = [
@@ -793,11 +835,15 @@ function renderEntryPreview(){
     ['Gross Profit', fmt(grossProfit), ''],
     ['Logged Expenses', fmt(loggedExpenses), ''],
     ['Fixed Costs (daily)', fmt(fixedExpenses), ''],
+    [`Delivery Commission (${commissionRate}%)`, fmt(commissionExpense), ''],
     ['Net Profit', fmt(netProfit), netProfit>=0?'pos':'neg'],
     ['Margin', margin.toFixed(1)+'%', ''],
   ].map(([lbl,val,cls])=> `<div class="sg-item"><div class="lbl">${lbl}</div><div class="val" style="font-size:18px; color:${cls==='pos'?'var(--good)':cls==='neg'?'var(--bad)':'inherit'}">${val}</div></div>`).join('');
 }
 document.getElementById('entryDate').addEventListener('change', renderEntryPreview);
+document.querySelectorAll('#tenderCard,#tenderCash,#tenderUber,#tenderSkip,#tenderDoordash').forEach(el=>{
+  el.addEventListener('input', renderEntryPreview);
+});
 
 document.getElementById('addItemRowBtn').addEventListener('click', ()=>{
   entryItems.push({rid:uid(), name:'', qty:0, unitPrice:0, revenue:0, cost:null});
@@ -928,6 +974,7 @@ async function renderHistory(){
       <td class="num">${fmt(t.grossProfit)}</td>
       <td class="num">${fmt(t.loggedExpenses)}</td>
       <td class="num">${fmt(t.fixedExpenses)}</td>
+      <td class="num">${fmt(t.commissionExpense)}</td>
       <td class="num"><span class="pill ${t.netProfit>=0?'good':'bad'}">${fmt(t.netProfit)}</span></td>
       <td class="num">${t.margin.toFixed(1)}%</td>
       <td>
@@ -971,6 +1018,7 @@ async function init(){
 
   await loadCatalog();
   await loadFixedCosts();
+  await loadCommissionRate();
   document.getElementById('entryDate').value = todayStr();
   entryItems = [{rid:uid(), name:'', qty:0, unitPrice:0, revenue:0, cost:null}];
   entryExpenses = [];
