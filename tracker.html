@@ -481,8 +481,20 @@ function isPlatterItem(name){
   const c = catalog.find(x => (x.name||'').trim().toLowerCase() === (name||'').trim().toLowerCase());
   return c ? !!c.isPlatter : false;
 }
+const QTY_SANITY_CAP = 300; // generous upper bound for one item, one day, one location
+let dataAnomalies = []; // {name, qty} — populated whenever we clip a bogus quantity
+function safeQty(item){
+  const q = Number(item.qty)||0;
+  if(q > QTY_SANITY_CAP){
+    if(!dataAnomalies.find(a=>a.name===item.name)){
+      dataAnomalies.push({name:item.name, qty:q});
+    }
+    return QTY_SANITY_CAP;
+  }
+  return q;
+}
 function packagingCostForItems(items){
-  const boxableQty = (items||[]).reduce((s,i)=> s + (isPlatterItem(i.name) ? 0 : (Number(i.qty)||0)), 0);
+  const boxableQty = (items||[]).reduce((s,i)=> s + (isPlatterItem(i.name) ? 0 : safeQty(i)), 0);
   return boxableQty * packagingCostPerOrder;
 }
 
@@ -573,6 +585,7 @@ async function renderDashboard(){
   const all = await getAllDays();
   const range = document.getElementById('rangeSelect').value;
   const days = daysInRange(all, range);
+  dataAnomalies = []; // reset before recomputing so the list reflects only this render
 
   const totals = days.reduce((acc,d)=>{
     const t = computeDayTotals(d.data, d.date);
@@ -656,6 +669,16 @@ async function renderDashboard(){
   tbody.innerHTML = rows.length ? rows.map(([name,v])=> `
     <tr><td>${name}</td><td class="num">${v.qty}</td><td class="num">${fmt(v.revenue)}</td><td class="num">${fmt(v.cogs)}</td></tr>
   `).join('') : `<tr><td colspan="4" class="empty">No item sales logged yet.</td></tr>`;
+
+  const banner = document.getElementById('storageErrorBanner');
+  if(dataAnomalies.length){
+    banner.style.display = 'block';
+    banner.textContent = `⚠ Suspicious quantity from Clover, capped at ${QTY_SANITY_CAP}/day so it can't blow up your numbers — real value was likely a units mix-up (e.g. weight sold as quantity). Needs a fix in the sync logic: ` +
+      dataAnomalies.map(a=>`"${a.name}" showed ${a.qty}`).join(', ');
+  } else if(banner.textContent.startsWith('⚠ Suspicious quantity')){
+    banner.style.display = 'none';
+    banner.textContent = '';
+  }
 
   await renderHeader();
 }
