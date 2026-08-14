@@ -109,6 +109,23 @@ function mountTrackerRoutes(app, trackerAuth, connectDB, location) {
     } catch (e) { res.status(500).json({ success: false, error: e.message }); }
   });
 
+  router.get('/commission-rate', async (req, res) => {
+    try {
+      const db = await connectDB();
+      const trackerDb = makeTrackerDb(db);
+      res.json({ success: true, rate: await trackerDb.getCommissionRate() });
+    } catch (e) { res.status(500).json({ success: false, error: e.message }); }
+  });
+
+  router.post('/commission-rate', async (req, res) => {
+    try {
+      const db = await connectDB();
+      const trackerDb = makeTrackerDb(db);
+      const rate = await trackerDb.saveCommissionRate(req.body.rate);
+      res.json({ success: true, rate });
+    } catch (e) { res.status(500).json({ success: false, error: e.message }); }
+  });
+
   router.get('/day/:date', async (req, res) => {
     try {
       const db = await connectDB();
