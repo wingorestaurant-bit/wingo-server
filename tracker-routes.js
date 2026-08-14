@@ -126,6 +126,23 @@ function mountTrackerRoutes(app, trackerAuth, connectDB, location) {
     } catch (e) { res.status(500).json({ success: false, error: e.message }); }
   });
 
+  router.get('/packaging-cost', async (req, res) => {
+    try {
+      const db = await connectDB();
+      const trackerDb = makeTrackerDb(db);
+      res.json({ success: true, perOrder: await trackerDb.getPackagingCost() });
+    } catch (e) { res.status(500).json({ success: false, error: e.message }); }
+  });
+
+  router.post('/packaging-cost', async (req, res) => {
+    try {
+      const db = await connectDB();
+      const trackerDb = makeTrackerDb(db);
+      const perOrder = await trackerDb.savePackagingCost(req.body.perOrder);
+      res.json({ success: true, perOrder });
+    } catch (e) { res.status(500).json({ success: false, error: e.message }); }
+  });
+
   router.get('/day/:date', async (req, res) => {
     try {
       const db = await connectDB();
