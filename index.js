@@ -4,6 +4,7 @@ const fetch = require('node-fetch');
 const path = require('path');
 const { MongoClient, ObjectId } = require('mongodb');
 const trackerAuth = require('./tracker-auth');
+const { mountTrackerRoutes } = require('./tracker-routes');
 let webpush = null;
 try {
   webpush = require('web-push');
@@ -84,6 +85,9 @@ const LOCATIONS = {
     cloverPrivateKey: process.env.CLOVER_PRIVATE_KEY_BEACH
   }
 };
+
+// ── PROFIT TRACKER: API routes + automatic daily Clover sync (5am Regina) ──
+mountTrackerRoutes(app, trackerAuth, connectDB, LOCATIONS['albert-st']);
 
 // ── KITCHEN AUTH ──────────────────────────────────────────────
 function getKitchenPassword(loc) {
