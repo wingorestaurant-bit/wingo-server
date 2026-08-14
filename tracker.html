@@ -477,8 +477,11 @@ function deliveryCommission(tenders){
   const deliveryRevenue = (Number(t.uberEats)||0) + (Number(t.doorDash)||0) + (Number(t.skip)||0);
   return deliveryRevenue * (commissionRate/100);
 }
+function normalizeItemName(s){
+  return (s||'').toLowerCase().replace(/[—–-]/g, ' ').replace(/\s+/g, ' ').trim();
+}
 function isPlatterItem(name){
-  const c = catalog.find(x => (x.name||'').trim().toLowerCase() === (name||'').trim().toLowerCase());
+  const c = catalog.find(x => normalizeItemName(x.name) === normalizeItemName(name));
   return c ? !!c.isPlatter : false;
 }
 const QTY_SANITY_CAP = 300; // generous upper bound for one item, one day, one location
@@ -693,11 +696,11 @@ async function renderUnmatchedItems(){
     days = r.days || [];
   } catch(e){ showApiError('load days for unmatched-item check', e); return; }
 
-  const catalogNames = new Set(catalog.map(c => (c.name||'').trim().toLowerCase()));
+  const catalogNames = new Set(catalog.map(c => normalizeItemName(c.name)));
   const agg = {}; // name -> {count, revenue}
   days.forEach(d=>{
     (d.items||[]).forEach(it=>{
-      const key = (it.name||'').trim().toLowerCase();
+      const key = normalizeItemName(it.name);
       if(!key || catalogNames.has(key)) return; // matched or blank — skip
       if(it.cost !== null && it.cost !== undefined) return; // has a cost some other way — skip
       if(!agg[key]) agg[key] = { name: it.name, count:0, revenue:0 };
