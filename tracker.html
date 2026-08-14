@@ -271,6 +271,13 @@
 
     <!-- CATALOG -->
     <div class="view" id="view-catalog">
+      <div class="card" id="oneTimeFixCard" style="border:1px solid var(--wingo-red);">
+        <h3>One-time catalog correction (Aug 14, 2026)</h3>
+        <div class="helptext" style="margin-bottom:10px;">
+          Renames "Ribs" → "One Order Ribs", fixes Half Order Boneless Wings' cost, and adds Full Order Boneless Wings, Half Order Ribs, and Pickle'd Poutine — all from real numbers you provided. Safe to click even if some of this already exists (it checks before adding). After running this, delete this card from the code whenever you next touch the file.
+        </div>
+        <button class="btn" id="applyOneTimeFixBtn">Apply catalog corrections</button>
+      </div>
       <div class="card" id="unmatchedCard" style="display:none;">
         <h3>⚠ Items seen from Clover with no cost matched</h3>
         <div class="helptext" style="margin-bottom:10px;">
@@ -478,7 +485,7 @@ function deliveryCommission(tenders){
   return deliveryRevenue * (commissionRate/100);
 }
 function normalizeItemName(s){
-  return (s||'').toLowerCase().replace(/[—–-]/g, ' ').replace(/\s+/g, ' ').trim();
+  return (s||'').toLowerCase().replace(/[—–-]/g, ' ').replace(/\borders\b/g,'order').replace(/\s+/g, ' ').trim();
 }
 function isPlatterItem(name){
   const c = catalog.find(x => normalizeItemName(x.name) === normalizeItemName(name));
@@ -738,6 +745,30 @@ async function renderUnmatchedItems(){
     });
   });
 }
+
+document.getElementById('applyOneTimeFixBtn').addEventListener('click', async ()=>{
+  const norm = s => (s||'').trim().toLowerCase();
+
+  const ribs = catalog.find(i => norm(i.name) === 'ribs');
+  if(ribs){ ribs.name = 'One Order Ribs'; ribs.price = 13.99; ribs.cost = 5.65; }
+
+  const halfBoneless = catalog.find(i => norm(i.name) === 'half order boneless wings');
+  if(halfBoneless){ halfBoneless.cost = 2.67; }
+
+  if(!catalog.find(i => norm(i.name) === 'full order boneless wings')){
+    catalog.push({id:uid(), name:'Full Order Boneless Wings', category:'Boneless & Fingers', price:13.99, cost:5.23, isPlatter:false});
+  }
+  if(!catalog.find(i => norm(i.name) === 'half order ribs')){
+    catalog.push({id:uid(), name:'Half Order Ribs', category:'Ribs', price:7.99, cost:2.83, isPlatter:false});
+  }
+  if(!catalog.find(i => norm(i.name).includes('pickle'))){
+    catalog.push({id:uid(), name:"Pickle'd Poutine", category:'Combos & Platters', price:12.99, cost:2.53, isPlatter:false});
+  }
+
+  await saveCatalog();
+  renderCatalog();
+  showToast('Catalog corrections applied');
+});
 
 function renderCatalog(){
   renderUnmatchedItems();
