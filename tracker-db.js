@@ -73,6 +73,22 @@ function makeTrackerDb(db) {
     return items;
   }
 
+  // Delivery commission rate — applied to Uber Eats/DoorDash/Skip revenue.
+  // Default 30% (their standard delivery commission); editable in the UI.
+  async function getCommissionRate() {
+    const doc = await settings().findOne({ _id: 'commission-rate' });
+    if (doc && typeof doc.rate === 'number') return doc.rate;
+    const seeded = 30;
+    await settings().updateOne({ _id: 'commission-rate' }, { $set: { rate: seeded } }, { upsert: true });
+    return seeded;
+  }
+
+  async function saveCommissionRate(rate) {
+    const clean = Number(rate) || 0;
+    await settings().updateOne({ _id: 'commission-rate' }, { $set: { rate: clean } }, { upsert: true });
+    return clean;
+  }
+
   async function getDay(date) {
     const doc = await days().findOne({ _id: date });
     if (!doc) return null;
@@ -97,7 +113,7 @@ function makeTrackerDb(db) {
     });
   }
 
-  return { getCatalog, saveCatalog, getFixedCosts, saveFixedCosts, getDay, saveDay, deleteDay, listDays };
+  return { getCatalog, saveCatalog, getFixedCosts, saveFixedCosts, getCommissionRate, saveCommissionRate, getDay, saveDay, deleteDay, listDays };
 }
 
 module.exports = { makeTrackerDb, SEED_CATALOG, SEED_FIXED_COSTS };
