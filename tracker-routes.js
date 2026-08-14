@@ -20,7 +20,10 @@ function reginaDateStr(offsetDays = 0) {
 }
 
 function matchCatalogItem(catalog, name) {
-  const norm = s => (s || '').trim().toLowerCase();
+  // Ignores dash style (em dash vs hyphen vs none) and whitespace differences —
+  // Clover's raw names ("One Order — Wings") don't always match catalog names
+  // ("One Order Wings") on punctuation alone.
+  const norm = s => (s || '').toLowerCase().replace(/[—–-]/g, ' ').replace(/\s+/g, ' ').trim();
   return catalog.find(c => norm(c.name) === norm(name)) || null;
 }
 
