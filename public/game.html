@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Wing Rush — The Official WingO Game</title>
+<meta name="description" content="Dodge, dash and collect wing flavours through the streets of Regina, SK in Wing Rush — WingO's official endless runner.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;500;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#0D0D0D; --ink:#1A1208; --paper:#F4EBD7;
+  --red:#E8190A; --red-deep:#A80F00;
+  --yellow:#F5A800; --yellow-deep:#C28200; --gold:#8B6A1A;
+  --font-head:'Oswald',sans-serif; --font-display:'Bebas Neue',sans-serif; --font-body:'Inter',sans-serif;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;height:100%;overflow:hidden;background:var(--black);font-family:var(--font-body);}
+#app{position:fixed;inset:0;width:100%;height:100%;}
+canvas{display:block;width:100%;height:100%;touch-action:none;}
+
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse at 50% 20%, #241a08 0%, #0D0D0D 70%);color:#fff;text-align:center;padding:1.5rem;z-index:10;}
+.hidden{display:none !important;}
+
+.logo-wrap{display:flex;align-items:center;gap:.6rem;margin-bottom:.4rem;}
+.logo-wrap img{height:44px;width:auto;border-radius:6px;}
+h1.title{font-family:var(--font-display);font-size:clamp(3rem,13vw,5.5rem);letter-spacing:3px;line-height:.9;margin:.2rem 0 0;
+  background:linear-gradient(180deg,var(--yellow) 0%, var(--red) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
+  text-shadow:0 6px 0 rgba(0,0,0,.35);}
+p.subtitle{font-family:var(--font-head);letter-spacing:3px;text-transform:uppercase;font-size:.85rem;color:var(--yellow);margin:.3rem 0 1.6rem;}
+
+.flavor-strip{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;max-width:420px;margin-bottom:1.6rem;}
+.flavor-chip{display:flex;align-items:center;gap:.35rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+  border-radius:20px;padding:.3rem .7rem;font-family:var(--font-head);font-size:.68rem;letter-spacing:1px;text-transform:uppercase;color:#ddd;}
+
+.btn{font-family:var(--font-display);font-size:1.3rem;letter-spacing:2px;text-transform:uppercase;border:none;cursor:pointer;
+  padding:.85rem 2.6rem;border-radius:6px;transition:transform .12s ease;}
+.btn:active{transform:scale(.95);}
+.btn-primary{background:var(--red);color:#fff;box-shadow:0 5px 0 var(--red-deep);}
+.btn-primary:active{box-shadow:0 2px 0 var(--red-deep);}
+.btn-ghost{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.5);margin-top:.7rem;padding:.6rem 1.8rem;font-size:1rem;}
+
+.howto{margin-top:1.6rem;display:flex;gap:1.4rem;font-family:var(--font-head);font-size:.72rem;letter-spacing:1px;color:#999;text-transform:uppercase;}
+.howto div{display:flex;flex-direction:column;align-items:center;gap:.3rem;}
+.howto span.key{font-size:1.3rem;}
+
+.hi-score{font-family:var(--font-head);letter-spacing:2px;color:#999;font-size:.8rem;text-transform:uppercase;margin-top:1.1rem;}
+.hi-score b{color:var(--yellow);font-size:1rem;}
+
+/* HUD */
+#hud{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:flex-start;
+  padding:calc(10px + env(safe-area-inset-top)) 14px 0;z-index:5;pointer-events:none;font-family:var(--font-head);}
+#score-box{color:#fff;}
+#score-box .label{font-size:.6rem;letter-spacing:3px;color:var(--yellow);text-transform:uppercase;opacity:.85;}
+#score-box .val{font-family:var(--font-display);font-size:2.1rem;line-height:1;letter-spacing:1px;text-shadow:0 2px 6px rgba(0,0,0,.6);}
+#hearts{display:flex;gap:4px;font-size:1.3rem;filter:drop-shadow(0 2px 3px rgba(0,0,0,.6));}
+#hearts span.lost{opacity:.2;filter:none;}
+#boost-banner{position:absolute;top:64px;left:50%;transform:translateX(-50%);font-family:var(--font-display);
+  color:var(--yellow);letter-spacing:2px;font-size:1.1rem;text-shadow:0 2px 4px rgba(0,0,0,.7);z-index:5;opacity:0;transition:opacity .2s;pointer-events:none;}
+#boost-banner.show{opacity:1;}
+
+/* touch controls */
+#touch-controls{position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;
+  padding:0 18px calc(16px + env(safe-area-inset-bottom));z-index:5;pointer-events:none;}
+#touch-controls .side{display:flex;gap:10px;pointer-events:auto;}
+#touch-controls .mid{display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:auto;}
+.tbtn{width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);
+  color:#fff;font-size:1.3rem;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);user-select:none;}
+.tbtn:active{background:rgba(245,168,0,.35);}
+@media(min-width:900px){ #touch-controls{display:none;} }
+
+/* game over */
+#gameover-screen .go-title{font-family:var(--font-display);font-size:clamp(2.6rem,10vw,4rem);color:var(--red);letter-spacing:2px;margin-bottom:.2rem;}
+.stat-row{display:flex;gap:1.6rem;margin:1rem 0 .3rem;flex-wrap:wrap;justify-content:center;}
+.stat{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:.8rem 1.3rem;min-width:110px;}
+.stat .n{font-family:var(--font-display);font-size:1.9rem;color:var(--yellow);}
+.stat .l{font-family:var(--font-head);font-size:.62rem;letter-spacing:2px;color:#999;text-transform:uppercase;margin-top:2px;}
+.new-record{font-family:var(--font-head);color:var(--yellow);letter-spacing:2px;font-size:.8rem;text-transform:uppercase;margin:.5rem 0 0;animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+.order-cta{margin-top:1.4rem;font-family:var(--font-head);font-size:.75rem;color:#aaa;letter-spacing:1px;}
+.order-cta a{color:var(--yellow);text-decoration:none;font-weight:700;}
+</style>
+</head>
+<body>
+<div id="app">
+  <canvas id="game"></canvas>
+
+  <div id="hud" class="hidden">
+    <div id="score-box">
+      <div class="label">Score</div>
+      <div class="val" id="score-val">0</div>
+      <div style="font-size:.58rem;letter-spacing:2px;color:#aaa;text-transform:uppercase;margin-top:2px;">📍 Regina, SK</div>
+    </div>
+    <div id="hearts"></div>
+  </div>
+  <div id="boost-banner">🔥 SAUCE BOSS BOOST!</div>
+
+  <div id="touch-controls" class="hidden">
+    <div class="side"><div class="tbtn" id="btn-left">◀</div></div>
+    <div class="mid">
+      <div class="tbtn" id="btn-up">▲</div>
+      <div class="tbtn" id="btn-down">▼</div>
+    </div>
+    <div class="side"><div class="tbtn" id="btn-right">▶</div></div>
+  </div>
+
+  <div class="screen" id="start-screen">
+    <div class="logo-wrap">
+      <img src="/images/wingo-logo-new.png" alt="WingO" onerror="this.style.display='none'">
+    </div>
+    <h1 class="title">WING RUSH</h1>
+    <p class="subtitle">The Official WingO Game</p>
+    <p style="font-family:var(--font-head);letter-spacing:2px;text-transform:uppercase;font-size:.7rem;color:#999;margin:-1.1rem 0 1.3rem;">📍 Racing down Albert St, Regina SK</p>
+    <div class="flavor-strip">
+      <div class="flavor-chip">🍗 Mild</div>
+      <div class="flavor-chip">🌶️ Hot</div>
+      <div class="flavor-chip">🍯 Honey Garlic</div>
+      <div class="flavor-chip">🔥 BBQ</div>
+      <div class="flavor-chip">🧄 Garlic Parm</div>
+      <div class="flavor-chip">🧂 S&amp;P</div>
+      <div class="flavor-chip">🍖 Dry Ribs</div>
+    </div>
+    <button class="btn btn-primary" id="start-btn">Start Run</button>
+    <div class="howto">
+      <div><span class="key">⬅️➡️</span>Swipe / Arrows to switch lanes</div>
+      <div><span class="key">⬆️</span>Swipe up / Space to jump</div>
+      <div><span class="key">⬇️</span>Swipe down to duck</div>
+    </div>
+    <div class="hi-score">High Score <b id="menu-hi">0</b></div>
+  </div>
+
+  <div class="screen hidden" id="gameover-screen">
+    <div class="go-title">WIPED OUT!</div>
+    <div id="new-record" class="new-record hidden">🏆 New High Score!</div>
+    <div class="stat-row">
+      <div class="stat"><div class="n" id="final-score">0</div><div class="l">Score</div></div>
+      <div class="stat"><div class="n" id="final-wings">0</div><div class="l">Wings Collected</div></div>
+      <div class="stat"><div class="n" id="final-distance">0m</div><div class="l">Distance</div></div>
+    </div>
+    <button class="btn btn-primary" id="retry-btn">Play Again</button>
+    <button class="btn btn-ghost" id="home-btn">Back to Menu</button>
+    <div class="order-cta">Craving the real thing? <a href="/">Order real WingO wings →</a></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  const canvas = document.getElementById('game');
+  const ctx = canvas.getContext('2d');
+  const dpr = Math.max(1, Math.min(window.devicePixelRatio || 1, 2));
+
+  let W = 0, H = 0;
+  function resize(){
+    W = window.innerWidth; H = window.innerHeight;
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    canvas.style.width = W+'px'; canvas.style.height = H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  const HI_KEY = 'wingoWingRushHighScore';
+  const getHigh = () => parseInt(localStorage.getItem(HI_KEY) || '0', 10);
+  const setHigh = (v) => localStorage.setItem(HI_KEY, String(v));
+  document.getElementById('menu-hi').textContent = getHigh();
+
+  // ---------- Flavors & obstacles ----------
+  const FLAVORS = [
+    {name:'Mild',        emoji:'🍗', color:'#F5A800', pts:10},
+    {name:'Hot',         emoji:'🌶️', color:'#E8190A', pts:15},
+    {name:'Honey Garlic',emoji:'🍯', color:'#C28200', pts:12},
+    {name:'BBQ',         emoji:'🔥', color:'#8B4513', pts:12},
+    {name:'Garlic Parm', emoji:'🧄', color:'#F4EBD7', pts:12},
+    {name:'Salt & Pepper',emoji:'🧂', color:'#B9B9B9', pts:10},
+    {name:'Dry Ribs',    emoji:'🍖', color:'#A80F00', pts:15},
+  ];
+  const SPECIAL = {name:'Sauce Boss', emoji:'⭐', color:'#F5A800', pts:50};
+
+  const OBSTACLES = [
+    {kind:'jump',  emoji:'📦', label:'Boxes'},
+    {kind:'duck',  emoji:'🚧', label:'Low Bar'},
+    {kind:'switch',emoji:'🛒', label:'Cart'},
+  ];
+
+  // ---------- Game state ----------
+  const LANES = [-1,0,1];
+  let laneWidth, vanishX, vanishY, playerAnchorY;
+  let skylineBuildings = [];
+  function buildSkyline(){
+    skylineBuildings = [];
+    const n = 16;
+    for (let i=0;i<n;i++){
+      skylineBuildings.push({
+        f: i/(n-1),               // fractional position, remapped to width on draw
+        w: 22 + Math.random()*36,
+        h: 26 + Math.random()*64,
+        lit: Math.random() < 0.4
+      });
+    }
+  }
+  function layout(){
+    laneWidth = Math.min(W*0.26, 150);
+    vanishX = W/2; vanishY = H*0.30;
+    playerAnchorY = H*0.80;
+    buildSkyline();
+  }
+  layout();
+  window.addEventListener('resize', layout);
+
+  function laneX(lane){ return W/2 + lane*laneWidth; }
+  function lerp(a,b,t){ return a+(b-a)*t; }
+
+  let state = 'menu'; // menu | playing | gameover
+  let entities = [];
+  let particles = [];
+  let player, score, distance, wingsCollected, elapsed, speed, spawnTimer, lastFlavors;
+  let hearts, invulnT, boostT, roadOffset, propTimer;
+
+  function resetGame(){
+    player = {lane:0, targetLane:0, x:laneX(0), jumpY:0, vy:0, isJumping:false, isDucking:false, duckT:0, hitFlashT:0};
+    entities = []; particles = [];
+    score = 0; distance = 0; wingsCollected = 0; elapsed = 0;
+    speed = 0.42; spawnTimer = 0; lastFlavors = [];
+    hearts = 3; invulnT = 0; boostT = 0; roadOffset = 0; propTimer = 0;
+  }
+
+  function startGame(){
+    resetGame();
+    state = 'playing';
+    document.getElementById('start-screen').classList.add('hidden');
+    document.getElementById('gameover-screen').classList.add('hidden');
+    document.getElementById('hud').classList.remove('hidden');
+    if (window.innerWidth < 900) document.getElementById('touch-controls').classList.remove('hidden');
+    renderHearts();
+  }
+
+  function renderHearts(){
+    const box = document.getElementById('hearts');
+    box.innerHTML = '';
+    for (let i=0;i<3;i++){
+      const s = document.createElement('span');
+      s.textContent = '❤️';
+      if (i >= hearts) s.classList.add('lost');
+      box.appendChild(s);
+    }
+  }
+
+  function endGame(){
+    state = 'gameover';
+    document.getElementById('hud').classList.add('hidden');
+    document.getElementById('touch-controls').classList.add('hidden');
+    const finalScore = Math.floor(score);
+    const isRecord = finalScore > getHigh();
+    if (isRecord) setHigh(finalScore);
+    document.getElementById('final-score').textContent = finalScore;
+    document.getElementById('final-wings').textContent = wingsCollected;
+    document.getElementById('final-distance').textContent = Math.floor(distance) + 'm';
+    document.getElementById('new-record').classList.toggle('hidden', !isRecord);
+    document.getElementById('menu-hi').textContent = getHigh();
+    document.getElementById('gameover-screen').classList.remove('hidden');
+  }
+
+  // ---------- Input ----------
+  function moveLane(dir){
+    if (state !== 'playing') return;
+    player.targetLane = Math.max(-1, Math.min(1, player.targetLane + dir));
+  }
+  function doJump(){
+    if (state !== 'playing') return;
+    if (!player.isJumping && !player.isDucking){
+      player.isJumping = true;
+      player.vy = -2.05;
+    }
+  }
+  function startDuck(){
+    if (state !== 'playing') return;
+    if (!player.isJumping) player.isDucking = true;
+  }
+  function endDuck(){ player.isDucking = false; }
+  function touchDuck(){
+    if (state !== 'playing' || player.isJumping) return;
+    player.isDucking = true;
+    player.duckT = 0.55;
+  }
+
+  window.addEventListener('keydown', (e)=>{
+    if (['ArrowLeft','a','A'].includes(e.key)) moveLane(-1);
+    else if (['ArrowRight','d','D'].includes(e.key)) moveLane(1);
+    else if (['ArrowUp','w','W',' '].includes(e.key)) { e.preventDefault(); doJump(); }
+    else if (['ArrowDown','s','S'].includes(e.key)) startDuck();
+    else if (e.key === 'Enter'){
+      if (state === 'menu') startGame();
+      else if (state === 'gameover') startGame();
+    }
+  });
+  window.addEventListener('keyup', (e)=>{
+    if (['ArrowDown','s','S'].includes(e.key)) endDuck();
+  });
+
+  // swipe detection
+  let touchStartX=0, touchStartY=0, touchStartT=0, swiped=false;
+  canvas.addEventListener('touchstart', (e)=>{
+    const t = e.changedTouches[0];
+    touchStartX = t.clientX; touchStartY = t.clientY; touchStartT = Date.now(); swiped=false;
+  }, {passive:true});
+  canvas.addEventListener('touchmove', (e)=>{
+    if (swiped) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - touchStartX, dy = t.clientY - touchStartY;
+    const adx = Math.abs(dx), ady = Math.abs(dy);
+    if (Math.max(adx,ady) > 32){
+      swiped = true;
+      if (adx > ady) moveLane(dx > 0 ? 1 : -1);
+      else if (dy < 0) doJump();
+      else touchDuck();
+    }
+  }, {passive:true});
+  canvas.addEventListener('touchend', ()=>{
+    if (!swiped && Date.now()-touchStartT < 250 && state !== 'playing') startGame();
+  }, {passive:true});
+
+  function bindHold(id, downFn, upFn){
+    const el = document.getElementById(id);
+    const down = (e)=>{ e.preventDefault(); downFn(); };
+    const up = (e)=>{ e.preventDefault(); if(upFn) upFn(); };
+    el.addEventListener('touchstart', down, {passive:false});
+    el.addEventListener('touchend', up, {passive:false});
+    el.addEventListener('mousedown', down);
+    el.addEventListener('mouseup', up);
+  }
+  bindHold('btn-left', ()=>moveLane(-1));
+  bindHold('btn-right', ()=>moveLane(1));
+  bindHold('btn-up', doJump);
+  bindHold('btn-down', startDuck, endDuck);
+
+  document.getElementById('start-btn').addEventListener('click', startGame);
+  document.getElementById('retry-btn').addEventListener('click', startGame);
+  document.getElementById('home-btn').addEventListener('click', ()=>{
+    document.getElementById('gameover-screen').classList.add('hidden');
+    document.getElementById('start-screen').classList.remove('hidden');
+    state = 'menu';
+  });
+
+  // ---------- Spawning ----------
+  function spawnWave(){
+    const lanesUsed = new Set();
+    const roll = Math.random();
+    if (roll < 0.55){
+      // one obstacle + collectibles in other lanes
+      const oLane = LANES[Math.floor(Math.random()*3)];
+      const type = OBSTACLES[Math.floor(Math.random()*OBSTACLES.length)];
+      entities.push({kind:'obstacle', type, lane:oLane, z:0, resolved:false});
+      lanesUsed.add(oLane);
+    } else if (roll < 0.7){
+      // two obstacles, one lane free
+      const free = LANES[Math.floor(Math.random()*3)];
+      LANES.forEach(l=>{
+        if (l===free) return;
+        const type = OBSTACLES[Math.floor(Math.random()*OBSTACLES.length)];
+        entities.push({kind:'obstacle', type, lane:l, z:0, resolved:false});
+        lanesUsed.add(l);
+      });
+    }
+    LANES.forEach(l=>{
+      if (lanesUsed.has(l)) return;
+      if (Math.random() < 0.8){
+        const isSpecial = Math.random() < 0.045;
+        const flavor = isSpecial ? SPECIAL : FLAVORS[Math.floor(Math.random()*FLAVORS.length)];
+        entities.push({kind:'collectible', flavor, special:isSpecial, lane:l, z:0, resolved:false});
+      }
+    });
+  }
+
+  const REGINA_PROPS = ['🏢','🌳','🚦','🏈','🌾','🏛️','🅿️'];
+  function spawnProp(){
+    const side = Math.random() < 0.5 ? -1 : 1;
+    const lane = side * (1.8 + Math.random()*0.5);
+    const emoji = REGINA_PROPS[Math.floor(Math.random()*REGINA_PROPS.length)];
+    entities.push({kind:'prop', emoji, lane, z:0});
+  }
+
+  // ---------- Update ----------
+  function update(dt){
+    elapsed += dt;
+    speed = Math.min(1.35, 0.42 + elapsed*0.0055);
+    distance += speed * dt * 40;
+    score += speed * dt * 12 * (boostT > 0 ? 2 : 1);
+    roadOffset = (roadOffset + speed*dt*3) % 1;
+
+    spawnTimer -= dt;
+    const interval = Math.max(0.55, 0.95 - speed*0.28);
+    if (spawnTimer <= 0){ spawnWave(); spawnTimer = interval; }
+
+    propTimer -= dt;
+    if (propTimer <= 0){ spawnProp(); propTimer = Math.max(0.5, 0.9 - speed*0.25); }
+
+    // player lane interpolation
+    const tx = laneX(player.targetLane);
+    player.x = lerp(player.x, tx, Math.min(1, dt*10));
+    player.lane = player.targetLane;
+
+    // jump physics
+    if (player.isJumping){
+      player.jumpY += player.vy * (dt*60) * 1.0;
+      player.vy += 0.14;
+      if (player.jumpY >= 0){ player.jumpY = 0; player.vy = 0; player.isJumping = false; }
+    }
+    // touch-duck auto release
+    if (player.duckT > 0){
+      player.duckT -= dt;
+      if (player.duckT <= 0) player.isDucking = false;
+    }
+
+    if (invulnT > 0) invulnT -= dt;
+    if (boostT > 0){
+      boostT -= dt;
+      document.getElementById('boost-banner').classList.toggle('show', true);
+      if (boostT <= 0) document.getElementById('boost-banner').classList.remove('show');
+    }
+    if (player.hitFlashT > 0) player.hitFlashT -= dt;
+
+    for (let i = entities.length - 1; i >= 0; i--){
+      const e = entities[i];
+      e.z += speed * dt * 0.62;
+
+      if (!e.resolved && e.z >= 0.88 && e.lane === player.lane){
+        e.resolved = true;
+        if (e.kind === 'collectible'){
+          collect(e);
+        } else if (e.kind === 'obstacle'){
+          const avoided =
+            (e.type.kind === 'jump'   && (player.isJumping && player.jumpY < -22)) ||
+            (e.type.kind === 'duck'   && player.isDucking);
+          if (!avoided && invulnT <= 0 && boostT <= 0){
+            hitPlayer();
+          }
+        }
+      }
+      if (e.z > 1.25) entities.splice(i,1);
+    }
+
+    for (let i = particles.length - 1; i >= 0; i--){
+      const p = particles[i];
+      p.life -= dt; p.y -= dt*40; p.x += p.vx*dt;
+      if (p.life <= 0) particles.splice(i,1);
+    }
+
+    document.getElementById('score-val').textContent = Math.floor(score);
+  }
+
+  function collect(e){
+    wingsCollected++;
+    let pts = e.flavor.pts;
+    if (e.special){
+      boostT = 5;
+      invulnT = Math.max(invulnT, 0.2);
+      addParticle('SAUCE BOSS BOOST +' + pts, '#F5A800');
+    } else {
+      lastFlavors.push(e.flavor.name);
+      if (lastFlavors.length > 3) lastFlavors.shift();
+      if (lastFlavors.length === 3 && new Set(lastFlavors).size === 3){
+        pts += 25;
+        addParticle('FLAVOR MIX! +' + pts, '#F5A800');
+        lastFlavors = [];
+      } else {
+        addParticle('+' + pts + ' ' + e.flavor.name, e.flavor.color);
+      }
+    }
+    score += pts * (boostT > 0 ? 2 : 1);
+  }
+
+  function addParticle(text, color){
+    particles.push({text, color, x: player.x, y: playerAnchorY - 70, vx: (Math.random()-0.5)*20, life: 0.9, maxLife:0.9});
+  }
+
+  function hitPlayer(){
+    hearts--;
+    invulnT = 1.5;
+    player.hitFlashT = 1.5;
+    renderHearts();
+    if (hearts <= 0){
+      setTimeout(()=>{ if(state==='playing') endGame(); }, 150);
+    }
+  }
+
+  // ---------- Render ----------
+  function easeIn(t){ return t*t; }
+
+  function drawGrainElevator(cx, baseY){
+    ctx.fillStyle = '#241a10';
+    const w=34, h=95;
+    ctx.fillRect(cx-w/2, baseY-h, w, h);
+    ctx.beginPath();
+    ctx.moveTo(cx-w/2-6, baseY-h);
+    ctx.lineTo(cx, baseY-h-22);
+    ctx.lineTo(cx+w/2+6, baseY-h);
+    ctx.closePath(); ctx.fill();
+    ctx.save();
+    ctx.translate(cx, baseY-h*0.45);
+    ctx.rotate(-Math.PI/2);
+    ctx.fillStyle = 'rgba(245,168,0,0.75)';
+    ctx.font = "700 9px 'Oswald', sans-serif";
+    ctx.textAlign = 'center';
+    ctx.fillText('REGINA', 0, 0);
+    ctx.restore();
+  }
+
+  function drawLegislature(cx, baseY){
+    ctx.fillStyle = '#241a10';
+    const w=76, h=44;
+    ctx.fillRect(cx-w/2, baseY-h, w, h);
+    ctx.beginPath();
+    ctx.arc(cx, baseY-h, 22, Math.PI, 0);
+    ctx.fill();
+    ctx.fillRect(cx-4, baseY-h-32, 8, 12);
+    // wings of the building
+    ctx.fillRect(cx-w/2-30, baseY-24, 30, 24);
+    ctx.fillRect(cx+w/2, baseY-24, 30, 24);
+  }
+
+  function drawStadium(cx, baseY){
+    ctx.fillStyle = '#241a10';
+    ctx.beginPath();
+    ctx.ellipse(cx, baseY-6, 48, 17, 0, Math.PI, 0, true);
+    ctx.fill();
+    [-40,40].forEach(dx=>{
+      ctx.fillStyle = '#241a10';
+      ctx.fillRect(cx+dx-2, baseY-42, 4, 36);
+      ctx.fillStyle = 'rgba(245,168,0,0.55)';
+      ctx.beginPath(); ctx.arc(cx+dx, baseY-44, 5, 0, Math.PI*2); ctx.fill();
+    });
+  }
+
+  function drawSkyline(){
+    const baseY = vanishY;
+    const shift = -(state === 'playing' ? (player.x - W/2) : 0) * 0.07;
+    ctx.save();
+    ctx.translate(shift, 0);
+
+    ctx.fillStyle = '#1c140a';
+    skylineBuildings.forEach(b=>{
+      const x = b.f * (W*1.3) - W*0.15;
+      ctx.fillStyle = '#1c140a';
+      ctx.fillRect(x, baseY-b.h, b.w, b.h);
+      if (b.lit){
+        ctx.fillStyle = 'rgba(245,168,0,0.55)';
+        ctx.fillRect(x+b.w*0.3, baseY-b.h+8, 3, 3);
+        ctx.fillRect(x+b.w*0.6, baseY-b.h+18, 3, 3);
+      }
+    });
+
+    drawGrainElevator(W*0.15, baseY);
+    drawLegislature(W*0.5, baseY);
+    drawStadium(W*0.85, baseY);
+    ctx.restore();
+
+    // Wascana Lake reflection band, right at the horizon in front of the skyline
+    const lake = ctx.createLinearGradient(0, baseY-4, 0, baseY+16);
+    lake.addColorStop(0, 'rgba(30,55,90,0)');
+    lake.addColorStop(1, 'rgba(18,36,64,0.6)');
+    ctx.fillStyle = lake;
+    ctx.fillRect(0, baseY-4, W, 20);
+  }
+
+  function drawRoad(){
+    ctx.fillStyle = '#0D0D0D';
+    ctx.fillRect(0,0,W,H);
+    // sky gradient
+    const g = ctx.createLinearGradient(0,0,0,vanishY+40);
+    g.addColorStop(0,'#241a08'); g.addColorStop(1,'#120c04');
+    ctx.fillStyle = g; ctx.fillRect(0,0,W,vanishY+40);
+
+    drawSkyline();
+
+    // road trapezoid
+    const roadTopHalf = laneWidth*1.55*0.14;
+    const roadBotHalf = laneWidth*1.55;
+    ctx.fillStyle = '#2a2118';
+    ctx.beginPath();
+    ctx.moveTo(vanishX-roadTopHalf, vanishY);
+    ctx.lineTo(vanishX+roadTopHalf, vanishY);
+    ctx.lineTo(vanishX+roadBotHalf, H);
+    ctx.lineTo(vanishX-roadBotHalf, H);
+    ctx.closePath(); ctx.fill();
+
+    // lane dividers (2 lines) with scrolling dashes
+    ctx.strokeStyle = 'rgba(245,168,0,0.55)';
+    ctx.lineWidth = 2;
+    [-1/3, 1/3].forEach(f=>{
+      ctx.beginPath();
+      const topX = vanishX + f*roadTopHalf*2;
+      const botX = vanishX + f*roadBotHalf*2;
+      ctx.setLineDash([14,18]);
+      ctx.lineDashOffset = -roadOffset*220;
+      ctx.moveTo(topX, vanishY); ctx.lineTo(botX, H);
+      ctx.stroke();
+    });
+    ctx.setLineDash([]);
+
+    // outer edges glow
+    ctx.strokeStyle = 'rgba(232,25,10,0.5)';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(vanishX-roadTopHalf, vanishY); ctx.lineTo(vanishX-roadBotHalf, H);
+    ctx.moveTo(vanishX+roadTopHalf, vanishY); ctx.lineTo(vanishX+roadBotHalf, H);
+    ctx.stroke();
+  }
+
+  function entityScreenPos(e){
+    const t = easeIn(Math.min(1, e.z));
+    const x = lerp(vanishX + e.lane*laneWidth*0.14, laneX(e.lane), t);
+    const y = lerp(vanishY, playerAnchorY, t);
+    const scale = lerp(0.28, 1.55, t);
+    return {x,y,scale,t};
+  }
+
+  function drawEmoji(text, x, y, size){
+    ctx.font = size + 'px serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(text, x, y);
+  }
+
+  function drawEntities(){
+    const sorted = entities.slice().sort((a,b)=>a.z-b.z);
+    sorted.forEach(e=>{
+      const {x,y,scale,t} = entityScreenPos(e);
+      if (t < 0.02) return;
+      ctx.globalAlpha = Math.min(1, t*2.2);
+      if (e.kind === 'collectible'){
+        const r = 26*scale;
+        ctx.beginPath();
+        ctx.arc(x,y,r,0,Math.PI*2);
+        ctx.fillStyle = e.special ? '#F5A800' : e.flavor.color;
+        ctx.globalAlpha *= 0.28;
+        ctx.fill();
+        ctx.globalAlpha = Math.min(1, t*2.2);
+        if (e.special){
+          ctx.shadowColor = '#F5A800'; ctx.shadowBlur = 18*scale;
+        }
+        drawEmoji(e.flavor.emoji, x, y, 34*scale);
+        ctx.shadowBlur = 0;
+      } else if (e.kind === 'obstacle'){
+        const shadowR = 30*scale;
+        ctx.beginPath();
+        ctx.ellipse(x, y+10*scale, shadowR, shadowR*0.32, 0, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(0,0,0,0.45)';
+        ctx.fill();
+        const yOff = e.type.kind === 'duck' ? -18*scale : 0;
+        drawEmoji(e.type.emoji, x, y+yOff, 46*scale);
+      } else if (e.kind === 'prop'){
+        const shadowR = 15*scale;
+        ctx.beginPath();
+        ctx.ellipse(x, y+8*scale, shadowR, shadowR*0.3, 0, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(0,0,0,0.35)';
+        ctx.fill();
+        drawEmoji(e.emoji, x, y-6*scale, 32*scale);
+      }
+      ctx.globalAlpha = 1;
+    });
+  }
+
+  function drawPlayer(){
+    const y = playerAnchorY + player.jumpY;
+    const squash = player.isDucking ? 0.6 : 1;
+    const flashOn = player.hitFlashT > 0 && Math.floor(player.hitFlashT*12)%2===0;
+    ctx.save();
+    ctx.translate(player.x, y);
+    ctx.beginPath();
+    ctx.ellipse(0, 46, 30, 9, 0, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(0,0,0,0.4)';
+    ctx.fill();
+    if (boostT > 0){
+      ctx.beginPath(); ctx.arc(0,-6,46,0,Math.PI*2);
+      ctx.strokeStyle = 'rgba(245,168,0,0.7)'; ctx.lineWidth=4; ctx.stroke();
+    }
+    ctx.globalAlpha = flashOn ? 0.35 : 1;
+    ctx.scale(1, squash);
+    ctx.font = '64px serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('🐔', 0, -6/squash);
+    ctx.restore();
+  }
+
+  function drawParticles(){
+    particles.forEach(p=>{
+      const a = Math.max(0, p.life / p.maxLife);
+      ctx.globalAlpha = a;
+      ctx.font = "700 20px 'Oswald', sans-serif";
+      ctx.textAlign = 'center';
+      ctx.fillStyle = p.color;
+      ctx.strokeStyle = 'rgba(0,0,0,0.6)';
+      ctx.lineWidth = 3;
+      ctx.strokeText(p.text, p.x, p.y);
+      ctx.fillText(p.text, p.x, p.y);
+      ctx.globalAlpha = 1;
+    });
+  }
+
+  function render(){
+    drawRoad();
+    if (state === 'playing'){
+      drawEntities();
+      drawPlayer();
+      drawParticles();
+    }
+  }
+
+  // ---------- Loop ----------
+  let lastT = performance.now();
+  function loop(now){
+    const dt = Math.min(0.05, (now - lastT)/1000);
+    lastT = now;
+    if (state === 'playing') update(dt);
+    render();
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  document.addEventListener('visibilitychange', ()=>{
+    if (document.hidden) lastT = performance.now();
+  });
+})();
+</script>
+</body>
+</html>
