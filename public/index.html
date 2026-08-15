@@ -595,6 +595,44 @@ setInterval(fetchLocationStatus,30000);
     </div>
   </div>
 </section>
+<!-- ═══════ LIMITED TIME OFFER: PICKLE'D POUTINE ═══════
+     Auto-hides after August 31, 2026 via inline JS.
+     BOGO logic: 1 poutine at $12.99 + 2nd FREE.
+     Photo: /public/images/Pickled-Poutine.png
+     Placed BEFORE menu categories for max visibility.
+-->
+<section class="lto-section" id="lto-pickled" style="display:none;">
+  <div class="lto-inner">
+    <div class="lto-media">
+      <img src="/images/Pickled-Poutine.png" alt="Pickle'd Poutine — dill pickle poutine limited time offer" class="lto-img" loading="lazy">
+      <div class="lto-price-tag">$12.99</div>
+    </div>
+    <div class="lto-content">
+      <div class="lto-eyebrow"><span class="lto-pulse">🥒</span> AUGUST ONLY · LIMITED TIME</div>
+      <h2 class="lto-title">PICKLE'D <span>POUTINE</span></h2>
+      <p class="lto-desc">Our signature poutine gets the prairie treatment. Crispy golden fries · rich house-made gravy · fresh Saskatchewan cheese curds · crunchy dill pickle bites · a drizzle of our secret dill sauce. It's the poutine you didn't know you needed.</p>
+      <div class="lto-bogo">
+        <div class="lto-bogo-badge">🎁 BOGO DEAL</div>
+        <div class="lto-bogo-text">BUY ONE · GET ONE <strong>FREE</strong></div>
+        <div class="lto-bogo-sub">Order 2 for the price of 1 · Pickup or Dine-in only</div>
+      </div>
+      <button class="lto-cta" onclick="openPickledLTO();if(window.trackEvent)trackEvent('lto_pickled_click');">🥒 Order 2 for $12.99 →</button>
+      <div class="lto-fine">Available August 2026 only · While supplies last</div>
+    </div>
+  </div>
+</section>
+
+<!-- Pickle'd Poutine BOGO Modal -->
+<div class="lunch-modal-ov" id="pickled-ov" onclick="if(event.target===this)closePickledLTO()">
+  <div class="lunch-modal">
+    <div class="lunch-modal-hd" style="border-bottom-color:#2D8A3E;">
+      <h2 style="color:#2D8A3E;">🥒 PICKLE'D POUTINE — BOGO</h2>
+      <button onclick="closePickledLTO()" style="color:#888;background:none;border:none;font-size:1.4rem;cursor:pointer;">✕</button>
+    </div>
+    <div style="padding:1.5rem;" id="pickled-bd"></div>
+  </div>
+</div>
+
 <section class="cat-section" id="cat-section">
   <div class="cat-inner">
     <div class="eyebrow">Fresh Made to Order</div>
@@ -615,43 +653,6 @@ setInterval(fetchLocationStatus,30000);
     </div>
   </div>
 </section>
-
-<!-- ═══════ LIMITED TIME OFFER: PICKLE'D POUTINE ═══════
-     Auto-hides after August 31, 2026 via inline JS.
-     BOGO logic: 1 poutine at $12.99 + 2nd FREE.
-     Photo: /public/images/IMG_1355.png
--->
-<section class="lto-section" id="lto-pickled" style="display:none;">
-  <div class="lto-inner">
-    <div class="lto-media">
-      <img src="/images/IMG_1355.png" alt="Pickle'd Poutine — dill pickle poutine limited time offer" class="lto-img" loading="lazy">
-      <div class="lto-price-tag">$12.99</div>
-    </div>
-    <div class="lto-content">
-      <div class="lto-eyebrow"><span class="lto-pulse">🥒</span> AUGUST ONLY · LIMITED TIME</div>
-      <h2 class="lto-title">PICKLE'D <span>POUTINE</span></h2>
-      <p class="lto-desc">Our signature poutine gets the prairie treatment. Crispy golden fries · rich house-made gravy · cheese curds · crunchy dill pickle bites · a drizzle of our secret dill sauce. It's the poutine you didn't know you needed.</p>
-      <div class="lto-bogo">
-        <div class="lto-bogo-badge">🎁 BOGO DEAL</div>
-        <div class="lto-bogo-text">BUY ONE · GET ONE <strong>FREE</strong></div>
-        <div class="lto-bogo-sub">Order 2 for the price of 1 · Pickup or Delivery</div>
-      </div>
-      <button class="lto-cta" onclick="openPickledLTO();if(window.trackEvent)trackEvent('lto_pickled_click');">🥒 Order 2 for $12.99 →</button>
-      <div class="lto-fine">Available August 2026 only · While supplies last</div>
-    </div>
-  </div>
-</section>
-
-<!-- Pickle'd Poutine BOGO Modal -->
-<div class="lunch-modal-ov" id="pickled-ov" onclick="if(event.target===this)closePickledLTO()">
-  <div class="lunch-modal">
-    <div class="lunch-modal-hd" style="border-bottom-color:#2D8A3E;">
-      <h2 style="color:#2D8A3E;">🥒 PICKLE'D POUTINE — BOGO</h2>
-      <button onclick="closePickledLTO()" style="color:#888;background:none;border:none;font-size:1.4rem;cursor:pointer;">✕</button>
-    </div>
-    <div style="padding:1.5rem;" id="pickled-bd"></div>
-  </div>
-</div>
 
 <!-- ═══════ GOOGLE REVIEWS SECTION ═══════
      👉 TO CUSTOMIZE: Replace the placeholder reviews below with real ones from your Google Business Profile.
@@ -1508,10 +1509,10 @@ function openPickledLTO(){
       '<div style="font-family:var(--font-head);font-size:.78rem;letter-spacing:2px;text-transform:uppercase;margin-top:.4rem;">2 Pickle\'d Poutines for $'+PICKLED_LTO_PRICE.toFixed(2)+'</div>'+
     '</div>'+
     '<div style="background:rgba(72,187,120,.1);border:1.5px solid #48BB78;color:#276749;padding:.6rem .85rem;border-radius:4px;font-family:var(--font-head);font-size:.8rem;letter-spacing:1px;margin-bottom:1rem;text-align:center;font-weight:700;">💰 You save $'+PICKLED_LTO_PRICE.toFixed(2)+' — August only</div>'+
-    '<img src="/images/IMG_1355.png" alt="Pickle\'d Poutine" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;margin-bottom:1rem;border:2px solid var(--paper-line);">'+
+    '<img src="/images/Pickled-Poutine.png" alt="Pickle\'d Poutine" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;margin-bottom:1rem;border:2px solid var(--paper-line);">'+
     '<div class="lunch-includes">'+
       '<div class="lunch-includes-row">🍟 <span><strong>Golden Fries</strong> · Crispy prairie-style</span></div>'+
-      '<div class="lunch-includes-row">🧀 <span><strong>Cheese Curds</strong> · Cheese curds</span></div>'+
+      '<div class="lunch-includes-row">🧀 <span><strong>Cheese Curds</strong> · Fresh Saskatchewan curds</span></div>'+
       '<div class="lunch-includes-row">🥒 <span><strong>Dill Pickle Bites</strong> · Crunchy, tangy, house-cut</span></div>'+
       '<div class="lunch-includes-row">💚 <span><strong>Signature Dill Sauce</strong> · The secret ingredient</span></div>'+
       '<div class="lunch-includes-row">🍯 <span><strong>House Gravy</strong> · Rich, savory, hot</span></div>'+
@@ -1547,11 +1548,21 @@ function proceedPickledCheckout(){
     notes:'',flavors:[],cookieFl:'',sizeName:'',upgradeName:'',upgradePrice:0,
     pickledLto:true
   });
+  orderType='pickup';
   updateCart();
   closePickledLTO();
   closeCart();
   renderCheckoutForm();
   document.getElementById('modal-ov').classList.add('open');
+  // Disable delivery option — LTO is pickup/dine-in only
+  setTimeout(function(){
+    var dBtn=document.getElementById('ot-d');
+    if(dBtn){
+      dBtn.style.opacity='.4';
+      dBtn.style.cursor='not-allowed';
+      dBtn.onclick=function(){toast('Pickle\'d Poutine LTO is pickup or dine-in only 🥒');};
+    }
+  },100);
 }
 var AYCE_PRICE=28.99;
 function openAYCE(){if(!isToday(2)){toast('AYCE is Tuesdays only 🍗');return;}var bd=document.getElementById('ayce-bd');bd.innerHTML='<div class="lunch-banner-deal" style="background:linear-gradient(135deg,#F5A800,#E8190A);"><div class="lunch-banner-deal-price">$28.99</div><div style="font-family:var(--font-head);font-size:.78rem;letter-spacing:2px;text-transform:uppercase;font-weight:600;margin-top:.2rem;">All You Can Eat Wings</div></div>'+'<div class="ayce-portions">🍽️ <strong>DINE-IN ONLY</strong> · Reserve and come eat with us<br>Pick your starting flavor — refills brought to your table</div>'+'<div class="ayce-record">🏆 CURRENT RECORD: <span class="ayce-blink">91 WINGS</span> — CAN YOU BEAT IT?</div>'+'<div class="lunch-includes"><div class="lunch-includes-row">🍗 <span><strong>Unlimited wings</strong> · 135+ flavors available</span></div><div class="lunch-includes-row">⏱️ <span><strong>Tuesdays 5 PM – 10 PM</strong> · Dine-in only</span></div><div class="lunch-includes-row">📋 <span><strong>One person per ticket</strong> · No sharing</span></div></div>'+buildFlavorSelect('ayce-flavor','🔥 Pick Your Starting Flavor')+'<label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.35rem;">Number of People</label><select id="ayce-people" style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.55rem .85rem;font-size:.9rem;background:white;outline:none;margin-bottom:1rem;"><option value="1">1 person — $28.99</option><option value="2">2 people — $57.98</option><option value="3">3 people — $86.97</option><option value="4">4 people — $115.96</option></select>'+'<label style="font-family:var(--font-head);font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:#555;display:block;margin-bottom:.35rem;">Special Instructions</label><textarea id="ayce-notes" placeholder="Allergies, group name..." style="width:100%;border:1.5px solid var(--paper-line);border-radius:4px;padding:.5rem .75rem;font-size:.83rem;resize:vertical;min-height:55px;outline:none;margin-bottom:1rem;"></textarea>'+'<button class="btn-place" onclick="proceedAYCECheckout()" style="background:var(--yellow);color:var(--black);">RESERVE AYCE 🍗</button><button onclick="closeAYCE()" style="width:100%;background:none;border:1.5px solid var(--paper-line);color:#888;padding:.65rem;font-family:var(--font-head);font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:4px;margin-top:.5rem;">✕ Cancel</button>';document.getElementById('ayce-ov').classList.add('open');document.body.style.overflow='hidden';}
