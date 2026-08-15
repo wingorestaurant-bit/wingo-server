@@ -272,9 +272,9 @@
     <!-- CATALOG -->
     <div class="view" id="view-catalog">
       <div class="card" id="oneTimeFixCard" style="border:1px solid var(--wingo-red);">
-        <h3>One-time catalog correction (Aug 14, 2026)</h3>
+        <h3>One-time catalog correction (Aug 14, 2026 — round 4, from the printed menu)</h3>
         <div class="helptext" style="margin-bottom:10px;">
-          Renames "Ribs" → "One Order Ribs", fixes Half Order Boneless Wings' cost, and adds Full Order Boneless Wings, Half Order Ribs, and Pickle'd Poutine — all from real numbers you provided. Safe to click even if some of this already exists (it checks before adding). After running this, delete this card from the code whenever you next touch the file.
+          Fixes prices on several items that had wrong/old numbers (Onion Rings, Jalapeño Poppers, Empanadas, Mozza Sticks, Corn Dog, KFC Burger, Deep Fried Oreos per pc, Combo for 2), corrects A Bit of Other Platter and Tinseltown Nacho's cost, and adds ~35 new items from the full printed menu (large sizes, poutines, salads, desserts, drinks). Items marked "(est)" in the code don't have real invoice costs yet — reasonable estimates, not confirmed numbers. Safe to click repeatedly.
         </div>
         <button class="btn" id="applyOneTimeFixBtn">Apply catalog corrections</button>
       </div>
@@ -485,7 +485,7 @@ function deliveryCommission(tenders){
   return deliveryRevenue * (commissionRate/100);
 }
 function normalizeItemName(s){
-  return (s||'').toLowerCase().replace(/[—–-]/g, ' ').replace(/\borders\b/g,'order').replace(/\s+/g, ' ').trim();
+  return (s||'').toLowerCase().replace(/[—–-]/g, ' ').replace(/\borders\b/g,'order').replace(/(\d)\s*pc\b/g,'$1pc').replace(/\s+/g, ' ').trim();
 }
 function isPlatterItem(name){
   const c = catalog.find(x => normalizeItemName(x.name) === normalizeItemName(name));
@@ -747,7 +747,7 @@ async function renderUnmatchedItems(){
 }
 
 document.getElementById('applyOneTimeFixBtn').addEventListener('click', async ()=>{
-  const norm = s => (s||'').trim().toLowerCase();
+  const norm = normalizeItemName;
 
   const ribs = catalog.find(i => norm(i.name) === 'ribs');
   if(ribs){ ribs.name = 'One Order Ribs'; ribs.price = 13.99; ribs.cost = 5.65; }
@@ -764,6 +764,123 @@ document.getElementById('applyOneTimeFixBtn').addEventListener('click', async ()
   if(!catalog.find(i => norm(i.name).includes('pickle'))){
     catalog.push({id:uid(), name:"Pickle'd Poutine", category:'Combos & Platters', price:12.99, cost:2.53, isPlatter:false});
   }
+
+  // Aug 14 (round 2) — additional confirmed items from the unmatched-items panel
+  const newItems = [
+    {name:'Curly Fries (sm)', category:'Sides', price:5.99, cost:1.06},
+    {name:'Fries (sm)', category:'Sides', price:4.99, cost:0.78},
+    {name:'Mozza Sticks', category:'Sides', price:8.99, cost:4.33},
+    {name:'Dumplings (6 Pieces In One Order)', category:'Sides', price:9.99, cost:1.27},
+    {name:'Jalapeno Poppers', category:'Sides', price:9.99, cost:1.30},
+    {name:'Empanadas (6)', category:'Sides', price:5.99, cost:1.39},
+    {name:'Deep Fried Oreos 12 pc', category:'Desserts', price:10.49, cost:3.00},
+    {name:'Deep Fried Oreos per pc', category:'Desserts', price:3.63, cost:0.25},
+    {name:'Half Order chicken fingers', category:'Boneless & Fingers', price:7.99, cost:2.16},
+    {name:'Poutines (sm)', category:'Combos & Platters', price:8.99, cost:2.53},
+    {name:'Gravy (sm)', category:'Sides', price:1.49, cost:0.50},
+  ];
+  newItems.forEach(ni=>{
+    if(!catalog.find(i => norm(i.name) === norm(ni.name))){
+      catalog.push({id:uid(), ...ni, isPlatter:false});
+    }
+  });
+
+  // Aug 14 (round 3) — burgers, bigger wing/rib sizes, Combo for 4, Too Much Platter
+  const newItems2 = [
+    {name:'Buffalo Stampede', category:'Combos & Platters', price:18.99, cost:5.29},
+    {name:'The Dillinator', category:'Combos & Platters', price:18.99, cost:5.29},
+    {name:'Korean Fried Chicken (KFC) Burger', category:'Combos & Platters', price:18.99, cost:5.29},
+    {name:'Sunset Crunch', category:'Combos & Platters', price:15.99, cost:4.01},
+    {name:'Five Order Wings', category:'Wings', price:58.99, cost:18.45},
+    {name:'Two Order Ribs', category:'Ribs', price:25.99, cost:11.31},
+    {name:'Three Order Ribs', category:'Ribs', price:37.99, cost:16.96},
+    {name:'Four Order Ribs', category:'Ribs', price:49.99, cost:22.62},
+    {name:'Five Order Ribs', category:'Ribs', price:58.99, cost:28.28},
+    {name:'Combo for 4', category:'Combos & Platters', price:67.99, cost:21.82},
+    {name:'Too Much Platter', category:'Combos & Platters', price:56.99, cost:16.88, isPlatter:true},
+  ];
+  newItems2.forEach(ni=>{
+    if(!catalog.find(i => norm(i.name) === norm(ni.name))){
+      catalog.push({id:uid(), isPlatter:false, ...ni});
+    }
+  });
+
+  // Aug 14 (round 4) — full printed menu: price corrections + big batch of new items.
+  // Some costs below are estimates (no hard invoice yet) — flagged with (est).
+  const priceFixes = [
+    ['Five Order Ribs', {price:58.99}],                 // was estimated 61.99, real menu says 58.99
+    ['Korean Fried Chicken (KFC) Burger', {price:16.49}], // was estimated 18.99
+    ['Onion Rings', {price:7.99}],                       // was 6.99 from old spreadsheet
+    ['Jalapeno Poppers', {price:10.49}],                 // was 9.99
+    ['Empanadas (6)', {price:9.99}],                     // was 5.99
+    ['Mozza Sticks', {price:10.49}],                     // was 8.99
+    ['Dumplings (6 Pieces In One Order)', {price:10.49}],// was 9.99
+    ['Deep Fried Oreos per pc', {price:0.99, cost:0.25}],// was mis-estimated at 3.63
+    ['Combo for 2', {price:39.99, cost:10.94}],          // was 42.48/9.10 — real menu: large fries + fried pickles + 2 cans pop
+    ['A Bit of Other Platter', {cost:16.53}],            // 1lb (16oz) ribs confirmed, not 14oz
+    ['Tinseltown Nacho', {cost:8.73, isPlatter:true}],   // refined from real "3lb curly fries" math; also flag as platter
+  ];
+  priceFixes.forEach(([name, fields])=>{
+    const item = catalog.find(i => norm(i.name) === norm(name));
+    if(item) Object.assign(item, fields);
+  });
+
+  const newItems3 = [
+    {name:'Fries (Lg)', category:'Sides', price:8.99, cost:1.56},
+    {name:'Curly Fries (Lg)', category:'Sides', price:9.99, cost:2.12},
+    {name:'Pickle Spears', category:'Sides', price:8.99, cost:1.75}, // (est)
+    {name:'Empanadas (12)', category:'Sides', price:12.99, cost:2.78},
+    {name:'Deep Fried Mac&Cheese bites', category:'Sides', price:10.49, cost:2.75}, // (est)
+    {name:'Cauliflower Wings', category:'Sides', price:12.99, cost:4.46},
+    {name:'Corn dog', category:'Sides', price:6.99, cost:0.96},
+    {name:'Corn Dog Combo', category:'Combos & Platters', price:11.99, cost:2.34},
+    {name:'Caesar Salad (med)', category:'Sides', price:7.99, cost:1.72}, // (est, scaled from sm)
+    {name:'Caesar Salad (lg)', category:'Sides', price:13.99, cost:3.00}, // (est, scaled from sm)
+    {name:'Chicken Caesar Salad (sm)', category:'Sides', price:9.99, cost:3.66}, // (est)
+    {name:'Chicken Caesar Salad (med)', category:'Sides', price:12.99, cost:4.72}, // (est)
+    {name:'Chicken Caesar Salad (lg)', category:'Sides', price:19.49, cost:7.32}, // (est)
+    {name:'Classic Poutine (Lg)', category:'Combos & Platters', price:13.99, cost:5.06},
+    {name:'Rib Poutine', category:'Combos & Platters', price:15.99, cost:4.23}, // (est)
+    {name:'Beef Poutine', category:'Combos & Platters', price:14.99, cost:4.50}, // (est — no beef invoice yet)
+    {name:'Perogy Poutine', category:'Combos & Platters', price:10.49, cost:3.45}, // (est)
+    {name:'Nacho Teaser', category:'Combos & Platters', price:12.99, cost:2.66}, // (est)
+    {name:'Loaded Taters', category:'Combos & Platters', price:13.99, cost:4.20}, // (est)
+    {name:'Hot \'n\' Heavy', category:'Combos & Platters', price:29.99, cost:14.17, isPlatter:true}, // (est on curds/gravy per-lb)
+    {name:'Making Love Platter', category:'Combos & Platters', price:34.99, cost:12.27, isPlatter:true},
+    {name:'Melon Splash', category:'Drinks', price:5.95, cost:1.25}, // (est)
+    {name:'Tropical Berry Glow', category:'Drinks', price:5.95, cost:1.25}, // (est)
+    {name:'Golden Coconut', category:'Drinks', price:5.95, cost:1.25}, // (est)
+    {name:'Coconut Mist', category:'Drinks', price:5.95, cost:1.25}, // (est)
+    {name:'Tropic Pine', category:'Drinks', price:5.95, cost:1.25}, // (est)
+    {name:'Lemon Berry Crush', category:'Drinks', price:4.95, cost:1.00}, // (est)
+    {name:'Tiramisu Cake', category:'Desserts', price:8.99, cost:2.50}, // (est)
+    {name:'Deep Fried Cookie Dough', category:'Desserts', price:3.50, cost:0.90}, // (est)
+    {name:'Deep Fried Cookie Dough Peanut Butter', category:'Desserts', price:3.50, cost:0.90}, // (est)
+    {name:'Deep Fried Mars Bars 1 Piece', category:'Desserts', price:2.99, cost:0.75}, // (est)
+    {name:'Deep Fried Mars Bars 6pc', category:'Desserts', price:12.99, cost:4.50}, // (est)
+    {name:"Sunday Deal 0.89 Per Piece", category:'Wings', price:0.89, cost:0.41},
+  ];
+  newItems3.forEach(ni=>{
+    if(!catalog.find(i => norm(i.name) === norm(ni.name))){
+      catalog.push({id:uid(), isPlatter:false, ...ni});
+    }
+  });
+
+  // Aug 14 (round 5) — audit pass: two missed price fixes + burger costs refined
+  // using the real topping lists from the printed menu instead of a flat guess.
+  const priceFixes2 = [
+    ['A Bit of Other Platter', {price:34.99}],           // was still showing 32.99
+    ['Half Order Boneless Wings', {price:7.99}],         // was still showing 7.00
+    ['The Tough Guy', {cost:5.64}],                      // pickles+tomato+onion+romaine+swiss
+    ['Buffalo Stampede', {cost:5.18}],                   // coleslaw+pickles+mozzarella
+    ['The Dillinator', {cost:5.24}],                     // pickle chips+romaine+swiss, no tomato
+    ['Korean Fried Chicken (KFC) Burger', {cost:4.98}],  // coleslaw+pickles, lighter topping
+    ['Sunset Crunch', {cost:3.35}],                      // no fries/pop, just ranch, no other toppings
+  ];
+  priceFixes2.forEach(([name, fields])=>{
+    const item = catalog.find(i => norm(i.name) === norm(name));
+    if(item) Object.assign(item, fields);
+  });
 
   await saveCatalog();
   renderCatalog();
