@@ -339,6 +339,12 @@ app.get('/kitchen.html', (req, res) => { res.sendFile(path.join(__dirname, 'publ
 
 // ── SAUCE BOSS DASHBOARD ROUTE ─────────────────────────────────
 app.get('/dashboard', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'dashboard.html')); });
+
+// ── WING RUSH GAME ─────────────────────────────────────────────
+app.get('/game', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'game.html')); });
+app.get('/game.html', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'game.html')); });
+app.get('/wing-rush', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'game.html')); });
+app.get('/play', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'game.html')); });
 app.get('/dashboard.html', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'dashboard.html')); });
 
 // ── PLACE ORDER ────────────────────────────────────────────────
