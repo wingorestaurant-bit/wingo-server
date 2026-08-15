@@ -98,6 +98,8 @@ async function fetchDaySales(location, dateStr) {
     n = n.replace(/^\?\s*/, '');           // strip leading "? " (Clover's unlinked-item marker)
     n = n.replace(/\s*\[[^\]]*\]\s*$/, ''); // strip trailing "[Sauce Choice]" modifier suffix
     n = n.replace(/\s*—\s*Order\s*#\d+\s*(\(\d+%\s*OFF\))?\s*$/i, ''); // strip "— Order #2 (50% OFF)"
+    n = n.replace(/^Pickle'?d\s+Up\s+Poutine$/i, "Pickle'd Poutine"); // two Clover button names, same item
+    n = n.replace(/^WING\s*NIGHT$/i, "One Order Wings"); // Thursday BOGO-50%-off promo — same wings, just discounted
     return n.trim();
   }
 
