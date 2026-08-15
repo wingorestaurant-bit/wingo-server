@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Wing Rush — The Official WingO Game</title>
-<meta name="description" content="Dodge, dash and collect wing flavours in Wing Rush — WingO's official endless runner.">
+<meta name="description" content="Dodge, dash and collect wing flavours through the streets of Regina, SK in Wing Rush — WingO's official endless runner.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;500;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -90,6 +90,7 @@ p.subtitle{font-family:var(--font-head);letter-spacing:3px;text-transform:upperc
     <div id="score-box">
       <div class="label">Score</div>
       <div class="val" id="score-val">0</div>
+      <div style="font-size:.58rem;letter-spacing:2px;color:#aaa;text-transform:uppercase;margin-top:2px;">📍 Regina, SK</div>
     </div>
     <div id="hearts"></div>
   </div>
@@ -110,6 +111,7 @@ p.subtitle{font-family:var(--font-head);letter-spacing:3px;text-transform:upperc
     </div>
     <h1 class="title">WING RUSH</h1>
     <p class="subtitle">The Official WingO Game</p>
+    <p style="font-family:var(--font-head);letter-spacing:2px;text-transform:uppercase;font-size:.7rem;color:#999;margin:-1.1rem 0 1.3rem;">📍 Racing down Albert St, Regina SK</p>
     <div class="flavor-strip">
       <div class="flavor-chip">🍗 Mild</div>
       <div class="flavor-chip">🌶️ Hot</div>
@@ -185,10 +187,24 @@ p.subtitle{font-family:var(--font-head);letter-spacing:3px;text-transform:upperc
   // ---------- Game state ----------
   const LANES = [-1,0,1];
   let laneWidth, vanishX, vanishY, playerAnchorY;
+  let skylineBuildings = [];
+  function buildSkyline(){
+    skylineBuildings = [];
+    const n = 16;
+    for (let i=0;i<n;i++){
+      skylineBuildings.push({
+        f: i/(n-1),               // fractional position, remapped to width on draw
+        w: 22 + Math.random()*36,
+        h: 26 + Math.random()*64,
+        lit: Math.random() < 0.4
+      });
+    }
+  }
   function layout(){
     laneWidth = Math.min(W*0.26, 150);
     vanishX = W/2; vanishY = H*0.30;
     playerAnchorY = H*0.80;
+    buildSkyline();
   }
   layout();
   window.addEventListener('resize', layout);
@@ -200,14 +216,14 @@ p.subtitle{font-family:var(--font-head);letter-spacing:3px;text-transform:upperc
   let entities = [];
   let particles = [];
   let player, score, distance, wingsCollected, elapsed, speed, spawnTimer, lastFlavors;
-  let hearts, invulnT, boostT, roadOffset;
+  let hearts, invulnT, boostT, roadOffset, propTimer;
 
   function resetGame(){
     player = {lane:0, targetLane:0, x:laneX(0), jumpY:0, vy:0, isJumping:false, isDucking:false, duckT:0, hitFlashT:0};
     entities = []; particles = [];
     score = 0; distance = 0; wingsCollected = 0; elapsed = 0;
     speed = 0.42; spawnTimer = 0; lastFlavors = [];
-    hearts = 3; invulnT = 0; boostT = 0; roadOffset = 0;
+    hearts = 3; invulnT = 0; boostT = 0; roadOffset = 0; propTimer = 0;
   }
 
   function startGame(){
@@ -357,6 +373,14 @@ p.subtitle{font-family:var(--font-head);letter-spacing:3px;text-transform:upperc
     });
   }
 
+  const REGINA_PROPS = ['🏢','🌳','🚦','🏈','🌾','🏛️','🅿️'];
+  function spawnProp(){
+    const side = Math.random() < 0.5 ? -1 : 1;
+    const lane = side * (1.8 + Math.random()*0.5);
+    const emoji = REGINA_PROPS[Math.floor(Math.random()*REGINA_PROPS.length)];
+    entities.push({kind:'prop', emoji, lane, z:0});
+  }
+
   // ---------- Update ----------
   function update(dt){
     elapsed += dt;
@@ -368,6 +392,9 @@ p.subtitle{font-family:var(--font-head);letter-spacing:3px;text-transform:upperc
     spawnTimer -= dt;
     const interval = Math.max(0.55, 0.95 - speed*0.28);
     if (spawnTimer <= 0){ spawnWave(); spawnTimer = interval; }
+
+    propTimer -= dt;
+    if (propTimer <= 0){ spawnProp(); propTimer = Math.max(0.5, 0.9 - speed*0.25); }
 
     // player lane interpolation
     const tx = laneX(player.targetLane);
@@ -461,6 +488,82 @@ p.subtitle{font-family:var(--font-head);letter-spacing:3px;text-transform:upperc
   // ---------- Render ----------
   function easeIn(t){ return t*t; }
 
+  function drawGrainElevator(cx, baseY){
+    ctx.fillStyle = '#241a10';
+    const w=34, h=95;
+    ctx.fillRect(cx-w/2, baseY-h, w, h);
+    ctx.beginPath();
+    ctx.moveTo(cx-w/2-6, baseY-h);
+    ctx.lineTo(cx, baseY-h-22);
+    ctx.lineTo(cx+w/2+6, baseY-h);
+    ctx.closePath(); ctx.fill();
+    ctx.save();
+    ctx.translate(cx, baseY-h*0.45);
+    ctx.rotate(-Math.PI/2);
+    ctx.fillStyle = 'rgba(245,168,0,0.75)';
+    ctx.font = "700 9px 'Oswald', sans-serif";
+    ctx.textAlign = 'center';
+    ctx.fillText('REGINA', 0, 0);
+    ctx.restore();
+  }
+
+  function drawLegislature(cx, baseY){
+    ctx.fillStyle = '#241a10';
+    const w=76, h=44;
+    ctx.fillRect(cx-w/2, baseY-h, w, h);
+    ctx.beginPath();
+    ctx.arc(cx, baseY-h, 22, Math.PI, 0);
+    ctx.fill();
+    ctx.fillRect(cx-4, baseY-h-32, 8, 12);
+    // wings of the building
+    ctx.fillRect(cx-w/2-30, baseY-24, 30, 24);
+    ctx.fillRect(cx+w/2, baseY-24, 30, 24);
+  }
+
+  function drawStadium(cx, baseY){
+    ctx.fillStyle = '#241a10';
+    ctx.beginPath();
+    ctx.ellipse(cx, baseY-6, 48, 17, 0, Math.PI, 0, true);
+    ctx.fill();
+    [-40,40].forEach(dx=>{
+      ctx.fillStyle = '#241a10';
+      ctx.fillRect(cx+dx-2, baseY-42, 4, 36);
+      ctx.fillStyle = 'rgba(245,168,0,0.55)';
+      ctx.beginPath(); ctx.arc(cx+dx, baseY-44, 5, 0, Math.PI*2); ctx.fill();
+    });
+  }
+
+  function drawSkyline(){
+    const baseY = vanishY;
+    const shift = -(state === 'playing' ? (player.x - W/2) : 0) * 0.07;
+    ctx.save();
+    ctx.translate(shift, 0);
+
+    ctx.fillStyle = '#1c140a';
+    skylineBuildings.forEach(b=>{
+      const x = b.f * (W*1.3) - W*0.15;
+      ctx.fillStyle = '#1c140a';
+      ctx.fillRect(x, baseY-b.h, b.w, b.h);
+      if (b.lit){
+        ctx.fillStyle = 'rgba(245,168,0,0.55)';
+        ctx.fillRect(x+b.w*0.3, baseY-b.h+8, 3, 3);
+        ctx.fillRect(x+b.w*0.6, baseY-b.h+18, 3, 3);
+      }
+    });
+
+    drawGrainElevator(W*0.15, baseY);
+    drawLegislature(W*0.5, baseY);
+    drawStadium(W*0.85, baseY);
+    ctx.restore();
+
+    // Wascana Lake reflection band, right at the horizon in front of the skyline
+    const lake = ctx.createLinearGradient(0, baseY-4, 0, baseY+16);
+    lake.addColorStop(0, 'rgba(30,55,90,0)');
+    lake.addColorStop(1, 'rgba(18,36,64,0.6)');
+    ctx.fillStyle = lake;
+    ctx.fillRect(0, baseY-4, W, 20);
+  }
+
   function drawRoad(){
     ctx.fillStyle = '#0D0D0D';
     ctx.fillRect(0,0,W,H);
@@ -468,6 +571,8 @@ p.subtitle{font-family:var(--font-head);letter-spacing:3px;text-transform:upperc
     const g = ctx.createLinearGradient(0,0,0,vanishY+40);
     g.addColorStop(0,'#241a08'); g.addColorStop(1,'#120c04');
     ctx.fillStyle = g; ctx.fillRect(0,0,W,vanishY+40);
+
+    drawSkyline();
 
     // road trapezoid
     const roadTopHalf = laneWidth*1.55*0.14;
@@ -537,7 +642,7 @@ p.subtitle{font-family:var(--font-head);letter-spacing:3px;text-transform:upperc
         }
         drawEmoji(e.flavor.emoji, x, y, 34*scale);
         ctx.shadowBlur = 0;
-      } else {
+      } else if (e.kind === 'obstacle'){
         const shadowR = 30*scale;
         ctx.beginPath();
         ctx.ellipse(x, y+10*scale, shadowR, shadowR*0.32, 0, 0, Math.PI*2);
@@ -545,6 +650,13 @@ p.subtitle{font-family:var(--font-head);letter-spacing:3px;text-transform:upperc
         ctx.fill();
         const yOff = e.type.kind === 'duck' ? -18*scale : 0;
         drawEmoji(e.type.emoji, x, y+yOff, 46*scale);
+      } else if (e.kind === 'prop'){
+        const shadowR = 15*scale;
+        ctx.beginPath();
+        ctx.ellipse(x, y+8*scale, shadowR, shadowR*0.3, 0, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(0,0,0,0.35)';
+        ctx.fill();
+        drawEmoji(e.emoji, x, y-6*scale, 32*scale);
       }
       ctx.globalAlpha = 1;
     });
