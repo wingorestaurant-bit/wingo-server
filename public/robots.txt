@@ -1,0 +1,17 @@
+# Wing-O Restaurants — robots.txt
+# Tells search engine crawlers what they can access and where to find the sitemap.
+
+User-agent: *
+Allow: /
+
+# Don't crawl admin, kitchen, or API endpoints — these aren't for search engines
+Disallow: /admin.html
+Disallow: /kitchen
+Disallow: /kitchen.html
+Disallow: /dashboard
+Disallow: /sb-admin
+Disallow: /customers
+Disallow: /api/
+
+# Sitemap location — Google and other crawlers use this to discover pages
+Sitemap: https://wingorestaurants.com/sitemap.xml
