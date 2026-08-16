@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Wing-O Restaurants — XML Sitemap
+  ─────────────────────────────────
+  Tells Google (and other search engines) which pages to crawl and index.
+  Update the <lastmod> dates when you significantly change a page.
+  Priorities: 1.0 = highest importance, 0.0 = lowest. Only meaningful RELATIVE to each other.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- Homepage — the main landing page -->
+  <url>
+    <loc>https://wingorestaurants.com/</loc>
+    <lastmod>2026-08-16</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Blog — SEO-optimized article listing -->
+  <url>
+    <loc>https://wingorestaurants.com/blog.html</loc>
+    <lastmod>2026-08-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- FAQ — AI-readable Q&amp;A for search + AI models -->
+  <url>
+    <loc>https://wingorestaurants.com/faq.html</loc>
+    <lastmod>2026-08-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Careers — job applications page -->
+  <url>
+    <loc>https://wingorestaurants.com/careers.html</loc>
+    <lastmod>2026-08-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+</urlset>
