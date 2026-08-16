@@ -598,7 +598,7 @@ setInterval(fetchLocationStatus,30000);
 <!-- ═══════ LIMITED TIME OFFER: PICKLE'D POUTINE ═══════
      Auto-hides after August 31, 2026 via inline JS.
      BOGO logic: 1 poutine at $12.99 + 2nd FREE.
-     Photo: /public/images/Pickled-Poutine.png
+     Photo: /public/images/IMG_1355.png
      Placed BEFORE menu categories for max visibility.
 -->
 <section class="lto-section" id="lto-pickled" style="display:none;">
@@ -1509,7 +1509,7 @@ function openPickledLTO(){
       '<div style="font-family:var(--font-head);font-size:.78rem;letter-spacing:2px;text-transform:uppercase;margin-top:.4rem;">2 Pickle\'d Poutines for $'+PICKLED_LTO_PRICE.toFixed(2)+'</div>'+
     '</div>'+
     '<div style="background:rgba(72,187,120,.1);border:1.5px solid #48BB78;color:#276749;padding:.6rem .85rem;border-radius:4px;font-family:var(--font-head);font-size:.8rem;letter-spacing:1px;margin-bottom:1rem;text-align:center;font-weight:700;">💰 You save $'+PICKLED_LTO_PRICE.toFixed(2)+' — August only</div>'+
-    '<img src="/images/Pickled-Poutine.png" alt="Pickle\'d Poutine" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;margin-bottom:1rem;border:2px solid var(--paper-line);">'+
+    '<img src="/images/IMG_1355.png" alt="Pickle\'d Poutine" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;margin-bottom:1rem;border:2px solid var(--paper-line);">'+
     '<div class="lunch-includes">'+
       '<div class="lunch-includes-row">🍟 <span><strong>Golden Fries</strong> · Crispy prairie-style</span></div>'+
       '<div class="lunch-includes-row">🧀 <span><strong>Cheese Curds</strong> · Fresh Saskatchewan curds</span></div>'+
@@ -2411,6 +2411,95 @@ showFirstOrderBanner();
   }
 })();
 </script>
+<!-- ═══════ SCROLL REVEAL ANIMATIONS ═══════
+     Subtle fade-in-up on scroll for key elements.
+     Uses native IntersectionObserver (super performant, zero libs).
+     Respects prefers-reduced-motion for accessibility.
+     Elements above the fold are shown instantly (no jarring flash).
+     Safe to remove: delete this entire block, page keeps working.
+-->
+<style>
+[data-reveal]{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.22,.61,.36,1),transform .7s cubic-bezier(.22,.61,.36,1);will-change:opacity,transform;}
+[data-reveal="visible"]{opacity:1;transform:translateY(0);}
+@media (prefers-reduced-motion: reduce){
+  [data-reveal],[data-reveal="visible"]{opacity:1!important;transform:none!important;transition:none!important;}
+}
+</style>
+<script>
+(function(){
+  // Skip if user has motion sensitivity or browser is old
+  if(!('IntersectionObserver' in window)) return;
+  if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  // Selectors for elements that should fade in as they scroll into view
+  var REVEAL_SELECTORS = [
+    '.cat-card',        // Menu category cards
+    '.review-card',     // Google reviews
+    '.pc',              // Weekly deal cards
+    '.lto-content',     // LTO text side
+    '.lto-media',       // LTO photo side
+    '.impact-sec .stat', // Impact stat numbers
+    '.section-title',   // Section headings
+    '.reviews-header',  // Reviews section header
+    '.reviews-cta',     // "Read all reviews" CTA
+    '.hero-cta'         // Hero call-to-action buttons
+  ];
+
+  function initReveal(){
+    var els = document.querySelectorAll(REVEAL_SELECTORS.join(','));
+    if(!els.length) return;
+
+    var viewportHeight = window.innerHeight || 800;
+    var staggerGroups = {}; // Track siblings for stagger effect
+
+    els.forEach(function(el, i){
+      var rect = el.getBoundingClientRect();
+      // If element is already visible on page load, skip animation (no flash of hidden content)
+      if(rect.top < viewportHeight * 0.9 && rect.bottom > 0){
+        return;
+      }
+      // Group siblings by parent for staggered reveal
+      var parent = el.parentElement;
+      var pid = parent ? (parent.id || parent.className || 'root') : 'root';
+      if(!staggerGroups[pid]) staggerGroups[pid] = 0;
+      var staggerIndex = staggerGroups[pid]++;
+
+      el.setAttribute('data-reveal', '');
+      el.setAttribute('data-stagger', Math.min(staggerIndex, 5)); // Cap at 5 for perf
+    });
+
+    // Observer — reveals element and unobserves it (fire once, forget)
+    var observer = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          var el = entry.target;
+          var stagger = parseInt(el.getAttribute('data-stagger') || '0', 10);
+          // Delay based on stagger index for cascade effect on siblings
+          setTimeout(function(){
+            el.setAttribute('data-reveal', 'visible');
+          }, stagger * 80);
+          observer.unobserve(el);
+        }
+      });
+    }, {
+      threshold: 0.12,     // Fire when 12% of element is in view
+      rootMargin: '0px 0px -40px 0px'  // Trigger slightly before element edge
+    });
+
+    document.querySelectorAll('[data-reveal]').forEach(function(el){
+      observer.observe(el);
+    });
+  }
+
+  // Wait for DOM ready, but run ASAP (before window.load)
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', initReveal);
+  } else {
+    initReveal();
+  }
+})();
+</script>
+<!-- ═══════ END SCROLL REVEAL ═══════ -->
 
 </body>
 </html>
