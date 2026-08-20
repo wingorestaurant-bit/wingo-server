@@ -333,6 +333,10 @@ app.get('/push-admin.html', (req, res) => { res.sendFile(path.join(__dirname, 'p
 app.get('/sauce-boss-admin', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'push-admin.html')); });
 app.get('/sb-admin', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'push-admin.html')); });
 
+// ── 3D / MOTION VIRTUAL STOREFRONT ─────────────────────────────
+app.get('/experience', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'experience.html')); });
+app.get('/experience.html', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'experience.html')); });
+
 // ── KITCHEN DISPLAY ────────────────────────────────────────────
 app.get('/kitchen', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'kitchen.html')); });
 app.get('/kitchen.html', (req, res) => { res.sendFile(path.join(__dirname, 'public', 'kitchen.html')); });
