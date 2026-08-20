@@ -16,6 +16,14 @@
     <priority>1.0</priority>
   </url>
 
+  <!-- 3D Experience — virtual storefront / sauce shelf -->
+  <url>
+    <loc>https://wingorestaurants.com/experience.html</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
   <!-- Blog — SEO-optimized article listing -->
   <url>
     <loc>https://wingorestaurants.com/blog.html</loc>
