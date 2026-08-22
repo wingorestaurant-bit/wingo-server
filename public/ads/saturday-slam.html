@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Saturday Slam — WingO 2-for-$20 Burger Ad</title>
+<meta name="description" content="WingO Saturday deal: two burgers for $20, every Saturday, each with Cajun fries. Pickup only.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rye&family=Fraunces:ital,wght@0,600;1,500;1,600&family=Barlow+Condensed:wght@600;700&display=swap">
+
+<style>
+  :root{
+    --ink:#0d0b09;
+    --panel:#1a1208;
+    --red:#e8190a;
+    --red-deep:#a80f00;
+    --gold:#f5a800;
+    --ember:#ff6b1a;
+    --paper:#f2e9d8;
+    --paper-dim:#c9bfa8;
+  }
+
+  *{box-sizing:border-box;}
+
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:18px;
+    font-family:'Barlow Condensed',sans-serif;
+    padding:32px 16px;
+  }
+
+  .rig{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:14px;
+  }
+
+  .stage,.stage-static{
+    position:relative;
+    width:min(420px,92vw);
+    aspect-ratio:9/16;
+    border-radius:22px;
+    overflow:hidden;
+    background:#000;
+    box-shadow:
+      0 0 0 1px rgba(245,168,0,.35),
+      0 0 0 8px var(--panel),
+      0 30px 70px -20px rgba(0,0,0,.85),
+      0 0 60px -10px rgba(232,25,10,.25);
+  }
+
+  .stage-static{display:none;}
+
+  /* ---------- shared frame chrome ---------- */
+
+  .vignette{
+    position:absolute; inset:0;
+    background:
+      radial-gradient(ellipse at 50% 38%, transparent 40%, rgba(0,0,0,.55) 100%),
+      linear-gradient(180deg, rgba(0,0,0,.55) 0%, transparent 16%, transparent 72%, rgba(0,0,0,.75) 100%);
+    z-index:5;
+    pointer-events:none;
+  }
+
+  .grain{
+    position:absolute; inset:0;
+    background-image:radial-gradient(rgba(255,255,255,.05) 1px, transparent 1px);
+    background-size:3px 3px;
+    mix-blend-mode:overlay;
+    opacity:.5;
+    z-index:6;
+    pointer-events:none;
+  }
+
+  .checker-strip{
+    position:absolute; left:0; right:0; bottom:0; height:14px;
+    background-image:repeating-conic-gradient(#000 0 90deg, var(--paper) 0 180deg);
+    background-size:14px 14px;
+    z-index:7;
+    opacity:.9;
+  }
+
+  /* ---------- hero photo + reveal ---------- */
+
+  .photo-wrap{
+    position:absolute; inset:0;
+    clip-path:circle(0% at 50% 44%);
+    animation:iris 10s infinite;
+  }
+
+  .hero-photo{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    object-fit:cover;
+    object-position:50% 38%;
+    filter:saturate(1.08) contrast(1.05);
+    animation:kenburns 21s ease-in-out infinite alternate;
+    transform-origin:50% 40%;
+  }
+
+  @keyframes iris{
+    0%,7%   { clip-path:circle(0% at 50% 44%); }
+    14%,100%{ clip-path:circle(85% at 50% 44%); }
+  }
+
+  @keyframes kenburns{
+    0%  { transform:scale(1.0) translate(0,0); }
+    100%{ transform:scale(1.14) translate(-1%,-1.5%); }
+  }
+
+  /* ---------- embers ---------- */
+
+  .embers{ position:absolute; inset:0; z-index:4; pointer-events:none; }
+  .ember{
+    position:absolute; bottom:-4%;
+    width:5px; height:5px; border-radius:50%;
+    background:var(--ember);
+    box-shadow:0 0 8px 2px rgba(255,107,26,.85), 0 0 2px rgba(255,214,140,.9);
+    opacity:0;
+    animation-name:rise;
+    animation-timing-function:ease-in;
+    animation-iteration-count:infinite;
+  }
+  @keyframes rise{
+    0%  { opacity:0; transform:translate(0,0) scale(.6); }
+    10% { opacity:.9; }
+    80% { opacity:.55; }
+    100%{ opacity:0; transform:translate(var(--drift,10px),-118vh) scale(.2); }
+  }
+
+  /* ---------- logo mark ---------- */
+
+  .logo-mark{
+    position:absolute; left:50%; top:38%;
+    width:46%;
+    transform:translate(-50%,-50%) scale(.001);
+    filter:drop-shadow(0 6px 18px rgba(0,0,0,.6));
+    z-index:8;
+    animation:logo-intro 10s infinite;
+  }
+  @keyframes logo-intro{
+    0%   { transform:translate(-50%,-50%) scale(.001); opacity:0; top:38%; width:46%; }
+    5%   { transform:translate(-50%,-50%) scale(1.06); opacity:1; }
+    8%   { transform:translate(-50%,-50%) scale(1); opacity:1; top:38%; width:46%; }
+    13%,100%{ transform:translate(-50%,-50%) scale(1); opacity:.96; top:9%; width:23%; }
+  }
+
+  /* ---------- text layers (shared positioning) ---------- */
+
+  .copy{
+    position:absolute; left:0; right:0;
+    text-align:center;
+    z-index:9;
+    padding:0 8%;
+  }
+
+  .ticket-line{
+    top:16%;
+    font-family:'Fraunces',serif;
+    font-style:italic;
+    font-weight:600;
+    font-size:clamp(20px,6.2vw,26px);
+    letter-spacing:.5px;
+    color:var(--gold);
+    text-shadow:0 2px 14px rgba(0,0,0,.7);
+    opacity:0;
+    animation:fade-hold-a 10s infinite;
+  }
+  @keyframes fade-hold-a{
+    0%,13%  { opacity:0; transform:translateY(8px); }
+    17%     { opacity:1; transform:translateY(0); }
+    33%     { opacity:1; transform:translateY(0); }
+    38%,100%{ opacity:0; transform:translateY(-6px); }
+  }
+
+  .price-slam{
+    top:45%;
+    transform:translateY(-50%);
+  }
+  .price-slam .line{
+    display:block;
+    font-family:'Rye',serif;
+    color:var(--paper);
+    line-height:.92;
+  }
+  .price-slam .l1{
+    font-size:clamp(30px,9.4vw,40px);
+    color:var(--red);
+    -webkit-text-stroke:1.5px var(--gold);
+    text-shadow:0 4px 0 rgba(0,0,0,.4);
+  }
+  .price-slam .l2{
+    font-size:clamp(58px,17vw,78px);
+    color:var(--gold);
+    text-shadow:0 6px 0 rgba(168,15,0,.9), 0 10px 22px rgba(0,0,0,.6);
+    margin-top:2px;
+  }
+  .price-slam .l3{
+    font-size:clamp(20px,6vw,26px);
+    color:var(--paper);
+    letter-spacing:2px;
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:700;
+    margin-top:4px;
+  }
+  .price-slam{
+    opacity:0;
+    animation:slam 10s infinite;
+  }
+  @keyframes slam{
+    0%,36%  { opacity:0; transform:translateY(-50%) scale(.6); }
+    41%     { opacity:1; transform:translateY(-50%) scale(1.08); }
+    45%     { opacity:1; transform:translateY(-50%) scale(1); }
+    63%     { opacity:1; transform:translateY(-50%) scale(1); }
+    68%,100%{ opacity:0; transform:translateY(-50%) scale(.92); }
+  }
+
+  .fries-line{
+    top:69%;
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:600;
+    font-size:clamp(15px,4.6vw,18px);
+    letter-spacing:1px;
+    text-transform:uppercase;
+    color:var(--paper-dim);
+    opacity:0;
+    animation:fade-hold-b 10s infinite;
+  }
+  .fries-line strong{ color:var(--gold); font-weight:700; }
+  @keyframes fade-hold-b{
+    0%,67%  { opacity:0; transform:translateY(10px); }
+    72%     { opacity:1; transform:translateY(0); }
+    85%     { opacity:1; transform:translateY(0); }
+    90%,100%{ opacity:0; transform:translateY(-6px); }
+  }
+
+  .cta-card{
+    top:79%; bottom:5%;
+    display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:8px;
+    opacity:0;
+    animation:cta 10s infinite;
+  }
+  @keyframes cta{
+    0%,89% { opacity:0; transform:translateY(10px); }
+    94%    { opacity:1; transform:translateY(0); }
+    100%   { opacity:1; transform:translateY(0); }
+  }
+  .cta-meta{
+    font-size:12px; letter-spacing:2px; font-weight:700;
+    color:var(--paper-dim); text-transform:uppercase;
+  }
+  .cta-btn{
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:700; letter-spacing:1.5px;
+    font-size:14px; text-transform:uppercase;
+    color:var(--ink);
+    background:linear-gradient(180deg,var(--gold),#d68e00);
+    padding:9px 22px;
+    border-radius:999px;
+    box-shadow:0 4px 14px rgba(245,168,0,.4), inset 0 1px 0 rgba(255,255,255,.5);
+  }
+
+  /* ---------- static fallback (reduced motion) ---------- */
+
+  .stage-static{
+    background:linear-gradient(180deg,#000,#000 100%);
+  }
+  .stage-static .photo-wrap-static{ position:absolute; inset:0; }
+  .stage-static img{ width:100%; height:100%; object-fit:cover; object-position:50% 38%; }
+  .stage-static .copy-static{
+    position:absolute; inset:0; z-index:9;
+    display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
+    text-align:center; gap:6px; padding:0 8% 8%;
+    background:linear-gradient(180deg,transparent 45%, rgba(0,0,0,.88) 78%);
+  }
+  .stage-static .ticket-line{ position:static; opacity:1; animation:none; }
+  .stage-static .price-slam{ position:static; opacity:1; transform:none; animation:none; }
+  .stage-static .fries-line{ position:static; opacity:1; animation:none; }
+  .stage-static .cta-card{ position:static; opacity:1; margin-top:4px; animation:none; }
+  .stage-static .logo-mark{ position:static; width:34%; height:auto; object-fit:contain; transform:none; opacity:1; margin-bottom:2px; filter:drop-shadow(0 4px 10px rgba(0,0,0,.6)); animation:none; }
+
+  @media (prefers-reduced-motion: reduce){
+    .stage{ display:none; }
+    .stage-static{ display:block; }
+  }
+
+  .caption{
+    font-family:'Barlow Condensed',sans-serif;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    font-size:12px;
+    color:var(--paper-dim);
+    opacity:.7;
+    text-align:center;
+  }
+</style>
+</head>
+<body>
+
+<div class="rig">
+
+  <div class="stage" aria-hidden="true">
+    <div class="photo-wrap">
+      <img class="hero-photo" src="../images/burger.jpg" alt="">
+    </div>
+    <div class="embers" id="embers"></div>
+    <div class="vignette"></div>
+    <div class="grain"></div>
+
+    <img class="logo-mark" src="../images/wingo-logo-new.png" alt="WingO">
+
+    <div class="copy ticket-line">Every Saturday</div>
+
+    <div class="copy price-slam">
+      <span class="line l1">2 for</span>
+      <span class="line l2">$20</span>
+      <span class="line l3">Burgers</span>
+    </div>
+
+    <div class="copy fries-line">Each comes with <strong>Cajun fries</strong></div>
+
+    <div class="copy cta-card">
+      <div class="cta-meta">Pickup only &middot; Saturdays</div>
+      <div class="cta-btn">Order now</div>
+    </div>
+
+    <div class="checker-strip"></div>
+  </div>
+
+  <div class="stage-static" role="img" aria-label="WingO Saturday deal: two burgers for twenty dollars, every Saturday, each with Cajun fries. Pickup only.">
+    <div class="photo-wrap-static">
+      <img src="../images/burger.jpg" alt="">
+    </div>
+    <div class="vignette"></div>
+    <div class="checker-strip"></div>
+    <div class="copy-static">
+      <img class="logo-mark" src="../images/wingo-logo-new.png" alt="WingO">
+      <div class="ticket-line">Every Saturday</div>
+      <div class="price-slam">
+        <span class="line l1">2 for</span>
+        <span class="line l2">$20</span>
+        <span class="line l3">Burgers</span>
+      </div>
+      <div class="fries-line">Each comes with <strong>Cajun fries</strong></div>
+      <div class="cta-card"><div class="cta-btn">Order now</div><div class="cta-meta">Pickup only &middot; Saturdays</div></div>
+    </div>
+  </div>
+
+  <p class="caption">Concept ad &middot; loops every 10s &middot; WingO &middot; More Than Wings</p>
+</div>
+
+<script>
+  (function(){
+    var host = document.getElementById('embers');
+    if(!host) return;
+    var n = 16;
+    for(var i=0;i<n;i++){
+      var d = document.createElement('div');
+      d.className = 'ember';
+      var left = Math.random()*100;
+      var delay = (Math.random()*10).toFixed(2);
+      var dur = (5 + Math.random()*4).toFixed(2);
+      var drift = ((Math.random()*60)-30).toFixed(0)+'px';
+      d.style.left = left+'%';
+      d.style.setProperty('--drift', drift);
+      d.style.animationDelay = delay+'s';
+      d.style.animationDuration = dur+'s';
+      host.appendChild(d);
+    }
+  })();
+</script>
+</body>
+</html>
