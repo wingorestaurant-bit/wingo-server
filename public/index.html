@@ -354,6 +354,36 @@ footer{background:var(--black);color:#888;padding:3rem 1.5rem 2rem;}
 .wb-btn:active{transform:translateY(2px);box-shadow:0 2px 0 var(--red-deep);}
 .wb-close{background:none;border:none;color:#888;font-size:1.2rem;cursor:pointer;padding:6px 10px;border-radius:3px;}
 .wb-close:hover{color:white;background:rgba(255,255,255,.1);}
+/* ═══ CHECKOUT ADD-ONS ═══ */
+.addon-wrap{display:flex;flex-direction:column;gap:.55rem;margin-bottom:1rem;}
+.addon-card{display:flex;align-items:center;gap:.75rem;background:#FFF;border:1.5px solid #E8E0D0;border-radius:8px;padding:.7rem .85rem;transition:border-color .2s,transform .15s;}
+.addon-card:hover{border-color:var(--yellow);transform:translateX(2px);}
+.addon-emoji{font-size:1.6rem;line-height:1;flex-shrink:0;}
+.addon-info{flex:1;min-width:0;}
+.addon-name{font-family:var(--font-head);font-size:.88rem;font-weight:700;color:var(--ink);letter-spacing:.3px;}
+.addon-pitch{font-size:.74rem;color:#999;margin-top:1px;}
+.addon-btn{flex-shrink:0;background:var(--red);color:#fff;border:none;border-radius:20px;padding:.45rem .9rem;font-family:var(--font-head);font-size:.78rem;font-weight:700;letter-spacing:.5px;cursor:pointer;transition:background .15s,transform .1s;}
+.addon-btn:hover{background:var(--red-deep);}
+.addon-btn:active{transform:scale(.94);}
+
+/* ═══ SAUCY STAMPS AT CHECKOUT ═══ */
+.loy-co-card{background:linear-gradient(135deg,#1A1208,#0D0D0D);border:2px solid var(--yellow);border-radius:8px;padding:.85rem 1rem;margin-bottom:1rem;}
+.loy-co-head{display:flex;justify-content:space-between;align-items:center;font-family:var(--font-head);font-size:.72rem;letter-spacing:2px;color:var(--yellow);font-weight:700;margin-bottom:.6rem;}
+.loy-co-count{color:#fff;font-family:var(--font-display);font-size:1rem;letter-spacing:1px;}
+.loy-co-dots{display:grid;grid-template-columns:repeat(10,1fr);gap:3px;margin-bottom:.55rem;}
+.loy-co-dot{aspect-ratio:1;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.07);border:1px solid rgba(245,168,0,.2);border-radius:4px;font-size:.7rem;}
+.loy-co-dot.on{background:rgba(245,168,0,.2);border-color:var(--yellow);}
+.loy-co-dot.next{background:rgba(232,25,10,.25);border-color:var(--red);color:var(--yellow);animation:loyPulse 1.4s ease-in-out infinite;}
+@keyframes loyPulse{0%,100%{opacity:1;}50%{opacity:.45;}}
+.loy-co-bar{height:5px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;margin-bottom:.5rem;}
+.loy-co-fill{height:100%;background:linear-gradient(90deg,var(--red),var(--yellow));border-radius:3px;transition:width .6s cubic-bezier(.22,.61,.36,1);}
+.loy-co-msg{font-size:.78rem;color:#DDD;text-align:center;line-height:1.4;}
+.loy-co-msg strong{color:var(--yellow);}
+.loy-co-join{background:rgba(245,168,0,.08);border:1.5px dashed var(--yellow);border-radius:8px;padding:.85rem 1rem;margin-bottom:1rem;text-align:center;font-size:.82rem;color:#7B5500;line-height:1.5;}
+.loy-co-join span{font-size:.74rem;color:#998;}
+.loy-co-btn{display:block;width:100%;margin-top:.6rem;background:var(--yellow);color:var(--ink);border:none;border-radius:6px;padding:.55rem;font-family:var(--font-head);font-size:.8rem;font-weight:700;letter-spacing:1px;cursor:pointer;}
+.loy-co-btn:active{transform:scale(.97);}
+
 .loyalty-ov{display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.85);padding:1rem;overflow-y:auto;}
 .loyalty-ov.open{display:flex;align-items:flex-start;justify-content:center;}
 .loyalty-modal{background:var(--paper);border-radius:8px;width:min(520px,100%);margin:1rem auto;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5);position:relative;}
@@ -1260,7 +1290,120 @@ function closeCart(){document.getElementById('cart-ov').classList.remove('open')
 function openCheckout(){closeCart();renderCheckoutForm();document.getElementById('modal-ov').classList.add('open');}
 function closeCheckout(){document.getElementById('modal-ov').classList.remove('open');}
 function setOT(t){orderType=t;document.getElementById('ot-p').classList.toggle('on',t==='pickup');document.getElementById('ot-d').classList.toggle('on',t==='delivery');document.getElementById('del-addr').classList.toggle('hidden',t==='pickup');document.getElementById('del-note').classList.toggle('hidden',t==='pickup');updateCart();renderPaymentSection();}
-function renderCheckoutForm(){var sub=cart.reduce(function(s,i){return s+i.price*i.qty;},0);var isLN=document.body.classList.contains('late-night');var lnDisc=isLN?parseFloat((sub*0.10).toFixed(2)):0;var discSub=sub-lnDisc;var gst=discSub*0.05,pst=discSub*0.06,del=orderType==='delivery'?5.50:0;var tipPct=window._tipPct!==undefined?window._tipPct:15;var tip=discSub*(tipPct/100);var total=discSub+gst+pst+del+tip;var itemRows=cart.map(function(it){return '<div class="os-row"><span>'+it.name+' x'+it.qty+'</span><span>$'+(it.price*it.qty).toFixed(2)+'</span></div>'+(it.details?'<div class="os-row sub-row"><span>'+it.details+'</span><span></span></div>':'');}).join('');var preNote='';if(!isOpen()){preNote='<div class="preorder-note"><strong>Pre-Order</strong> — We are currently closed. Your order will be prepared when we open '+getNextOpenTime()+'. We will call you to confirm!</div>';}var lastSaved=getLastOrder();var savedFn=lastSaved&&lastSaved.customer?lastSaved.customer.firstName||'':'';var savedLn=lastSaved&&lastSaved.customer?lastSaved.customer.lastName||'':'';var savedPh=lastSaved&&lastSaved.customer?lastSaved.customer.phone||'':'';var savedEm=lastSaved&&lastSaved.customer?lastSaved.customer.email||'':'';var savedAddr=lastSaved&&lastSaved.customer?lastSaved.customer.address||'':'';document.getElementById('mbd').innerHTML=preNote+'<div class="otype-row"><div class="oc on" id="ot-p" onclick="setOT(\'pickup\')"><div class="oc-icon">🏃</div><div class="oc-lbl">Pickup</div><div class="oc-sub">Ready in ~20 min</div></div><div class="oc" id="ot-d" onclick="setOT(\'delivery\')"><div class="oc-icon">🛵</div><div class="oc-lbl">Delivery</div><div class="oc-sub">+$5.50 · Regina</div></div></div><div class="fg"><label>Location</label><select id="o-loc" onchange="setLocation(this.value)"><option value="albert-st">Albert Street — #3 155 Albert St N, Regina</option><option value="east-regina">East Regina — 534 University Park Drive</option><option value="regina-beach">Regina Beach — 110 Centre St, Regina Beach</option></select></div><div id="del-addr" class="fg hidden"><label>Delivery Address</label><input type="text" id="o-addr" placeholder="123 Main St, Regina, SK" value="'+savedAddr+'"></div><div id="del-note" class="del-note hidden">Delivery available within Regina. Flat rate $5.50.</div><div class="msec">YOUR INFO</div><div class="frow"><div class="fg"><label>First Name</label><input type="text" id="o-fn" placeholder="First name" value="'+savedFn+'"></div><div class="fg"><label>Last Name</label><input type="text" id="o-ln" placeholder="Last name" value="'+savedLn+'"></div></div><div class="fg"><label>Phone</label><input type="tel" id="o-ph" placeholder="(306) 555-0123" value="'+savedPh+'"></div><div class="fg"><label>Email</label><input type="email" id="o-em" placeholder="you@email.com" value="'+savedEm+'"></div><div class="fg"><label>Order Notes</label><textarea id="o-notes" placeholder="Any special requests..."></textarea></div><div class="tip-section"><div class="tip-label">💸 Add Tip For Staff</div><div class="tip-row"><button type="button" class="tip-btn'+(tipPct===15?' on':'')+'" onclick="setTip(15)">15%</button><button type="button" class="tip-btn'+(tipPct===18?' on':'')+'" onclick="setTip(18)">18%</button><button type="button" class="tip-btn'+(tipPct===20?' on':'')+'" onclick="setTip(20)">20%</button><button type="button" class="tip-btn'+(tipPct===25?' on':'')+'" onclick="setTip(25)">25%</button><button type="button" class="tip-btn'+(tipPct===0?' on':'')+'" onclick="setTip(0)">No Tip</button></div><div class="tip-sub">Tips go directly to your kitchen team 🍗</div></div><div class="msec">ORDER SUMMARY</div><div class="os-box">'+itemRows+'<div class="os-row" style="font-weight:700;color:#1A1208;border-top:2px solid #C8B89A;padding-top:8px;margin-top:4px;"><span>Subtotal</span><span>$'+sub.toFixed(2)+'</span></div>'+(lnDisc>0?'<div class="os-row" style="color:#B577FF;font-weight:600"><span>🌙 Late Night 10% Off</span><span>-$'+lnDisc.toFixed(2)+'</span></div>':'')+'<div class="os-row" style="color:#888"><span>GST (5%)</span><span>$'+gst.toFixed(2)+'</span></div><div class="os-row" style="color:#888"><span>PST (6%)</span><span>$'+pst.toFixed(2)+'</span></div>'+(del>0?'<div class="os-row" style="color:#888"><span>Delivery</span><span>$'+del.toFixed(2)+'</span></div>':'')+(tip>0?'<div class="os-row" style="color:#48BB78;font-weight:700;"><span>💸 Tip ('+tipPct+'%)</span><span>$'+tip.toFixed(2)+'</span></div>':'')+'<div class="os-total"><span>Total</span><span>$'+total.toFixed(2)+'</span></div></div><div id="payment-section"></div>';detectAndSortLocations(true);setTimeout(renderPaymentSection,200);}
+// ═══════ CHECKOUT ADD-ONS + LOYALTY PROGRESS ═══════
+// Smart add-on suggestions based on what's already in the cart.
+var ADDONS = {
+  fries:      {id:'s1', name:'Fries',                    price:4.99,  emoji:'🍟', pitch:'Golden and crispy'},
+  curly:      {id:'s2', name:'Curly Fries',              price:5.99,  emoji:'🌀', pitch:'Seasoned and twisty'},
+  rings:      {id:'s3', name:'Onion Rings',              price:7.99,  emoji:'🧅', pitch:'Golden crispy rings'},
+  pickles:    {id:'s4', name:'Pickle Spears',            price:8.99,  emoji:'🥒', pitch:'Deep fried, dill heaven'},
+  poppers:    {id:'s6', name:'Jalapeno Poppers',         price:10.49, emoji:'🌶️', pitch:'Crispy with a kick'},
+  mozza:      {id:'s9', name:'Mozza Sticks',             price:10.49, emoji:'🧀', pitch:'That cheese pull though'},
+  macbites:   {id:'s7', name:'Mac & Cheese Bites',       price:10.49, emoji:'🧈', pitch:'Deep fried comfort'},
+  oreos:      {id:'m3', name:'Deep Fried Oreos',         price:0.99,  emoji:'🍪', pitch:'Under a buck. Just add it.'},
+  cookiedough:{id:'m2', name:'Deep Fried Cookie Dough',  price:3.50,  emoji:'🍩', pitch:'Warm, gooey, dangerous'},
+  marsbar:    {id:'m4', name:'Deep Fried Mars Bar',      price:2.99,  emoji:'🍫', pitch:'Chocolate, fried. Yes really.'},
+  lemonade:   {id:'d8', name:'Glow Lemonade',            price:4.95,  emoji:'🍋', pitch:'Cools the heat down'},
+  melon:      {id:'d1', name:'Melon Splash',             price:5.95,  emoji:'🍉', pitch:'Watermelon + pineapple + lime'}
+};
+
+// Picks up to 3 add-ons that make sense for what's in the cart right now
+function getSmartAddons(){
+  var inCart = {};
+  cart.forEach(function(it){ inCart[it.id] = true; });
+  var hasSpicy = cart.some(function(it){
+    var d = (it.details||'') + (it.name||'');
+    return /Devil|Dead Angel|Hot|Reaper|Habanero|Sriracha|Ghost|Suicide|Inferno|Fire/i.test(d);
+  });
+  var hasSide = cart.some(function(it){ return String(it.id).charAt(0)==='s'; });
+  var hasDessert = cart.some(function(it){ return String(it.id).charAt(0)==='m'; });
+  var hasDrink = cart.some(function(it){ return String(it.id).charAt(0)==='d'; });
+
+  var picks = [];
+  // Spicy order? Offer something cooling first.
+  if(hasSpicy && !hasDrink) picks.push(ADDONS.lemonade);
+  // No side yet? Suggest one.
+  if(!hasSide) picks.push(hasSpicy ? ADDONS.mozza : ADDONS.curly);
+  // No dessert? Cheap impulse add.
+  if(!hasDessert) picks.push(ADDONS.oreos);
+  // Fill remaining slots with crowd-pleasers not already in cart
+  var fallback = [ADDONS.poppers, ADDONS.rings, ADDONS.pickles, ADDONS.cookiedough, ADDONS.melon, ADDONS.macbites];
+  for(var i=0;i<fallback.length && picks.length<3;i++){
+    var f = fallback[i];
+    if(!inCart[f.id] && picks.indexOf(f)===-1) picks.push(f);
+  }
+  // Drop anything already in the cart, cap at 3
+  return picks.filter(function(p){ return !inCart[p.id]; }).slice(0,3);
+}
+
+function renderAddonsHTML(){
+  var picks = getSmartAddons();
+  if(!picks.length) return '';
+  var cards = picks.map(function(a){
+    return '<div class="addon-card">'+
+      '<div class="addon-emoji">'+a.emoji+'</div>'+
+      '<div class="addon-info"><div class="addon-name">'+a.name+'</div><div class="addon-pitch">'+a.pitch+'</div></div>'+
+      '<button type="button" class="addon-btn" onclick="quickAddAddon(\''+a.id+'\')">+ $'+a.price.toFixed(2)+'</button>'+
+    '</div>';
+  }).join('');
+  return '<div class="msec">MAKE IT A MEAL</div><div class="addon-wrap">'+cards+'</div>';
+}
+
+// One-tap add straight from checkout — no navigating back to the menu
+function quickAddAddon(id){
+  var found = null;
+  Object.keys(ADDONS).forEach(function(k){ if(ADDONS[k].id===id) found = ADDONS[k]; });
+  if(!found) return;
+  var key = found.id+'|addon';
+  var ex = null;
+  for(var i=0;i<cart.length;i++){ if(cart[i].key===key){ ex = cart[i]; break; } }
+  if(ex){ ex.qty++; }
+  else {
+    cart.push({id:found.id,key:key,qty:1,name:found.name,price:found.price,details:'',notes:'',flavors:[],cookieFl:'',sizeName:'',upgradeName:'',upgradePrice:0});
+  }
+  updateCart();
+  toast('Added: '+found.name+' '+found.emoji);
+  renderCheckoutForm();
+}
+
+// ── SAUCY STAMPS PROGRESS AT CHECKOUT ──
+// Renders after the form paints; needs an API call so it fills in async.
+function renderLoyaltyProgress(){
+  var box = document.getElementById('loy-checkout-box');
+  if(!box) return;
+  var session = loyGetSession();
+  if(!session || !session.phone){
+    box.innerHTML = '<div class="loy-co-join">🏆 <strong>Not collecting Saucy Stamps yet?</strong><br><span>Every order earns a stamp · 10 stamps = FREE wings</span><button type="button" class="loy-co-btn" onclick="closeModal();openLoyalty();">Join Free →</button></div>';
+    return;
+  }
+  fetch(API_BASE+'/api/loyalty/member/'+session.phone.replace(/\D/g,''))
+    .then(function(r){ return r.json(); })
+    .then(function(m){
+      if(!m || typeof m.stamps === 'undefined'){ box.innerHTML=''; return; }
+      var stamps = m.stamps||0;
+      var after = stamps + 1;               // this order earns one
+      var toGo = Math.max(10 - after, 0);
+      var pct = Math.min((after/10)*100, 100);
+      var dots = '';
+      for(var i=1;i<=10;i++){
+        var cls = i<=stamps ? 'on' : (i===after ? 'next' : '');
+        dots += '<span class="loy-co-dot '+cls+'">'+(i<=stamps?'🍗':(i===after?'✦':''))+'</span>';
+      }
+      var msg = toGo===0
+        ? '🎉 <strong>This order earns your FREE wings!</strong> Reward unlocks after checkout.'
+        : '<strong>'+toGo+' more order'+(toGo>1?'s':'')+'</strong> after this one → FREE wings 🍗';
+      box.innerHTML =
+        '<div class="loy-co-card">'+
+          '<div class="loy-co-head"><span>🏆 SAUCY STAMPS</span><span class="loy-co-count">'+after+' / 10</span></div>'+
+          '<div class="loy-co-dots">'+dots+'</div>'+
+          '<div class="loy-co-bar"><div class="loy-co-fill" style="width:'+pct+'%"></div></div>'+
+          '<div class="loy-co-msg">'+msg+'</div>'+
+        '</div>';
+    })
+    .catch(function(){ box.innerHTML=''; });
+}
+
+function renderCheckoutForm(){var sub=cart.reduce(function(s,i){return s+i.price*i.qty;},0);var isLN=document.body.classList.contains('late-night');var lnDisc=isLN?parseFloat((sub*0.10).toFixed(2)):0;var discSub=sub-lnDisc;var gst=discSub*0.05,pst=discSub*0.06,del=orderType==='delivery'?5.50:0;var tipPct=window._tipPct!==undefined?window._tipPct:15;var tip=discSub*(tipPct/100);var total=discSub+gst+pst+del+tip;var itemRows=cart.map(function(it){return '<div class="os-row"><span>'+it.name+' x'+it.qty+'</span><span>$'+(it.price*it.qty).toFixed(2)+'</span></div>'+(it.details?'<div class="os-row sub-row"><span>'+it.details+'</span><span></span></div>':'');}).join('');var preNote='';if(!isOpen()){preNote='<div class="preorder-note"><strong>Pre-Order</strong> — We are currently closed. Your order will be prepared when we open '+getNextOpenTime()+'. We will call you to confirm!</div>';}var lastSaved=getLastOrder();var savedFn=lastSaved&&lastSaved.customer?lastSaved.customer.firstName||'':'';var savedLn=lastSaved&&lastSaved.customer?lastSaved.customer.lastName||'':'';var savedPh=lastSaved&&lastSaved.customer?lastSaved.customer.phone||'':'';var savedEm=lastSaved&&lastSaved.customer?lastSaved.customer.email||'':'';var savedAddr=lastSaved&&lastSaved.customer?lastSaved.customer.address||'':'';document.getElementById('mbd').innerHTML=preNote+'<div id="loy-checkout-box"></div><div class="otype-row"><div class="oc on" id="ot-p" onclick="setOT(\'pickup\')"><div class="oc-icon">🏃</div><div class="oc-lbl">Pickup</div><div class="oc-sub">Ready in ~20 min</div></div><div class="oc" id="ot-d" onclick="setOT(\'delivery\')"><div class="oc-icon">🛵</div><div class="oc-lbl">Delivery</div><div class="oc-sub">+$5.50 · Regina</div></div></div><div class="fg"><label>Location</label><select id="o-loc" onchange="setLocation(this.value)"><option value="albert-st">Albert Street — #3 155 Albert St N, Regina</option><option value="east-regina">East Regina — 534 University Park Drive</option><option value="regina-beach">Regina Beach — 110 Centre St, Regina Beach</option></select></div><div id="del-addr" class="fg hidden"><label>Delivery Address</label><input type="text" id="o-addr" placeholder="123 Main St, Regina, SK" value="'+savedAddr+'"></div><div id="del-note" class="del-note hidden">Delivery available within Regina. Flat rate $5.50.</div><div class="msec">YOUR INFO</div><div class="frow"><div class="fg"><label>First Name</label><input type="text" id="o-fn" placeholder="First name" value="'+savedFn+'"></div><div class="fg"><label>Last Name</label><input type="text" id="o-ln" placeholder="Last name" value="'+savedLn+'"></div></div><div class="fg"><label>Phone</label><input type="tel" id="o-ph" placeholder="(306) 555-0123" value="'+savedPh+'"></div><div class="fg"><label>Email</label><input type="email" id="o-em" placeholder="you@email.com" value="'+savedEm+'"></div><div class="fg"><label>Order Notes</label><textarea id="o-notes" placeholder="Any special requests..."></textarea></div><div class="tip-section"><div class="tip-label">💸 Add Tip For Staff</div><div class="tip-row"><button type="button" class="tip-btn'+(tipPct===15?' on':'')+'" onclick="setTip(15)">15%</button><button type="button" class="tip-btn'+(tipPct===18?' on':'')+'" onclick="setTip(18)">18%</button><button type="button" class="tip-btn'+(tipPct===20?' on':'')+'" onclick="setTip(20)">20%</button><button type="button" class="tip-btn'+(tipPct===25?' on':'')+'" onclick="setTip(25)">25%</button><button type="button" class="tip-btn'+(tipPct===0?' on':'')+'" onclick="setTip(0)">No Tip</button></div><div class="tip-sub">Tips go directly to your kitchen team 🍗</div></div>'+renderAddonsHTML()+'<div class="msec">ORDER SUMMARY</div><div class="os-box">'+itemRows+'<div class="os-row" style="font-weight:700;color:#1A1208;border-top:2px solid #C8B89A;padding-top:8px;margin-top:4px;"><span>Subtotal</span><span>$'+sub.toFixed(2)+'</span></div>'+(lnDisc>0?'<div class="os-row" style="color:#B577FF;font-weight:600"><span>🌙 Late Night 10% Off</span><span>-$'+lnDisc.toFixed(2)+'</span></div>':'')+'<div class="os-row" style="color:#888"><span>GST (5%)</span><span>$'+gst.toFixed(2)+'</span></div><div class="os-row" style="color:#888"><span>PST (6%)</span><span>$'+pst.toFixed(2)+'</span></div>'+(del>0?'<div class="os-row" style="color:#888"><span>Delivery</span><span>$'+del.toFixed(2)+'</span></div>':'')+(tip>0?'<div class="os-row" style="color:#48BB78;font-weight:700;"><span>💸 Tip ('+tipPct+'%)</span><span>$'+tip.toFixed(2)+'</span></div>':'')+'<div class="os-total"><span>Total</span><span>$'+total.toFixed(2)+'</span></div></div><div id="payment-section"></div>';detectAndSortLocations(true);setTimeout(renderPaymentSection,200);setTimeout(renderLoyaltyProgress,100);}
 function setTip(pct){window._tipPct=pct;renderCheckoutForm();} function renderPaymentSection(){var sec=document.getElementById('payment-section');if(!sec)return;var btnTxt=isPreOrder()?'PRE-ORDER FOR '+getNextOpenTime().toUpperCase():'PLACE ORDER';var btnStyle=isPreOrder()?'style="background:#F5A800;color:#0D0D0D;"':'';sec.innerHTML='<div class="msec">PAYMENT</div><div class="clover-badge">💰 Pay At '+(orderType==='pickup'?'Pickup':'Delivery')+'</div><p class="pay-note"><strong>Pay '+(orderType==='pickup'?'when you pick up':'when your order arrives')+'.</strong> Cash or card accepted at the store.</p><button class="btn-place" id="pbtn" onclick="submitOrder()" '+btnStyle+'>'+btnTxt+' 🔥</button>';}
 function setLocation(v){activeLocation=v;var lbl=document.getElementById('cart-loc-label');var names={'albert-st':'Albert Street','east-regina':'East Regina','regina-beach':'Regina Beach'};if(lbl)lbl.textContent=(names[v]||'Albert Street')+' · Pickup or Delivery';}
 async function submitOrder(){window._lastCartSnapshot=JSON.parse(JSON.stringify(cart));var fn=document.getElementById('o-fn')?document.getElementById('o-fn').value.trim():'';var ln=document.getElementById('o-ln')?document.getElementById('o-ln').value.trim():'';var ph=document.getElementById('o-ph')?document.getElementById('o-ph').value.trim():'';var em=document.getElementById('o-em')?document.getElementById('o-em').value.trim():'';var notes=document.getElementById('o-notes')?document.getElementById('o-notes').value.trim():'';var addr=orderType==='delivery'&&document.getElementById('o-addr')?document.getElementById('o-addr').value.trim():'';var locId=document.getElementById('o-loc')?document.getElementById('o-loc').value:activeLocation;if(!fn||!ph){toast('Name and phone required');return;}if(orderType==='delivery'&&!addr){toast('Please enter delivery address');return;}var btn=document.getElementById('pbtn');btn.disabled=true;var sub=cart.reduce(function(s,i){return s+i.price*i.qty;},0);var isLN=document.body.classList.contains('late-night');var lnDisc=isLN?parseFloat((sub*0.10).toFixed(2)):0;var discSub=sub-lnDisc;var gst=discSub*0.05,pst=discSub*0.06,del=orderType==='delivery'?5.50:0;var tipPct=window._tipPct!==undefined?window._tipPct:15;var tip=parseFloat((discSub*(tipPct/100)).toFixed(2));var total=parseFloat((discSub+gst+pst+del+tip).toFixed(2));btn.innerHTML='<span class="spinner"></span>Sending to Kitchen...';var serverItems=cart.map(function(i){var parts=[];if(i.flavors&&i.flavors.length){if(i.flavors.length===1)parts.push(i.flavors[0]);else i.flavors.forEach(function(f,idx){parts.push('Order '+(idx+1)+': '+f);});}if(i.cookieFl)parts.push(i.cookieFl);if(i.sizeName)parts.push(i.sizeName);if(i.upgradeName)parts.push(i.upgradeName);if(i.notes)parts.push('Note: '+i.notes);return {name:i.name,flavor:parts.join(' · '),price:i.price,qty:i.qty};});var preOrderNote=isPreOrder()?'[PRE-ORDER — opens '+getNextOpenTime()+'] ':'';var lnNote=isLN?'[🌙 LATE NIGHT 10% OFF applied — $'+lnDisc.toFixed(2)+' discount] ':'';try{var resp=await fetch(API_BASE+'/api/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({locationId:locId,orderType:orderType,customer:{firstName:fn,lastName:ln,phone:ph,email:em,address:addr},items:serverItems,notes:preOrderNote+lnNote+(notes||''),subtotal:sub,discount:lnDisc,discountReason:isLN?'Late Night 10% Off':'',tax:gst+pst,tip:tip,tipPct:tipPct,total:total,preOrder:isPreOrder(),openTime:getNextOpenTime()})});var data=await resp.json();if(data.success){showSuccess(Object.assign({},data,{orderType:orderType,location:locId}));cart=[];updateCart();}else{toast('Error: '+(data.error||'Unknown'));btn.disabled=false;btn.innerHTML='PLACE ORDER 🔥';}}catch(e){var onum='WO-'+Math.floor(1000+Math.random()*9000);showSuccess({success:true,orderNum:onum,cloverSuccess:false,customer:fn,total:total.toFixed(2),phone:ph,orderType:orderType,location:locId});cart=[];updateCart();}}
