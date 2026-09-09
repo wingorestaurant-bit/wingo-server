@@ -3,8 +3,6 @@ const cors = require('cors');
 const fetch = require('node-fetch');
 const path = require('path');
 const { MongoClient, ObjectId } = require('mongodb');
-const trackerAuth = require('./tracker-auth');
-const { mountTrackerRoutes } = require('./tracker-routes');
 let webpush = null;
 try {
   webpush = require('web-push');
@@ -21,11 +19,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
-
-// ── PROFIT TRACKER (password-protected, file lives outside public/) ──
-app.get('/tracker', trackerAuth, (req, res) => {
-  res.sendFile(path.join(__dirname, 'tracker.html'));
-});
 
 // ── MONGODB CONNECTION ────────────────────────────────────────
 const MONGO_URI = process.env.MONGODB_URI;
@@ -85,9 +78,6 @@ const LOCATIONS = {
     cloverPrivateKey: process.env.CLOVER_PRIVATE_KEY_BEACH
   }
 };
-
-// ── PROFIT TRACKER: API routes + automatic daily Clover sync (5am Regina) ──
-mountTrackerRoutes(app, trackerAuth, connectDB, LOCATIONS['albert-st']);
 
 // ── KITCHEN AUTH ──────────────────────────────────────────────
 function getKitchenPassword(loc) {
@@ -607,6 +597,161 @@ app.post('/api/kitchen/order/:id/status', async (req, res) => {
 // Called from kitchen display "🔥 Notify Ready" button.
 // Fires customer email but does NOT change order status.
 // Can be called multiple times if kitchen needs to re-notify.
+// ══════════ CATERING / CORPORATE ORDERS ══════════
+// Receives a built catering request from /catering.html, stores it,
+// emails the owner, and sends the customer a confirmation copy.
+app.post('/api/catering', async (req, res) => {
+  try {
+    const b = req.body || {};
+    const c = b.customer || {};
+    if (!c.firstName || !c.phone || !c.email) {
+      return res.status(400).json({ error: 'missing required fields' });
+    }
+
+    const refNum = 'WC-' + Date.now().toString().slice(-6);
+    const loc = LOCATIONS[b.locationId] || { name: b.locationId || 'Albert Street', phone: '306-522-2111', address: '' };
+    const isDelivery = b.fulfilment === 'delivery';
+    const flavours = Array.isArray(b.flavours) ? b.flavours : [];
+    const addons = Array.isArray(b.addons) ? b.addons : [];
+
+    const billLabel = {
+      card:    'Pay in full on pickup/delivery (card or cash)',
+      deposit: '50% DEPOSIT NOW — balance on pickup/delivery',
+      po:      'COMPANY CARD / PO ON FILE'
+    }[b.billing] || 'Pay in full on pickup/delivery';
+
+    let whenStr = b.date || '';
+    try {
+      const d = new Date(b.date + 'T' + (b.time || '12:00'));
+      whenStr = d.toLocaleDateString('en-CA', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
+              + ' at ' + d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    } catch (e) { /* fall back to raw date string */ }
+
+    // Persist if the DB is up; never block the response on it
+    try {
+      const database = await connectDB();
+      if (database) {
+        await database.collection('catering').insertOne({
+          refNum, ...b, status: 'new', createdAt: new Date()
+        });
+      }
+    } catch (e) {
+      console.error('[catering] db insert failed:', e.message);
+    }
+
+    const addonRows = addons.length
+      ? addons.map(a => `<tr><td style="padding:4px 0;">${a.name} × ${a.qty}</td><td style="padding:4px 0;text-align:right;">$${Number(a.total).toFixed(2)}</td></tr>`).join('')
+      : '<tr><td style="padding:4px 0;color:#888;" colspan="2">None</td></tr>';
+
+    // ── Owner notification ──
+    sendEmail({
+      to: 'besaucy@wingorestaurants.com',
+      subject: `🍽️ CATERING REQUEST ${refNum} — ${b.headcount} guests — ${whenStr}`,
+      html: `<div style="font-family:Arial,sans-serif;max-width:640px;margin:0 auto;background:#F4EBD7;">
+        <div style="background:#0D0D0D;padding:20px;text-align:center;border-bottom:3px double #F5A800;">
+          <h1 style="color:#E8190A;font-size:26px;margin:0;letter-spacing:2px;">WING<span style="color:#fff;">-O</span> CATERING</h1>
+          <p style="color:#F5A800;margin:6px 0 0;font-size:12px;letter-spacing:3px;">NEW REQUEST · ${refNum}</p>
+        </div>
+        <div style="padding:22px;">
+          <div style="background:#E8190A;color:#fff;padding:14px;border-radius:6px;text-align:center;margin-bottom:16px;">
+            <div style="font-size:11px;letter-spacing:2px;">NEEDED</div>
+            <div style="font-size:19px;font-weight:bold;margin-top:3px;">${whenStr}</div>
+            <div style="font-size:13px;margin-top:5px;">${isDelivery ? '🛵 DELIVERY — ' + (b.address || '') : '🏃 PICKUP — ' + loc.name}</div>
+          </div>
+
+          <div style="background:#fff;border:1px solid #C8B89A;border-radius:6px;padding:16px;margin-bottom:14px;">
+            <div style="font-size:11px;color:#888;letter-spacing:2px;margin-bottom:8px;">CUSTOMER</div>
+            <div style="font-size:17px;font-weight:bold;">${c.firstName} ${c.lastName || ''}</div>
+            ${c.company ? `<div style="color:#E8190A;font-weight:bold;font-size:14px;margin-top:2px;">${c.company}</div>` : ''}
+            <div style="margin-top:8px;font-size:14px;">
+              📞 <a href="tel:${String(c.phone).replace(/\D/g, '')}" style="color:#E8190A;font-weight:bold;">${c.phone}</a><br>
+              📧 <a href="mailto:${c.email}" style="color:#E8190A;">${c.email}</a>
+            </div>
+          </div>
+
+          <div style="background:#fff;border:1px solid #C8B89A;border-radius:6px;padding:16px;margin-bottom:14px;">
+            <div style="font-size:11px;color:#888;letter-spacing:2px;margin-bottom:8px;">ORDER</div>
+            <div style="font-size:18px;font-weight:bold;color:#1A1208;">${b.package} · ${b.headcount} guests</div>
+            ${b.wingStyle ? `<div style="margin-top:6px;padding:6px 10px;background:#FFF8EE;border:1px solid #F5D98A;border-radius:4px;font-size:14px;"><strong>🍗 ${b.wingOrders || ''} orders — ${b.wingStyle} wings</strong></div>` : ''}
+            ${b.occasion ? `<div style="font-size:13px;color:#666;margin-top:6px;">Occasion: ${b.occasion}</div>` : ''}
+            <div style="margin-top:10px;font-size:14px;"><strong>Flavours (${flavours.length}):</strong><br>${flavours.join(' · ') || '—'}</div>
+            <div style="margin-top:12px;font-size:14px;"><strong>Add-ons:</strong></div>
+            <table style="width:100%;font-size:14px;margin-top:4px;">${addonRows}</table>
+          </div>
+
+          <div style="background:#fff;border:1px solid #C8B89A;border-radius:6px;padding:16px;margin-bottom:14px;">
+            <table style="width:100%;font-size:14px;">
+              <tr><td style="padding:3px 0;color:#666;">Subtotal</td><td style="padding:3px 0;text-align:right;">$${Number(b.subtotal || 0).toFixed(2)}</td></tr>
+              <tr><td style="padding:3px 0;color:#666;">Tax</td><td style="padding:3px 0;text-align:right;">$${Number(b.tax || 0).toFixed(2)}</td></tr>
+              <tr><td style="padding:8px 0 0;font-weight:bold;font-size:18px;border-top:2px solid #1A1208;">TOTAL</td><td style="padding:8px 0 0;text-align:right;font-weight:bold;font-size:18px;color:#E8190A;border-top:2px solid #1A1208;">$${Number(b.total || 0).toFixed(2)}</td></tr>
+            </table>
+            <div style="margin-top:10px;padding:8px;background:#FFF8EE;border:1px solid #F5D98A;border-radius:4px;font-size:13px;text-align:center;"><strong>Billing:</strong> ${billLabel}</div>
+          </div>
+
+          ${b.notes ? `<div style="background:#FFF8EE;border-left:4px solid #F5A800;border-radius:6px;padding:12px 14px;font-size:14px;"><strong>Notes:</strong> ${b.notes}</div>` : ''}
+
+          <div style="text-align:center;margin-top:18px;padding:12px;background:#0D0D0D;border-radius:6px;color:#F5A800;font-size:13px;letter-spacing:1px;">
+            ⏰ CALL TO CONFIRM WITHIN 4 BUSINESS HOURS
+          </div>
+        </div>
+      </div>`
+    });
+
+    // ── Customer confirmation ──
+    sendEmail({
+      to: c.email,
+      subject: `🍗 Catering Request Received — ${refNum} · Wing-O`,
+      html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#F4EBD7;">
+        <div style="background:#0D0D0D;padding:24px;text-align:center;border-bottom:3px double #F5A800;">
+          <h1 style="color:#E8190A;font-size:30px;margin:0;letter-spacing:2px;font-weight:900;">WING<span style="color:#fff;">-O</span></h1>
+          <p style="color:#F5A800;margin:8px 0 0;font-size:12px;letter-spacing:3px;">CATERING REQUEST RECEIVED</p>
+        </div>
+        <div style="padding:26px 24px;">
+          <p style="font-size:18px;font-weight:bold;margin:0 0 6px;">Hey ${c.firstName}! 👋</p>
+          <p style="font-size:15px;color:#333;line-height:1.6;margin:0 0 18px;">Thanks for choosing WingO to feed your crew. We've got your request and someone from our team will call you within <strong>4 business hours</strong> to confirm the details and lock it in. Nothing is charged until we've spoken.</p>
+
+          <div style="background:#fff;border:1px solid #C8B89A;border-radius:8px;padding:16px 18px;margin-bottom:14px;text-align:center;">
+            <div style="font-size:10px;color:#888;letter-spacing:2px;">REFERENCE #</div>
+            <div style="font-size:24px;color:#E8190A;font-weight:900;letter-spacing:2px;">${refNum}</div>
+          </div>
+
+          <div style="background:#fff;border:1px solid #C8B89A;border-radius:8px;padding:18px;margin-bottom:14px;">
+            <table style="width:100%;font-size:14px;">
+              <tr><td style="padding:5px 0;color:#888;font-size:11px;letter-spacing:1.5px;">PACKAGE</td><td style="padding:5px 0;text-align:right;font-weight:bold;">${b.package}</td></tr>
+              <tr><td style="padding:5px 0;color:#888;font-size:11px;letter-spacing:1.5px;">GUESTS</td><td style="padding:5px 0;text-align:right;font-weight:bold;">${b.headcount}</td></tr>
+              <tr><td style="padding:5px 0;color:#888;font-size:11px;letter-spacing:1.5px;">WHEN</td><td style="padding:5px 0;text-align:right;font-weight:bold;">${whenStr}</td></tr>
+              <tr><td style="padding:5px 0;color:#888;font-size:11px;letter-spacing:1.5px;">${isDelivery ? 'DELIVER TO' : 'PICKUP AT'}</td><td style="padding:5px 0;text-align:right;font-size:13px;">${isDelivery ? (b.address || '') : loc.name}</td></tr>
+            </table>
+            ${b.wingStyle ? `<div style="margin-top:12px;padding-top:12px;border-top:1px solid #E8DCC1;font-size:14px;"><strong>Wings:</strong> ${b.wingOrders || ''} orders — ${b.wingStyle}</div>` : ''}
+            ${addons.length ? `<div style="margin-top:10px;font-size:14px;"><strong>Also included:</strong><br><span style="color:#666;">${addons.map(a=>a.name).join('<br>')}</span></div>` : ''}
+            <div style="margin-top:12px;padding-top:12px;border-top:2px solid #1A1208;display:flex;justify-content:space-between;font-size:18px;font-weight:bold;">
+              <span>Estimated Total</span><span style="color:#E8190A;">$${Number(b.total || 0).toFixed(2)}</span>
+            </div>
+            <div style="font-size:11px;color:#888;text-align:center;margin-top:6px;">Final total confirmed on our call</div>
+          </div>
+
+          <div style="text-align:center;padding:12px 0;font-size:13px;color:#666;line-height:1.7;">
+            Need to change something before we call?<br>
+            <a href="tel:${String(loc.phone || '3065222111').replace(/\D/g, '')}" style="color:#E8190A;text-decoration:none;font-weight:bold;">📞 ${loc.phone || '306-522-2111'}</a>
+            &nbsp;·&nbsp;
+            <a href="mailto:besaucy@wingorestaurants.com" style="color:#E8190A;text-decoration:none;font-weight:bold;">📧 Email us</a>
+          </div>
+        </div>
+        <div style="background:#0D0D0D;padding:22px 20px;text-align:center;">
+          <p style="color:#F5A800;font-family:Georgia,serif;font-style:italic;font-size:14px;margin:0 0 8px;">— The Sauce Boss 🌾</p>
+          <p style="color:#666;font-size:10px;letter-spacing:2px;margin:0;">PROUDLY PRAIRIE · REGINA, SASKATCHEWAN</p>
+        </div>
+      </div>`
+    });
+
+    console.log(`🍽️ Catering request ${refNum} — ${c.firstName} — ${b.headcount} guests — $${Number(b.total || 0).toFixed(2)}`);
+    res.json({ success: true, refNum });
+  } catch (e) {
+    console.error('[catering] error', e.message);
+    res.status(500).json({ error: 'server error' });
+  }
+});
+
 app.post('/api/kitchen/order/:id/notify-ready', async (req, res) => {
   const { loc, pw } = req.body;
   if (!checkKitchenAuth(loc, pw)) return res.status(401).json({ error: 'unauthorized' });
