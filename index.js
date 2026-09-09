@@ -52,7 +52,7 @@ const LOCATIONS = {
     merchantId: "5376RB8DAZMH1",
     apiToken: process.env.CLOVER_API_TOKEN_ALBERT,
     address: "#3 - 155 Albert St N, Regina, SK",
-    phone: "306-522-2111",
+    phone: "639-997-0553", // TEMP: Albert St line having technical issues. Revert to 306-522-2111.
     hours: "Mon-Wed 11am-1am · Thu-Sun 11am-3am",
     onlinePayments: false,
     cloverPrivateKey: process.env.CLOVER_PRIVATE_KEY_ALBERT
@@ -609,7 +609,7 @@ app.post('/api/catering', async (req, res) => {
     }
 
     const refNum = 'WC-' + Date.now().toString().slice(-6);
-    const loc = LOCATIONS[b.locationId] || { name: b.locationId || 'Albert Street', phone: '306-522-2111', address: '' };
+    const loc = LOCATIONS[b.locationId] || { name: b.locationId || 'Albert Street', phone: '639-997-0553', address: '' } // TEMP phone;
     const isDelivery = b.fulfilment === 'delivery';
     const flavours = Array.isArray(b.flavours) ? b.flavours : [];
     const addons = Array.isArray(b.addons) ? b.addons : [];
@@ -732,7 +732,7 @@ app.post('/api/catering', async (req, res) => {
 
           <div style="text-align:center;padding:12px 0;font-size:13px;color:#666;line-height:1.7;">
             Need to change something before we call?<br>
-            <a href="tel:${String(loc.phone || '3065222111').replace(/\D/g, '')}" style="color:#E8190A;text-decoration:none;font-weight:bold;">📞 ${loc.phone || '306-522-2111'}</a>
+            <a href="tel:${String(loc.phone || '6399970553').replace(/\D/g, '')}" style="color:#E8190A;text-decoration:none;font-weight:bold;">📞 ${loc.phone || '639-997-0553'}</a>
             &nbsp;·&nbsp;
             <a href="mailto:besaucy@wingorestaurants.com" style="color:#E8190A;text-decoration:none;font-weight:bold;">📧 Email us</a>
           </div>
