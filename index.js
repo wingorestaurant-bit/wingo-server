@@ -18,7 +18,8 @@ try {
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+// extensions: lets clean URLs like /regina-albert-st serve regina-albert-st.html (SEO pages)
+app.use(express.static(path.join(__dirname, 'public'), { extensions: ['html'] }));
 
 // ── MONGODB CONNECTION ────────────────────────────────────────
 const MONGO_URI = process.env.MONGODB_URI;
