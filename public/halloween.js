@@ -895,7 +895,7 @@
   // Where the ghosts hide. The footer one is small and shy on purpose.
   var HUNT_SPOTS = [
     { id: 'hero',    sel: '.hero',        css: 'left:5%;top:34%;',     size: 50 },
-    { id: 'deals',   sel: '.promo-bar',   css: 'right:1.5%;top:-18px;', size: 44 },
+    { id: 'deals',   sel: '.promo-bar',   css: 'right:20px;top:-18px;', size: 44 },
     { id: 'menu',    sel: '#cat-section', css: 'right:3%;top:1.2rem;',  size: 46 },
     { id: 'reviews', sel: '#reviews',     css: 'left:2%;top:1.4rem;', size: 44 },
     { id: 'footer',  sel: 'footer',       css: 'right:6%;top:1.2rem;', size: 34, shy: true }
