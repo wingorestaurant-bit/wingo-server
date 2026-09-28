@@ -312,6 +312,26 @@ app.get('/api/check-first-order', async (req, res) => {
   });
 });
 
+// ── HALLOWEEN GHOST HUNT REWARD ───────────────────────────────
+// Customers who catch all 5 ghosts on the site get FREE small fries
+// on a $30+ order — once per phone number per Halloween season.
+// Season dates match public/halloween.js (Sep 25 – Nov 2, Regina time).
+const GHOST_HUNT_MIN_SUBTOTAL = 30.00;
+const GHOST_HUNT_FRIES_ITEM = { name: '🎃 FREE Fries (Ghost Hunt)', flavor: 'Small · Halloween Ghost Hunt reward', price: 0, qty: 1 };
+
+function ghostHuntSeason() {
+  const parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Regina', year: 'numeric', month: 'numeric', day: 'numeric' })
+    .formatToParts(new Date()).reduce((o, p) => (o[p.type] = Number(p.value), o), {});
+  const md = parts.month * 100 + parts.day;
+  return { active: md >= 925 && md <= 1102, year: parts.year };
+}
+
+async function ghostHuntRedeemed(phoneNorm, year) {
+  const database = await connectDB();
+  if (!database) return true;  // fail closed — can't verify, don't give it away
+  return !!(await database.collection('orders').findOne({ ghostHuntPhone: phoneNorm, ghostHuntYear: year }));
+}
+
 // ── HEALTH CHECK ───────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', locations: Object.keys(LOCATIONS), time: new Date().toISOString() });
@@ -381,6 +401,27 @@ app.post('/api/orders', async (req, res) => {
     }
   } catch (e) { console.warn('Contest redemption check failed:', e.message); }
 
+  // ── HALLOWEEN GHOST HUNT FREE FRIES ────────────────────────
+  let ghostHuntFries = false, ghostHuntDenied = null;
+  const ghostPhone = String(customer.phone || '').replace(/\D/g, '');
+  const ghostSeason = ghostHuntSeason();
+  if (req.body.ghostHunt === 'fries') {
+    try {
+      if (!ghostSeason.active) ghostHuntDenied = 'season-over';
+      else if (discountValidated) ghostHuntDenied = 'first-order-discount';  // doesn't stack with 15% off — fries stay saved
+      else if ((Number(subtotal) || 0) < GHOST_HUNT_MIN_SUBTOTAL) ghostHuntDenied = 'below-minimum';
+      else if (ghostPhone.length < 10) ghostHuntDenied = 'invalid-phone';
+      else if (await ghostHuntRedeemed(ghostPhone, ghostSeason.year)) ghostHuntDenied = 'already-redeemed';
+      else ghostHuntFries = true;
+    } catch (e) { ghostHuntDenied = 'error'; console.warn('Ghost hunt check failed:', e.message); }
+    if (ghostHuntFries) {
+      items.push({ ...GHOST_HUNT_FRIES_ITEM });
+      console.log(`🎃 Ghost Hunt free fries added for ${ghostPhone}`);
+    } else {
+      console.log(`⚠️ Ghost Hunt fries denied for ${ghostPhone}: ${ghostHuntDenied}`);
+    }
+  }
+
   console.log(`\n[${timestamp}] Order ${orderNum} for ${customer.firstName} at ${loc.name}`);
 
   let cloverId = null, cloverSuccess = false;
@@ -399,13 +440,15 @@ app.post('/api/orders', async (req, res) => {
           phone: customer.phone, email: customer.email || '', address: customer.address || ''
         },
         items: items.map(i => ({ name: i.name, flavor: i.flavor || '', price: i.price, qty: i.qty })),
-        notes: contestRedemption
+        notes: (ghostHuntFries ? '🎃 GHOST HUNT — FREE SMALL FRIES · ' : '') + (contestRedemption
           ? ('🏆 FREE WINGS WINNER · ' + contestRedemption.label + ' · ' + (notes || ''))
-          : (notes || ''),
+          : (notes || '')),
         subtotal: Number(subtotal), tax: Number(tax), total: Number(total),
         preOrder: !!preOrder, openTime: openTime || null, cloverId, cloverSuccess,
         firstOrderDiscount: discountApplied, discountValidated,
         contestRedemption: contestRedemption || null,
+        ghostHuntPhone: ghostHuntFries ? ghostPhone : null,
+        ghostHuntYear: ghostHuntFries ? ghostSeason.year : null,
         kitchenStatus: 'pending', createdAt: new Date()
       });
       console.log(`✓ Order ${orderNum} saved to Mongo`);
@@ -522,7 +565,8 @@ app.post('/api/orders', async (req, res) => {
     customer: customer.firstName, total: Number(total).toFixed(2),
     phone: customer.phone, orderType, location: loc.name,
     stampAdded: !!stampResult, gotFreeWings: stampResult?.gotFree || false, loyaltyStamps: stampResult?.stamps,
-    discountApplied, discountValidated
+    discountApplied, discountValidated,
+    ghostHuntFries, ghostHuntDenied
   });
 });
 
