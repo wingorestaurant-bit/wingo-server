@@ -11,6 +11,9 @@
 //  • Site-wide: ghost fly-bys, a bat swarm, a dangling spider,
 //    a zombie that shuffles along the bottom of the screen,
 //    a little ghost that follows your cursor, spooky banner.
+//  • 👻 GHOST HUNT: 5 clickable ghosts hide around the page. Catch
+//    them all → FREE small fries on a $30+ order (checked by the
+//    server in index.js, once per phone number per season).
 //  • A 🎃 button (bottom-left) lets customers switch it off.
 //
 // SEASON: turns itself on between SEASON_START and SEASON_END.
@@ -880,6 +883,338 @@
     });
   }
 
+  // ═════════════════════════════════════════════════════════════
+  // 👻 GHOST HUNT — catch 5 hidden ghosts → FREE fries on $30+
+  // ─────────────────────────────────────────────────────────────
+  // Progress lives in this browser (localStorage). The reward is
+  // requested at checkout and validated by the server (/api/orders):
+  // in season, subtotal ≥ $30, once per phone number per year.
+  // ═════════════════════════════════════════════════════════════
+  var HUNT_KEY = 'wingo_ghost_hunt';
+  var HUNT_MIN = 30;
+  // Where the ghosts hide. The footer one is small and shy on purpose.
+  var HUNT_SPOTS = [
+    { id: 'hero',    sel: '.hero',        css: 'left:5%;top:34%;',     size: 50 },
+    { id: 'deals',   sel: '.promo-bar',   css: 'right:20px;top:-18px;', size: 44 },
+    { id: 'menu',    sel: '#cat-section', css: 'right:3%;top:1.2rem;',  size: 46 },
+    { id: 'reviews', sel: '#reviews',     css: 'left:2%;top:1.4rem;', size: 44 },
+    { id: 'footer',  sel: 'footer',       css: 'right:6%;top:1.2rem;', size: 34, shy: true }
+  ];
+
+  function huntState(){
+    var s = null;
+    try { s = JSON.parse(localStorage.getItem(HUNT_KEY) || 'null'); } catch(e){}
+    s = s || {};
+    s.caught = Array.isArray(s.caught) ? s.caught : [];
+    return s;
+  }
+  function saveHunt(s){ try { localStorage.setItem(HUNT_KEY, JSON.stringify(s)); } catch(e){} }
+  function analytics(name, params){ if (window.trackEvent) try { window.trackEvent(name, params || {}); } catch(e){} }
+
+  var HUNT_CSS = [
+    // Hidden ghosts
+    '.hw-hunt{position:absolute;z-index:5;padding:0;border:0;background:none;cursor:pointer;pointer-events:auto;-webkit-tap-highlight-color:transparent;filter:drop-shadow(0 0 10px rgba(124,252,0,.7)) drop-shadow(0 0 3px rgba(255,255,255,.9));animation:hw-peek 5s ease-in-out infinite;}',
+    '.hw-hunt.shy{animation:hw-shy 7s ease-in-out infinite;}',
+    '.hw-hunt svg{display:block;width:100%;height:auto;}',
+    '.hw-hunt:hover,.hw-hunt:focus-visible{outline:none;animation-play-state:paused;transform:scale(1.15);opacity:1;}',
+    '.hw-hunt::after{content:"";position:absolute;inset:-14px;}',  // bigger tap target
+    '@keyframes hw-peek{0%,100%{transform:translateY(0) rotate(-6deg);opacity:.95}50%{transform:translateY(-8px) rotate(6deg);opacity:.75}}',
+    '@keyframes hw-shy{0%,100%{opacity:.15;transform:translateY(6px)}35%,65%{opacity:.9;transform:translateY(-4px)}}',
+    '.hw-poof{position:absolute;z-index:6;pointer-events:none;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:#dfffc8;box-shadow:0 0 12px #7CFC00;animation:hw-poof .7s ease-out forwards;}',
+    '@keyframes hw-poof{to{transform:translate(var(--dx),var(--dy)) scale(.2);opacity:0}}',
+    '.hw-caught{animation:hw-caught .5s ease-in forwards!important;pointer-events:none;}',
+    '@keyframes hw-caught{0%{transform:scale(1)}40%{transform:scale(1.5) rotate(20deg)}100%{transform:scale(0) rotate(-40deg);opacity:0}}',
+    // Progress pill (sits right of the pumpkin toggle)
+    '#hw-hud{position:fixed;left:calc(1rem + 56px);bottom:5.2rem;z-index:998;display:flex;align-items:center;gap:.4rem;padding:.4rem .8rem;border-radius:40px;border:2px solid #7CFC00;background:#12061f;color:#fff;font-family:"Creepster","Bebas Neue",cursive;font-size:1.05rem;letter-spacing:1.5px;cursor:pointer;box-shadow:0 0 14px rgba(124,252,0,.35);}',
+    '#hw-hud .dots{display:flex;gap:3px;}#hw-hud .dots i{width:8px;height:8px;border-radius:50%;background:#3a2a4a;}#hw-hud .dots i.on{background:#7CFC00;box-shadow:0 0 6px #7CFC00;}',
+    '#hw-hud.bump{animation:hw-bump .5s;}@keyframes hw-bump{50%{transform:scale(1.2)}}',
+    '#hw-hud.won{border-color:#FF7518;box-shadow:0 0 14px rgba(255,117,24,.5);}',
+    '@media (max-width:768px){#hw-hud{left:calc(.6rem + 48px);font-size:.95rem;padding:.35rem .7rem;}body.cart-open #hw-hud,body.checkout-open #hw-hud,body.modal-open #hw-hud,body.cart-open #hw-intro,body.checkout-open #hw-intro,body.modal-open #hw-intro{display:none;}}',
+    '@media (max-width:600px){#hw-hud{bottom:8.6rem;}}',
+    // Intro card
+    '#hw-intro{position:fixed;left:1rem;bottom:8.6rem;z-index:998;width:min(330px,calc(100vw - 2rem));background:linear-gradient(160deg,#1c0a2e,#0d0614);color:#eee;border:2px solid #7CFC00;border-radius:14px;padding:1rem 1.1rem;box-shadow:0 10px 40px rgba(0,0,0,.6),0 0 24px rgba(124,252,0,.25);font-family:var(--font-body,Inter,sans-serif);transform:translateY(20px);opacity:0;transition:all .45s cubic-bezier(.3,1.4,.5,1);}',
+    '#hw-intro.show{transform:none;opacity:1;}',
+    '@media (max-width:600px){#hw-intro{left:.6rem;bottom:11.6rem;}}',
+    '#hw-intro h4{margin:0 0 .35rem;font-family:"Creepster","Bebas Neue",cursive;font-weight:400;font-size:1.5rem;letter-spacing:2px;color:#B8F28B;}',
+    '#hw-intro p{margin:0 0 .8rem;font-size:.88rem;line-height:1.45;}#hw-intro p b{color:#FFB347;}',
+    '#hw-intro .x{position:absolute;top:.4rem;right:.6rem;background:none;border:0;color:#999;font-size:1.3rem;cursor:pointer;}',
+    '.hw-btn{display:inline-block;border:0;border-radius:8px;padding:.7rem 1.1rem;font-family:var(--font-head,Oswald,sans-serif);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;font-size:.85rem;cursor:pointer;background:#FF7518;color:#12061f;box-shadow:0 3px 0 #8a3300;}',
+    '.hw-btn.alt{background:transparent;color:#B8F28B;border:1.5px solid #7CFC00;box-shadow:none;}',
+    // Toast
+    '#hw-toast{position:fixed;left:50%;top:84px;z-index:100001;transform:translate(-50%,-20px);opacity:0;background:#12061f;color:#fff;border:2px solid #7CFC00;border-radius:40px;padding:.6rem 1.2rem;font-family:"Creepster","Bebas Neue",cursive;font-size:1.15rem;letter-spacing:1.5px;white-space:nowrap;box-shadow:0 0 20px rgba(124,252,0,.4);transition:all .35s;pointer-events:none;}',
+    '#hw-toast.show{opacity:1;transform:translate(-50%,0);}',
+    // Win modal
+    '#hw-win{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;padding:1rem;background:radial-gradient(ellipse at center,rgba(40,10,60,.92),rgba(5,2,10,.97));animation:hw-fadein .4s;}',
+    '@keyframes hw-fadein{from{opacity:0}}',
+    '#hw-win .card{position:relative;max-width:420px;width:100%;text-align:center;color:#eee;background:linear-gradient(170deg,#1c0a2e,#0d0614);border:2px solid #FF7518;border-radius:18px;padding:1.6rem 1.4rem 1.4rem;box-shadow:0 0 50px rgba(255,117,24,.45);animation:hw-rise .6s cubic-bezier(.3,1.5,.5,1);}',
+    '@keyframes hw-rise{from{transform:translateY(40px) scale(.9);opacity:0}}',
+    '#hw-win .big{width:110px;margin:-4.2rem auto .4rem;filter:drop-shadow(0 0 20px rgba(200,220,255,.9));animation:hw-peek 2.4s ease-in-out infinite;}',
+    '#hw-win h3{margin:0;font-family:"Creepster","Bebas Neue",cursive;font-weight:400;font-size:2.1rem;letter-spacing:2px;color:#B8F28B;line-height:1.05;text-shadow:0 0 16px rgba(124,252,0,.5);}',
+    '#hw-win .prize{margin:.7rem 0 .3rem;font-family:"Creepster","Bebas Neue",cursive;font-size:1.7rem;color:#FF7518;letter-spacing:1.5px;}',
+    '#hw-win p{font-size:.9rem;line-height:1.5;margin:0 0 1.1rem;color:#ccc;}#hw-win p b{color:#FFB347;}',
+    '#hw-win .row{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;}',
+    '#hw-win .x{position:absolute;top:.5rem;right:.8rem;background:none;border:0;color:#999;font-size:1.5rem;cursor:pointer;}',
+    '.hw-confetti{position:fixed;top:-40px;z-index:100001;pointer-events:none;font-size:1.6rem;animation:hw-fall linear forwards;}',
+    '@keyframes hw-fall{to{transform:translateY(110vh) rotate(720deg)}}',
+    // Checkout badge
+    '.hw-co{border-radius:8px;padding:.7rem .9rem;margin:.5rem 0;font-family:var(--font-head,Oswald,sans-serif);font-size:.85rem;font-weight:700;letter-spacing:.5px;display:flex;justify-content:space-between;align-items:center;gap:.5rem;}',
+    '.hw-co.ok{background:linear-gradient(90deg,#1c0a2e,#2b0b3d);color:#FFB347;border:1.5px solid #FF7518;}',
+    '.hw-co.ok span:last-child{color:#B8F28B;}',
+    '.hw-co.need{background:rgba(124,252,0,.07);color:#3d6b12;border:1.5px dashed #6fae3a;justify-content:center;text-align:center;}'
+  ].join('\n');
+
+  var huntStyle = null;
+  function huntStyles(){
+    if (huntStyle) return;
+    huntStyle = document.createElement('style');
+    huntStyle.textContent = HUNT_CSS;
+    document.head.appendChild(huntStyle);
+  }
+
+  var toastTimer;
+  function huntToast(msg){
+    var t = document.getElementById('hw-toast');
+    if (!t) { t = el('div', ''); t.id = 'hw-toast'; t.setAttribute('role', 'status'); document.body.appendChild(t); }
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2600);
+  }
+
+  function goToMenu(){
+    var home = document.getElementById('home-page');
+    if (home && home.style.display === 'none' && typeof window.showHome === 'function') window.showHome();
+    setTimeout(function(){
+      var m = document.getElementById('cat-section');
+      if (m) m.scrollIntoView({ behavior: 'smooth' });
+    }, 150);
+  }
+
+  function shareHunt(btn){
+    var url = location.origin + '/?halloween=1';
+    var text = 'I survived the Wing-O Ghost Hunt 👻🎃 and scored FREE fries! Can you find all 5 ghosts?';
+    if (navigator.share) {
+      navigator.share({ title: 'Wing-O Ghost Hunt', text: text, url: url }).then(function(){ analytics('ghost_hunt_share', { method: 'native' }); }).catch(function(){});
+    } else if (navigator.clipboard) {
+      navigator.clipboard.writeText(text + ' ' + url).then(function(){ btn.textContent = 'Link copied! ✅'; analytics('ghost_hunt_share', { method: 'copy' }); });
+    }
+  }
+
+  function confetti(){
+    if (reduceMotion) return;
+    var bits = ['🎃', '👻', '🍟', '🦇', '🍬', '🍗'];
+    for (var i = 0; i < 36; i++) {
+      var c = el('div', 'hw-confetti');
+      c.textContent = bits[i % bits.length];
+      c.style.left = rand(0, 100) + 'vw';
+      c.style.animationDuration = rand(2.2, 4.2) + 's';
+      c.style.animationDelay = rand(0, 1.2) + 's';
+      document.body.appendChild(c);
+      (function(c){ setTimeout(function(){ c.remove(); }, 6000); })(c);
+    }
+  }
+
+  function winModal(){
+    var s = huntState();
+    var m = el('div', '');
+    m.id = 'hw-win';
+    m.setAttribute('role', 'dialog');
+    m.setAttribute('aria-modal', 'true');
+    m.setAttribute('aria-label', 'Ghost Hunt complete');
+    var body = s.redeemed
+      ? '<p>You already claimed your free fries this season. Thanks for playing — see you next Halloween! 👻</p>'
+      : '<p>Your <b>FREE small fries</b> are unlocked for any order of <b>$' + HUNT_MIN + '+</b>. They\'re added automatically at checkout — just order on this device. One per customer; can\'t be combined with the 15% first-order discount.</p>';
+    m.innerHTML = '<div class="card"><button class="x" aria-label="Close">×</button>' +
+      '<div class="big">' + SVG_GHOST + '</div>' +
+      '<h3>You survived the Ghost Hunt!</h3>' +
+      '<div class="prize">🍟 Free fries are yours</div>' + body +
+      '<div class="row">' + (s.redeemed ? '' : '<button class="hw-btn" data-a="order">Order now 🍗</button>') +
+      '<button class="hw-btn alt" data-a="share">Dare a friend 📣</button></div></div>';
+    function close(){ m.remove(); document.removeEventListener('keydown', onKey); }
+    function onKey(e){ if (e.key === 'Escape') close(); }
+    m.addEventListener('click', function(e){
+      var a = e.target.closest('[data-a]');
+      if (e.target === m || e.target.classList.contains('x')) close();
+      else if (a && a.dataset.a === 'order') { close(); goToMenu(); analytics('ghost_hunt_order_click'); }
+      else if (a && a.dataset.a === 'share') shareHunt(a);
+    });
+    document.addEventListener('keydown', onKey);
+    document.body.appendChild(m);
+    var first = m.querySelector('.hw-btn'); if (first) first.focus();
+  }
+
+  function infoModalOrIntro(){
+    var s = huntState();
+    if (s.won) return winModal();
+    showIntro(true);
+  }
+
+  function showIntro(force){
+    var s = huntState();
+    if (document.getElementById('hw-intro') || s.won || (!force && s.intro)) return;
+    var n = s.caught.length;
+    var card = el('div', '');
+    card.id = 'hw-intro';
+    card.setAttribute('role', 'dialog');
+    card.setAttribute('aria-label', 'Ghost Hunt');
+    card.innerHTML = '<button class="x" aria-label="Close">×</button><h4>👻 Ghost Hunt</h4>' +
+      '<p>5 ghosts are hiding around this page. Catch them all and get <b>FREE fries</b> on your $' + HUNT_MIN + '+ order!' +
+      (n ? ' You\'ve caught <b>' + n + '/5</b> so far.' : '') + '</p>' +
+      '<button class="hw-btn">' + (n ? 'Keep hunting' : 'Start hunting') + ' 🔦</button>';
+    function close(){ card.classList.remove('show'); setTimeout(function(){ card.remove(); }, 400); var st = huntState(); st.intro = true; saveHunt(st); }
+    card.querySelector('.x').addEventListener('click', close);
+    card.querySelector('.hw-btn').addEventListener('click', function(){ close(); analytics('ghost_hunt_start'); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+    document.body.appendChild(card);
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){ card.classList.add('show'); }); });
+    onCleanup(function(){ card.remove(); });
+  }
+
+  function hunt(){
+    huntStyles();
+    var s = huntState();
+
+    // Progress pill
+    var hud = el('button', '');
+    hud.id = 'hw-hud';
+    hud.type = 'button';
+    function paintHud(){
+      var st = huntState(), n = Math.min(st.caught.length, HUNT_SPOTS.length);
+      hud.classList.toggle('won', !!st.won);
+      hud.innerHTML = st.won ? '🍟 Free fries!' : '👻 ' + n + '/5 <span class="dots">' +
+        HUNT_SPOTS.map(function(sp){ return '<i class="' + (st.caught.indexOf(sp.id) !== -1 ? 'on' : '') + '"></i>'; }).join('') + '</span>';
+      hud.setAttribute('aria-label', st.won ? 'Ghost Hunt complete — free fries unlocked' : 'Ghost Hunt: ' + n + ' of 5 ghosts caught');
+    }
+    paintHud();
+    hud.addEventListener('click', infoModalOrIntro);
+    document.body.appendChild(hud);
+    onCleanup(function(){ hud.remove(); });
+
+    if (!s.won) {
+      var introT = setTimeout(function(){ showIntro(false); }, 6000);
+      onCleanup(function(){ clearTimeout(introT); });
+    }
+
+    // Place the uncaught ghosts
+    HUNT_SPOTS.forEach(function(sp){
+      if (s.won || s.caught.indexOf(sp.id) !== -1) return;
+      var host = document.querySelector(sp.sel);
+      if (!host) return;
+      var restorePos = null;
+      if (getComputedStyle(host).position === 'static') { restorePos = host.style.position; host.style.position = 'relative'; }
+      var g = el('button', 'hw-hunt' + (sp.shy ? ' shy' : ''), SVG_GHOST);
+      g.type = 'button';
+      g.setAttribute('aria-label', 'Catch the hidden ghost');
+      g.style.cssText = sp.css + 'width:' + sp.size + 'px;animation-delay:-' + rand(0, 4).toFixed(1) + 's;';
+      g.addEventListener('click', function(e){
+        e.preventDefault(); e.stopPropagation();
+        catchGhost(sp.id, g, host);
+      });
+      host.appendChild(g);
+      onCleanup(function(){ g.remove(); if (restorePos !== null) host.style.position = restorePos; });
+    });
+
+    function catchGhost(id, g, host){
+      var st = huntState();
+      if (st.caught.indexOf(id) === -1) st.caught.push(id);
+      var n = st.caught.length;
+      // Burst of ecto-sparks
+      var r = g.getBoundingClientRect(), hr = host.getBoundingClientRect();
+      for (var i = 0; i < 12; i++) {
+        var p = el('div', 'hw-poof'), a = i / 12 * Math.PI * 2, d = rand(30, 60);
+        p.style.left = (r.left - hr.left + r.width / 2) + 'px';
+        p.style.top = (r.top - hr.top + r.height / 2) + 'px';
+        p.style.setProperty('--dx', Math.cos(a) * d + 'px');
+        p.style.setProperty('--dy', Math.sin(a) * d + 'px');
+        host.appendChild(p);
+        (function(p){ setTimeout(function(){ p.remove(); }, 800); })(p);
+      }
+      g.classList.add('hw-caught');
+      setTimeout(function(){ g.remove(); }, 520);
+      analytics('ghost_caught', { ghost: id, count: n });
+      if (n >= HUNT_SPOTS.length && !st.won) {
+        st.won = true;
+        saveHunt(st);
+        analytics('ghost_hunt_won');
+        huntToast('👻 5/5 — You caught them all!');
+        setTimeout(function(){ confetti(); winModal(); }, 700);
+      } else {
+        saveHunt(st);
+        var left = HUNT_SPOTS.length - n;
+        huntToast(['👻 Gotcha!', '👻 Boo-yah!', '👻 Caught one!', '👻 Spooky skills!'][n % 4] + ' ' + n + '/5 — ' + left + ' more hiding…');
+      }
+      var intro = document.getElementById('hw-intro'); if (intro) intro.remove();
+      hud.classList.remove('bump'); void hud.offsetWidth; hud.classList.add('bump');
+      paintHud();
+    }
+  }
+
+  // Checkout: show the reward and ask the server for it (runs even if
+  // spooky visuals are switched off, so a winner never loses the prize).
+  function installCheckoutHooks(){
+    huntStyles();
+    function eligible(){ var s = huntState(); return s.won && !s.redeemed; }
+    // Doesn't stack with the 15% first-order discount (set by that wrapper)
+    function firstOrderDiscount(){ return (window._foDiscount || 0) > 0; }
+    function cartSubtotal(){ return (window.cart || []).reduce(function(t, i){ return t + i.price * i.qty; }, 0); }
+
+    (function wrapRender(){
+      if (typeof window.renderCheckoutForm !== 'function') return setTimeout(wrapRender, 250);
+      if (window._ghostHuntWrapped) return;
+      window._ghostHuntWrapped = true;
+      var orig = window.renderCheckoutForm;
+      window.renderCheckoutForm = function(){
+        var out = orig.apply(this, arguments);
+        try {
+          var old = document.getElementById('hw-co-badge'); if (old) old.remove();
+          if (!eligible()) return out;
+          var osBox = document.querySelector('#mbd .os-box');
+          if (!osBox) return out;
+          var sub = cartSubtotal(), b = el('div', '');
+          b.id = 'hw-co-badge';
+          if (firstOrderDiscount()) {
+            b.className = 'hw-co need';
+            b.textContent = '👻 Your 15% first-order discount applies today — your FREE Ghost Hunt fries are saved for your next $' + HUNT_MIN + '+ order!';
+          } else if (sub >= HUNT_MIN) {
+            b.className = 'hw-co ok';
+            b.innerHTML = '<span>🎃 Ghost Hunt reward: FREE small fries 🍟</span><span>$0.00</span>';
+          } else if (sub > 0) {
+            b.className = 'hw-co need';
+            b.textContent = '👻 Add $' + (HUNT_MIN - sub).toFixed(2) + ' more to claim your FREE Ghost Hunt fries!';
+          } else return out;
+          osBox.parentNode.insertBefore(b, osBox);
+        } catch(e){ console.warn('[Halloween] checkout badge:', e); }
+        return out;
+      };
+    })();
+
+    var origFetch = window.fetch;
+    window.fetch = function(url, options){
+      var isOrder = typeof url === 'string' && url.indexOf('/api/orders') !== -1 && options && options.method === 'POST';
+      var asked = false;
+      if (isOrder && eligible()) {
+        try {
+          var body = JSON.parse(options.body);
+          if ((Number(body.subtotal) || 0) >= HUNT_MIN && !firstOrderDiscount()) {
+            body.ghostHunt = 'fries';
+            options.body = JSON.stringify(body);
+            asked = true;
+          }
+        } catch(e){ console.warn('[Halloween] order intercept failed:', e); }
+      }
+      var p = origFetch.apply(this, arguments);
+      if (!asked) return p;
+      return p.then(function(resp){
+        resp.clone().json().then(function(d){
+          if (d && (d.ghostHuntFries || d.ghostHuntDenied === 'already-redeemed')) {
+            var s = huntState(); s.redeemed = true; saveHunt(s);
+            if (d.ghostHuntFries) analytics('ghost_hunt_redeemed');
+          }
+        }).catch(function(){});
+        return resp;
+      });
+    };
+  }
+
   // ── On / off ────────────────────────────────────────────────
   var active = false;
   function start(){
@@ -890,6 +1225,7 @@
     decorate();
     critters();
     hero3D();
+    hunt();
   }
   function stop(){
     if (!active) return;
@@ -923,6 +1259,7 @@
   }
 
   function init(){
+    installCheckoutHooks();
     if (!prefOff()) start();
     toggleButton();
   }
