@@ -129,6 +129,7 @@
     '#hw-toggle.off{border-color:#555;box-shadow:none;filter:grayscale(1);opacity:.7;}',
     '@media (max-width:768px){#hw-toggle{width:40px;height:40px;font-size:1.15rem;}body.cart-open #hw-toggle,body.checkout-open #hw-toggle,body.modal-open #hw-toggle{display:none;}}',
     '@media (max-width:600px){#hw-toggle{left:.6rem;bottom:8.4rem;}}',  // stacks above the Gauntlet button
+    '@media (max-width:768px){#hw-toggle{display:none!important;}}',  // phones: keep the screen uncluttered
     '@media (prefers-reduced-motion:reduce){#hw-banner,#hw-hero-title,.hw-ghost .bob,.hw-ghost .tail{animation:none!important;}}'
   ].join('\n');
 
@@ -931,10 +932,11 @@
     '#hw-hud.won{border-color:#FF7518;box-shadow:0 0 14px rgba(255,117,24,.5);}',
     '@media (max-width:768px){#hw-hud{left:calc(.6rem + 48px);font-size:.95rem;padding:.35rem .7rem;}body.cart-open #hw-hud,body.checkout-open #hw-hud,body.modal-open #hw-hud,body.cart-open #hw-intro,body.checkout-open #hw-intro,body.modal-open #hw-intro{display:none;}}',
     '@media (max-width:600px){#hw-hud{bottom:8.6rem;}}',
+    '@media (max-width:768px){#hw-hud{display:none!important;}}',  // phones: progress shows in the catch messages instead
     // Intro card
     '#hw-intro{position:fixed;left:1rem;bottom:8.6rem;z-index:998;width:min(330px,calc(100vw - 2rem));background:linear-gradient(160deg,#1c0a2e,#0d0614);color:#eee;border:2px solid #7CFC00;border-radius:14px;padding:1rem 1.1rem;box-shadow:0 10px 40px rgba(0,0,0,.6),0 0 24px rgba(124,252,0,.25);font-family:var(--font-body,Inter,sans-serif);transform:translateY(20px);opacity:0;transition:all .45s cubic-bezier(.3,1.4,.5,1);}',
     '#hw-intro.show{transform:none;opacity:1;}',
-    '@media (max-width:600px){#hw-intro{left:.6rem;bottom:11.6rem;}}',
+    '@media (max-width:768px){#hw-intro{left:.6rem;bottom:calc(92px + env(safe-area-inset-bottom));}}',
     '#hw-intro h4{margin:0 0 .35rem;font-family:"Creepster","Bebas Neue",cursive;font-weight:400;font-size:1.5rem;letter-spacing:2px;color:#B8F28B;}',
     '#hw-intro p{margin:0 0 .8rem;font-size:.88rem;line-height:1.45;}#hw-intro p b{color:#FFB347;}',
     '#hw-intro .x{position:absolute;top:.4rem;right:.6rem;background:none;border:0;color:#999;font-size:1.3rem;cursor:pointer;}',
