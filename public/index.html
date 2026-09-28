@@ -559,7 +559,7 @@ setInterval(fetchLocationStatus,30000);
 <div id="preorder-banner" class="preorder-banner">
   <p><span class="preorder-badge">Pre-Order</span> We are closed right now — but you can <strong>pre-order for when we open!</strong> Your order will be ready at our next opening time.</p>
 </div>
-<div style="background:var(--paper-dark);text-align:center;padding:3px 1rem;font-family:var(--font-head);font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--ink-light);border-bottom:1px solid var(--paper-line);">The Wing-O Post · Regina, Saskatchewan · Est. 2024 · 135+ Flavors · More Than Wings</div>
+<div class="wingo-post-strip" style="background:var(--paper-dark);text-align:center;padding:3px 1rem;font-family:var(--font-head);font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--ink-light);border-bottom:1px solid var(--paper-line);">The Wing-O Post · Regina, Saskatchewan · Est. 2024 · 135+ Flavors · More Than Wings</div>
 <div id="first-order-banner" style="display:none;background:linear-gradient(90deg,#0D0D0D,#1A1208,#0D0D0D);color:white;text-align:center;padding:.5rem 1rem;font-family:var(--font-head);font-size:.78rem;letter-spacing:2px;font-weight:600;text-transform:uppercase;border-bottom:2px solid var(--yellow);cursor:pointer;" onclick="scrollToOrderFromBanner()"><span style="color:#F5A800;">🎉 NEW HERE?</span> First Order <span style="color:#F5A800;font-weight:800;">15% OFF</span> · Auto-Applied at Checkout · Min $25 →</div>
 <div class="announce" id="today-banner" onclick="openTodayDeal()" style="cursor:pointer;"></div>
   <div onclick="window.location.href='/careers.html'" style="background:linear-gradient(90deg,#0D0D0D,#2A1D0F,#0D0D0D);background-size:200% 100%;animation:gauntlet-shimmer 4s linear infinite;color:white;text-align:center;padding:.7rem 1rem;font-family:var(--font-head);font-size:.82rem;letter-spacing:2px;border-bottom:2px solid #F5A800;font-weight:700;text-transform:uppercase;cursor:pointer;">🔥 <span style="color:#F5A800;">WE'RE HIRING</span> — JOIN THE SAUCE BOSS CREW · <span style="color:#F5A800;">TAP TO APPLY →</span></div>
@@ -1850,6 +1850,8 @@ function proceedSunCheckout(){var f1=document.getElementById('sun-f1').value;var
 .ft-btn.gold{background:linear-gradient(135deg,#F5A800,#C28200);}
 .ft-btn.purple{background:linear-gradient(135deg,#4A148C,#1A0033);}
 @media(max-width:600px){.feature-trio{bottom:5rem;right:.6rem;}.ft-btn{font-size:.7rem;padding:.55rem .85rem;}}
+/* Mobile declutter: no floating Sauce Match / What Should I Order buttons, no "Wing-O Post" strip */
+@media(max-width:768px){.feature-trio{display:none!important;}.wingo-post-strip{display:none!important;}}
 
 /* ===== QUIZ MODAL ===== */
 .quiz-ov{display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.92);padding:1rem;overflow-y:auto;}
@@ -2723,6 +2725,6 @@ showFirstOrderBanner();
 <!-- ═══════ END SCROLL REVEAL ═══════ -->
 
 <!-- 🎃 HALLOWEEN MODE — seasonal (auto on Sep 25 – Nov 2). Remove this line to disable. -->
-<script src="/halloween.js?v=3" defer></script>
+<script src="/halloween.js?v=4" defer></script>
 </body>
 </html>
