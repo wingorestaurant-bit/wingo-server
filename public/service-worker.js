@@ -6,7 +6,7 @@
 // HTML files always check network first (so updates appear instantly).
 // Static assets (images/fonts) use cache-first (fast, rarely change).
 // ─────────────────────────────────────────────────────────────────
-const CACHE_VERSION = 'v4';
+const CACHE_VERSION = 'v5';
 const CACHE_NAME = `wingo-${CACHE_VERSION}`;
 
 // ── PUSH NOTIFICATION HANDLER ──────────────────────────────────
