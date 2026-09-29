@@ -95,14 +95,14 @@ function checkKitchenAuth(loc, pw) {
 }
 
 // ── EMAIL (Resend) ─────────────────────────────────────────────
-async function sendEmail({ to, subject, html }) {
+async function sendEmail({ to, subject, html, replyTo }) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) { console.warn('No RESEND_API_KEY'); return; }
   try {
     const r = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ from: 'Wing-O Orders <orders@wingorestaurants.com>', to, subject, html })
+      body: JSON.stringify({ from: 'Wing-O Orders <orders@wingorestaurants.com>', to, subject, html, ...(replyTo ? { reply_to: replyTo } : {}) })
     });
     const d = await r.json();
     if (d.id) console.log(`✉️ Email sent: ${subject}`);
@@ -450,7 +450,9 @@ app.post('/api/orders', async (req, res) => {
         contestRedemption: contestRedemption || null,
         ghostHuntPhone: ghostHuntFries ? ghostPhone : null,
         ghostHuntYear: ghostHuntFries ? ghostSeason.year : null,
-        kitchenStatus: 'pending', createdAt: new Date()
+        kitchenStatus: 'pending', createdAt: new Date(),
+        // Google review request email goes out later (see REVIEW REQUESTS); only for customers who gave an email
+        reviewDueAt: (customer.email && String(customer.email).includes('@')) ? reviewDueTime(new Date(), !!preOrder) : null
       });
       console.log(`✓ Order ${orderNum} saved to Mongo`);
     }
@@ -1635,6 +1637,128 @@ app.locals.checkContestRedemption = checkContestRedemption;
 // END CONTEST MODULE
 // ========================================================
 
+// Escape text for HTML emails
+const escHtml = s => String(s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+// ── GOOGLE REVIEW REQUESTS ─────────────────────────────────────
+// ~2 hours after an online order, email the customer a link to review
+// the location they ordered from. Rules:
+//  • only orders that have reviewDueAt (set when the order is saved), so
+//    orders from before this feature never get an email
+//  • no emails 10 PM – 10 AM Regina time (pushed to 11 AM)
+//  • one request per email address every 60 days; unsubscribe honoured
+//  • Google policy: ask everyone the same way — no incentives, no filtering
+//    happy customers first ("review gating")
+// Set REVIEW_URL_ALBERT / REVIEW_URL_EAST / REVIEW_URL_BEACH on Railway to
+// each location's "Ask for reviews" link from Google Business Profile.
+const REVIEW_LINKS = {
+  'albert-st':    process.env.REVIEW_URL_ALBERT,
+  'east-regina':  process.env.REVIEW_URL_EAST,
+  'regina-beach': process.env.REVIEW_URL_BEACH,
+};
+const REVIEW_DELAY_MS = 2 * 60 * 60 * 1000;
+const REVIEW_REPEAT_DAYS = 60;
+const REGINA_UTC_OFFSET_H = -6;  // Saskatchewan: CST all year, no daylight saving
+
+function reviewUrlFor(locationId) {
+  if (REVIEW_LINKS[locationId]) return REVIEW_LINKS[locationId];
+  const loc = LOCATIONS[locationId];
+  // Fallback: Google Maps search for the location (customer taps "Reviews" there)
+  return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent('Wing-O ' + (loc ? loc.address : 'Regina SK'));
+}
+
+// Returns a Date at the given Regina wall-clock hour, on the Regina day of `d` plus `addDays`.
+function reginaAt(d, hour, addDays) {
+  const r = new Date(d.getTime() + REGINA_UTC_OFFSET_H * 3600000);  // shift so UTC fields = Regina time
+  return new Date(Date.UTC(r.getUTCFullYear(), r.getUTCMonth(), r.getUTCDate() + (addDays || 0), hour) - REGINA_UTC_OFFSET_H * 3600000);
+}
+function reviewDueTime(createdAt, preOrder) {
+  if (preOrder) {
+    // Made when the store opens at 11 AM → ask at 1 PM that day
+    const today1pm = reginaAt(createdAt, 13, 0);
+    return today1pm > createdAt ? today1pm : reginaAt(createdAt, 13, 1);
+  }
+  const due = new Date(createdAt.getTime() + REVIEW_DELAY_MS);
+  const h = new Date(due.getTime() + REGINA_UTC_OFFSET_H * 3600000).getUTCHours();
+  if (h >= 22) return reginaAt(due, 11, 1);  // late evening → 11 AM next day
+  if (h < 10) return reginaAt(due, 11, 0);   // overnight → 11 AM same day
+  return due;
+}
+
+async function sendDueReviewRequests() {
+  const database = await connectDB();
+  if (!database) return;
+  const orders = database.collection('orders');
+  const now = new Date();
+  for (let i = 0; i < 25; i++) {
+    // Claim one due order atomically so two server instances never both send it
+    const r = await orders.findOneAndUpdate(
+      { reviewDueAt: { $lte: now }, reviewRequest: { $exists: false } },
+      { $set: { reviewRequest: { status: 'claimed', at: now } } }
+    );
+    const order = r && r.value !== undefined ? r.value : r;
+    if (!order) break;
+    const mark = (status, extra) => orders.updateOne({ _id: order._id }, { $set: { reviewRequest: { status, at: new Date(), ...(extra || {}) } } });
+    try {
+      const email = String(order.customer?.email || '').trim();
+      const emailNorm = email.toLowerCase();
+      if (!emailNorm.includes('@')) { await mark('skipped', { reason: 'no-email' }); continue; }
+      if (now - new Date(order.createdAt) > 3 * 86400000) { await mark('skipped', { reason: 'too-old' }); continue; }
+      if (await database.collection('email_optouts').findOne({ email_normalized: emailNorm })) { await mark('skipped', { reason: 'unsubscribed' }); continue; }
+      const recent = await database.collection('review_requests').findOne({ email_normalized: emailNorm, sent_at: { $gt: new Date(now - REVIEW_REPEAT_DAYS * 86400000) } });
+      if (recent) { await mark('skipped', { reason: 'asked-recently' }); continue; }
+
+      const token = require('crypto').randomBytes(16).toString('hex');
+      const locName = String(LOCATIONS[order.locationId]?.name || order.locationName || '').replace(/\s*\(.*\)\s*$/, '');  // 'East Regina (Wing-O East)' → 'East Regina'
+      const reviewUrl = reviewUrlFor(order.locationId);
+      const unsubUrl = `https://wingorestaurants.com/api/email/unsubscribe?t=${token}`;
+      const first = escHtml(order.customer?.firstName || '');
+      await database.collection('review_requests').insertOne({ email_normalized: emailNorm, orderNum: order.orderNum, locationId: order.locationId, token, sent_at: new Date() });
+      await sendEmail({
+        to: email,
+        replyTo: 'besaucy@wingorestaurants.com',
+        subject: `How were your wings${first ? ', ' + (order.customer.firstName) : ''}? 🍗`,
+        html: `<div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;background:#F4EBD7;">
+          <div style="background:#0D0D0D;padding:22px;text-align:center;border-bottom:3px double #F5A800;"><h1 style="color:#E8190A;margin:0;letter-spacing:2px;">WING<span style="color:white;">-O</span></h1></div>
+          <div style="padding:26px 24px;color:#1A1208;font-size:15px;line-height:1.6;text-align:center;">
+            <p style="font-size:19px;font-weight:bold;margin:0 0 10px;">Hey${first ? ' ' + first : ''}! How was everything? 👋</p>
+            <p style="margin:0 0 20px;">Thanks for ordering from <strong>Wing-O ${escHtml(locName)}</strong> (order ${escHtml(order.orderNum)}). We're a local Regina business, and a quick Google review helps more people find us.</p>
+            <a href="${escHtml(reviewUrl)}" style="display:inline-block;background:#E8190A;color:white;text-decoration:none;font-weight:bold;font-size:17px;letter-spacing:1px;padding:15px 28px;border-radius:6px;">⭐ Leave a Google review</a>
+            <p style="margin:22px 0 0;font-size:14px;color:#555;">Something not right? Just reply to this email — it goes straight to the Sauce Boss and we'll make it right.</p>
+          </div>
+          <div style="padding:14px 24px;color:#888;font-size:12px;text-align:center;">Wing-O Restaurants · Regina, Saskatchewan · You're getting this because you ordered at wingorestaurants.com. <a href="${unsubUrl}" style="color:#888;">Unsubscribe</a></div>
+        </div>`
+      });
+      await mark('sent');
+      console.log(`⭐ Review request sent for ${order.orderNum} (${locName})`);
+    } catch (e) {
+      console.warn('Review request failed for', order.orderNum, e.message);
+      await mark('error', { message: String(e.message).slice(0, 200) }).catch(() => {});
+    }
+  }
+}
+setInterval(() => { sendDueReviewRequests().catch(e => console.warn('Review job error:', e.message)); }, Number(process.env.REVIEW_JOB_MS) || 10 * 60 * 1000);
+
+app.get('/api/email/unsubscribe', async (req, res) => {
+  const t = String(req.query.t || '');
+  const page = msg => `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Wing-O</title></head><body style="font-family:Arial,sans-serif;background:#F4EBD7;text-align:center;padding:60px 20px;"><h1 style="color:#E8190A;">WING-O</h1><p style="font-size:17px;">${msg}</p><p><a href="/" style="color:#E8190A;">Back to Wing-O</a></p></body></html>`;
+  if (!/^[a-f0-9]{32}$/.test(t)) return res.status(400).send(page('That unsubscribe link is not valid.'));
+  try {
+    const database = await connectDB();
+    if (!database) return res.status(500).send(page('Please try again in a few minutes.'));
+    const rr = await database.collection('review_requests').findOne({ token: t });
+    if (!rr) return res.status(404).send(page('We couldn\'t find that link — you may already be unsubscribed.'));
+    await database.collection('email_optouts').updateOne(
+      { email_normalized: rr.email_normalized },
+      { $set: { email_normalized: rr.email_normalized, source: 'review-request', at: new Date() } },
+      { upsert: true }
+    );
+    res.send(page('You won\'t get review emails from Wing-O anymore. Thanks for ordering! 🍗'));
+  } catch (e) {
+    res.status(500).send(page('Please try again in a few minutes.'));
+  }
+});
+
 // ── WINNIPEG LAUNCH SIGN-UPS ───────────────────────────────────
 // Email list for the Winnipeg opening (form on /winnipeg).
 // Consent is required and recorded (CASL); every email has an unsubscribe link.
@@ -1648,7 +1772,7 @@ function wpgRateOk(ip) {
   if (wpgHits.size > 5000) wpgHits.clear();
   return hits.length <= 5;
 }
-const wpgEsc = s => String(s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const wpgEsc = escHtml;
 let wpgIndexed = false;
 
 app.post('/api/winnipeg/signup', async (req, res) => {
