@@ -6,6 +6,9 @@ Allow: /
 
 # Don't crawl admin, kitchen, or API endpoints — these aren't for search engines
 Disallow: /admin.html
+Disallow: /admin
+Disallow: /contest-admin
+Disallow: /push-admin
 Disallow: /kitchen
 Disallow: /kitchen.html
 Disallow: /dashboard
