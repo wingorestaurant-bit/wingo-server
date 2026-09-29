@@ -18,3 +18,20 @@ Every Tuesday, 5–10 PM, it's ALL YOU CAN EAT WINGS at Wing-O — $28.99 per pe
 Tag the friend who thinks they can do it 👇
 
 #WingKing #WingO #ReginaEats #YQR #AllYouCanEat #WingChallenge #FoodChallenge #ChickenWings #SaskEats
+
+---
+
+# Winnipeg — "Be first in line" (Meta ad for the sign-up list)
+
+| File | Use it for |
+|---|---|
+| [`winnipeg/wingo-winnipeg-reel.mp4`](winnipeg/wingo-winnipeg-reel.mp4) | Reels / Stories video (15 s, 1080×1920) |
+| [`winnipeg/wingo-winnipeg-feed.png`](winnipeg/wingo-winnipeg-feed.png) | Facebook / Instagram feed (1080×1350) |
+| [`winnipeg/wingo-winnipeg-story.png`](winnipeg/wingo-winnipeg-story.png) | Stories (1080×1920) |
+
+**Ads Manager text**
+- Primary text: Winnipeg, Regina's favourite wings are coming. 🍗 135+ flavours, crispy wings, boneless and fried chicken. Sign up free and hear the opening date before anyone else.
+- Headline: Be First in Line, Winnipeg
+- Description: Free sign-up · Manitoba's first Wing-O
+- Call to action button: Sign Up
+- Website URL: https://wingorestaurants.com/winnipeg?utm_source=meta&utm_medium=paid&utm_campaign=winnipeg_launch
