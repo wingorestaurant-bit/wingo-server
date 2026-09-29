@@ -25,6 +25,8 @@ Tag the friend who thinks they can do it 👇
 
 | File | Use it for |
 |---|---|
+| [`winnipeg/wingo-winnipeg-reel-v2-music.mp4`](winnipeg/wingo-winnipeg-reel-v2-music.mp4) | **NEWEST — with music** · 15 s (original beat, royalty-free) |
+| [`winnipeg/wingo-winnipeg-6s-music.mp4`](winnipeg/wingo-winnipeg-6s-music.mp4) | **NEWEST — with music** · 6 s cut |
 | [`winnipeg/wingo-winnipeg-reel-v2.mp4`](winnipeg/wingo-winnipeg-reel-v2.mp4) | **NEW** 15 s video — WINNIPEG 👀 hook + address (1530 Dakota St, Unit 4001) |
 | [`winnipeg/wingo-winnipeg-6s.mp4`](winnipeg/wingo-winnipeg-6s.mp4) | **NEW** 6 s cut for Stories / Reels |
 | [`winnipeg/wingo-winnipeg-reel.mp4`](winnipeg/wingo-winnipeg-reel.mp4) | First version (no address) |
