@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>Winnipeg Sign-ups — Wing-O Admin</title>
+<link rel="icon" type="image/jpeg" href="/images/logo.jpg">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:Inter,Arial,sans-serif;background:#0D0D0D;color:#eee;min-height:100vh;padding:1.5rem;}
+.wrap{max-width:980px;margin:0 auto;}
+header{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;}
+header img{height:40px;width:auto;}
+h1{font-family:Oswald,Arial,sans-serif;font-size:1.3rem;letter-spacing:2px;text-transform:uppercase;color:#F5A800;}
+.card{background:#1A1208;border:1px solid #3a2e1c;border-radius:8px;padding:1.25rem;margin-bottom:1rem;}
+input{width:100%;max-width:320px;padding:.75rem;border-radius:6px;border:1.5px solid #444;background:#111;color:#fff;font-size:1rem;}
+button{background:#E8190A;color:#fff;border:0;border-radius:6px;padding:.75rem 1.2rem;font-weight:700;letter-spacing:1px;cursor:pointer;margin-top:.6rem;}
+button.alt{background:#F5A800;color:#0D0D0D;}
+.stats{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;}
+.stat{background:#1A1208;border:1px solid #3a2e1c;border-radius:8px;padding:1rem 1.25rem;min-width:150px;}
+.stat b{display:block;font-size:2rem;color:#F5A800;}
+.stat span{font-size:.8rem;color:#999;text-transform:uppercase;letter-spacing:1px;}
+.tbl{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:.9rem;}
+th,td{text-align:left;padding:.55rem .6rem;border-bottom:1px solid #2a2a2a;white-space:nowrap;}
+th{color:#F5A800;font-size:.75rem;text-transform:uppercase;letter-spacing:1px;}
+tr.off td{color:#666;text-decoration:line-through;}
+.err{color:#FEB2B2;margin-top:.6rem;}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><img src="/images/wingo-logo-wide.png" alt="Wing-O"><h1>Winnipeg Sign-ups</h1></header>
+
+<div class="card" id="login">
+  <p style="margin-bottom:.6rem;color:#bbb;">Enter the admin password (the <code>ADMIN_PASSWORD</code> set on Railway).</p>
+  <input type="password" id="pw" placeholder="Admin password" autocomplete="current-password">
+  <br><button id="go">View sign-ups</button>
+  <div class="err" id="err"></div>
+</div>
+
+<div id="out" style="display:none;">
+  <div class="stats">
+    <div class="stat"><b id="n-sub">0</b><span>Subscribed</span></div>
+    <div class="stat"><b id="n-all">0</b><span>Total sign-ups</span></div>
+  </div>
+  <button class="alt" id="csv">⬇ Download CSV (subscribed only)</button>
+  <div class="card tbl" style="margin-top:1rem;"><table><thead><tr><th>Date</th><th>Name</th><th>Email</th><th>Phone</th><th>Neighbourhood</th></tr></thead><tbody id="rows"></tbody></table></div>
+</div>
+</div>
+<script>
+(function(){
+  var data = null;
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function load(){
+    var pw = document.getElementById('pw').value, err = document.getElementById('err');
+    err.textContent = '';
+    fetch('/api/winnipeg/list', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: pw }) })
+      .then(function(r){ return r.json().then(function(d){ return { ok: r.ok, d: d }; }); })
+      .then(function(res){
+        if (!res.ok) { err.textContent = res.d.error || 'Could not load.'; return; }
+        data = res.d;
+        document.getElementById('login').style.display = 'none';
+        document.getElementById('out').style.display = 'block';
+        document.getElementById('n-sub').textContent = data.subscribed;
+        document.getElementById('n-all').textContent = data.total;
+        document.getElementById('rows').innerHTML = data.rows.map(function(r){
+          return '<tr class="' + (r.unsubscribed ? 'off' : '') + '"><td>' + esc(new Date(r.created_at).toLocaleDateString('en-CA')) + '</td><td>' + esc(r.name) + '</td><td>' + esc(r.email) + '</td><td>' + esc(r.phone) + '</td><td>' + esc(r.area) + '</td></tr>';
+        }).join('') || '<tr><td colspan="5" style="color:#888;">No sign-ups yet.</td></tr>';
+      })
+      .catch(function(){ err.textContent = 'Network error.'; });
+  }
+  document.getElementById('go').addEventListener('click', load);
+  document.getElementById('pw').addEventListener('keydown', function(e){ if (e.key === 'Enter') load(); });
+  document.getElementById('csv').addEventListener('click', function(){
+    if (!data) return;
+    var q = function(v){ v = String(v == null ? '' : v); if (/^[=+\-@]/.test(v)) v = "'" + v; return '"' + v.replace(/"/g, '""') + '"'; };
+    var lines = [['Date', 'Name', 'Email', 'Phone', 'Neighbourhood'].join(',')].concat(
+      data.rows.filter(function(r){ return !r.unsubscribed; }).map(function(r){
+        return [new Date(r.created_at).toISOString().slice(0, 10), r.name, r.email, r.phone, r.area].map(q).join(',');
+      }));
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([lines.join('\n')], { type: 'text/csv' }));
+    a.download = 'wingo-winnipeg-signups.csv';
+    a.click();
+  });
+})();
+</script>
+</body>
+</html>

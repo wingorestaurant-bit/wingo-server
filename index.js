@@ -1635,6 +1635,126 @@ app.locals.checkContestRedemption = checkContestRedemption;
 // END CONTEST MODULE
 // ========================================================
 
+// ── WINNIPEG LAUNCH SIGN-UPS ───────────────────────────────────
+// Email list for the Winnipeg opening (form on /winnipeg).
+// Consent is required and recorded (CASL); every email has an unsubscribe link.
+// Owner views the list at /winnipeg-admin with ADMIN_PASSWORD (set on Railway).
+const wpgHits = new Map();
+function wpgRateOk(ip) {
+  const now = Date.now();
+  const hits = (wpgHits.get(ip) || []).filter(t => now - t < 60000);
+  hits.push(now);
+  wpgHits.set(ip, hits);
+  if (wpgHits.size > 5000) wpgHits.clear();
+  return hits.length <= 5;
+}
+const wpgEsc = s => String(s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+let wpgIndexed = false;
+
+app.post('/api/winnipeg/signup', async (req, res) => {
+  try {
+    const ip = (req.headers['x-forwarded-for'] || req.ip || '').split(',')[0].trim();
+    if (!wpgRateOk(ip)) return res.status(429).json({ success: false, error: 'Too many tries — please wait a minute.' });
+    const { name, email, phone, area, consent, website } = req.body || {};
+    if (website) return res.json({ success: true });  // honeypot: bots fill the hidden field
+    const emailNorm = String(email || '').trim().toLowerCase();
+    if (emailNorm.length > 200 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailNorm)) {
+      return res.status(400).json({ success: false, error: 'Please enter a valid email.' });
+    }
+    if (consent !== true) return res.status(400).json({ success: false, error: 'Please tick the box so we can email you the opening news.' });
+
+    const database = await connectDB();
+    if (!database) return res.status(500).json({ success: false, error: 'Sign-ups are unavailable right now — please try again soon.' });
+    const col = database.collection('winnipeg_signups');
+    if (!wpgIndexed) { await col.createIndex({ email_normalized: 1 }, { unique: true }); await col.createIndex({ unsubscribe_token: 1 }); wpgIndexed = true; }
+
+    const existing = await col.findOne({ email_normalized: emailNorm });
+    if (existing && !existing.unsubscribed) return res.json({ success: true, already: true });
+
+    const token = require('crypto').randomBytes(16).toString('hex');
+    const doc = {
+      name: String(name || '').trim().slice(0, 60),
+      email: String(email).trim().slice(0, 200),
+      email_normalized: emailNorm,
+      phone: String(phone || '').trim().slice(0, 30),
+      area: String(area || '').trim().slice(0, 80),
+      consent_marketing: true,
+      consent_text: 'Yes, Wing-O Restaurants may email me about the Winnipeg opening and Wing-O deals. I can unsubscribe at any time.',
+      consent_at: new Date(),
+      unsubscribed: false,
+      unsubscribe_token: token,
+      created_at: existing ? existing.created_at : new Date(),
+      ip,
+      user_agent: String(req.headers['user-agent'] || '').slice(0, 300)
+    };
+    try {
+      if (existing) await col.updateOne({ _id: existing._id }, { $set: doc });  // re-subscribe after unsubscribing
+      else await col.insertOne(doc);
+    } catch (e) {
+      if (e.code === 11000) return res.json({ success: true, already: true });
+      throw e;
+    }
+
+    const unsubUrl = `https://wingorestaurants.com/api/winnipeg/unsubscribe?t=${token}`;
+    sendEmail({
+      to: doc.email,
+      subject: "🍗 You're on the Wing-O Winnipeg list",
+      html: `<div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;background:#F4EBD7;">
+        <div style="background:#0D0D0D;padding:22px;text-align:center;border-bottom:3px double #F5A800;"><h1 style="color:#E8190A;margin:0;letter-spacing:2px;">WING<span style="color:white;">-O</span></h1><p style="color:#F5A800;margin:6px 0 0;font-size:12px;letter-spacing:3px;">WINNIPEG · COMING SOON</p></div>
+        <div style="padding:24px;color:#1A1208;font-size:15px;line-height:1.6;">
+          <p style="font-size:18px;font-weight:bold;margin:0 0 10px;">Hey${doc.name ? ' ' + wpgEsc(doc.name) : ''}! 👋</p>
+          <p>You're on the list. When Wing-O opens in Winnipeg, you'll be the first to hear the date — plus any opening-week deals.</p>
+          <p>135+ flavours, crispy wings, boneless, chicken fingers and fried chicken burgers. Winnipeg, get ready.</p>
+          <p style="margin-top:22px;">— The Sauce Boss 🌾<br><span style="color:#888;font-size:13px;">Wing-O Restaurants · Regina, Saskatchewan</span></p>
+        </div>
+        <div style="padding:14px 24px;color:#888;font-size:12px;text-align:center;">You signed up at wingorestaurants.com/winnipeg. <a href="${unsubUrl}" style="color:#888;">Unsubscribe</a></div>
+      </div>`
+    });
+
+    console.log(`🚀 Winnipeg sign-up: ${emailNorm}${doc.area ? ' (' + doc.area + ')' : ''}`);
+    res.json({ success: true });
+  } catch (e) {
+    console.error('Winnipeg signup error:', e.message);
+    res.status(500).json({ success: false, error: 'Something went wrong — please try again.' });
+  }
+});
+
+app.get('/api/winnipeg/unsubscribe', async (req, res) => {
+  const t = String(req.query.t || '');
+  const page = msg => `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Wing-O</title></head><body style="font-family:Arial,sans-serif;background:#F4EBD7;text-align:center;padding:60px 20px;"><h1 style="color:#E8190A;">WING-O</h1><p style="font-size:17px;">${msg}</p><p><a href="/" style="color:#E8190A;">Back to Wing-O</a></p></body></html>`;
+  if (!/^[a-f0-9]{32}$/.test(t)) return res.status(400).send(page('That unsubscribe link is not valid.'));
+  try {
+    const database = await connectDB();
+    if (!database) return res.status(500).send(page('Please try again in a few minutes.'));
+    const r = await database.collection('winnipeg_signups').updateOne({ unsubscribe_token: t }, { $set: { unsubscribed: true, unsubscribed_at: new Date() } });
+    if (!r.matchedCount) return res.status(404).send(page('We couldn\'t find that sign-up — you may already be unsubscribed.'));
+    res.send(page('You\'re unsubscribed from Wing-O Winnipeg emails. Sorry to see you go! 🍗'));
+  } catch (e) {
+    res.status(500).send(page('Please try again in a few minutes.'));
+  }
+});
+
+// Owner-only list. Needs ADMIN_PASSWORD set on Railway (no built-in fallback).
+app.post('/api/winnipeg/list', async (req, res) => {
+  const expected = process.env.ADMIN_PASSWORD;
+  if (!expected) return res.status(503).json({ error: 'Set ADMIN_PASSWORD on Railway to view sign-ups.' });
+  const given = String((req.body || {}).password || '');
+  const crypto = require('crypto');
+  const a = crypto.createHash('sha256').update(given).digest(), b = crypto.createHash('sha256').update(expected).digest();
+  if (!crypto.timingSafeEqual(a, b)) return res.status(401).json({ error: 'Wrong password' });
+  try {
+    const database = await connectDB();
+    if (!database) return res.status(500).json({ error: 'Database unavailable' });
+    const rows = await database.collection('winnipeg_signups')
+      .find({}, { projection: { _id: 0, name: 1, email: 1, phone: 1, area: 1, created_at: 1, unsubscribed: 1 } })
+      .sort({ created_at: -1 }).limit(20000).toArray();
+    const safe = rows.map(r => ({ name: r.name, email: r.email, phone: r.phone, area: r.area, created_at: r.created_at, unsubscribed: !!r.unsubscribed }));
+    res.json({ total: safe.length, subscribed: safe.filter(r => !r.unsubscribed).length, rows: safe });
+  } catch (e) {
+    res.status(500).json({ error: 'server error' });
+  }
+});
+
 // ── SPA FALLBACK ───────────────────────────────────────────────
 app.get('*', (req, res, next) => {
   if (req.path.startsWith('/api/')) return next();
