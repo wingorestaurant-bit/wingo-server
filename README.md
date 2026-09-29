@@ -35,3 +35,12 @@ Tag the friend who thinks they can do it 👇
 - Description: Free sign-up · Manitoba's first Wing-O
 - Call to action button: Sign Up
 - Website URL: https://wingorestaurants.com/winnipeg?utm_source=meta&utm_medium=paid&utm_campaign=winnipeg_launch
+
+---
+
+# Email — All You Can Eat Wings (Tuesdays) + Wing King
+
+- [`email/wingo-ayce-email.html`](email/wingo-ayce-email.html) — paste into your email tool's "code your own" / HTML editor
+- [`email/wingo-ayce-email-preview.png`](email/wingo-ayce-email-preview.png) — what it looks like
+- Subject: 👑 Can you eat 96 wings? All You Can Eat is back every Tuesday
+- Replace `{{FIRST_NAME}}` and `{{UNSUBSCRIBE_URL}}` with your email tool's merge tags (see the note at the top of the file).
