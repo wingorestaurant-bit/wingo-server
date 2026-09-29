@@ -25,12 +25,14 @@ Tag the friend who thinks they can do it 👇
 
 | File | Use it for |
 |---|---|
-| [`winnipeg/wingo-winnipeg-reel.mp4`](winnipeg/wingo-winnipeg-reel.mp4) | Reels / Stories video (15 s, 1080×1920) |
+| [`winnipeg/wingo-winnipeg-reel-v2.mp4`](winnipeg/wingo-winnipeg-reel-v2.mp4) | **NEW** 15 s video — WINNIPEG 👀 hook + address (1530 Dakota St, Unit 4001) |
+| [`winnipeg/wingo-winnipeg-6s.mp4`](winnipeg/wingo-winnipeg-6s.mp4) | **NEW** 6 s cut for Stories / Reels |
+| [`winnipeg/wingo-winnipeg-reel.mp4`](winnipeg/wingo-winnipeg-reel.mp4) | First version (no address) |
 | [`winnipeg/wingo-winnipeg-feed.png`](winnipeg/wingo-winnipeg-feed.png) | Facebook / Instagram feed (1080×1350) |
 | [`winnipeg/wingo-winnipeg-story.png`](winnipeg/wingo-winnipeg-story.png) | Stories (1080×1920) |
 
 **Ads Manager text**
-- Primary text: Winnipeg, Regina's favourite wings are coming. 🍗 135+ flavours, crispy wings, boneless and fried chicken. Sign up free and hear the opening date before anyone else.
+- Primary text: Winnipeg 👀 Regina's favourite wings are opening at 1530 Dakota St, Unit 4001. 🍗 135+ flavours, crispy wings, boneless and fried chicken. Sign up free and hear the opening date before anyone else.
 - Headline: Be First in Line, Winnipeg
 - Description: Free sign-up · Manitoba's first Wing-O
 - Call to action button: Sign Up
