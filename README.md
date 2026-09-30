@@ -52,3 +52,9 @@ Tag the friend who thinks they can do it 👇
 - [`email/wingo-ayce-email-preview.png`](email/wingo-ayce-email-preview.png) — what it looks like
 - Subject: 👑 Can you eat 96 wings? All You Can Eat is back every Tuesday
 - Replace `{{FIRST_NAME}}` and `{{UNSUBSCRIBE_URL}}` with your email tool's merge tags (see the note at the top of the file).
+
+## Regina — Thursday Wing Night
+
+| File | What |
+|---|---|
+| [`regina/wingo-wing-night-thursday-15s.mp4`](regina/wingo-wing-night-thursday-15s.mp4) | 15 s Reel/Story, real photos, with music. Wings BOGO 50% every Thursday, open till 3 AM, tag-your-partner CTA |
