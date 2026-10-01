@@ -59,3 +59,4 @@ Tag the friend who thinks they can do it 👇
 |---|---|
 | [`regina/wingo-wing-night-thursday-15s.mp4`](regina/wingo-wing-night-thursday-15s.mp4) | 15 s Reel/Story, real photos, with music. Offer-first hook ("Regina, 2nd order 50% OFF"), screen-shake beat hits, pulsing 50% sticker, tag-your-partner CTA. Albert St N + University Park Dr only (Regina Beach closed for season) |
 | [`regina/wingo-wing-night-story.mp4`](regina/wingo-wing-night-story.mp4) | 15 s Instagram Story, real photos, hype beat: glitch intro, colour-split hits, shockwaves, scrolling ticker, embers, price-slash 100%→50% OFF, spinning badge, "Tap the link" end card (add the link sticker under the arrow) |
+| [`regina/wingo-wing-night-groupchat-story.mp4`](regina/wingo-wing-night-groupchat-story.mp4) | **USE THIS** Thursday Story v2: group-chat concept, bone-in wings only, new original 128 BPM house track with message pops; chat swipes away into the deal on the drop |
