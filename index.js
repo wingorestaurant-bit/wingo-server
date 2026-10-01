@@ -111,13 +111,21 @@ async function sendEmail({ to, subject, html, replyTo }) {
 }
 
 // ── AUTO STAMP ────────────────────────────────────────────────
+// Stamp cards are matched on the 10-digit number, so "+1 (306) 555-0101" and "306-555-0101" are the same card.
+// Older cards may have been saved with the leading 1, so lookups accept both forms.
+function loyaltyPhone(p) {
+  const d = String(p || '').replace(/\D/g, '');
+  return d.length === 11 && d[0] === '1' ? d.slice(1) : d;
+}
+const loyaltyPhoneQuery = p => ({ phone: { $in: [p, '1' + p] } });
+
 async function autoAddStamp(phone, orderNum, customerName) {
   if (!phone || !orderNum) return null;
-  const cleanPhone = phone.replace(/\D/g, '');
+  const cleanPhone = loyaltyPhone(phone);
   try {
     const database = await connectDB();
     if (!database) return null;
-    const member = await database.collection('loyalty').findOne({ phone: cleanPhone });
+    const member = await database.collection('loyalty').findOne(loyaltyPhoneQuery(cleanPhone));
     if (!member) return null;
     if (member.usedOrderNums && member.usedOrderNums.includes(orderNum)) {
       console.log(`⚠️ Stamp already given for order ${orderNum}`);
@@ -133,7 +141,7 @@ async function autoAddStamp(phone, orderNum, customerName) {
       ...(member.history || [])
     ].slice(0, 50);
     await database.collection('loyalty').updateOne(
-      { phone: cleanPhone },
+      { _id: member._id },
       {
         $set: { stamps: finalStamps, totalOrders: newTotalOrders, freeEarned: newFreeEarned, history: newHistory, updatedAt: new Date() },
         $push: { usedOrderNums: orderNum }
@@ -1010,11 +1018,11 @@ app.post('/api/franchise', async (req, res) => {
 app.post('/api/loyalty/signup', async (req, res) => {
   const { name, email, phone } = req.body;
   if (!name || !email || !phone) return res.json({ success: false, error: 'Missing fields' });
-  const cleanPhone = phone.replace(/\D/g, '');
+  const cleanPhone = loyaltyPhone(phone);
   try {
     const database = await connectDB();
     if (!database) return res.json({ success: false, error: 'Database unavailable' });
-    const existing = await database.collection('loyalty').findOne({ phone: cleanPhone });
+    const existing = await database.collection('loyalty').findOne(loyaltyPhoneQuery(cleanPhone));
     if (existing) return res.json({ success: false, error: 'Phone already registered' });
     const member = {
       name, email, phone: cleanPhone, stamps: 0, totalOrders: 0, freeEarned: 0,
@@ -1045,12 +1053,12 @@ app.post('/api/loyalty/signup', async (req, res) => {
 app.get('/api/loyalty/lookup', async (req, res) => {
   const { q } = req.query;
   if (!q) return res.json({ success: false, error: 'Missing search' });
-  const cleanPhone = q.replace(/\D/g, '');
+  const cleanPhone = loyaltyPhone(q);
   try {
     const database = await connectDB();
     if (!database) return res.json({ success: false, error: 'Database unavailable' });
     const member = await database.collection('loyalty').findOne({
-      $or: [{ phone: cleanPhone }, { email: q.toLowerCase().trim() }]
+      $or: [loyaltyPhoneQuery(cleanPhone), { email: q.toLowerCase().trim() }]
     });
     if (!member) return res.json({ success: false, error: 'Member not found' });
     res.json({ success: true, member });
@@ -1061,17 +1069,24 @@ app.get('/api/loyalty/lookup', async (req, res) => {
 });
 
 app.post('/api/loyalty/stamp', async (req, res) => {
-  const { phone, orderNum, password } = req.body;
-  const cleanPhone = phone.replace(/\D/g, '');
+  const { phone, password } = req.body;
+  const orderNum = String(req.body.orderNum || '').trim().toUpperCase();
+  const cleanPhone = loyaltyPhone(phone);
   if (!cleanPhone || !orderNum) return res.json({ success: false, error: 'Missing fields' });
-  if (!password || password !== (process.env.ADMIN_PASSWORD || 'sauceboss2025')) {
-    return res.status(401).json({ success: false, error: 'Unauthorized — admin password required' });
-  }
+  // Staff (admin password) can stamp any order, including in-store ones.
+  // Customers can stamp their own online orders: the order must exist under the same phone number.
+  const isStaff = !!password && password === (process.env.ADMIN_PASSWORD || 'sauceboss2025');
   try {
     const database = await connectDB();
     if (!database) return res.json({ success: false, error: 'Database unavailable' });
-    const member = await database.collection('loyalty').findOne({ phone: cleanPhone });
+    const member = await database.collection('loyalty').findOne(loyaltyPhoneQuery(cleanPhone));
     if (!member) return res.json({ success: false, error: 'Member not found' });
+    if (!isStaff) {
+      const order = await database.collection('orders').findOne({ orderNum });
+      if (!order || loyaltyPhone(order.customer && order.customer.phone) !== cleanPhone) {
+        return res.json({ success: false, error: 'We couldn’t find that online order under your phone number. In-store orders are stamped at the counter.' });
+      }
+    }
     if (member.usedOrderNums && member.usedOrderNums.includes(orderNum)) {
       return res.json({ success: false, error: 'Order number already used' });
     }
@@ -1081,17 +1096,17 @@ app.post('/api/loyalty/stamp', async (req, res) => {
     const finalStamps = gotFree ? 0 : newStamps;
     const newFreeEarned = gotFree ? (member.freeEarned || 0) + 1 : (member.freeEarned || 0);
     const newHistory = [
-      { orderNum, date: new Date().toLocaleDateString('en-CA'), stamp: newTotalOrders, manual: true },
+      { orderNum, date: new Date().toLocaleDateString('en-CA'), stamp: newTotalOrders, manual: true, ...(isStaff ? { staff: true } : {}) },
       ...(member.history || [])
     ].slice(0, 50);
     await database.collection('loyalty').updateOne(
-      { phone: cleanPhone },
+      { _id: member._id },
       {
         $set: { stamps: finalStamps, totalOrders: newTotalOrders, freeEarned: newFreeEarned, history: newHistory, updatedAt: new Date() },
         $push: { usedOrderNums: orderNum }
       }
     );
-    const updated = await database.collection('loyalty').findOne({ phone: cleanPhone });
+    const updated = await database.collection('loyalty').findOne({ _id: member._id });
     console.log(`🍗 MANUAL STAMP: ${member.name} — ${orderNum} — Total: ${newTotalOrders} — Free: ${gotFree}`);
     if (gotFree) {
       sendEmail({
@@ -1116,11 +1131,11 @@ app.post('/api/loyalty/stamp', async (req, res) => {
 });
 
 app.get('/api/loyalty/member/:phone', async (req, res) => {
-  const cleanPhone = req.params.phone.replace(/\D/g, '');
+  const cleanPhone = loyaltyPhone(req.params.phone);
   try {
     const database = await connectDB();
     if (!database) return res.json({ success: false, error: 'Database unavailable' });
-    const member = await database.collection('loyalty').findOne({ phone: cleanPhone });
+    const member = await database.collection('loyalty').findOne(loyaltyPhoneQuery(cleanPhone));
     if (!member) return res.json({ success: false, error: 'Member not found' });
     res.json({ success: true, member });
   } catch (e) { res.json({ success: false, error: 'Lookup failed' }); }
@@ -1906,7 +1921,7 @@ async function creditReferralBonus(referrerCode, newMemberPhone, newMemberName) 
       console.log(`⚠️ Referral code ${referrerCode} not found`);
       return null;
     }
-    if (referrer.phone === newMemberPhone.replace(/\D/g, '')) {
+    if (loyaltyPhone(referrer.phone) === loyaltyPhone(newMemberPhone)) {
       console.log(`⚠️ Self-referral blocked: ${referrerCode}`);
       return null;
     }
@@ -1959,11 +1974,11 @@ async function creditReferralBonus(referrerCode, newMemberPhone, newMemberName) 
 app.post('/api/loyalty/signup-v2', async (req, res) => {
   const { name, email, phone, referralCode } = req.body;
   if (!name || !email || !phone) return res.json({ success: false, error: 'Missing fields' });
-  const cleanPhone = phone.replace(/\D/g, '');
+  const cleanPhone = loyaltyPhone(phone);
   try {
     const database = await connectDB();
     if (!database) return res.json({ success: false, error: 'Database unavailable' });
-    const existing = await database.collection('loyalty').findOne({ phone: cleanPhone });
+    const existing = await database.collection('loyalty').findOne(loyaltyPhoneQuery(cleanPhone));
     if (existing) return res.json({ success: false, error: 'Phone already registered' });
     const myReferralCode = generateReferralCode(name, cleanPhone);
     let initialStamps = 0;
