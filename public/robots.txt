@@ -10,6 +10,7 @@ Disallow: /admin
 Disallow: /contest-admin
 Disallow: /push-admin
 Disallow: /winnipeg-admin
+Disallow: /stamps-admin
 Disallow: /kitchen
 Disallow: /kitchen.html
 Disallow: /dashboard
