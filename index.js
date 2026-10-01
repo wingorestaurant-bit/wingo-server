@@ -111,13 +111,62 @@ async function sendEmail({ to, subject, html, replyTo }) {
 }
 
 // ── AUTO STAMP ────────────────────────────────────────────────
+// Stamp cards are matched on the 10-digit number, so "+1 (306) 555-0101" and "306-555-0101" are the same card.
+// Older cards may have been saved with the leading 1, so lookups accept both forms.
+function loyaltyPhone(p) {
+  const d = String(p || '').replace(/\D/g, '');
+  return d.length === 11 && d[0] === '1' ? d.slice(1) : d;
+}
+const loyaltyPhoneQuery = p => ({ phone: { $in: [p, '1' + p] } });
+
+// Staff password: only the ADMIN_PASSWORD set on Railway works (no built-in fallback).
+function isAdmin(pw) {
+  const expected = process.env.ADMIN_PASSWORD;
+  return !!expected && typeof pw === 'string' && pw === expected;
+}
+
+// Each stamp card gets a private token so the browser never needs the customer's full phone or email.
+const newCardToken = () => require('crypto').randomBytes(12).toString('hex');
+async function ensureCardToken(database, member) {
+  if (!member.cardToken) {
+    member.cardToken = newCardToken();
+    await database.collection('loyalty').updateOne({ _id: member._id }, { $set: { cardToken: member.cardToken } });
+  }
+  return member;
+}
+// Free wings still owed to the customer. Cards from before redemptions were tracked count the latest
+// reward as unused only while the card is still at 0 stamps (what the old card showed).
+function freeAvailable(member) {
+  const earned = member.freeEarned || 0;
+  if (member.freeRedeemed === undefined) return (member.stamps || 0) === 0 && earned > 0 ? 1 : 0;
+  return Math.max(0, earned - member.freeRedeemed);
+}
+// What a customer's browser is allowed to see: no email, no full phone number.
+function publicCard(member) {
+  const last4 = String(member.phone || '').slice(-4);
+  const free = freeAvailable(member);
+  return {
+    name: String(member.name || '').split(' ')[0],
+    phoneLast4: last4,
+    token: member.cardToken,
+    stamps: member.stamps || 0,
+    totalOrders: member.totalOrders || 0,
+    freeEarned: member.freeEarned || 0,
+    freeAvailable: free,
+    rewardCode: free > 0 ? 'SAUCY-' + last4 : null,
+    referralCode: member.referralCode || null,
+    referralCount: member.referralCount || 0,
+    history: (member.history || []).map(h => ({ orderNum: h.orderNum, date: h.date, stamp: h.stamp, referral: !!h.referral, redeemed: !!h.redeemed }))
+  };
+}
+
 async function autoAddStamp(phone, orderNum, customerName) {
   if (!phone || !orderNum) return null;
-  const cleanPhone = phone.replace(/\D/g, '');
+  const cleanPhone = loyaltyPhone(phone);
   try {
     const database = await connectDB();
     if (!database) return null;
-    const member = await database.collection('loyalty').findOne({ phone: cleanPhone });
+    const member = await database.collection('loyalty').findOne(loyaltyPhoneQuery(cleanPhone));
     if (!member) return null;
     if (member.usedOrderNums && member.usedOrderNums.includes(orderNum)) {
       console.log(`⚠️ Stamp already given for order ${orderNum}`);
@@ -133,7 +182,7 @@ async function autoAddStamp(phone, orderNum, customerName) {
       ...(member.history || [])
     ].slice(0, 50);
     await database.collection('loyalty').updateOne(
-      { phone: cleanPhone },
+      { _id: member._id },
       {
         $set: { stamps: finalStamps, totalOrders: newTotalOrders, freeEarned: newFreeEarned, history: newHistory, updatedAt: new Date() },
         $push: { usedOrderNums: orderNum }
@@ -918,7 +967,7 @@ app.get('/api/donation', async (req, res) => {
 
 app.post('/api/donation', async (req, res) => {
   const { amount, password } = req.body;
-  if (password !== (process.env.ADMIN_PASSWORD || 'sauceboss2025')) return res.status(401).json({ error: 'Wrong password' });
+  if (!isAdmin(password)) return res.status(401).json({ error: 'Wrong password' });
   const newAmount = Number(amount);
   if (isNaN(newAmount) || newAmount < 0) return res.status(400).json({ error: 'Invalid amount' });
   donationAmount = newAmount;
@@ -952,7 +1001,7 @@ app.get('/api/locations/status', async (req, res) => {
 
 app.post('/api/locations/status', async (req, res) => {
   const { locationId, enabled, password } = req.body;
-  if (password !== (process.env.ADMIN_PASSWORD || 'sauceboss2025')) return res.status(401).json({ error: 'Wrong password' });
+  if (!isAdmin(password)) return res.status(401).json({ error: 'Wrong password' });
   if (!locationId || !LOCATIONS[locationId]) return res.status(400).json({ error: 'Invalid location' });
   try {
     const database = await connectDB();
@@ -1010,14 +1059,14 @@ app.post('/api/franchise', async (req, res) => {
 app.post('/api/loyalty/signup', async (req, res) => {
   const { name, email, phone } = req.body;
   if (!name || !email || !phone) return res.json({ success: false, error: 'Missing fields' });
-  const cleanPhone = phone.replace(/\D/g, '');
+  const cleanPhone = loyaltyPhone(phone);
   try {
     const database = await connectDB();
     if (!database) return res.json({ success: false, error: 'Database unavailable' });
-    const existing = await database.collection('loyalty').findOne({ phone: cleanPhone });
+    const existing = await database.collection('loyalty').findOne(loyaltyPhoneQuery(cleanPhone));
     if (existing) return res.json({ success: false, error: 'Phone already registered' });
     const member = {
-      name, email, phone: cleanPhone, stamps: 0, totalOrders: 0, freeEarned: 0,
+      name, email, phone: cleanPhone, stamps: 0, totalOrders: 0, freeEarned: 0, freeRedeemed: 0, cardToken: newCardToken(),
       usedOrderNums: [], history: [], joinDate: new Date().toISOString(), createdAt: new Date()
     };
     await database.collection('loyalty').insertOne(member);
@@ -1035,7 +1084,7 @@ app.post('/api/loyalty/signup', async (req, res) => {
         </table>
       </div>`
     });
-    res.json({ success: true, member });
+    res.json({ success: true, member: publicCard(member) });
   } catch (e) {
     console.error('Loyalty signup error:', e.message);
     res.json({ success: false, error: 'Signup failed' });
@@ -1045,15 +1094,31 @@ app.post('/api/loyalty/signup', async (req, res) => {
 app.get('/api/loyalty/lookup', async (req, res) => {
   const { q } = req.query;
   if (!q) return res.json({ success: false, error: 'Missing search' });
-  const cleanPhone = q.replace(/\D/g, '');
+  const cleanPhone = loyaltyPhone(q);
   try {
     const database = await connectDB();
     if (!database) return res.json({ success: false, error: 'Database unavailable' });
-    const member = await database.collection('loyalty').findOne({
-      $or: [{ phone: cleanPhone }, { email: q.toLowerCase().trim() }]
-    });
+    const byEmail = q.includes('@');
+    const member = await database.collection('loyalty').findOne(
+      byEmail ? { email: q.toLowerCase().trim() } : loyaltyPhoneQuery(cleanPhone)
+    );
     if (!member) return res.json({ success: false, error: 'Member not found' });
-    res.json({ success: true, member });
+    await ensureCardToken(database, member);
+    if (byEmail) {
+      // Don't show someone's card to whoever typed their email: send the owner a private link instead.
+      const link = `https://wingorestaurants.com/?card=${member.cardToken}`;
+      sendEmail({
+        to: member.email,
+        subject: 'Your Saucy Stamps card 🍗',
+        html: `<div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;background:#0D0D0D;padding:24px;border-radius:8px;color:#eee;">
+          <h2 style="color:#F5A800;margin:0 0 12px;">Here's your Saucy Stamps card</h2>
+          <p style="color:#ccc;line-height:1.5;">Hi ${String(member.name || '').split(' ')[0]}, tap below to open your stamp card on this device.</p>
+          <p style="text-align:center;margin:20px 0;"><a href="${link}" style="background:#E8190A;color:#fff;text-decoration:none;padding:12px 22px;border-radius:6px;font-weight:bold;">Open my card</a></p>
+          <p style="color:#888;font-size:12px;">Didn't ask for this? You can ignore this email.</p></div>`
+      });
+      return res.json({ success: true, emailed: true });
+    }
+    res.json({ success: true, member: publicCard(member) });
   } catch (e) {
     console.error('Loyalty lookup error:', e.message);
     res.json({ success: false, error: 'Lookup failed' });
@@ -1061,17 +1126,25 @@ app.get('/api/loyalty/lookup', async (req, res) => {
 });
 
 app.post('/api/loyalty/stamp', async (req, res) => {
-  const { phone, orderNum, password } = req.body;
-  const cleanPhone = phone.replace(/\D/g, '');
-  if (!cleanPhone || !orderNum) return res.json({ success: false, error: 'Missing fields' });
-  if (!password || password !== (process.env.ADMIN_PASSWORD || 'sauceboss2025')) {
-    return res.status(401).json({ success: false, error: 'Unauthorized — admin password required' });
-  }
+  const { phone, token, password } = req.body;
+  const orderNum = String(req.body.orderNum || '').trim().toUpperCase();
+  let cleanPhone = loyaltyPhone(phone);
+  if ((!cleanPhone && !token) || !orderNum) return res.json({ success: false, error: 'Missing fields' });
+  // Staff (admin password) can stamp any order, including in-store ones.
+  // Customers can stamp their own online orders: the order must exist under the same phone number.
+  const isStaff = isAdmin(password);
   try {
     const database = await connectDB();
     if (!database) return res.json({ success: false, error: 'Database unavailable' });
-    const member = await database.collection('loyalty').findOne({ phone: cleanPhone });
+    const member = await database.collection('loyalty').findOne(token ? { cardToken: String(token) } : loyaltyPhoneQuery(cleanPhone));
     if (!member) return res.json({ success: false, error: 'Member not found' });
+    cleanPhone = loyaltyPhone(member.phone);
+    if (!isStaff) {
+      const order = await database.collection('orders').findOne({ orderNum });
+      if (!order || loyaltyPhone(order.customer && order.customer.phone) !== cleanPhone) {
+        return res.json({ success: false, error: 'We couldn’t find that online order under your phone number. In-store orders are stamped at the counter.' });
+      }
+    }
     if (member.usedOrderNums && member.usedOrderNums.includes(orderNum)) {
       return res.json({ success: false, error: 'Order number already used' });
     }
@@ -1081,17 +1154,17 @@ app.post('/api/loyalty/stamp', async (req, res) => {
     const finalStamps = gotFree ? 0 : newStamps;
     const newFreeEarned = gotFree ? (member.freeEarned || 0) + 1 : (member.freeEarned || 0);
     const newHistory = [
-      { orderNum, date: new Date().toLocaleDateString('en-CA'), stamp: newTotalOrders, manual: true },
+      { orderNum, date: new Date().toLocaleDateString('en-CA'), stamp: newTotalOrders, manual: true, ...(isStaff ? { staff: true } : {}) },
       ...(member.history || [])
     ].slice(0, 50);
     await database.collection('loyalty').updateOne(
-      { phone: cleanPhone },
+      { _id: member._id },
       {
         $set: { stamps: finalStamps, totalOrders: newTotalOrders, freeEarned: newFreeEarned, history: newHistory, updatedAt: new Date() },
         $push: { usedOrderNums: orderNum }
       }
     );
-    const updated = await database.collection('loyalty').findOne({ phone: cleanPhone });
+    const updated = await database.collection('loyalty').findOne({ _id: member._id });
     console.log(`🍗 MANUAL STAMP: ${member.name} — ${orderNum} — Total: ${newTotalOrders} — Free: ${gotFree}`);
     if (gotFree) {
       sendEmail({
@@ -1108,26 +1181,72 @@ app.post('/api/loyalty/stamp', async (req, res) => {
         </div>`
       });
     }
-    res.json({ success: true, member: updated, gotFree, stamps: finalStamps, totalOrders: newTotalOrders });
+    await ensureCardToken(database, updated);
+    res.json({ success: true, member: isStaff ? Object.assign(publicCard(updated), staffView(updated)) : publicCard(updated), gotFree, stamps: finalStamps, totalOrders: newTotalOrders });
   } catch (e) {
     console.error('Loyalty stamp error:', e.message);
     res.json({ success: false, error: 'Failed to add stamp' });
   }
 });
 
-app.get('/api/loyalty/member/:phone', async (req, res) => {
-  const cleanPhone = req.params.phone.replace(/\D/g, '');
+// Card by private token (from the emailed link, and from a saved browser session).
+app.get('/api/loyalty/card/:token', async (req, res) => {
   try {
     const database = await connectDB();
     if (!database) return res.json({ success: false, error: 'Database unavailable' });
-    const member = await database.collection('loyalty').findOne({ phone: cleanPhone });
+    const member = await database.collection('loyalty').findOne({ cardToken: String(req.params.token) });
     if (!member) return res.json({ success: false, error: 'Member not found' });
-    res.json({ success: true, member });
+    res.json({ success: true, member: publicCard(member) });
+  } catch (e) { res.json({ success: false, error: 'Lookup failed' }); }
+});
+
+// ── Staff: look up a card, and mark free wings as used (/stamps-admin) ──
+const staffView = m => ({ fullName: m.name, email: m.email, phone: m.phone, freeRedeemed: m.freeRedeemed === undefined ? Math.max(0, (m.freeEarned || 0) - freeAvailable(m)) : m.freeRedeemed });
+app.post('/api/loyalty/admin/find', async (req, res) => {
+  if (!isAdmin(req.body.password)) return res.status(401).json({ success: false, error: 'Wrong password' });
+  const q = String(req.body.q || '').trim();
+  if (!q) return res.json({ success: false, error: 'Enter a phone number or email' });
+  try {
+    const database = await connectDB();
+    if (!database) return res.json({ success: false, error: 'Database unavailable' });
+    const member = await database.collection('loyalty').findOne(q.includes('@') ? { email: q.toLowerCase() } : loyaltyPhoneQuery(loyaltyPhone(q)));
+    if (!member) return res.json({ success: false, error: 'No card found' });
+    await ensureCardToken(database, member);
+    res.json({ success: true, member: Object.assign(publicCard(member), staffView(member)) });
+  } catch (e) { res.json({ success: false, error: 'Lookup failed' }); }
+});
+app.post('/api/loyalty/redeem', async (req, res) => {
+  if (!isAdmin(req.body.password)) return res.status(401).json({ success: false, error: 'Wrong password' });
+  try {
+    const database = await connectDB();
+    if (!database) return res.json({ success: false, error: 'Database unavailable' });
+    const member = await database.collection('loyalty').findOne(loyaltyPhoneQuery(loyaltyPhone(req.body.phone)));
+    if (!member) return res.json({ success: false, error: 'No card found' });
+    const avail = freeAvailable(member);
+    if (avail < 1) return res.json({ success: false, error: 'No free wings to redeem on this card' });
+    const redeemed = (member.freeEarned || 0) - avail + 1;
+    const history = [{ orderNum: 'FREE WINGS', date: new Date().toLocaleDateString('en-CA'), redeemed: true }, ...(member.history || [])].slice(0, 50);
+    await database.collection('loyalty').updateOne({ _id: member._id }, { $set: { freeRedeemed: redeemed, history, updatedAt: new Date() } });
+    const updated = await database.collection('loyalty').findOne({ _id: member._id });
+    console.log(`🎁 REDEEMED free wings: ${member.name} (${member.phone})`);
+    res.json({ success: true, member: Object.assign(publicCard(updated), staffView(updated)) });
+  } catch (e) { res.json({ success: false, error: 'Redeem failed' }); }
+});
+
+app.get('/api/loyalty/member/:phone', async (req, res) => {
+  const cleanPhone = loyaltyPhone(req.params.phone);
+  try {
+    const database = await connectDB();
+    if (!database) return res.json({ success: false, error: 'Database unavailable' });
+    const member = await database.collection('loyalty').findOne(loyaltyPhoneQuery(cleanPhone));
+    if (!member) return res.json({ success: false, error: 'Member not found' });
+    await ensureCardToken(database, member);
+    res.json({ success: true, member: publicCard(member) });
   } catch (e) { res.json({ success: false, error: 'Lookup failed' }); }
 });
 
 app.get('/api/loyalty/admin/members', async (req, res) => {
-  if (req.query.password !== (process.env.ADMIN_PASSWORD || 'sauceboss2025')) {
+  if (!isAdmin(req.query.password)) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
   try {
@@ -1167,7 +1286,7 @@ app.post('/api/push/unsubscribe', async (req, res) => {
 });
 
 app.get('/api/push/count', async (req, res) => {
-  if (req.query.password !== (process.env.ADMIN_PASSWORD || 'sauceboss2025')) {
+  if (!isAdmin(req.query.password)) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
   try {
@@ -1179,7 +1298,7 @@ app.get('/api/push/count', async (req, res) => {
 
 app.post('/api/push/send', async (req, res) => {
   const { password, title, body, url, icon } = req.body;
-  if (password !== (process.env.ADMIN_PASSWORD || 'sauceboss2025')) return res.status(401).json({ error: 'Unauthorized' });
+  if (!isAdmin(password)) return res.status(401).json({ error: 'Unauthorized' });
   if (!title || !body) return res.json({ success: false, error: 'Title and body required' });
   try {
     const database = await connectDB();
@@ -1213,7 +1332,7 @@ app.post('/api/push/send', async (req, res) => {
 // ── SAUCE BOSS DASHBOARD ───────────────────────────────────────
 app.get('/api/dashboard/orders', async (req, res) => {
   const { password, location, limit = 200 } = req.query;
-  if (password !== (process.env.ADMIN_PASSWORD || 'sauceboss2025')) {
+  if (!isAdmin(password)) {
     return res.status(401).json({ success: false, error: 'Unauthorized' });
   }
   try {
@@ -1906,7 +2025,7 @@ async function creditReferralBonus(referrerCode, newMemberPhone, newMemberName) 
       console.log(`⚠️ Referral code ${referrerCode} not found`);
       return null;
     }
-    if (referrer.phone === newMemberPhone.replace(/\D/g, '')) {
+    if (loyaltyPhone(referrer.phone) === loyaltyPhone(newMemberPhone)) {
       console.log(`⚠️ Self-referral blocked: ${referrerCode}`);
       return null;
     }
@@ -1959,11 +2078,11 @@ async function creditReferralBonus(referrerCode, newMemberPhone, newMemberName) 
 app.post('/api/loyalty/signup-v2', async (req, res) => {
   const { name, email, phone, referralCode } = req.body;
   if (!name || !email || !phone) return res.json({ success: false, error: 'Missing fields' });
-  const cleanPhone = phone.replace(/\D/g, '');
+  const cleanPhone = loyaltyPhone(phone);
   try {
     const database = await connectDB();
     if (!database) return res.json({ success: false, error: 'Database unavailable' });
-    const existing = await database.collection('loyalty').findOne({ phone: cleanPhone });
+    const existing = await database.collection('loyalty').findOne(loyaltyPhoneQuery(cleanPhone));
     if (existing) return res.json({ success: false, error: 'Phone already registered' });
     const myReferralCode = generateReferralCode(name, cleanPhone);
     let initialStamps = 0;
@@ -1977,7 +2096,7 @@ app.post('/api/loyalty/signup-v2', async (req, res) => {
     }
     const member = {
       name, email, phone: cleanPhone,
-      stamps: initialStamps, totalOrders: initialStamps, freeEarned: 0,
+      stamps: initialStamps, totalOrders: initialStamps, freeEarned: 0, freeRedeemed: 0, cardToken: newCardToken(),
       referralCode: myReferralCode, referralCount: 0, referredBy: referralCode || null,
       usedOrderNums: [], history: initialStamps > 0 ? [{ orderNum: 'WELCOME-REF', date: new Date().toLocaleDateString('en-CA'), stamp: 1, referral: true }] : [],
       joinDate: new Date().toISOString(), createdAt: new Date()
@@ -1998,7 +2117,7 @@ app.post('/api/loyalty/signup-v2', async (req, res) => {
         </table>
       </div>`
     });
-    res.json({ success: true, member, referralBonus });
+    res.json({ success: true, member: publicCard(member), referralBonus });
   } catch (e) {
     console.error('Loyalty signup-v2 error:', e.message);
     res.json({ success: false, error: 'Signup failed' });
@@ -2018,7 +2137,7 @@ app.get('/api/loyalty/referral-info/:code', async (req, res) => {
 
 // One-time migration: give existing members their referral codes
 app.post('/api/loyalty/migrate-codes', async (req, res) => {
-  if (req.body.password !== (process.env.ADMIN_PASSWORD || 'sauceboss2025')) return res.status(401).json({ error: 'Unauthorized' });
+  if (!isAdmin(req.body.password)) return res.status(401).json({ error: 'Unauthorized' });
   try {
     const database = await connectDB();
     const members = await database.collection('loyalty').find({ referralCode: { $exists: false } }).toArray();
@@ -2045,7 +2164,7 @@ app.get('/customers.html', (req, res) => { res.sendFile(path.join(__dirname, 'pu
 
 app.get('/api/customers', async (req, res) => {
   const { password } = req.query;
-  if (password !== (process.env.ADMIN_PASSWORD || 'sauceboss2025')) {
+  if (!isAdmin(password)) {
     return res.status(401).json({ success: false, error: 'Unauthorized' });
   }
   try {

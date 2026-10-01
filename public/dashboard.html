@@ -219,9 +219,9 @@ function login(){
   fetch(`${API}/api/dashboard/orders?password=${encodeURIComponent(pw)}&limit=1`)
     .then(r=>r.json())
     .then(d=>{if(d.success)startApp();else showErr();})
-    .catch(()=>{if(pw==='sauceboss2025')startApp();else showErr();});
+    .catch(()=>{const e=document.getElementById('login-err');e.textContent='Can’t reach the server. Check your connection and try again.';e.style.display='block';});
 }
-function showErr(){const e=document.getElementById('login-err');e.style.display='block';setTimeout(()=>e.style.display='none',3000);}
+function showErr(){const e=document.getElementById('login-err');e.textContent='Wrong password — try again';e.style.display='block';setTimeout(()=>e.style.display='none',3000);}
 function startApp(){
   document.getElementById('login').style.display='none';
   document.getElementById('app').classList.add('show');

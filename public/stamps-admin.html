@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>Saucy Stamps — Wing-O Staff</title>
+<link rel="icon" type="image/jpeg" href="/images/logo.jpg">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:Inter,Arial,sans-serif;background:#0D0D0D;color:#eee;min-height:100vh;padding:1.5rem;}
+.wrap{max-width:720px;margin:0 auto;}
+header{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;}
+header img{height:40px;width:auto;}
+h1{font-family:Oswald,Arial,sans-serif;font-size:1.3rem;letter-spacing:2px;text-transform:uppercase;color:#F5A800;}
+h2{font-family:Oswald,Arial,sans-serif;font-size:1.5rem;letter-spacing:1px;color:#fff;margin-bottom:.2rem;}
+.card{background:#1A1208;border:1px solid #3a2e1c;border-radius:8px;padding:1.25rem;margin-bottom:1rem;}
+label{display:block;font-size:.75rem;color:#F5A800;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin:.6rem 0 .35rem;}
+input{width:100%;max-width:360px;padding:.75rem;border-radius:6px;border:1.5px solid #444;background:#111;color:#fff;font-size:1rem;}
+input:focus{outline:none;border-color:#F5A800;}
+button{background:#E8190A;color:#fff;border:0;border-radius:6px;padding:.75rem 1.2rem;font-weight:700;letter-spacing:1px;cursor:pointer;margin-top:.6rem;font-size:.95rem;}
+button.alt{background:#F5A800;color:#0D0D0D;}
+button.ghost{background:transparent;border:1.5px solid #555;color:#ccc;}
+button:disabled{opacity:.5;cursor:default;}
+.row{display:flex;gap:.6rem;flex-wrap:wrap;align-items:flex-end;}
+.row input{flex:1;min-width:0;}
+.muted{color:#999;font-size:.9rem;line-height:1.5;}
+.err{color:#FEB2B2;margin-top:.6rem;min-height:1.2em;}
+.ok{color:#9AE6B4;margin-top:.6rem;min-height:1.2em;}
+.stamps{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin:.9rem 0;max-width:420px;}
+.stamps span{aspect-ratio:1;border-radius:50%;border:2px dashed #555;display:grid;place-items:center;font-size:.9rem;}
+.stamps span.on{border:2px solid #F5A800;background:#3a2a0a;}
+.stats{display:flex;gap:.75rem;flex-wrap:wrap;margin:.5rem 0;}
+.stat{background:#111;border:1px solid #2a2a2a;border-radius:8px;padding:.7rem 1rem;min-width:110px;}
+.stat b{display:block;font-size:1.5rem;color:#F5A800;font-variant-numeric:tabular-nums;}
+.stat span{font-size:.72rem;color:#999;text-transform:uppercase;letter-spacing:1px;}
+.reward{background:#E8190A;color:#fff;border-radius:8px;padding:1rem;margin:.8rem 0;}
+.reward b{font-size:1.15rem;letter-spacing:1px;}
+.confirm{display:none;background:#2a0f0a;border:1px solid #E8190A;border-radius:8px;padding:.9rem;margin-top:.6rem;}
+.hist div{display:flex;justify-content:space-between;gap:1rem;padding:.45rem 0;border-bottom:1px solid #2a2a2a;font-size:.88rem;}
+.hist div span:last-child{color:#F5A800;white-space:nowrap;}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><img src="/images/wingo-logo-wide.png" alt="Wing-O"><h1>Saucy Stamps · Staff</h1></header>
+
+<div class="card" id="login">
+  <p class="muted" style="margin-bottom:.4rem;">Enter the admin password (the <code>ADMIN_PASSWORD</code> set on Railway).</p>
+  <input type="password" id="pw" placeholder="Admin password" autocomplete="current-password">
+  <br><button id="go">Sign in</button>
+  <div class="err" id="loginErr"></div>
+</div>
+
+<div id="app" style="display:none;">
+  <div class="card">
+    <label for="q">Find a card</label>
+    <div class="row"><input id="q" placeholder="Phone number or email" inputmode="email"><button id="find">Find</button></div>
+    <div class="err" id="findErr"></div>
+  </div>
+
+  <div class="card" id="member" style="display:none;">
+    <h2 id="mName"></h2>
+    <p class="muted" id="mContact"></p>
+    <div class="stamps" id="mStamps"></div>
+    <div class="stats">
+      <div class="stat"><b id="mStampCount">0</b><span>Stamps</span></div>
+      <div class="stat"><b id="mTotal">0</b><span>Total orders</span></div>
+      <div class="stat"><b id="mEarned">0</b><span>Free earned</span></div>
+      <div class="stat"><b id="mUsed">0</b><span>Free used</span></div>
+    </div>
+
+    <div class="reward" id="mReward" style="display:none;">
+      <b>🎉 FREE WINGS READY</b>
+      <div style="margin-top:.3rem;">Code <strong id="mCode"></strong> · give one free half order of wings, then mark it used.</div>
+      <button class="alt" id="redeem">Mark free wings as used</button>
+      <div class="confirm" id="confirm">
+        <div>Give the free half order now and mark it used? This can’t be undone.</div>
+        <div class="row"><button id="redeemYes">Yes, mark used</button><button class="ghost" id="redeemNo">Cancel</button></div>
+      </div>
+    </div>
+
+    <label for="ord">Add a stamp for an order</label>
+    <div class="row"><input id="ord" placeholder="Online order (WO-1234) or in-store receipt #"><button class="alt" id="stamp">Add stamp</button></div>
+    <div class="ok" id="actOk"></div><div class="err" id="actErr"></div>
+
+    <label style="margin-top:1rem;">Recent activity</label>
+    <div class="hist" id="mHist"></div>
+  </div>
+</div>
+</div>
+<script>
+(function(){
+  var pw = '', current = null;
+  var $ = function(id){ return document.getElementById(id); };
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function post(url, body){
+    body.password = pw;
+    return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      .then(function(r){ return r.json().then(function(d){ d._status = r.status; return d; }); });
+  }
+  function show(m){
+    current = m;
+    $('member').style.display = 'block';
+    $('mName').textContent = m.fullName || m.name;
+    $('mContact').textContent = [m.phone, m.email].filter(Boolean).join(' · ');
+    var dots = ''; for (var i = 0; i < 10; i++) dots += '<span class="' + (i < m.stamps ? 'on' : '') + '">' + (i < m.stamps ? '🍗' : '') + '</span>';
+    $('mStamps').innerHTML = dots;
+    $('mStampCount').textContent = m.stamps + ' / 10';
+    $('mTotal').textContent = m.totalOrders;
+    $('mEarned').textContent = m.freeEarned;
+    $('mUsed').textContent = m.freeRedeemed || 0;
+    $('mReward').style.display = m.freeAvailable > 0 ? 'block' : 'none';
+    $('mCode').textContent = (m.rewardCode || '') + (m.freeAvailable > 1 ? ' (' + m.freeAvailable + ' ready)' : '');
+    $('confirm').style.display = 'none';
+    var h = m.history || [];
+    $('mHist').innerHTML = h.length ? h.slice(0, 12).map(function(x){
+      return '<div><span>' + esc(x.orderNum) + ' · ' + esc(x.date) + '</span><span>' + (x.redeemed ? '🎁 Free wings used' : x.referral ? '🎁 Referral stamp' : '🍗 Stamp #' + esc(x.stamp)) + '</span></div>';
+    }).join('') : '<p class="muted">No activity yet.</p>';
+  }
+  function find(){
+    var q = $('q').value.trim(); $('findErr').textContent = ''; $('actOk').textContent = ''; $('actErr').textContent = '';
+    if (!q) { $('findErr').textContent = 'Enter a phone number or email.'; return; }
+    post('/api/loyalty/admin/find', { q: q }).then(function(d){
+      if (d._status === 401) { signOut('Your password was not accepted. Sign in again.'); return; }
+      if (!d.success) { $('member').style.display = 'none'; $('findErr').textContent = d.error || 'No card found.'; return; }
+      show(d.member);
+    }).catch(function(){ $('findErr').textContent = 'Can’t reach the server. Try again.'; });
+  }
+  function signOut(msg){ pw = ''; try { sessionStorage.removeItem('wingo_staff_pw'); } catch(e){} $('app').style.display = 'none'; $('login').style.display = 'block'; $('loginErr').textContent = msg || ''; }
+  function signIn(val){
+    // Check the password with a harmless lookup before showing the tools.
+    pw = val;
+    post('/api/loyalty/admin/find', { q: '0000000000' }).then(function(d){
+      if (d._status === 401) { signOut('Wrong password — try again.'); return; }
+      try { sessionStorage.setItem('wingo_staff_pw', val); } catch(e){}
+      $('login').style.display = 'none'; $('app').style.display = 'block'; $('q').focus();
+    }).catch(function(){ $('loginErr').textContent = 'Can’t reach the server. Try again.'; });
+  }
+  $('go').onclick = function(){ var v = $('pw').value; if (v) signIn(v); };
+  $('pw').addEventListener('keydown', function(e){ if (e.key === 'Enter') $('go').click(); });
+  $('find').onclick = find;
+  $('q').addEventListener('keydown', function(e){ if (e.key === 'Enter') find(); });
+  $('stamp').onclick = function(){
+    var o = $('ord').value.trim(); $('actOk').textContent = ''; $('actErr').textContent = '';
+    if (!current) return; if (!o) { $('actErr').textContent = 'Enter the order or receipt number.'; return; }
+    $('stamp').disabled = true;
+    post('/api/loyalty/stamp', { phone: current.phone, orderNum: o }).then(function(d){
+      $('stamp').disabled = false;
+      if (!d.success) { $('actErr').textContent = d.error === 'Order number already used' ? 'That order already has a stamp.' : (d.error || 'Couldn’t add the stamp.'); return; }
+      $('ord').value = ''; show(d.member);
+      $('actOk').textContent = d.gotFree ? '10th stamp! Free wings are now ready on this card.' : 'Stamp added. ' + (10 - d.stamps) + ' more to free wings.';
+    }).catch(function(){ $('stamp').disabled = false; $('actErr').textContent = 'Can’t reach the server. Try again.'; });
+  };
+  $('redeem').onclick = function(){ $('confirm').style.display = 'block'; };
+  $('redeemNo').onclick = function(){ $('confirm').style.display = 'none'; };
+  $('redeemYes').onclick = function(){
+    $('redeemYes').disabled = true; $('actOk').textContent = ''; $('actErr').textContent = '';
+    post('/api/loyalty/redeem', { phone: current.phone }).then(function(d){
+      $('redeemYes').disabled = false;
+      if (!d.success) { $('actErr').textContent = d.error || 'Couldn’t mark it used.'; return; }
+      show(d.member); $('actOk').textContent = 'Free wings marked as used.';
+    }).catch(function(){ $('redeemYes').disabled = false; $('actErr').textContent = 'Can’t reach the server. Try again.'; });
+  };
+  try { var saved = sessionStorage.getItem('wingo_staff_pw'); if (saved) signIn(saved); } catch(e){}
+})();
+</script>
+</body>
+</html>
