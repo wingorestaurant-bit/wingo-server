@@ -2660,7 +2660,13 @@ showFirstOrderBanner();
   // Wait 3 seconds before showing — let page load
   setTimeout(showFirstOrderPopup, 3000);
 
+  // Never cover the cart, checkout, stamp card or another open window: wait until it's closed.
+  function somethingOpen(){ return !!document.querySelector('[id$="-ov"].open'); }
+
   function showFirstOrderPopup(){
+    if(localStorage.getItem(STORAGE_KEY) || document.getElementById('fo-popup-ov')) return;
+    if(localStorage.getItem('wingo_last_order')) { localStorage.setItem(STORAGE_KEY, '1'); return; }
+    if(somethingOpen()) { setTimeout(showFirstOrderPopup, 4000); return; }
     var ov = document.createElement('div');
     ov.id = 'fo-popup-ov';
     ov.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:1rem;animation:fo-fade .3s ease-out;';
