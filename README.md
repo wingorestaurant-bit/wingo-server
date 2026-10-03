@@ -68,3 +68,9 @@ Tag the friend who thinks they can do it 👇
 | [`hiring/wingo-now-hiring-poster.pdf`](hiring/wingo-now-hiring-poster.pdf) | Print poster, 8.5 x 11 in, 300 dpi. QR code opens wingorestaurants.com/careers |
 | [`hiring/wingo-now-hiring-poster.png`](hiring/wingo-now-hiring-poster.png) | Same poster as an image (2550 x 3300) |
 | [`hiring/wingo-now-hiring-instagram.png`](hiring/wingo-now-hiring-instagram.png) | Instagram post, 1080 x 1350 |
+
+## Burgers
+
+| File | What |
+|---|---|
+| [`regina/wingo-burger-battle-story.mp4`](regina/wingo-burger-battle-story.mp4) | 15 s Instagram Story: Saturday Burger Battle (Tough Guy vs Dillinator, fighting-game style) ending on 2 for $20 burgers. Original 140 BPM arcade track. Add a poll sticker over "VOTE" and a link sticker under the end arrow |
