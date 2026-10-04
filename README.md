@@ -74,3 +74,10 @@ Tag the friend who thinks they can do it 👇
 | File | What |
 |---|---|
 | [`regina/wingo-burger-battle-story.mp4`](regina/wingo-burger-battle-story.mp4) | 15 s Instagram Story: Saturday Burger Battle (Tough Guy vs Dillinator, fighting-game style) ending on 2 for $20 burgers. Original 140 BPM arcade track. Add a poll sticker over "VOTE" and a link sticker under the end arrow |
+
+## Winnipeg interior wall concepts (1530 Dakota St)
+`winnipeg/interior/`: before/after mockups on the real site photos, plus the flat artwork (`art-*.png`) for the printer.
+- **Long wall** (`long`): newspaper collage with sauce stickers, oak wainscot on the bottom third, flavour board in a black frame, a red "Ask for the flavour of the week" plaque, SK/MB/JP plates and crossed rackets.
+- **Black window panels** (`panels`): 3 menu screens (Wings, Burgers, Platters), and a "Deal every day" chalkboard below them.
+- **Kitchen door wall** (`door`): newspaper collage plus a SAUCE LAB neon sign.
+- **Farm wall** (`farm`): black line-art prairie mural (barn, WING-O grain elevator, windmill, wheat) with SK and MB plates.
