@@ -50,7 +50,7 @@ connectDB();
 const LOCATIONS = {
   "albert-st": {
     name: "Albert Street (Regina)",
-    merchantId: "5376RB8DAZMH1",
+    merchantId: process.env.CLOVER_MERCHANT_ID_ALBERT || "5376RB8DAZMH1",
     apiToken: process.env.CLOVER_API_TOKEN_ALBERT,
     address: "#3 - 155 Albert St N, Regina, SK",
     phone: "639-997-0553", // TEMP: Albert St line having technical issues. Revert to 306-522-2111.
@@ -60,7 +60,7 @@ const LOCATIONS = {
   },
   "east-regina": {
     name: "East Regina (Wing-O East)",
-    merchantId: "4BB1SFERQNQF1",
+    merchantId: process.env.CLOVER_MERCHANT_ID_EAST || "4BB1SFERQNQF1",
     apiToken: process.env.CLOVER_API_TOKEN_EAST,
     address: "534 University Park Drive, Regina, SK",
     phone: "306-522-2114",
@@ -70,7 +70,7 @@ const LOCATIONS = {
   },
   "regina-beach": {
     name: "Regina Beach",
-    merchantId: "WSTB4D3E5RAG1",
+    merchantId: process.env.CLOVER_MERCHANT_ID_BEACH || "WSTB4D3E5RAG1",
     apiToken: process.env.CLOVER_API_TOKEN_BEACH,
     address: "110 Centre St, Regina Beach, SK",
     phone: "639-997-0553",
@@ -385,6 +385,20 @@ async function ghostHuntRedeemed(phoneNorm, year) {
 // ── HEALTH CHECK ───────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', locations: Object.keys(LOCATIONS), time: new Date().toISOString() });
+});
+
+// Checks that a location's Clover merchant ID and API token work, without creating an order.
+// GET /api/clover/check?loc=albert-st&password=ADMIN_PASSWORD
+app.get('/api/clover/check', async (req, res) => {
+  if (!isAdmin(req.query.password)) return res.status(401).json({ error: 'Wrong password' });
+  const loc = LOCATIONS[req.query.loc];
+  if (!loc) return res.status(400).json({ error: 'Unknown location', locations: Object.keys(LOCATIONS) });
+  if (!loc.apiToken) return res.json({ ok: false, merchantId: loc.merchantId, error: 'No API token set for this location' });
+  try {
+    const r = await fetch(`https://api.clover.com/v3/merchants/${loc.merchantId}`, { headers: { 'Authorization': `Bearer ${loc.apiToken}` } });
+    const d = await r.json().catch(() => ({}));
+    res.json({ ok: r.ok, status: r.status, merchantId: loc.merchantId, merchantName: d.name || null, error: r.ok ? null : (d.message || 'Clover rejected the request') });
+  } catch (e) { res.json({ ok: false, merchantId: loc.merchantId, error: e.message }); }
 });
 
 // ── PUSH ADMIN PANEL ───────────────────────────────────────────
