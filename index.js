@@ -50,7 +50,7 @@ connectDB();
 const LOCATIONS = {
   "albert-st": {
     name: "Albert Street (Regina)",
-    merchantId: process.env.CLOVER_MERCHANT_ID_ALBERT || "5376RB8DAZMH1",
+    merchantId: process.env.CLOVER_MERCHANT_ID_ALBERT || "98YG45GQNN8X1",
     apiToken: process.env.CLOVER_API_TOKEN_ALBERT,
     address: "#3 - 155 Albert St N, Regina, SK",
     phone: "639-997-0553", // TEMP: Albert St line having technical issues. Revert to 306-522-2111.
