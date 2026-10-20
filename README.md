@@ -81,3 +81,9 @@ Tag the friend who thinks they can do it 👇
 - **Black window panels** (`panels`): 3 menu screens (Wings, Burgers, Platters), and a "Deal every day" chalkboard below them.
 - **Kitchen door wall** (`door`): newspaper collage plus a SAUCE LAB neon sign.
 - **Farm wall** (`farm`): black line-art prairie mural (barn, WING-O grain elevator, windmill, wheat) with SK and MB plates.
+
+## Winnipeg sauce board (6 ft x 4 ft)
+`winnipeg/sauce-board/`: all 130 flavours in 8 categories, with heat/taste dots and a chili icon on hot flavours.
+- `wingo-winnipeg-sauce-board-6x4ft.pdf`: send this to the printer. Sharp vector text, exactly 72 x 48 in.
+- `wingo-winnipeg-sauce-board-6x4ft-150dpi.png`: the same board as a 10800 x 7200 image, for printers that want an image file.
+- `wingo-winnipeg-sauce-board-preview.jpg`: small preview for phones.
