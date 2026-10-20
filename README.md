@@ -87,3 +87,4 @@ Tag the friend who thinks they can do it 👇
 - `wingo-winnipeg-sauce-board-6x4ft.pdf`: send this to the printer. Sharp vector text, exactly 72 x 48 in.
 - `wingo-winnipeg-sauce-board-6x4ft-150dpi.png`: the same board as a 10800 x 7200 image, for printers that want an image file.
 - `wingo-winnipeg-sauce-board-preview.jpg`: small preview for phones.
+- `wingo-winnipeg-sauce-board-menu-style-*`: the same board in the style of the in-store menu (grey chalk background, red serif headings, Josefin Sans, sketch art from the menu).
