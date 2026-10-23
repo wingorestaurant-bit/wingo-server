@@ -94,3 +94,4 @@ Tag the friend who thinks they can do it 👇
 - `Wing-O-SOP-Book.pdf`: 12 pages. Cover + 11 SOPs: opening, closing, wings cook/sauce/toss, orders & online orders, Saucy Stamps, food safety & temps, allergens, handwashing & sanitizing, receiving, fryer oil, making it right.
 - `Wing-O-Cleaning-Sheets.pdf`: 7 printable sheets: opening & closing checklists (Mon–Sun), weekly deep clean, monthly deep clean, temperature log, fryer oil & sanitizer log, hourly washroom check.
 - `Wing-O-Culture-Sheets.pdf`: 6 pages. The Wing-O Way: story, 6 values, 5 guest-service moments, crew promise, uniform & station standards, team sign-off sheet.
+- `Wing-O-Temperature-Record-3-Coolers-3-Freezers.pdf`: one page per month. AM and PM temps for 3 coolers and 3 freezers, days 1–31, initials, too-warm steps and a manager sign-off.
