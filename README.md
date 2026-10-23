@@ -88,3 +88,9 @@ Tag the friend who thinks they can do it 👇
 - `wingo-winnipeg-sauce-board-6x4ft-150dpi.png`: the same board as a 10800 x 7200 image, for printers that want an image file.
 - `wingo-winnipeg-sauce-board-preview.jpg`: small preview for phones.
 - `wingo-winnipeg-sauce-board-menu-style-*`: the same board in the style of the in-store menu (grey chalk background, red serif headings, Josefin Sans, sketch art from the menu).
+
+## Operations: SOPs, cleaning sheets, culture (Letter, print-ready)
+`operations/`
+- `Wing-O-SOP-Book.pdf`: 12 pages. Cover + 11 SOPs: opening, closing, wings cook/sauce/toss, orders & online orders, Saucy Stamps, food safety & temps, allergens, handwashing & sanitizing, receiving, fryer oil, making it right.
+- `Wing-O-Cleaning-Sheets.pdf`: 7 printable sheets: opening & closing checklists (Mon–Sun), weekly deep clean, monthly deep clean, temperature log, fryer oil & sanitizer log, hourly washroom check.
+- `Wing-O-Culture-Sheets.pdf`: 6 pages. The Wing-O Way: story, 6 values, 5 guest-service moments, crew promise, uniform & station standards, team sign-off sheet.
