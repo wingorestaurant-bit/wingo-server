@@ -95,3 +95,10 @@ Tag the friend who thinks they can do it 👇
 - `Wing-O-Cleaning-Sheets.pdf`: 7 printable sheets: opening & closing checklists (Mon–Sun), weekly deep clean, monthly deep clean, temperature log, fryer oil & sanitizer log, hourly washroom check.
 - `Wing-O-Culture-Sheets.pdf`: 6 pages. The Wing-O Way: story, 6 values, 5 guest-service moments, crew promise, uniform & station standards, team sign-off sheet.
 - `Wing-O-Temperature-Record-3-Coolers-3-Freezers.pdf`: one page per month. AM and PM temps for 3 coolers and 3 freezers, days 1–31, initials, too-warm steps and a manager sign-off.
+
+## Franchise kit (`operations/franchise/`, Letter, print-ready)
+- `Wing-O-Brand-Standards.pdf`: 8 pages. Story and name rules, logo do's and don'ts, colours (HEX/RGB), typography, photos and sketch style, store look, voice and social media.
+- `Wing-O-Store-Audit.pdf`: 5 pages. 100-point scored audit with critical items, grades and an action plan.
+- `Wing-O-New-Store-Opening-Playbook.pdf`: 6 pages. 90-day countdown with who-does-what, from permits to day 30.
+- `Wing-O-Training-Program.pdf`: 9 pages. Plan by role, 7 station sign-off sheets, a 15-question knowledge check with a managers' answer key, and a completion sheet.
+- `Wing-O-Recipe-Portion-Cards.pdf`: 5 pages. Portion chart, item recipe cards, a Dillinator example and confidential sauce batch cards.
