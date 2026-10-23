@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>Franchise Leads — Wing-O Admin</title>
+<link rel="icon" type="image/jpeg" href="/images/logo.jpg">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:Inter,Arial,sans-serif;background:#0D0D0D;color:#eee;min-height:100vh;padding:1.5rem;}
+.wrap{max-width:1100px;margin:0 auto;}
+header{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;}
+header img{height:40px;width:auto;}
+h1{font-family:Oswald,Arial,sans-serif;font-size:1.3rem;letter-spacing:2px;text-transform:uppercase;color:#F5A800;}
+.card{background:#1A1208;border:1px solid #3a2e1c;border-radius:8px;padding:1.25rem;margin-bottom:1rem;}
+input,select,textarea{padding:.6rem;border-radius:6px;border:1.5px solid #444;background:#111;color:#fff;font-size:.95rem;font-family:inherit;}
+#pw{width:100%;max-width:320px;}
+button{background:#E8190A;color:#fff;border:0;border-radius:6px;padding:.7rem 1.1rem;font-weight:700;letter-spacing:1px;cursor:pointer;}
+button.alt{background:#F5A800;color:#0D0D0D;}
+.stats{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;}
+.stat{background:#1A1208;border:1px solid #3a2e1c;border-radius:8px;padding:1rem 1.25rem;min-width:140px;}
+.stat b{display:block;font-size:1.8rem;color:#F5A800;}
+.stat span{font-size:.75rem;color:#999;text-transform:uppercase;letter-spacing:1px;}
+.tools{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem;}
+.lead{background:#1A1208;border:1px solid #3a2e1c;border-left:4px solid #E8190A;border-radius:8px;padding:1rem 1.15rem;margin-bottom:.8rem;}
+.lead.done{border-left-color:#555;opacity:.75;}
+.lead .top{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+.lead h3{font-family:Oswald,Arial,sans-serif;font-size:1.15rem;letter-spacing:1px;}
+.lead .when{color:#999;font-size:.8rem;}
+.lead dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.3rem 1rem;margin:.6rem 0;font-size:.9rem;}
+.lead dt{color:#F5A800;font-size:.7rem;text-transform:uppercase;letter-spacing:1px;}
+.lead dd{color:#ddd;word-break:break-word;}
+.lead a{color:#F5A800;}
+.lead .msg{background:#111;border-radius:6px;padding:.6rem .8rem;color:#ccc;font-size:.9rem;white-space:pre-wrap;margin:.4rem 0;}
+.lead .edit{display:flex;gap:.6rem;flex-wrap:wrap;align-items:flex-start;margin-top:.5rem;}
+.lead textarea{flex:1;min-width:220px;min-height:2.6rem;}
+.err{color:#FEB2B2;margin-top:.6rem;}
+.tag{display:inline-block;background:#333;color:#ccc;border-radius:3px;padding:.1rem .45rem;font-size:.7rem;letter-spacing:1px;text-transform:uppercase;margin-left:.4rem;vertical-align:middle;}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><img src="/images/wingo-logo-wide.png" alt="Wing-O"><h1>Franchise Leads</h1></header>
+
+<div class="card" id="login">
+  <p style="margin-bottom:.6rem;color:#bbb;">Enter the admin password (the <code>ADMIN_PASSWORD</code> set on Railway).</p>
+  <input type="password" id="pw" placeholder="Admin password" autocomplete="current-password">
+  <br><button id="go" style="margin-top:.6rem;">View leads</button>
+  <div class="err" id="err"></div>
+</div>
+
+<div id="out" style="display:none;">
+  <div class="stats" id="stats"></div>
+  <div class="tools">
+    <select id="filter"><option value="">All leads</option></select>
+    <input type="search" id="q" placeholder="Search name, city, email">
+    <button class="alt" id="csv">⬇ Download CSV</button>
+  </div>
+  <div id="list"></div>
+</div>
+</div>
+<script>
+(function(){
+  var pw = '', data = null;
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function post(body){
+    body.password = pw;
+    return fetch('/api/franchise/leads', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      .then(function(r){ return r.json().then(function(d){ return { ok: r.ok, d: d }; }); });
+  }
+  function render(){
+    var f = document.getElementById('filter').value, q = document.getElementById('q').value.trim().toLowerCase();
+    var counts = {}; data.rows.forEach(function(r){ counts[r.status || 'new'] = (counts[r.status || 'new'] || 0) + 1; });
+    document.getElementById('stats').innerHTML = '<div class="stat"><b>' + data.rows.length + '</b><span>Total leads</span></div>' +
+      data.statuses.map(function(s){ return '<div class="stat"><b>' + (counts[s] || 0) + '</b><span>' + esc(s) + '</span></div>'; }).join('');
+    var rows = data.rows.filter(function(r){
+      if (f && (r.status || 'new') !== f) return false;
+      if (q && [r.firstName, r.lastName, r.city, r.email, r.phone].join(' ').toLowerCase().indexOf(q) < 0) return false;
+      return true;
+    });
+    document.getElementById('list').innerHTML = rows.map(function(r){
+      var st = r.status || 'new', gauntlet = /GAUNTLET/.test(r.budget || '');
+      return '<div class="lead' + (st === 'not a fit' || st === 'signed' ? ' done' : '') + '" data-id="' + esc(r.id) + '">' +
+        '<div class="top"><h3>' + esc(r.firstName + ' ' + (r.lastName || '')) + (gauntlet ? '<span class="tag">Gauntlet</span>' : '') + '</h3><div class="when">' + esc(new Date(r.created_at).toLocaleString('en-CA')) + '</div></div>' +
+        '<dl><div><dt>City</dt><dd>' + esc(r.city) + '</dd></div><div><dt>Email</dt><dd><a href="mailto:' + esc(r.email) + '">' + esc(r.email) + '</a></dd></div>' +
+        '<div><dt>Phone</dt><dd><a href="tel:' + esc(r.phone) + '">' + esc(r.phone) + '</a></dd></div><div><dt>Investment</dt><dd>' + esc(r.budget || '—') + '</dd></div>' +
+        '<div><dt>Timeline</dt><dd>' + esc(r.timeline || '—') + '</dd></div><div><dt>Financing</dt><dd>' + esc(r.financing || '—') + '</dd></div>' +
+        '<div><dt>Experience</dt><dd>' + esc(r.experience || '—') + '</dd></div></dl>' +
+        (r.message ? '<div class="msg">' + esc(r.message) + '</div>' : '') +
+        '<div class="edit"><select class="st">' + data.statuses.map(function(s){ return '<option' + (s === st ? ' selected' : '') + '>' + esc(s) + '</option>'; }).join('') + '</select>' +
+        '<textarea class="notes" placeholder="Your notes (calls, next steps)">' + esc(r.notes || '') + '</textarea><button class="save">Save</button></div></div>';
+    }).join('') || '<div class="card" style="color:#888;">No leads here yet.</div>';
+  }
+  function load(){
+    pw = document.getElementById('pw').value;
+    var err = document.getElementById('err'); err.textContent = '';
+    post({}).then(function(res){
+      if (!res.ok) { err.textContent = res.d.error || 'Could not load.'; return; }
+      data = res.d;
+      var sel = document.getElementById('filter');
+      sel.innerHTML = '<option value="">All leads</option>' + data.statuses.map(function(s){ return '<option>' + esc(s) + '</option>'; }).join('');
+      document.getElementById('login').style.display = 'none';
+      document.getElementById('out').style.display = 'block';
+      render();
+    }).catch(function(){ err.textContent = 'Network error.'; });
+  }
+  document.getElementById('go').addEventListener('click', load);
+  document.getElementById('pw').addEventListener('keydown', function(e){ if (e.key === 'Enter') load(); });
+  document.getElementById('filter').addEventListener('change', render);
+  document.getElementById('q').addEventListener('input', render);
+  document.getElementById('list').addEventListener('click', function(e){
+    if (!e.target.classList.contains('save')) return;
+    var card = e.target.closest('.lead'), btn = e.target;
+    btn.disabled = true; btn.textContent = 'Saving…';
+    post({ id: card.dataset.id, status: card.querySelector('.st').value, notes: card.querySelector('.notes').value }).then(function(res){
+      if (!res.ok) { btn.disabled = false; btn.textContent = 'Save'; alert(res.d.error || 'Could not save.'); return; }
+      data = res.d; render();
+    }).catch(function(){ btn.disabled = false; btn.textContent = 'Save'; alert('Network error.'); });
+  });
+  document.getElementById('csv').addEventListener('click', function(){
+    if (!data) return;
+    var cols = ['created_at', 'status', 'firstName', 'lastName', 'email', 'phone', 'city', 'budget', 'timeline', 'financing', 'experience', 'message', 'notes'];
+    var q = function(v){ v = String(v == null ? '' : v); if (/^[=+\-@]/.test(v)) v = "'" + v; return '"' + v.replace(/"/g, '""') + '"'; };
+    var lines = [cols.join(',')].concat(data.rows.map(function(r){ return cols.map(function(c){ return q(c === 'created_at' ? new Date(r[c]).toISOString().slice(0, 10) : r[c]); }).join(','); }));
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([lines.join('\n')], { type: 'text/csv' }));
+    a.download = 'wingo-franchise-leads.csv';
+    a.click();
+  });
+})();
+</script>
+</body>
+</html>
