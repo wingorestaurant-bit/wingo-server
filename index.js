@@ -427,6 +427,12 @@ app.post('/api/orders', async (req, res) => {
       if (statusDoc?.status && statusDoc.status[locationId] === false) {
         return res.status(400).json({ error: 'This location is temporarily closed. Please pick another location.' });
       }
+      if (orderType === 'delivery') {
+        const delDoc = await database.collection('settings').findOne({ key: 'delivery_status' });
+        if (delDoc?.status && delDoc.status[locationId] === false) {
+          return res.status(400).json({ error: 'Delivery is turned off at this location right now. Please choose pickup.' });
+        }
+      }
     }
   } catch (e) { /* fail-open if DB check fails */ }
   if (!customer?.firstName || !customer?.phone) return res.status(400).json({ error: 'Missing customer info' });
@@ -1007,9 +1013,33 @@ app.get('/api/locations/status', async (req, res) => {
     const database = await connectDB();
     if (!database) return res.json({ status: {} });
     const doc = await database.collection('settings').findOne({ key: 'location_status' });
-    res.json({ status: doc?.status || {} });
+    const del = await database.collection('settings').findOne({ key: 'delivery_status' });
+    res.json({ status: doc?.status || {}, delivery: del?.status || {} });
   } catch (e) {
     res.json({ status: {} });
+  }
+});
+
+// Delivery ON/OFF per location (pickup stays available). Missing = ON.
+app.post('/api/locations/delivery', async (req, res) => {
+  const { locationId, enabled, password } = req.body || {};
+  if (!isAdmin(password)) return res.status(401).json({ error: 'Wrong password' });
+  if (!locationId || !LOCATIONS[locationId]) return res.status(400).json({ error: 'Invalid location' });
+  try {
+    const database = await connectDB();
+    if (!database) return res.status(500).json({ error: 'Database unavailable' });
+    const doc = await database.collection('settings').findOne({ key: 'delivery_status' });
+    const status = doc?.status || {};
+    status[locationId] = !!enabled;
+    await database.collection('settings').updateOne(
+      { key: 'delivery_status' },
+      { $set: { status, updatedAt: new Date() } },
+      { upsert: true }
+    );
+    console.log(`🛵 Delivery ${locationId} → ${enabled ? 'ON' : 'OFF'}`);
+    res.json({ success: true, locationId, enabled: !!enabled });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
   }
 });
 

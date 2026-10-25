@@ -91,6 +91,29 @@
 
   <hr class="divider">
 
+  <!-- DELIVERY TOGGLES -->
+  <div class="section-title" style="margin-bottom:.5rem;">🛵 Delivery — On / Off</div>
+  <div class="loc-help">Turn delivery <strong>OFF</strong> for a location when you have no driver. <strong>Pickup stays open.</strong> Customers see Delivery greyed out at checkout. Changes are <strong>instant</strong>.</div>
+
+  <div id="del-toggles">
+    <div class="loc-row del-row" data-loc="albert-st">
+      <div class="loc-info"><span class="loc-name">Albert Street</span><span class="loc-status on">DELIVERY ON</span></div>
+      <div class="toggle on disabled" onclick="toggleDelivery('albert-st')"></div>
+    </div>
+    <div class="loc-row del-row" data-loc="east-regina">
+      <div class="loc-info"><span class="loc-name">East Regina</span><span class="loc-status on">DELIVERY ON</span></div>
+      <div class="toggle on disabled" onclick="toggleDelivery('east-regina')"></div>
+    </div>
+    <div class="loc-row del-row" data-loc="regina-beach">
+      <div class="loc-info"><span class="loc-name">Regina Beach</span><span class="loc-status on">DELIVERY ON</span></div>
+      <div class="toggle on disabled" onclick="toggleDelivery('regina-beach')"></div>
+    </div>
+  </div>
+
+  <div class="msg" id="del-msg"></div>
+
+  <hr class="divider">
+
   <!-- DONATION TRACKER -->
   <div class="section-title">Current Donation Total</div>
   <div class="current-amount" id="current-display">Loading...</div>
@@ -135,27 +158,31 @@ async function loadLocationStatus() {
     const r = await fetch(API + '/api/locations/status');
     const d = await r.json();
     const status = d.status || {};
-    document.querySelectorAll('.loc-row').forEach(row => {
+    document.querySelectorAll('#loc-toggles .loc-row').forEach(row => {
       const loc = row.dataset.loc;
       const enabled = status[loc] !== false; // default ON
       updateLocRow(row, enabled);
     });
+    const delivery = d.delivery || {};
+    document.querySelectorAll('#del-toggles .loc-row').forEach(row => {
+      updateLocRow(row, delivery[row.dataset.loc] !== false, 'DELIVERY ON', 'DELIVERY OFF');
+    });
   } catch (e) { console.warn('Load location status failed:', e); }
 }
 
-function updateLocRow(row, enabled) {
+function updateLocRow(row, enabled, onText, offText) {
   const toggle = row.querySelector('.toggle');
   const status = row.querySelector('.loc-status');
   if (enabled) {
     row.classList.remove('off');
     toggle.classList.add('on'); toggle.classList.remove('off');
     status.classList.add('on'); status.classList.remove('off');
-    status.textContent = 'OPEN';
+    status.textContent = onText || 'OPEN';
   } else {
     row.classList.add('off');
     toggle.classList.remove('on'); toggle.classList.add('off');
     status.classList.remove('on'); status.classList.add('off');
-    status.textContent = 'CLOSED';
+    status.textContent = offText || 'CLOSED';
   }
 }
 
@@ -166,7 +193,7 @@ async function toggleLocation(locationId) {
     document.getElementById('password-input').focus();
     return;
   }
-  const row = document.querySelector('.loc-row[data-loc="' + locationId + '"]');
+  const row = document.querySelector('#loc-toggles .loc-row[data-loc="' + locationId + '"]');
   if (!row) return;
   const toggle = row.querySelector('.toggle');
   if (toggle.classList.contains('disabled')) return;
@@ -195,8 +222,41 @@ async function toggleLocation(locationId) {
   toggle.classList.remove('disabled');
 }
 
-function showLocMsg(text, type) {
-  const el = document.getElementById('loc-msg');
+async function toggleDelivery(locationId) {
+  const password = document.getElementById('password-input').value.trim();
+  if (!password) {
+    showLocMsg('⚠️ Enter admin password above first', 'err', 'del-msg');
+    document.getElementById('password-input').focus();
+    return;
+  }
+  const row = document.querySelector('#del-toggles .loc-row[data-loc="' + locationId + '"]');
+  if (!row) return;
+  const toggle = row.querySelector('.toggle');
+  if (toggle.classList.contains('disabled')) return;
+  const newState = !toggle.classList.contains('on');
+  toggle.classList.add('disabled');
+  try {
+    const r = await fetch(API + '/api/locations/delivery', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ locationId, enabled: newState, password })
+    });
+    const d = await r.json();
+    if (d.success) {
+      updateLocRow(row, newState, 'DELIVERY ON', 'DELIVERY OFF');
+      const locName = row.querySelector('.loc-name').textContent;
+      showLocMsg('✓ Delivery at ' + locName + ' is now ' + (newState ? 'ON' : 'OFF'), 'ok', 'del-msg');
+    } else {
+      showLocMsg('✗ ' + (d.error || 'Failed to update — check password'), 'err', 'del-msg');
+    }
+  } catch (e) {
+    showLocMsg('✗ Server error — try again', 'err', 'del-msg');
+  }
+  toggle.classList.remove('disabled');
+}
+
+function showLocMsg(text, type, id) {
+  const el = document.getElementById(id || 'loc-msg');
   el.textContent = text;
   el.className = 'msg ' + type;
   el.style.display = 'block';
