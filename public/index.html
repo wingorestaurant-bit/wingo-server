@@ -77,7 +77,8 @@
     "Chicken Fingers",
     "Burgers"
    ],
-   "menu": "https://wingorestaurants.com/#cat-section",
+   "menu": "https://wingorestaurants.com/menu",
+   "hasMenu": "https://wingorestaurants.com/menu",
    "acceptsReservations": false,
    "address": {
     "@type": "PostalAddress",
@@ -136,7 +137,8 @@
     "Chicken Fingers",
     "Burgers"
    ],
-   "menu": "https://wingorestaurants.com/#cat-section",
+   "menu": "https://wingorestaurants.com/menu",
+   "hasMenu": "https://wingorestaurants.com/menu",
    "acceptsReservations": false,
    "address": {
     "@type": "PostalAddress",
@@ -195,7 +197,8 @@
     "Chicken Fingers",
     "Burgers"
    ],
-   "menu": "https://wingorestaurants.com/#cat-section",
+   "menu": "https://wingorestaurants.com/menu",
+   "hasMenu": "https://wingorestaurants.com/menu",
    "acceptsReservations": false,
    "address": {
     "@type": "PostalAddress",
@@ -1102,7 +1105,7 @@ setInterval(fetchLocationStatus,30000);
     <h2 id="seo-h">Chicken Wings &amp; Fried Chicken in Regina</h2>
     <p>Wing-O is Regina's home for crispy <strong>chicken wings</strong> — fried to order and tossed in your choice of <strong>135+ handcrafted sauces and dry rubs</strong>, from Honey Garlic and Maple BBQ to Devil's Kiss with Carolina Reaper. Not into bones? Our <strong>boneless wings</strong>, <strong>chicken fingers</strong> and hand-breaded <strong>fried chicken</strong> burgers take every flavour too.</p>
     <p>Find us on <a href="/regina-albert-st">Albert Street North</a> and <a href="/regina-east">University Park Drive in east Regina</a>, plus <a href="/regina-beach">Centre Street in Regina Beach</a>. Our Regina locations are open until 1 AM Monday to Wednesday and 3 AM Thursday to Sunday, with pickup in about 20 minutes and delivery anywhere in Regina.</p>
-    <p class="seo-links"><a href="/best-wing-night-deals-regina">🔥 Wing night deals in Regina</a><a href="/fried-chicken-regina">🍗 Fried chicken in Regina</a></p>
+    <p class="seo-links"><a href="/menu">📋 Full menu &amp; prices</a><a href="/flavours">🔥 All 135+ flavours</a><a href="/best-wings-regina">🏆 Best wings in Regina</a><a href="/best-wing-night-deals-regina">💸 Wing night deals in Regina</a><a href="/late-night-food-regina">🌙 Late night food in Regina</a><a href="/fried-chicken-regina">🍗 Fried chicken in Regina</a></p>
   </div>
 </section>
 <section class="loc-sec" id="locations">
@@ -1179,6 +1182,8 @@ setInterval(fetchLocationStatus,30000);
         <li><a href="https://www.instagram.com/wingorestaurants?igsh=dndtenNwZXh6emZk&utm_source=qr" target="_blank" style="color:#555;text-decoration:none;">📸 Instagram</a></li>
         <li><a href="https://www.facebook.com/share/1AuXgHuEv9/?mibextid=wwXIfr" target="_blank" style="color:#555;text-decoration:none;">👍 Facebook</a></li>
         <li><a href="https://www.instagram.com/sauce_____boss?igsh=MWJvdnhmdnd1aWh0cg%3D%3D&utm_source=qr" target="_blank" style="color:#555;text-decoration:none;"><img src="/images/sauce-boss-avatar.png" alt="" width="160" height="160" style="width:20px;height:20px;border-radius:50%;background:#F4EBD7;display:inline-block;vertical-align:middle;margin-right:5px;">Follow Sauce Boss</a></li>
+        <li><a href="/menu" style="color:#555;text-decoration:none;">📋 Menu &amp; Prices</a></li>
+        <li><a href="/flavours" style="color:#555;text-decoration:none;">🔥 All Flavours</a></li>
         <li><a href="/blog.html" style="color:#555;text-decoration:none;">📖 Blog</a></li>
         <li><a href="/faq.html" style="color:#555;text-decoration:none;">❓ FAQ</a></li>
         <li><a href="/careers.html" style="color:#F5A800;text-decoration:none;font-weight:600;">🔥 We're Hiring</a></li>
@@ -1417,10 +1422,10 @@ var selectedSizeIndex = 0;
 var selectedSizePrice = 0;
 var FLAVORS = {
   "Flirty Ones":["Devil's Kiss","Honey Garlic","Lemon Pepper","Buffalo","Buffalo Ranch","BBQ Ranch","Honey Dill","Greek Dry","Greek Wet","Teriyaki","Creamy Dill Pickle","Medium"],
-  "Second Round":["Tangy Thai (Sweet Spicy Thai + Buffalo)","Cali Thai (Sweet Spicy Thai + Ranch)","Curry Bean (Pineapple Curry + Caribbean Jerk)","Thai Twilight (Sweet Spicy Thai + Pineapple Curry)","Sweet Grenade (Sweet Spicy Thai + Hot)","Hot Hickey (Teriyaki + BBQ + Hot)","Dill Drip Diva (Honey Dill + Hot)","Maple Mirage (Medium + Maple BBQ)","Sweet Escape Surge (Devil's Kiss + Sweet Spicy Thai)","Prairie Heat (Buffalo + Garlic Parmesan)"],
-  "Rub It":["All Dressed","Dry BBQ","Dry Buffalo","Dry Cajun","Creole","Dill Pickle","Greek","Hickory","Italian","Lemon Pepper","Ketchup","Mango Habanero","Citrus Pepper","Maple Bacon","Montreal Style","Parmesan","Salt & Pepper","Salt & Vinegar","Sour Cream & Chives","White Cheddar","Sriracha","Hot & Honey Dry","Applewood BBQ","Brown Bourbon","Hot BBQ"],
+  "Second Round":["Tangy Thai (Sweet Spicy Thai + Buffalo)","California Ranch (Sweet Spicy Thai + Ranch)","Curry Bean (Pineapple Curry + Caribbean Jerk)","Thai Twilight (Sweet Spicy Thai + Pineapple Curry)","Sweet Grenade (Sweet Spicy Thai + Hot)","Hot Hickey (Teriyaki + BBQ + Hot)","Dill Drip Diva (Honey Dill + Hot)","Maple Mirage (Medium + Maple BBQ)","Sweet Escape Surge (Devil's Kiss + Sweet Spicy Thai)","Prairie Heat (Buffalo + Garlic Parmesan)"],
+  "Rub It":["All Dressed","Dry BBQ","Dry Buffalo","Dry Cajun","Creole","Dill Pickle","Greek","Hickory","Italian","Lemon Pepper","Ketchup","Mango Habanero","Citrus Pepper","Maple Bacon","Montreal Style","Parmesan","Salt & Pepper","Salt & Vinegar","Sour Cream & Chives","White Cheddar","Sriracha","Hot & Honey Dry","Applewood BBQ","Brown Bourbon","Hot BBQ","The Garlic Vault"],
   "Have To Do It":["Ranch","Creamy Greek","Honey Mustard","Blue Cheese","Cajun","Herb and Garlic","Pizza Wings","Parmesan Dry","Garlic Parmesan","Creamy Chipotle"],
-  "Sweet Melodious":["Apricot Honey","Orange Ginger","Plum","Pineapple Curry","Sunburn Samurai (Pineapple Curry + Teriyaki)","Raspberry Pepper","Strawberry","Sweet and Spicy Thai","Sweet and Sour","Juicy Melons (Mustard Mellon + Teriyaki)"],
+  "Sweet Melodious":["Apricot Honey","Orange Ginger","Plum","Pineapple Curry","Sunburn Samurai (Pineapple Curry + Teriyaki)","Raspberry Pepper","Strawberry","Sweet and Spicy Thai","Sweet and Sour","Juicy Melons (Mustard Melon + Teriyaki)"],
   "Illegal Sauces":["Hot Fantasy (Jalapeno Cheddar)","Grefflo (Greek + Buffalo)","Citrus Twist (Medium + Dry Lemon Pepper)","Illegal Pizza (Pizza + Hot + Italian)","Honeyaki Harmony (Teriyaki + Honey Garlic)","Chinese Bull (Teriyaki + BBQ)","Mystic Garlic (Teriyaki + Herb & Garlic)","Blue Buzz (Blue Cheese + Honey Garlic)","Creamy Lemon (Ranch + Dry Lemon Pepper)","Pepper Pleasure (Caesar + BBQ + Parmesan)","Tour of Italy (Ranch + Italian)","Honey Ranch Bliss (Ranch + Honey Garlic + Honey Mustard)","Cajun Cream (Ranch + Dry Cajun)","Canadian Greek (Ranch + Dry Greek)","Parmesan Prestige (Caesar + Honey Garlic + Parmesan)","Creamy Bliss (Caesar + Parmesan)","Influencer (Ranch + Salt & Pepper)","Mid-Majestic (Caesar + Honey Dill + Medium)","Zesty Twist (Sea Salt + Lime Juice)","Sweet Heat (Sweet Spicy Thai + BBQ)","Wrench It Up (Ranch + Mango Habanero)","Thai Coconut Crush (Sweet Thai + Ranch + Coconut)","Scotch's Up (Mango + Caribbean Jerk)","Dill Rancher (Hot Fantasy + Honey Dill + Ranch)","Citrus Sting (Honey Garlic + Lemon Pepper)","Japanese Twist (Teriyaki + Honey Mustard)","Dill Inferno (Buffalo + Creamy Dill Pickle)","Cream of the Zing (Creamy Bliss + Lemon Pepper)","Prarie Gold (Honey Garlic + Dry Dill)"],
   "BBQ Intimacy":["BBQ","Forty Creek BBQ","Honey BBQ","Hot BBQ","Maple BBQ","Mesquite BBQ","South Pacific BBQ","Southwestern BBQ","Sultry Caesar (BBQ + Caesar)","Sapphire Smoke (Blue Cheese + BBQ)","Tropical Tinder (BBQ + Pineapple Curry)","BBQ Bunt (BBQ + Honey Garlic)","Mustard Melons (BBQ + Honey Mustard)","Soul Kiss (BBQ + Hickory)","Maple Meltdown (Maple BBQ + Garlic Parmesan)","Smoke Bee Kiss (Honey Dill + Hickory)","Smoke & Sting (Applewood BBQ + Honey Mustard)"],
   "Hot As Hell":["Dead Angel (Carolina Reaper)","Spicy Mammilla (Caesar + Dead Angel + Ranch)","Sizzle Caesar (Caesar + Parmesan + Hot)","Caribbean Connection (Medium + BBQ + Caribbean Jerk)","Tropical Temptation (Medium + BBQ + Mango Habanero)","BBQ Seduction (BBQ + Caribbean Jerk)","Sentimental Sauce (Hot + Honey Mustard)","Cobalt Kiss (Blue Cheese + Hot)","Dragon Dip (Teriyaki + Hot)","Mild","Hot","Honey Buffalo","Honey Is Hot","Honey's Too Hot","Not So Hot","African Pepper","Island on Fire (Hot + Thousand Island + Cajun)"]
@@ -1432,13 +1437,13 @@ var FLAVOR_HEAT = {
   // Flirty Ones
   "Devil's Kiss":"🔥","Honey Garlic":"🍯","Lemon Pepper":"🫑","Buffalo":"🌶️","Buffalo Ranch":"🌶️","BBQ Ranch":"🫑","Honey Dill":"🍯","Greek Dry":"🫑","Greek Wet":"🫑","Teriyaki":"🍯","Creamy Dill Pickle":"😐","Medium":"🌶️",
   // Second Round
-  "Tangy Thai (Sweet Spicy Thai + Buffalo)":"🌶️","Cali Thai (Sweet Spicy Thai + Ranch)":"🍯","Curry Bean (Pineapple Curry + Caribbean Jerk)":"🌶️","Thai Twilight (Sweet Spicy Thai + Pineapple Curry)":"🍯","Sweet Grenade (Sweet Spicy Thai + Hot)":"🔥","Hot Hickey (Teriyaki + BBQ + Hot)":"🌶️","Dill Drip Diva (Honey Dill + Hot)":"🌶️","Maple Mirage (Medium + Maple BBQ)":"🌶️","Sweet Escape Surge (Devil's Kiss + Sweet Spicy Thai)":"🔥","Prairie Heat (Buffalo + Garlic Parmesan)":"🌶️",
+  "Tangy Thai (Sweet Spicy Thai + Buffalo)":"🌶️","California Ranch (Sweet Spicy Thai + Ranch)":"🍯","Curry Bean (Pineapple Curry + Caribbean Jerk)":"🌶️","Thai Twilight (Sweet Spicy Thai + Pineapple Curry)":"🍯","Sweet Grenade (Sweet Spicy Thai + Hot)":"🔥","Hot Hickey (Teriyaki + BBQ + Hot)":"🌶️","Dill Drip Diva (Honey Dill + Hot)":"🌶️","Maple Mirage (Medium + Maple BBQ)":"🌶️","Sweet Escape Surge (Devil's Kiss + Sweet Spicy Thai)":"🔥","Prairie Heat (Buffalo + Garlic Parmesan)":"🌶️",
   // Rub It
-  "All Dressed":"😐","Dry BBQ":"🍯","Dry Buffalo":"🌶️","Dry Cajun":"🌶️","Creole":"🌶️","Dill Pickle":"😐","Greek":"🫑","Hickory":"🫑","Italian":"🫑","Ketchup":"🍯","Mango Habanero":"🔥","Citrus Pepper":"🫑","Maple Bacon":"🍯","Montreal Style":"🫑","Parmesan":"🫑","Salt & Pepper":"😐","Salt & Vinegar":"😐","Sour Cream & Chives":"🫑","White Cheddar":"🫑","Sriracha":"🔥","Hot & Honey Dry":"🌶️","Applewood BBQ":"🍯","Brown Bourbon":"🍯","Hot BBQ":"🌶️",
+  "All Dressed":"😐","Dry BBQ":"🍯","Dry Buffalo":"🌶️","Dry Cajun":"🌶️","Creole":"🌶️","Dill Pickle":"😐","Greek":"🫑","Hickory":"🫑","Italian":"🫑","Ketchup":"🍯","Mango Habanero":"🔥","Citrus Pepper":"🫑","Maple Bacon":"🍯","Montreal Style":"🫑","Parmesan":"🫑","Salt & Pepper":"😐","Salt & Vinegar":"😐","Sour Cream & Chives":"🫑","White Cheddar":"🫑","Sriracha":"🔥","Hot & Honey Dry":"🌶️","Applewood BBQ":"🍯","Brown Bourbon":"🍯","Hot BBQ":"🌶️","The Garlic Vault":"😐",
   // Have To Do It
   "Ranch":"🫑","Creamy Greek":"🫑","Honey Mustard":"🍯","Blue Cheese":"🫑","Cajun":"🌶️","Herb and Garlic":"🫑","Pizza Wings":"🫑","Parmesan Dry":"🫑","Garlic Parmesan":"🫑","Creamy Chipotle":"🌶️",
   // Sweet Melodious
-  "Apricot Honey":"🍯","Orange Ginger":"🍯","Plum":"🍯","Pineapple Curry":"🍯","Sunburn Samurai (Pineapple Curry + Teriyaki)":"🍯","Raspberry Pepper":"🍯","Strawberry":"🍯","Sweet and Spicy Thai":"🌶️","Sweet and Sour":"🍯","Juicy Melons (Mustard Mellon + Teriyaki)":"🍯",
+  "Apricot Honey":"🍯","Orange Ginger":"🍯","Plum":"🍯","Pineapple Curry":"🍯","Sunburn Samurai (Pineapple Curry + Teriyaki)":"🍯","Raspberry Pepper":"🍯","Strawberry":"🍯","Sweet and Spicy Thai":"🌶️","Sweet and Sour":"🍯","Juicy Melons (Mustard Melon + Teriyaki)":"🍯",
   // Illegal Sauces
   "Hot Fantasy (Jalapeno Cheddar)":"🌶️","Grefflo (Greek + Buffalo)":"🌶️","Citrus Twist (Medium + Dry Lemon Pepper)":"🌶️","Illegal Pizza (Pizza + Hot + Italian)":"🌶️","Honeyaki Harmony (Teriyaki + Honey Garlic)":"🍯","Chinese Bull (Teriyaki + BBQ)":"🍯","Mystic Garlic (Teriyaki + Herb & Garlic)":"🍯","Blue Buzz (Blue Cheese + Honey Garlic)":"🍯","Creamy Lemon (Ranch + Dry Lemon Pepper)":"🫑","Pepper Pleasure (Caesar + BBQ + Parmesan)":"🫑","Tour of Italy (Ranch + Italian)":"🫑","Honey Ranch Bliss (Ranch + Honey Garlic + Honey Mustard)":"🍯","Cajun Cream (Ranch + Dry Cajun)":"🌶️","Canadian Greek (Ranch + Dry Greek)":"🫑","Parmesan Prestige (Caesar + Honey Garlic + Parmesan)":"🍯","Creamy Bliss (Caesar + Parmesan)":"🫑","Influencer (Ranch + Salt & Pepper)":"😐","Mid-Majestic (Caesar + Honey Dill + Medium)":"🌶️","Zesty Twist (Sea Salt + Lime Juice)":"😐","Sweet Heat (Sweet Spicy Thai + BBQ)":"🌶️","Wrench It Up (Ranch + Mango Habanero)":"🔥","Thai Coconut Crush (Sweet Thai + Ranch + Coconut)":"🍯","Scotch's Up (Mango + Caribbean Jerk)":"🌶️","Dill Rancher (Hot Fantasy + Honey Dill + Ranch)":"🌶️","Citrus Sting (Honey Garlic + Lemon Pepper)":"🍯","Japanese Twist (Teriyaki + Honey Mustard)":"🍯","Dill Inferno (Buffalo + Creamy Dill Pickle)":"🌶️","Cream of the Zing (Creamy Bliss + Lemon Pepper)":"🫑","Prarie Gold (Honey Garlic + Dry Dill)":"🍯",
   // BBQ Intimacy
