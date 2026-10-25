@@ -1,91 +1,93 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  Wing-O Restaurants — XML Sitemap
-  ─────────────────────────────────
-  Tells Google (and other search engines) which pages to crawl and index.
-  Update the <lastmod> dates when you significantly change a page.
-  Priorities: 1.0 = highest importance, 0.0 = lowest. Only meaningful RELATIVE to each other.
--->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-
-  <!-- Homepage — the main landing page -->
   <url>
     <loc>https://wingorestaurants.com/</loc>
-    <lastmod>2026-09-28</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-10-25</lastmod>
+    <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
-
-  <!-- Blog — SEO-optimized article listing -->
   <url>
-    <loc>https://wingorestaurants.com/blog.html</loc>
-    <lastmod>2026-08-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <!-- FAQ — AI-readable Q&amp;A for search + AI models -->
-  <url>
-    <loc>https://wingorestaurants.com/faq.html</loc>
-    <lastmod>2026-08-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <!-- Careers — job applications page -->
-  <url>
-    <loc>https://wingorestaurants.com/careers.html</loc>
-    <lastmod>2026-08-05</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <!-- Catering & corporate ordering -->
-  <url>
-    <loc>https://wingorestaurants.com/catering.html</loc>
-    <lastmod>2026-09-08</lastmod>
-    <changefreq>monthly</changefreq>
+    <loc>https://wingorestaurants.com/menu</loc>
+    <lastmod>2026-10-25</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
-
-  <!-- Location pages — one per restaurant, for local "wings near me" searches -->
+  <url>
+    <loc>https://wingorestaurants.com/flavours</loc>
+    <lastmod>2026-10-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
   <url>
     <loc>https://wingorestaurants.com/regina-albert-st</loc>
-    <lastmod>2026-09-28</lastmod>
+    <lastmod>2026-10-25</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://wingorestaurants.com/regina-east</loc>
-    <lastmod>2026-09-28</lastmod>
+    <lastmod>2026-10-25</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://wingorestaurants.com/regina-beach</loc>
-    <lastmod>2026-09-28</lastmod>
+    <lastmod>2026-10-25</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://wingorestaurants.com/winnipeg</loc>
-    <lastmod>2026-09-29</lastmod>
-    <changefreq>monthly</changefreq>
+    <lastmod>2026-10-25</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
-
-  <!-- SEO blog posts -->
+  <url>
+    <loc>https://wingorestaurants.com/best-wings-regina</loc>
+    <lastmod>2026-10-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
   <url>
     <loc>https://wingorestaurants.com/best-wing-night-deals-regina</loc>
-    <lastmod>2026-09-28</lastmod>
+    <lastmod>2026-10-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://wingorestaurants.com/late-night-food-regina</loc>
+    <lastmod>2026-10-25</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://wingorestaurants.com/fried-chicken-regina</loc>
-    <lastmod>2026-09-28</lastmod>
+    <lastmod>2026-10-25</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.6</priority>
   </url>
-
+  <url>
+    <loc>https://wingorestaurants.com/catering.html</loc>
+    <lastmod>2026-10-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://wingorestaurants.com/careers.html</loc>
+    <lastmod>2026-10-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://wingorestaurants.com/blog.html</loc>
+    <lastmod>2026-10-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://wingorestaurants.com/faq.html</loc>
+    <lastmod>2026-10-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
 </urlset>

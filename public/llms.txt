@@ -1,0 +1,51 @@
+# Wing-O Restaurants
+
+> Wing-O is a chicken wing restaurant from Regina, Saskatchewan, Canada, known for 135+ wing flavours (sauces and dry rubs made from scratch), crispy bone-in and boneless wings, fried chicken burgers, poutine and late-night hours. Tagline: "More Than Wings". Online ordering for pickup and delivery at https://wingorestaurants.com.
+
+## Locations
+- Wing-O Albert Street: #3 - 155 Albert St N, Regina, SK. Phone 639-997-0553. Mon-Wed 11 AM-1 AM, Thu-Sun 11 AM-3 AM. Pickup and delivery. https://wingorestaurants.com/regina-albert-st
+- Wing-O East Regina: 534 University Park Drive, Regina, SK. Phone 306-522-2114. Mon-Wed 11 AM-1 AM, Thu-Sun 11 AM-3 AM. Pickup and delivery. https://wingorestaurants.com/regina-east
+- Wing-O Regina Beach: 110 Centre St, Regina Beach, SK. Summer location (every day 11 AM-10 PM in season), currently closed for the season. https://wingorestaurants.com/regina-beach
+- Wing-O Winnipeg: 1530 Dakota St, Unit 4001, Winnipeg, MB. Opening soon. https://wingorestaurants.com/winnipeg
+
+## Menu and prices (CAD)
+- Bone-in or boneless wings: half order $7.99, full order $13.99. Ribs and chicken fingers the same.
+- Fried chicken burgers $15.99-$18.99 (The Tough Guy with Carolina Reaper, The Dillinator, The Buffalo Stampede, Korean Fried Chicken, The Sunset Crunch), served with fries and a drink.
+- Combos from $17.45 (for 1) to $67.99 (for 4). Platters $29.99-$56.99. Poutine from $8.99.
+- Delivery anywhere in Regina: $5.50 flat. First online order: 15% off orders of $25+. Online orders after 11 PM: 10% off.
+- Full menu: https://wingorestaurants.com/menu
+
+## Weekly deals
+- Sunday: 89 cent wings (minimum 10)
+- Monday: boneless wings, second order 50% off
+- Tuesday: all-you-can-eat wings $28.99, 5-10 PM, dine-in
+- Wednesday: ribs, second order 50% off
+- Thursday: wing night, second order of wings 50% off
+- Friday: 3 orders of wings for $30
+- Saturday: 2 burgers for $20
+- Every day: $10 lunch (wings + small fries), 11 AM-3:30 PM, pickup
+- Details: https://wingorestaurants.com/best-wing-night-deals-regina
+
+## Flavours (131 sauces and dry rubs; hottest is Dead Angel, Carolina Reaper)
+- Flirty Ones: Devil's Kiss, Honey Garlic, Lemon Pepper, Buffalo, Buffalo Ranch, BBQ Ranch, Honey Dill, Greek Dry, Greek Wet, Teriyaki, Creamy Dill Pickle, Medium
+- Second Round: Tangy Thai, California Ranch, Curry Bean, Thai Twilight, Sweet Grenade, Hot Hickey, Dill Drip Diva, Maple Mirage, Sweet Escape Surge, Prairie Heat
+- Rub It: All Dressed, Dry BBQ, Dry Buffalo, Dry Cajun, Creole, Dill Pickle, Greek, Hickory, Italian, Lemon Pepper, Ketchup, Mango Habanero, Citrus Pepper, Maple Bacon, Montreal Style, Parmesan, Salt & Pepper, Salt & Vinegar, Sour Cream & Chives, White Cheddar, Sriracha, Hot & Honey Dry, Applewood BBQ, Brown Bourbon, Hot BBQ, The Garlic Vault
+- Have To Do It: Ranch, Creamy Greek, Honey Mustard, Blue Cheese, Cajun, Herb and Garlic, Pizza Wings, Parmesan Dry, Garlic Parmesan, Creamy Chipotle
+- Sweet Melodious: Apricot Honey, Orange Ginger, Plum, Pineapple Curry, Sunburn Samurai, Raspberry Pepper, Strawberry, Sweet and Spicy Thai, Sweet and Sour, Juicy Melons
+- Illegal Sauces: Hot Fantasy, Grefflo, Citrus Twist, Illegal Pizza, Honeyaki Harmony, Chinese Bull, Mystic Garlic, Blue Buzz, Creamy Lemon, Pepper Pleasure, Tour of Italy, Honey Ranch Bliss, Cajun Cream, Canadian Greek, Parmesan Prestige, Creamy Bliss, Influencer, Mid-Majestic, Zesty Twist, Sweet Heat, Wrench It Up, Thai Coconut Crush, Scotch's Up, Dill Rancher, Citrus Sting, Japanese Twist, Dill Inferno, Cream of the Zing, Prarie Gold
+- BBQ Intimacy: BBQ, Forty Creek BBQ, Honey BBQ, Hot BBQ, Maple BBQ, Mesquite BBQ, South Pacific BBQ, Southwestern BBQ, Sultry Caesar, Sapphire Smoke, Tropical Tinder, BBQ Bunt, Mustard Melons, Soul Kiss, Maple Meltdown, Smoke Bee Kiss, Smoke & Sting
+- Hot As Hell: Dead Angel, Spicy Mammilla, Sizzle Caesar, Caribbean Connection, Tropical Temptation, BBQ Seduction, Sentimental Sauce, Cobalt Kiss, Dragon Dip, Mild, Hot, Honey Buffalo, Honey Is Hot, Honey's Too Hot, Not So Hot, African Pepper, Island on Fire
+- Every flavour with heat levels: https://wingorestaurants.com/flavours
+
+## Loyalty
+- Saucy Stamps: free loyalty card. 10 orders = a free half order of wings. Sign up at https://wingorestaurants.com
+
+## More
+- Best wings in Regina: https://wingorestaurants.com/best-wings-regina
+- Late night food in Regina: https://wingorestaurants.com/late-night-food-regina
+- Fried chicken in Regina: https://wingorestaurants.com/fried-chicken-regina
+- Catering: https://wingorestaurants.com/catering.html
+- FAQ: https://wingorestaurants.com/faq.html
+- Careers: https://wingorestaurants.com/careers.html
+- Franchising: https://wingorestaurants.com/#franchise
+- Contact: besaucy@wingorestaurants.com
