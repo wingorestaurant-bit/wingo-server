@@ -427,6 +427,12 @@ app.post('/api/orders', async (req, res) => {
       if (statusDoc?.status && statusDoc.status[locationId] === false) {
         return res.status(400).json({ error: 'This location is temporarily closed. Please pick another location.' });
       }
+      if (orderType === 'delivery') {
+        const delDoc = await database.collection('settings').findOne({ key: 'delivery_status' });
+        if (delDoc?.status && delDoc.status[locationId] === false) {
+          return res.status(400).json({ error: 'Delivery is turned off at this location right now. Please choose pickup.' });
+        }
+      }
     }
   } catch (e) { /* fail-open if DB check fails */ }
   if (!customer?.firstName || !customer?.phone) return res.status(400).json({ error: 'Missing customer info' });
@@ -1007,9 +1013,33 @@ app.get('/api/locations/status', async (req, res) => {
     const database = await connectDB();
     if (!database) return res.json({ status: {} });
     const doc = await database.collection('settings').findOne({ key: 'location_status' });
-    res.json({ status: doc?.status || {} });
+    const del = await database.collection('settings').findOne({ key: 'delivery_status' });
+    res.json({ status: doc?.status || {}, delivery: del?.status || {} });
   } catch (e) {
     res.json({ status: {} });
+  }
+});
+
+// Delivery ON/OFF per location (pickup stays available). Missing = ON.
+app.post('/api/locations/delivery', async (req, res) => {
+  const { locationId, enabled, password } = req.body || {};
+  if (!isAdmin(password)) return res.status(401).json({ error: 'Wrong password' });
+  if (!locationId || !LOCATIONS[locationId]) return res.status(400).json({ error: 'Invalid location' });
+  try {
+    const database = await connectDB();
+    if (!database) return res.status(500).json({ error: 'Database unavailable' });
+    const doc = await database.collection('settings').findOne({ key: 'delivery_status' });
+    const status = doc?.status || {};
+    status[locationId] = !!enabled;
+    await database.collection('settings').updateOne(
+      { key: 'delivery_status' },
+      { $set: { status, updatedAt: new Date() } },
+      { upsert: true }
+    );
+    console.log(`🛵 Delivery ${locationId} → ${enabled ? 'ON' : 'OFF'}`);
+    res.json({ success: true, locationId, enabled: !!enabled });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
   }
 });
 
@@ -1044,29 +1074,85 @@ app.get('/api/locations', (req, res) => {
 });
 
 // ── FRANCHISE INQUIRY ─────────────────────────────────────────
+// Form in the franchise overlay on the home page (and /#franchise). Every lead is saved to
+// MongoDB (franchise_leads) and emailed; the owner reviews them at /franchise-admin.
+const frHits = new Map();
+function frRateOk(ip) {
+  const now = Date.now();
+  const hits = (frHits.get(ip) || []).filter(t => now - t < 60000);
+  hits.push(now);
+  frHits.set(ip, hits);
+  if (frHits.size > 5000) frHits.clear();
+  return hits.length <= 5;
+}
+const FR_FIELDS = { firstName: 60, lastName: 60, email: 200, phone: 30, city: 120, budget: 80, timeline: 80, financing: 80, experience: 200, message: 3000 };
+
 app.post('/api/franchise', async (req, res) => {
-  const { firstName, lastName, email, phone, city, budget, message } = req.body;
+  const ip = (req.headers['x-forwarded-for'] || req.ip || '').split(',')[0].trim();
+  if (!frRateOk(ip)) return res.status(429).json({ success: false, error: 'Too many tries — please wait a minute.' });
+  const lead = {};
+  for (const [k, max] of Object.entries(FR_FIELDS)) lead[k] = String((req.body || {})[k] || '').trim().slice(0, max);
+  if (!lead.firstName || !lead.email || !lead.phone || !lead.city) return res.status(400).json({ success: false, error: 'Please fill in all required fields.' });
   const timestamp = new Date().toLocaleString('en-CA', { timeZone: 'America/Regina' });
-  console.log(`\n🚀 FRANCHISE: ${firstName} ${lastName} — ${city} — ${timestamp}`);
+  console.log(`\n🚀 FRANCHISE: ${lead.firstName} ${lead.lastName} — ${lead.city} — ${timestamp}`);
+
+  let saved = false;
+  try {
+    const database = await connectDB();
+    if (database) {
+      await database.collection('franchise_leads').insertOne({ ...lead, status: 'new', created_at: new Date(), ip });
+      saved = true;
+    }
+  } catch (e) { console.error('Franchise lead save failed:', e.message); }
+
+  const e = escHtml;
+  const row = (label, val) => `<tr><td style="padding:8px 0;color:#888;font-size:13px;width:120px;">${label}</td><td style="padding:8px 0;font-weight:bold;">${val}</td></tr>`;
   sendEmail({
     to: 'besaucy@wingorestaurants.com',
-    subject: `🚀 Franchise Inquiry — ${firstName} ${lastName} (${city})`,
+    subject: `🚀 Franchise Inquiry — ${lead.firstName} ${lead.lastName} (${lead.city})`.replace(/[\r\n]/g, ' '),
     html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">
       <div style="background:#0D0D0D;padding:20px;text-align:center;"><h1 style="color:#E8190A;font-size:28px;margin:0;">WING-O</h1><p style="color:#888;margin:4px 0 0;font-size:12px;letter-spacing:2px;">🚀 Franchise Inquiry</p></div>
       <div style="background:#F5F0E8;padding:24px;">
         <table style="width:100%;border-collapse:collapse;">
-          <tr><td style="padding:8px 0;color:#888;font-size:13px;width:120px;">Name</td><td style="padding:8px 0;font-weight:bold;">${firstName} ${lastName}</td></tr>
-          <tr><td style="padding:8px 0;color:#888;font-size:13px;">Email</td><td><a href="mailto:${email}" style="color:#E8190A;">${email}</a></td></tr>
-          <tr><td style="padding:8px 0;color:#888;font-size:13px;">Phone</td><td><a href="tel:${phone}" style="color:#E8190A;">${phone}</a></td></tr>
-          <tr><td style="padding:8px 0;color:#888;font-size:13px;">City</td><td style="padding:8px 0;font-weight:bold;">${city}</td></tr>
-          <tr><td style="padding:8px 0;color:#888;font-size:13px;">Budget</td><td style="padding:8px 0;">${budget || 'Not specified'}</td></tr>
-          <tr><td style="padding:8px 0;color:#888;font-size:13px;">Time</td><td style="padding:8px 0;">${timestamp}</td></tr>
+          ${row('Name', e(lead.firstName + ' ' + lead.lastName))}
+          ${row('Email', `<a href="mailto:${e(lead.email)}" style="color:#E8190A;">${e(lead.email)}</a>`)}
+          ${row('Phone', `<a href="tel:${e(lead.phone)}" style="color:#E8190A;">${e(lead.phone)}</a>`)}
+          ${row('City', e(lead.city))}
+          ${row('Investment', e(lead.budget || 'Not specified'))}
+          ${row('Timeline', e(lead.timeline || 'Not specified'))}
+          ${row('Financing', e(lead.financing || 'Not specified'))}
+          ${row('Experience', e(lead.experience || 'Not specified'))}
+          ${row('Time', e(timestamp))}
         </table>
-        ${message ? `<hr style="border:1px solid #E8E0D0;margin:16px 0;"><p style="background:white;border:1px solid #E8E0D0;border-radius:6px;padding:12px;margin:0;font-size:14px;">${message}</p>` : ''}
+        ${lead.message ? `<hr style="border:1px solid #E8E0D0;margin:16px 0;"><p style="background:white;border:1px solid #E8E0D0;border-radius:6px;padding:12px;margin:0;font-size:14px;white-space:pre-wrap;">${e(lead.message)}</p>` : ''}
+        <p style="font-size:12px;color:#888;margin-top:16px;">${saved ? 'Saved — see every lead at wingorestaurants.com/franchise-admin' : '⚠️ Not saved to the database — keep this email.'}</p>
       </div>
     </div>`
   });
   res.json({ success: true });
+});
+
+// Owner-only lead list + status updates. Needs ADMIN_PASSWORD set on Railway.
+const FR_STATUSES = ['new', 'contacted', 'call booked', 'sent disclosure', 'not a fit', 'signed'];
+app.post('/api/franchise/leads', async (req, res) => {
+  if (!isAdmin((req.body || {}).password)) return res.status(401).json({ error: 'Wrong password' });
+  try {
+    const database = await connectDB();
+    if (!database) return res.status(500).json({ error: 'Database unavailable' });
+    const col = database.collection('franchise_leads');
+    const { id, status, notes } = req.body;
+    if (id) {
+      if (!ObjectId.isValid(id)) return res.status(400).json({ error: 'Bad id' });
+      const set = { updated_at: new Date() };
+      if (status !== undefined) { if (!FR_STATUSES.includes(status)) return res.status(400).json({ error: 'Bad status' }); set.status = status; }
+      if (notes !== undefined) set.notes = String(notes).slice(0, 2000);
+      await col.updateOne({ _id: new ObjectId(id) }, { $set: set });
+    }
+    const rows = await col.find({}, { projection: { ip: 0 } }).sort({ created_at: -1 }).limit(5000).toArray();
+    res.json({ statuses: FR_STATUSES, rows: rows.map(r => ({ ...r, id: String(r._id), _id: undefined })) });
+  } catch (e) {
+    res.status(500).json({ error: 'server error' });
+  }
 });
 
 // ── LOYALTY ───────────────────────────────────────────────────
