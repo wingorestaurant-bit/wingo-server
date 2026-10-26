@@ -141,6 +141,7 @@ main{flex:1;display:grid;grid-template-rows:1fr auto;overflow:hidden}
       <option value="east-regina">East Regina</option>
       <option value="moose-jaw">Moose Jaw</option>
       <option value="regina-beach">Regina Beach</option>
+      <option value="winnipeg">Winnipeg — Dakota St</option>
     </select>
     <label>Kitchen Password</label>
     <input type="password" id="gate-pw" placeholder="Enter password" autocomplete="current-password">
@@ -241,7 +242,8 @@ function tryLogin(){
         document.getElementById('sound-gate').classList.remove('hide');
         var locNames = {
           'albert-st':'Albert Street','rochdale':'Rochdale',
-          'east-regina':'East Regina','moose-jaw':'Moose Jaw'
+          'east-regina':'East Regina','moose-jaw':'Moose Jaw',
+          'regina-beach':'Regina Beach','winnipeg':'Winnipeg'
         };
         document.getElementById('loc-label').textContent = locNames[loc] || loc;
       } else {

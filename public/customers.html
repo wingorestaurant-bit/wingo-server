@@ -156,6 +156,7 @@ tr:hover td{background:#222;color:white;}
         <option value="east-regina">East Regina</option>
         <option value="moose-jaw">Moose Jaw</option>
         <option value="regina-beach">Regina Beach</option>
+        <option value="winnipeg">Winnipeg</option>
       </select>
       <select id="filter-tier" onchange="render()">
         <option value="">All customers</option>
@@ -205,7 +206,7 @@ var API = window.location.origin;
 var STATE = { password: '', customers: [], filtered: [], stats: {}, sortKey: 'lastOrderDate', sortDir: 'desc' };
 var LOC_NAMES = {
   'albert-st':'Albert Street','rochdale':'Rochdale','east-regina':'East Regina',
-  'moose-jaw':'Moose Jaw','regina-beach':'Regina Beach'
+  'moose-jaw':'Moose Jaw','regina-beach':'Regina Beach','winnipeg':'Winnipeg'
 };
 
 // === LOGIN ===

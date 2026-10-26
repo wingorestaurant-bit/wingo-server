@@ -77,8 +77,33 @@ const LOCATIONS = {
     hours: "Every Day 11am-10pm",
     onlinePayments: false,
     cloverPrivateKey: process.env.CLOVER_PRIVATE_KEY_BEACH
+  },
+  // Manitoba: 7% PST (RST) and Central time with daylight saving.
+  // Ordering and delivery start OFF until the store opens: turn them on in /admin.
+  "winnipeg": {
+    name: "Winnipeg (Dakota St)",
+    merchantId: process.env.CLOVER_MERCHANT_ID_WINNIPEG,
+    apiToken: process.env.CLOVER_API_TOKEN_WINNIPEG,
+    address: "1530 Dakota St, Unit 4001, Winnipeg, MB",
+    phone: process.env.WINNIPEG_PHONE || "",
+    hours: process.env.WINNIPEG_HOURS || "Mon-Wed 11am-1am · Thu-Sun 11am-3am",
+    onlinePayments: false,
+    cloverPrivateKey: process.env.CLOVER_PRIVATE_KEY_WINNIPEG,
+    pst: 0.07,
+    timeZone: "America/Winnipeg",
+    startsOff: true
   }
 };
+// PST rate and time zone per location (Saskatchewan: 6% PST, CST all year).
+const locPst = loc => (loc && loc.pst) || 0.06;
+const pstLabel = loc => `PST (${Math.round(locPst(loc) * 100)}%)`;
+const locTz = loc => (loc && loc.timeZone) || 'America/Regina';
+// Saved on/off switches (settings collection), with "starts off" locations treated as off until switched on.
+function effectiveStatus(saved, flag) {
+  const out = Object.assign({}, saved || {});
+  Object.entries(LOCATIONS).forEach(([id, l]) => { if (l[flag] && out[id] === undefined) out[id] = false; });
+  return out;
+}
 
 // ── KITCHEN AUTH ──────────────────────────────────────────────
 function getKitchenPassword(loc) {
@@ -86,6 +111,7 @@ function getKitchenPassword(loc) {
     case 'albert-st':   return process.env.KITCHEN_PW_ALBERT;
     case 'east-regina': return process.env.KITCHEN_PW_EAST;
     case 'regina-beach': return process.env.KITCHEN_PW_BEACH;
+    case 'winnipeg':    return process.env.KITCHEN_PW_WINNIPEG;
     default: return null;
   }
 }
@@ -217,6 +243,10 @@ async function autoAddStamp(phone, orderNum, customerName) {
 
 // ── CREATE CLOVER ORDER ────────────────────────────────────────
 async function createCloverOrder(loc, orderNum, orderType, customer, items, subtotal, notes, timestamp) {
+  if (!loc.merchantId || !loc.apiToken) {
+    console.error(`Clover not set up for ${loc.name}: add its merchant ID and API token on Railway`);
+    return null;
+  }
   const orderNote = `
 =================================
 WING-O ONLINE ORDER
@@ -237,7 +267,7 @@ ${items.map(i => `  ${i.name}${i.flavor ? ' [' + i.flavor + ']' : ''} x${i.qty} 
 ---------------------------------
   Subtotal: $${Number(subtotal).toFixed(2)}
   GST (5%): $${(Number(subtotal) * 0.05).toFixed(2)}
-  PST (6%): $${(Number(subtotal) * 0.06).toFixed(2)}
+  ${pstLabel(loc)}: $${(Number(subtotal) * locPst(loc)).toFixed(2)}
 ${orderType === 'delivery' ? `  Delivery: $5.50` : ''}
 ---------------------------------
 ${notes ? 'NOTES: ' + notes : ''}
@@ -295,11 +325,11 @@ PAY AT ${orderType === 'delivery' ? 'DELIVERY' : 'PICKUP'}
   // ── Add tax + delivery fee as line items so receipt total is correct ──
   const subtotalNum = Number(subtotal);
   const gst = Math.round(subtotalNum * 0.05 * 100); // cents
-  const pst = Math.round(subtotalNum * 0.06 * 100); // cents
+  const pst = Math.round(subtotalNum * locPst(loc) * 100); // cents
 
   const extras = [
     { name: 'GST (5%)', price: gst },
-    { name: 'PST (6%)', price: pst }
+    { name: pstLabel(loc), price: pst }
   ];
 
   if (orderType === 'delivery') {
@@ -393,6 +423,7 @@ app.get('/api/clover/check', async (req, res) => {
   if (!isAdmin(req.query.password)) return res.status(401).json({ error: 'Wrong password' });
   const loc = LOCATIONS[req.query.loc];
   if (!loc) return res.status(400).json({ error: 'Unknown location', locations: Object.keys(LOCATIONS) });
+  if (!loc.merchantId) return res.json({ ok: false, merchantId: null, error: 'No merchant ID set for this location' });
   if (!loc.apiToken) return res.json({ ok: false, merchantId: loc.merchantId, error: 'No API token set for this location' });
   try {
     const r = await fetch(`https://api.clover.com/v3/merchants/${loc.merchantId}`, { headers: { 'Authorization': `Bearer ${loc.apiToken}` } });
@@ -424,12 +455,12 @@ app.post('/api/orders', async (req, res) => {
     const database = await connectDB();
     if (database) {
       const statusDoc = await database.collection('settings').findOne({ key: 'location_status' });
-      if (statusDoc?.status && statusDoc.status[locationId] === false) {
+      if (effectiveStatus(statusDoc?.status, 'startsOff')[locationId] === false) {
         return res.status(400).json({ error: 'This location is temporarily closed. Please pick another location.' });
       }
       if (orderType === 'delivery') {
         const delDoc = await database.collection('settings').findOne({ key: 'delivery_status' });
-        if (delDoc?.status && delDoc.status[locationId] === false) {
+        if (effectiveStatus(delDoc?.status, 'startsOff')[locationId] === false) {
           return res.status(400).json({ error: 'Delivery is turned off at this location right now. Please choose pickup.' });
         }
       }
@@ -440,7 +471,7 @@ app.post('/api/orders', async (req, res) => {
 
   const loc = LOCATIONS[locationId];
   const orderNum = 'WO-' + String(Math.floor(1000 + Math.random() * 9000));
-  const timestamp = new Date().toLocaleString('en-CA', { timeZone: 'America/Regina' });
+  const timestamp = new Date().toLocaleString('en-CA', { timeZone: locTz(loc) });
 
   // ── FIRST-ORDER DISCOUNT VALIDATION ────────────────────────
   let discountApplied = 0;
@@ -552,7 +583,7 @@ app.post('/api/orders', async (req, res) => {
         <div style="margin-top:12px;">
           <div style="display:flex;justify-content:space-between;padding:4px 0;color:#888;font-size:13px;"><span>Subtotal</span><span>$${Number(subtotal).toFixed(2)}</span></div>
           <div style="display:flex;justify-content:space-between;padding:4px 0;color:#888;font-size:13px;"><span>GST (5%)</span><span>$${(Number(subtotal)*0.05).toFixed(2)}</span></div>
-          <div style="display:flex;justify-content:space-between;padding:4px 0;color:#888;font-size:13px;"><span>PST (6%)</span><span>$${(Number(subtotal)*0.06).toFixed(2)}</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;color:#888;font-size:13px;"><span>${pstLabel(loc)}</span><span>$${(Number(subtotal)*locPst(loc)).toFixed(2)}</span></div>
           <div style="display:flex;justify-content:space-between;padding:8px 0;font-weight:bold;font-size:18px;border-top:2px solid #0D0D0D;margin-top:8px;"><span>TOTAL DUE AT ${orderType === 'delivery' ? 'DELIVERY' : 'PICKUP'}</span><span style="color:#E8190A;">$${Number(total).toFixed(2)}</span></div>
         </div>
         ${notes ? `<div style="background:#FFF8EE;border:1px solid #F5D98A;border-radius:6px;padding:10px;margin-top:12px;"><strong>Notes:</strong> ${notes}</div>` : ''}
@@ -1011,12 +1042,12 @@ app.post('/api/donation', async (req, res) => {
 app.get('/api/locations/status', async (req, res) => {
   try {
     const database = await connectDB();
-    if (!database) return res.json({ status: {} });
+    if (!database) return res.json({ status: effectiveStatus({}, 'startsOff'), delivery: effectiveStatus({}, 'startsOff') });
     const doc = await database.collection('settings').findOne({ key: 'location_status' });
     const del = await database.collection('settings').findOne({ key: 'delivery_status' });
-    res.json({ status: doc?.status || {}, delivery: del?.status || {} });
+    res.json({ status: effectiveStatus(doc?.status, 'startsOff'), delivery: effectiveStatus(del?.status, 'startsOff') });
   } catch (e) {
-    res.json({ status: {} });
+    res.json({ status: effectiveStatus({}, 'startsOff'), delivery: effectiveStatus({}, 'startsOff') });
   }
 });
 
@@ -1874,6 +1905,7 @@ const REVIEW_LINKS = {
   'albert-st':    process.env.REVIEW_URL_ALBERT,
   'east-regina':  process.env.REVIEW_URL_EAST,
   'regina-beach': process.env.REVIEW_URL_BEACH,
+  'winnipeg':     process.env.REVIEW_URL_WINNIPEG,
 };
 const REVIEW_DELAY_MS = 2 * 60 * 60 * 1000;
 const REVIEW_REPEAT_DAYS = 60;

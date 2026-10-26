@@ -156,6 +156,7 @@ body{font-family:var(--fb);background:var(--bg);color:var(--text);min-height:100
     <button class="loc-tab" onclick="setLoc('rochdale',this)">Rochdale <span class="loc-count" id="lc-rochdale">0</span></button>
     <button class="loc-tab" onclick="setLoc('east-regina',this)">East Regina <span class="loc-count" id="lc-east-regina">0</span></button>
     <button class="loc-tab" onclick="setLoc('moose-jaw',this)">Moose Jaw <span class="loc-count" id="lc-moose-jaw">0</span></button>
+    <button class="loc-tab" onclick="setLoc('winnipeg',this)">Winnipeg <span class="loc-count" id="lc-winnipeg">0</span></button>
   </div>
 
   <div class="content">
@@ -209,7 +210,7 @@ body{font-family:var(--fb);background:var(--bg);color:var(--text);min-height:100
 </div>
 
 <script>
-const API='',LOC_NAMES={'albert-st':'Albert Street','rochdale':'Rochdale','east-regina':'East Regina','moose-jaw':'Moose Jaw'};
+const API='',LOC_NAMES={'albert-st':'Albert Street','rochdale':'Rochdale','east-regina':'East Regina','moose-jaw':'Moose Jaw','winnipeg':'Winnipeg'};
 let pw='',curLoc='all',allOrders=[],refreshTimer=null;
 
 function login(){
@@ -255,7 +256,7 @@ function calcStats(orders){
 function renderAll(stats){updateCounts();renderStats(stats);renderOrders();renderRevChart(stats);renderGlance();}
 function setLoc(loc,btn){curLoc=loc;document.querySelectorAll('.loc-tab').forEach(b=>b.classList.remove('on'));btn.classList.add('on');renderOrders();}
 function updateCounts(){
-  ['all','albert-st','rochdale','east-regina','moose-jaw'].forEach(l=>{
+  ['all','albert-st','rochdale','east-regina','moose-jaw','winnipeg'].forEach(l=>{
     const el=document.getElementById('lc-'+l);
     if(el)el.textContent=l==='all'?allOrders.length:allOrders.filter(o=>o.locationId===l).length;
   });
@@ -306,7 +307,7 @@ function renderOrders(){
 function renderRevChart(stats){
   const lr=stats?.locRevenue||{},lc=stats?.locCount||{};
   const max=Math.max(...Object.values(lr),1);
-  document.getElementById('rev-chart').innerHTML=['albert-st','rochdale','east-regina','moose-jaw'].map(l=>{
+  document.getElementById('rev-chart').innerHTML=['albert-st','rochdale','east-regina','moose-jaw','winnipeg'].map(l=>{
     const rev=lr[l]||0,cnt=lc[l]||0,pct=Math.round(rev/max*100);
     return `<div class="rev-row">
       <div class="rev-name">${LOC_NAMES[l].split(' ')[0]}</div>
