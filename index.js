@@ -46,12 +46,14 @@ async function connectDB() {
 }
 connectDB();
 
+const envTrim = name => String(process.env[name] || '').trim() || undefined;
+
 // ── LOCATION CONFIG ────────────────────────────────────────────
 const LOCATIONS = {
   "albert-st": {
     name: "Albert Street (Regina)",
-    merchantId: process.env.CLOVER_MERCHANT_ID_ALBERT || "98YG45GQNN8X1",
-    apiToken: process.env.CLOVER_API_TOKEN_ALBERT,
+    merchantId: envTrim('CLOVER_MERCHANT_ID_ALBERT') || "98YG45GQNN8X1",
+    apiToken: envTrim('CLOVER_API_TOKEN_ALBERT'),
     address: "#3 - 155 Albert St N, Regina, SK",
     phone: "639-997-0553", // TEMP: Albert St line having technical issues. Revert to 306-522-2111.
     hours: "Mon-Wed 11am-1am · Thu-Sun 11am-3am",
@@ -60,8 +62,8 @@ const LOCATIONS = {
   },
   "east-regina": {
     name: "East Regina (Wing-O East)",
-    merchantId: process.env.CLOVER_MERCHANT_ID_EAST || "4BB1SFERQNQF1",
-    apiToken: process.env.CLOVER_API_TOKEN_EAST,
+    merchantId: envTrim('CLOVER_MERCHANT_ID_EAST') || "4BB1SFERQNQF1",
+    apiToken: envTrim('CLOVER_API_TOKEN_EAST'),
     address: "534 University Park Drive, Regina, SK",
     phone: "306-522-2114",
     hours: "Mon-Wed 11am-1am · Thu-Sun 11am-3am",
@@ -70,8 +72,8 @@ const LOCATIONS = {
   },
   "regina-beach": {
     name: "Regina Beach",
-    merchantId: process.env.CLOVER_MERCHANT_ID_BEACH || "WSTB4D3E5RAG1",
-    apiToken: process.env.CLOVER_API_TOKEN_BEACH,
+    merchantId: envTrim('CLOVER_MERCHANT_ID_BEACH') || "WSTB4D3E5RAG1",
+    apiToken: envTrim('CLOVER_API_TOKEN_BEACH'),
     address: "110 Centre St, Regina Beach, SK",
     phone: "639-997-0553",
     hours: "Every Day 11am-10pm",
@@ -82,8 +84,8 @@ const LOCATIONS = {
   // Ordering and delivery start OFF until the store opens: turn them on in /admin.
   "winnipeg": {
     name: "Winnipeg (Dakota St)",
-    merchantId: process.env.CLOVER_MERCHANT_ID_WINNIPEG,
-    apiToken: process.env.CLOVER_API_TOKEN_WINNIPEG,
+    merchantId: envTrim('CLOVER_MERCHANT_ID_WINNIPEG'),
+    apiToken: envTrim('CLOVER_API_TOKEN_WINNIPEG'),
     address: "1530 Dakota St, Unit 4001, Winnipeg, MB",
     phone: process.env.WINNIPEG_PHONE || "",
     hours: process.env.WINNIPEG_HOURS || "Mon-Wed 11am-1am · Thu-Sun 11am-3am",
@@ -116,8 +118,8 @@ function getKitchenPassword(loc) {
   }
 }
 function checkKitchenAuth(loc, pw) {
-  const expected = getKitchenPassword(loc);
-  return !!expected && pw === expected;
+  const expected = String(getKitchenPassword(loc) || '').trim();
+  return !!expected && typeof pw === 'string' && pw.trim() === expected;
 }
 
 // ── EMAIL (Resend) ─────────────────────────────────────────────
@@ -146,9 +148,10 @@ function loyaltyPhone(p) {
 const loyaltyPhoneQuery = p => ({ phone: { $in: [p, '1' + p] } });
 
 // Staff password: only the ADMIN_PASSWORD set on Railway works (no built-in fallback).
+// Spaces or a newline pasted around the password (in Railway or the form) shouldn't lock the owner out.
 function isAdmin(pw) {
-  const expected = process.env.ADMIN_PASSWORD;
-  return !!expected && typeof pw === 'string' && pw === expected;
+  const expected = String(process.env.ADMIN_PASSWORD || '').trim();
+  return !!expected && typeof pw === 'string' && pw.trim() === expected;
 }
 
 // Each stamp card gets a private token so the browser never needs the customer's full phone or email.
@@ -418,10 +421,11 @@ app.get('/api/health', (req, res) => {
 });
 
 // Checks that a location's Clover merchant ID and API token work, without creating an order.
-// GET /api/clover/check?loc=albert-st&password=ADMIN_PASSWORD
-app.get('/api/clover/check', async (req, res) => {
-  if (!isAdmin(req.query.password)) return res.status(401).json({ error: 'Wrong password' });
-  const loc = LOCATIONS[req.query.loc];
+// GET /api/clover/check?loc=albert-st&password=ADMIN_PASSWORD, or POST { loc, password } (the /admin button).
+app.all('/api/clover/check', async (req, res) => {
+  const q = req.method === 'POST' ? (req.body || {}) : req.query;
+  if (!isAdmin(q.password)) return res.status(401).json({ error: 'Wrong password' });
+  const loc = LOCATIONS[q.loc];
   if (!loc) return res.status(400).json({ error: 'Unknown location', locations: Object.keys(LOCATIONS) });
   if (!loc.merchantId) return res.json({ ok: false, merchantId: null, error: 'No merchant ID set for this location' });
   if (!loc.apiToken) return res.json({ ok: false, merchantId: loc.merchantId, error: 'No API token set for this location' });

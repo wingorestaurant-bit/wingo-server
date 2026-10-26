@@ -122,6 +122,17 @@
 
   <hr class="divider">
 
+  <!-- CLOVER CONNECTION TEST -->
+  <div class="section-title" style="margin-bottom:.5rem;">🔌 Clover Connection Test</div>
+  <div class="loc-help">Checks that a location's Clover <strong>Merchant ID</strong> and <strong>API token</strong> on Railway work. It does <strong>not</strong> create an order.</div>
+  <select id="clover-loc" style="width:100%;padding:.75rem;border-radius:6px;border:1.5px solid #333;background:#111;color:#fff;font-size:1rem;margin-bottom:.6rem;">
+    <option value="winnipeg">Winnipeg</option><option value="albert-st">Albert Street</option><option value="east-regina">East Regina</option><option value="regina-beach">Regina Beach</option>
+  </select>
+  <button class="btn" id="clover-btn" onclick="testClover()">Test Clover Connection 🔌</button>
+  <div class="msg" id="clover-msg"></div>
+
+  <hr class="divider">
+
   <!-- DONATION TRACKER -->
   <div class="section-title">Current Donation Total</div>
   <div class="current-amount" id="current-display">Loading...</div>
@@ -261,6 +272,25 @@ async function toggleDelivery(locationId) {
     showLocMsg('✗ Server error — try again', 'err', 'del-msg');
   }
   toggle.classList.remove('disabled');
+}
+
+async function testClover() {
+  const password = document.getElementById('password-input').value.trim();
+  const el = document.getElementById('clover-msg');
+  const show = (t, type) => { el.textContent = t; el.className = 'msg ' + type; el.style.display = 'block'; };
+  if (!password) { show('⚠️ Enter admin password above first', 'err'); return; }
+  const btn = document.getElementById('clover-btn'); btn.disabled = true;
+  try {
+    const r = await fetch(API + '/api/clover/check', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ loc: document.getElementById('clover-loc').value, password }) });
+    const d = await r.json();
+    if (r.status === 401) show('✗ Wrong admin password', 'err');
+    else if (d.ok) show('✓ Connected to Clover: ' + (d.merchantName || d.merchantId), 'ok');
+    else if (d.status === 401 || d.status === 403) show('✗ Clover rejected the API token. Check the token and its Orders: Read & Write permission.', 'err');
+    else if (d.status === 404) show('✗ Clover could not find that Merchant ID. Check it in Railway.', 'err');
+    else show('✗ ' + (d.error || 'Not connected'), 'err');
+  } catch (e) { show('✗ Server error, try again', 'err'); }
+  btn.disabled = false;
 }
 
 function showLocMsg(text, type, id) {
