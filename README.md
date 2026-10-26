@@ -110,3 +110,7 @@ Tag the friend who thinks they can do it 👇
 ## Reel: "POV: you said 'I'll just get wings'"
 - `reels/wingo-reel-just-get-wings.mp4`: 15.5 s. Wings start, then the order snowballs through 13 menu items with a running tab and a ka-ching on each, ending "...that's why it's called MORE THAN WINGS". Original funk track at 115 BPM.
 - `reels/wingo-reel-just-get-wings-cover.jpg`: cover frame.
+
+## Reel: Regina to Winnipeg map trip
+- `winnipeg/wingo-reel-regina-to-winnipeg.mp4`: 17 s maps-app style route from Wing-O Albert St along the real Trans-Canada Hwy 1 (Natural Earth map data) to 1530 Dakota St, then the real storefront photo with "Opening soon · be first in line". Original road-trip track.
+- `winnipeg/wingo-reel-regina-to-winnipeg-cover.jpg`: cover frame.
