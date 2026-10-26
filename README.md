@@ -106,3 +106,7 @@ Tag the friend who thinks they can do it 👇
 ## Albert St closed Monday Oct 26 (staff Halloween party)
 - `regina/wingo-albert-closed-monday-story.mp4`: 10 s animated Story with original spooky music (moon, bats, ghosts, CLOSED slam, "Back Tuesday · regular hours 11 AM – 1 AM").
 - `regina/wingo-albert-closed-monday-story.jpg`: the same Story as a still image.
+
+## Reel: "POV: you said 'I'll just get wings'"
+- `reels/wingo-reel-just-get-wings.mp4`: 15.5 s. Wings start, then the order snowballs through 13 menu items with a running tab and a ka-ching on each, ending "...that's why it's called MORE THAN WINGS". Original funk track at 115 BPM.
+- `reels/wingo-reel-just-get-wings-cover.jpg`: cover frame.
