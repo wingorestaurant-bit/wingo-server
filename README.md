@@ -114,3 +114,4 @@ Tag the friend who thinks they can do it 👇
 ## Reel: Regina to Winnipeg map trip
 - `winnipeg/wingo-reel-regina-to-winnipeg.mp4`: 17 s maps-app style route from Wing-O Albert St along the real Trans-Canada Hwy 1 (Natural Earth map data) to 1530 Dakota St, then the real storefront photo with "Opening soon · be first in line". Original road-trip track.
 - `winnipeg/wingo-reel-regina-to-winnipeg-cover.jpg`: cover frame.
+- `winnipeg/wingo-reel-winnipeg-get-saucy.mp4` (**use this one**): 19 s. A search for "best saucy wings in Winnipeg" gets 0 results, then "Then it's time for Wing-O to come to Winnipeg". A flying drumstick drives Hwy 1 collecting sauces (counter to 135), "Here we are!" with confetti, then the storefront with "Winnipeg, it's your time to get saucy" and a comment CTA. Cover: `wingo-reel-winnipeg-get-saucy-cover.jpg`.
