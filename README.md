@@ -102,3 +102,7 @@ Tag the friend who thinks they can do it 👇
 - `Wing-O-New-Store-Opening-Playbook.pdf`: 6 pages. 90-day countdown with who-does-what, from permits to day 30.
 - `Wing-O-Training-Program.pdf`: 9 pages. Plan by role, 7 station sign-off sheets, a 15-question knowledge check with a managers' answer key, and a completion sheet.
 - `Wing-O-Recipe-Portion-Cards.pdf`: 5 pages. Portion chart, item recipe cards, a Dillinator example and confidential sauce batch cards.
+
+## Albert St closed Monday Oct 26 (staff Halloween party)
+- `regina/wingo-albert-closed-monday-story.mp4`: 10 s animated Story with original spooky music (moon, bats, ghosts, CLOSED slam, "Back Tuesday · regular hours 11 AM – 1 AM").
+- `regina/wingo-albert-closed-monday-story.jpg`: the same Story as a still image.
