@@ -119,3 +119,4 @@ Tag the friend who thinks they can do it 👇
 ## Reel: Halloween masked cook (Oct 31)
 - `reels/wingo-halloween-masked-cook-reel.mp4`: 26 s edit of the owner's in-store footage. Tight cuts with speed ramps, zoom punches, RGB-split glitches, typed horror captions, grain and vignette, a "HAPPY HALLOWEEN" finale and an "Order if you dare" end card. Original score (music box, heartbeat, hits on every cut, trap drop).
 - `reels/wingo-halloween-masked-cook-cover.jpg`: cover frame.
+- `reels/wingo-halloween-masked-cook-subtitled.mp4` (**use this one**): the full 44 s video with its original sound, uncut. Animated subtitles, light zoom/glitch on scene changes, grain, "HAPPY HALLOWEEN" finale and an "Order if you dare" outro. Cover: `wingo-halloween-masked-cook-subtitled-cover.jpg`.
