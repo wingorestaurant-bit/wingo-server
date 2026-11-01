@@ -127,3 +127,4 @@ Tag the friend who thinks they can do it 👇
 - `...-150dpi.png`: 3600 x 5400 image version. `...-preview.jpg`: phone preview.
 
 - Journey poster v3: rebuilt to match the original Regina poster layout (torn scroll banner, one winding road, flat icons at the bends, text wrapping the road) using the farm, rooster and tractor line art.
+- Journey poster v4: one icon per story placed beside its own text, clean road ending above the farm, no text highlight boxes.
