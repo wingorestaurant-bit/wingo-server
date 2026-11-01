@@ -125,3 +125,5 @@ Tag the friend who thinks they can do it 👇
 `winnipeg/journey-poster/`: the Regina "Wing-O Journey" poster story with a new "Next stop: Winnipeg" chapter. Parchment style, winding road, Sauce Boss and rooster art.
 - `Wing-O-Winnipeg-Journey-Poster-24x36.pdf`: print file, exactly 24 x 36 in.
 - `...-150dpi.png`: 3600 x 5400 image version. `...-preview.jpg`: phone preview.
+
+- Journey poster v3: rebuilt to match the original Regina poster layout (torn scroll banner, one winding road, flat icons at the bends, text wrapping the road) using the farm, rooster and tractor line art.
