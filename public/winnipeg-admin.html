@@ -27,6 +27,15 @@ th,td{text-align:left;padding:.55rem .6rem;border-bottom:1px solid #2a2a2a;white
 th{color:#F5A800;font-size:.75rem;text-transform:uppercase;letter-spacing:1px;}
 tr.off td{color:#666;text-decoration:line-through;}
 .err{color:#FEB2B2;margin-top:.6rem;}
+.ok{color:#9AE6B4;margin-top:.6rem;}
+#camp h2{font-family:Oswald,Arial,sans-serif;font-size:1.1rem;letter-spacing:1px;color:#F5A800;margin-bottom:.4rem;}
+#camp .subj{color:#bbb;margin-bottom:.8rem;font-size:.95rem;}
+#camp .row{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;}
+#camp .row input{max-width:280px;}
+#camp .big{font-size:1.05rem;padding:.9rem 1.4rem;}
+#camp button:disabled{opacity:.45;cursor:not-allowed;}
+#c-prog{margin-top:.8rem;color:#ddd;}
+#c-frame{width:100%;max-width:600px;height:640px;border:0;border-radius:8px;background:#fff;margin-top:.8rem;display:none;}
 </style>
 </head>
 <body>
@@ -45,6 +54,19 @@ tr.off td{color:#666;text-decoration:line-through;}
     <div class="stat"><b id="n-sub">0</b><span>Subscribed</span></div>
     <div class="stat"><b id="n-all">0</b><span>Total sign-ups</span></div>
   </div>
+  <div class="card" id="camp">
+    <h2>📣 Grand opening email</h2>
+    <p class="subj">Subject: <b id="c-subj">…</b></p>
+    <div class="row">
+      <button class="alt" id="c-prev" style="margin-top:0;">👀 Preview</button>
+      <input type="email" id="c-test-to" placeholder="Your email for a test">
+      <button class="alt" id="c-test" style="margin-top:0;">✉️ Send me a test</button>
+    </div>
+    <iframe id="c-frame" title="Email preview"></iframe>
+    <div style="margin-top:1rem;"><button class="big" id="c-send" disabled>Send to all</button></div>
+    <div id="c-prog"></div>
+    <div class="err" id="c-err"></div>
+  </div>
   <button class="alt" id="csv">⬇ Download CSV (subscribed only)</button>
   <div class="card tbl" style="margin-top:1rem;"><table><thead><tr><th>Date</th><th>Name</th><th>Email</th><th>Phone</th><th>Neighbourhood</th></tr></thead><tbody id="rows"></tbody></table></div>
 </div>
@@ -60,7 +82,7 @@ tr.off td{color:#666;text-decoration:line-through;}
       .then(function(r){ return r.json().then(function(d){ return { ok: r.ok, d: d }; }); })
       .then(function(res){
         if (!res.ok) { err.textContent = res.d.error || 'Could not load.'; return; }
-        data = res.d;
+        data = res.d; pwUsed = pw; status();
         document.getElementById('login').style.display = 'none';
         document.getElementById('out').style.display = 'block';
         document.getElementById('n-sub').textContent = data.subscribed;
@@ -71,6 +93,47 @@ tr.off td{color:#666;text-decoration:line-through;}
       })
       .catch(function(){ err.textContent = 'Network error.'; });
   }
+  // ── grand opening email ──
+  var pwUsed = '', poll = null;
+  function api(path, body){
+    body = body || {}; body.password = pwUsed;
+    return fetch('/api/winnipeg/campaign/' + path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      .then(function(r){ return r.json().then(function(d){ if (!r.ok) throw new Error(d.error || 'Something went wrong.'); return d; }); });
+  }
+  function cErr(m){ document.getElementById('c-err').textContent = m || ''; }
+  function status(){
+    return api('status').then(function(d){
+      document.getElementById('c-subj').textContent = d.subject;
+      var btn = document.getElementById('c-send'), prog = document.getElementById('c-prog');
+      var lines = ['✅ Sent: <b>' + d.sent + '</b> &nbsp; ⏳ Not sent yet: <b>' + d.pending + '</b>' + (d.failed ? ' &nbsp; ⚠️ Failed: <b>' + d.failed + '</b> (press Send again to retry them)' : '')];
+      if (d.running) lines.push('Sending now… keep this page open to watch, or close it. It keeps going either way.');
+      else if (d.last && d.last.finished && d.last.error) lines.push('Last send stopped: ' + esc(d.last.error));
+      if (!d.emailReady) lines.push('⚠️ Email is not set up: add RESEND_API_KEY on Railway.');
+      prog.innerHTML = lines.join('<br>');
+      btn.disabled = d.running || !d.pending || !d.emailReady;
+      btn.textContent = d.running ? 'Sending…' : d.pending ? '🚀 Send to all ' + d.pending + ' subscribed' : (d.sent ? '✅ Everyone has it' : 'No one to send to');
+      if (d.running && !poll) poll = setInterval(status, 3000);
+      if (!d.running && poll) { clearInterval(poll); poll = null; }
+    }).catch(function(e){ cErr(e.message); });
+  }
+  document.getElementById('c-prev').addEventListener('click', function(){
+    cErr('');
+    api('preview').then(function(d){ var f = document.getElementById('c-frame'); f.srcdoc = d.html; f.style.display = 'block'; }).catch(function(e){ cErr(e.message); });
+  });
+  document.getElementById('c-test').addEventListener('click', function(){
+    var to = document.getElementById('c-test-to').value.trim(), b = this;
+    cErr(''); b.disabled = true;
+    api('test', { email: to }).then(function(){ document.getElementById('c-prog').insertAdjacentHTML('afterbegin', '<div class="ok">Test sent to ' + esc(to) + '. Check your inbox (and spam).</div>'); })
+      .catch(function(e){ cErr(e.message); }).then(function(){ b.disabled = false; });
+  });
+  document.getElementById('c-send').addEventListener('click', function(){
+    var n = (this.textContent.match(/\d+/) || ['0'])[0];
+    if (!confirm('Send the grand opening email to ' + n + ' people now?\n\nThis cannot be undone. Each person only gets it once.')) return;
+    cErr(''); this.disabled = true;
+    api('send', { confirm: 'SEND' }).then(function(){ return status(); }).then(function(){ if (!poll) poll = setInterval(status, 3000); })
+      .catch(function(e){ cErr(e.message); status(); });
+  });
+
   document.getElementById('go').addEventListener('click', load);
   document.getElementById('pw').addEventListener('keydown', function(e){ if (e.key === 'Enter') load(); });
   document.getElementById('csv').addEventListener('click', function(){

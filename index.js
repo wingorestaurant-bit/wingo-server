@@ -2134,6 +2134,145 @@ app.post('/api/winnipeg/list', async (req, res) => {
   }
 });
 
+// ── WINNIPEG OPENING EMAIL: SEND TO THE WHOLE LIST ─────────────
+// The owner sends it from /winnipeg-admin. Rules:
+//  • only sign-ups that are still subscribed, each with their own unsubscribe link
+//  • each sign-up gets this email once: it is marked on the sign-up (campaigns.<id>)
+//    before sending, so a double click or a second server never sends it twice
+//  • sent through Resend's batch API, 100 emails per call, under its 2 calls/second limit
+//  • if a batch fails, those people are marked "error" and the next Send retries only them
+const wpgOpening = require('./winnipeg-opening-email');
+const WPG_FROM = 'Wing-O Restaurants <orders@wingorestaurants.com>';
+const WPG_KEY = `campaigns.${wpgOpening.ID}`;
+const wpgPendingQuery = () => ({ unsubscribed: { $ne: true }, unsubscribe_token: { $exists: true }, [`${WPG_KEY}.status`]: { $nin: ['sent', 'claimed'] } });
+let wpgCampaignRunning = false, wpgCampaignLast = null;
+
+function wpgEmailFor(row, test) {
+  const unsubUrl = test ? 'https://wingorestaurants.com/winnipeg' : `https://wingorestaurants.com/api/winnipeg/unsubscribe?t=${row.unsubscribe_token}`;
+  return {
+    from: WPG_FROM, to: [row.email], reply_to: 'besaucy@wingorestaurants.com',
+    subject: (test ? '[TEST] ' : '') + wpgOpening.SUBJECT,
+    html: wpgOpening.render({ name: row.name, unsubUrl }),
+    headers: { 'List-Unsubscribe': `<${unsubUrl}>` },
+  };
+}
+async function wpgSendBatch(items) {
+  const r = await fetch('https://api.resend.com/emails/batch', {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(items),
+  });
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok || !Array.isArray(d.data)) throw new Error(d.message || `Resend error ${r.status}`);
+  return d.data.length;
+}
+async function wpgCampaignCounts(col) {
+  const f = `${WPG_KEY}.status`;
+  const [subscribed, sent, failed, pending] = await Promise.all([
+    col.countDocuments({ unsubscribed: { $ne: true } }),
+    col.countDocuments({ [f]: 'sent' }),
+    col.countDocuments({ unsubscribed: { $ne: true }, [f]: 'error' }),
+    col.countDocuments(wpgPendingQuery()),
+  ]);
+  return { subscribed, sent, failed, pending };
+}
+async function runWpgCampaign(col) {
+  const run = { started: new Date(), sent: 0, failed: 0, error: null, finished: null };
+  wpgCampaignLast = run;
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  try {
+    for (let round = 0; round < 400; round++) {
+      const rows = await col.find(wpgPendingQuery(), { projection: { _id: 1, email: 1, name: 1, unsubscribe_token: 1 } }).limit(100).toArray();
+      if (!rows.length) break;
+      const claimed = [];
+      for (const row of rows) {
+        const u = await col.updateOne({ _id: row._id, ...wpgPendingQuery() }, { $set: { [WPG_KEY]: { status: 'claimed', at: new Date() } } });
+        if (u.modifiedCount) claimed.push(row);
+      }
+      if (!claimed.length) continue;
+      const ids = claimed.map(r => r._id);
+      try {
+        await wpgSendBatch(claimed.map(r => wpgEmailFor(r)));
+        await col.updateMany({ _id: { $in: ids } }, { $set: { [WPG_KEY]: { status: 'sent', at: new Date() } } });
+        run.sent += claimed.length;
+      } catch (e) {
+        const msg = String(e.message).slice(0, 200);
+        console.warn('Winnipeg opening email batch failed:', msg);
+        if (/rate|too many/i.test(msg)) {   // too fast: put them back and slow down
+          await col.updateMany({ _id: { $in: ids } }, { $unset: { [WPG_KEY]: '' } });
+          await sleep(3000); continue;
+        }
+        // One bad address fails the whole batch, so send this batch one by one
+        let ok = 0;
+        for (const r of claimed) {
+          try {
+            await wpgSendBatch([wpgEmailFor(r)]);
+            await col.updateOne({ _id: r._id }, { $set: { [WPG_KEY]: { status: 'sent', at: new Date() } } }); ok++;
+          } catch (e1) {
+            const m1 = String(e1.message).slice(0, 200);
+            await col.updateOne({ _id: r._id }, { $set: { [WPG_KEY]: { status: 'error', at: new Date(), message: m1 } } });
+            run.failed++; run.error = m1;
+          }
+          await sleep(600);
+        }
+        run.sent += ok;
+        if (!ok) break;   // nothing goes through (e.g. bad API key): stop, the owner can retry
+      }
+      await sleep(700);
+    }
+  } catch (e) {
+    run.error = String(e.message).slice(0, 200);
+    console.warn('Winnipeg opening email job error:', run.error);
+  } finally {
+    run.finished = new Date();
+    wpgCampaignRunning = false;
+    console.log(`📣 Winnipeg opening email: ${run.sent} sent, ${run.failed} failed`);
+  }
+}
+async function wpgAdminCol(req, res) {
+  if (!isAdmin((req.body || {}).password)) { res.status(401).json({ error: 'Wrong password' }); return null; }
+  const database = await connectDB();
+  if (!database) { res.status(500).json({ error: 'Database unavailable' }); return null; }
+  return database.collection('winnipeg_signups');
+}
+
+app.post('/api/winnipeg/campaign/status', async (req, res) => {
+  try {
+    const col = await wpgAdminCol(req, res); if (!col) return;
+    res.json({ subject: wpgOpening.SUBJECT, ...(await wpgCampaignCounts(col)), running: wpgCampaignRunning, last: wpgCampaignLast, emailReady: !!process.env.RESEND_API_KEY });
+  } catch (e) { res.status(500).json({ error: 'server error' }); }
+});
+
+app.post('/api/winnipeg/campaign/preview', (req, res) => {
+  if (!isAdmin((req.body || {}).password)) return res.status(401).json({ error: 'Wrong password' });
+  res.json({ subject: wpgOpening.SUBJECT, html: wpgOpening.render({ name: '', unsubUrl: '#' }) });
+});
+
+app.post('/api/winnipeg/campaign/test', async (req, res) => {
+  try {
+    const col = await wpgAdminCol(req, res); if (!col) return;
+    if (!process.env.RESEND_API_KEY) return res.status(503).json({ error: 'Set RESEND_API_KEY on Railway first.' });
+    const email = String((req.body || {}).email || '').trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ error: 'Enter a valid email address.' });
+    await wpgSendBatch([wpgEmailFor({ email, name: '' }, true)]);
+    res.json({ success: true });
+  } catch (e) { res.status(500).json({ error: String(e.message || 'Send failed').slice(0, 200) }); }
+});
+
+app.post('/api/winnipeg/campaign/send', async (req, res) => {
+  try {
+    const col = await wpgAdminCol(req, res); if (!col) return;
+    if (req.body.confirm !== 'SEND') return res.status(400).json({ error: 'Not confirmed.' });
+    if (!process.env.RESEND_API_KEY) return res.status(503).json({ error: 'Set RESEND_API_KEY on Railway first.' });
+    if (wpgCampaignRunning) return res.status(409).json({ error: 'Already sending. Watch the progress below.' });
+    const { pending } = await wpgCampaignCounts(col);
+    if (!pending) return res.json({ success: true, started: false, pending: 0 });
+    wpgCampaignRunning = true;
+    runWpgCampaign(col);   // runs in the background; the page polls /status
+    res.json({ success: true, started: true, pending });
+  } catch (e) { wpgCampaignRunning = false; res.status(500).json({ error: 'server error' }); }
+});
+
 // ── SPA FALLBACK ───────────────────────────────────────────────
 app.get('*', (req, res, next) => {
   if (req.path.startsWith('/api/')) return next();
