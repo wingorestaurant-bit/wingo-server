@@ -129,3 +129,4 @@ Tag the friend who thinks they can do it 👇
 - Journey poster v3: rebuilt to match the original Regina poster layout (torn scroll banner, one winding road, flat icons at the bends, text wrapping the road) using the farm, rooster and tractor line art.
 - Journey poster v4: one icon per story placed beside its own text, clean road ending above the farm, no text highlight boxes.
 - Winnipeg soft opening (Thu Nov 5): animated Story (16s, no WingO Movement part, 1080x1920, silent so music can be added in Instagram), still Story PNG, and the opening email HTML in winnipeg/soft-opening/.
+- Winnipeg soft opening date reveal Story (15s): countdown, rockets and fireworks revealing Thursday Nov 5, then address, hours and the Wing Night deal. In winnipeg/soft-opening/.
