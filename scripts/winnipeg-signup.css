@@ -1,0 +1,17 @@
+.signup{background:linear-gradient(160deg,#1A1208,#0D0D0D);color:white;border-radius:10px;padding:2rem 1.5rem;border:2px solid var(--yellow);box-shadow:0 10px 30px rgba(0,0,0,.2);}
+.signup h2{color:white!important;}
+.signup p{color:#ccc!important;}
+.signup form{display:grid;gap:.75rem;margin-top:1rem;}
+.signup .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:.75rem;}
+.signup label{display:block;font-family:var(--font-head);font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--yellow);margin-bottom:.3rem;}
+.signup input[type=text],.signup input[type=email],.signup input[type=tel]{width:100%;padding:.8rem .9rem;border-radius:6px;border:1.5px solid #444;background:#1c1c1c;color:white;font-size:1rem;font-family:var(--font-body);}
+.signup input:focus{outline:none;border-color:var(--yellow);}
+.signup .consent{display:flex;gap:.6rem;align-items:flex-start;font-size:.85rem;color:#bbb;line-height:1.45;}
+.signup .consent input{margin-top:.2rem;width:18px;height:18px;flex-shrink:0;accent-color:var(--red);}
+.signup button{background:var(--red);color:white;border:0;border-radius:6px;padding:1rem;font-family:var(--font-display);font-size:1.25rem;letter-spacing:2px;cursor:pointer;box-shadow:0 4px 0 var(--red-deep);}
+.signup button:disabled{opacity:.6;cursor:wait;}
+.signup .msg{display:none;border-radius:6px;padding:.9rem 1rem;font-weight:600;}
+.signup .msg.ok{display:block;background:rgba(72,187,120,.15);border:1.5px solid #48BB78;color:#9AE6B4;}
+.signup .msg.err{display:block;background:rgba(232,25,10,.15);border:1.5px solid var(--red);color:#FEB2B2;}
+.signup .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;}
+.signup .small{font-size:.78rem;color:#888!important;margin:0!important;}

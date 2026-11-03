@@ -1,18 +1,19 @@
 # Wing-O Restaurants
 
-> Wing-O is a chicken wing restaurant from Regina, Saskatchewan, Canada, known for 135+ wing flavours (sauces and dry rubs made from scratch), crispy bone-in and boneless wings, fried chicken burgers, poutine and late-night hours. Tagline: "More Than Wings". Online ordering for pickup and delivery at https://wingorestaurants.com.
+> Wing-O is a chicken wing restaurant from Regina, Saskatchewan, Canada, now also in Winnipeg, Manitoba, known for 135+ wing flavours (sauces and dry rubs made from scratch), crispy bone-in and boneless wings, fried chicken burgers, poutine and late-night hours. Tagline: "More Than Wings". Online ordering for pickup and delivery at https://wingorestaurants.com.
 
 ## Locations
 - Wing-O Albert Street: #3 - 155 Albert St N, Regina, SK. Phone 639-997-0553. Mon-Wed 11 AM-1 AM, Thu-Sun 11 AM-3 AM. Pickup and delivery. https://wingorestaurants.com/regina-albert-st
 - Wing-O East Regina: 534 University Park Drive, Regina, SK. Phone 306-522-2114. Mon-Wed 11 AM-1 AM, Thu-Sun 11 AM-3 AM. Pickup and delivery. https://wingorestaurants.com/regina-east
 - Wing-O Regina Beach: 110 Centre St, Regina Beach, SK. Summer location (every day 11 AM-10 PM in season), currently closed for the season. https://wingorestaurants.com/regina-beach
-- Wing-O Winnipeg: 1530 Dakota St, Unit 4001, Winnipeg, MB. Opening soon. https://wingorestaurants.com/winnipeg
+- Wing-O Winnipeg: 1530 Dakota St, Unit 4001, Winnipeg, MB (St. Vital). Phone 204-255-4055. Mon-Wed 11 AM-1 AM, Thu-Sun 11 AM-3 AM. Pickup and delivery. Soft opening Thursday, November 5, 2026. https://wingorestaurants.com/winnipeg
 
 ## Menu and prices (CAD)
+- Prices and weekly deals are the same in Regina and Winnipeg.
 - Bone-in or boneless wings: half order $7.99, full order $13.99. Ribs and chicken fingers the same.
 - Fried chicken burgers $15.99-$18.99 (The Tough Guy with Carolina Reaper, The Dillinator, The Buffalo Stampede, Korean Fried Chicken, The Sunset Crunch), served with fries and a drink.
 - Combos from $17.45 (for 1) to $67.99 (for 4). Platters $29.99-$56.99. Poutine from $8.99.
-- Delivery anywhere in Regina: $5.50 flat. First online order: 15% off orders of $25+. Online orders after 11 PM: 10% off.
+- Delivery: $5.50 flat (anywhere in Regina; Winnipeg from 1530 Dakota St). First online order: 15% off orders of $25+. Online orders after 11 PM: 10% off.
 - Full menu: https://wingorestaurants.com/menu
 
 ## Weekly deals
@@ -24,7 +25,7 @@
 - Friday: 3 orders of wings for $30
 - Saturday: 2 burgers for $20
 - Every day: $10 lunch (wings + small fries), 11 AM-3:30 PM, pickup
-- Details: https://wingorestaurants.com/best-wing-night-deals-regina
+- Details: https://wingorestaurants.com/best-wing-night-deals-regina (Regina) and https://wingorestaurants.com/best-wing-night-deals-winnipeg (Winnipeg)
 
 ## Flavours (131 sauces and dry rubs; hottest is Dead Angel, Carolina Reaper)
 - Flirty Ones: Devil's Kiss, Honey Garlic, Lemon Pepper, Buffalo, Buffalo Ranch, BBQ Ranch, Honey Dill, Greek Dry, Greek Wet, Teriyaki, Creamy Dill Pickle, Medium
@@ -44,6 +45,10 @@
 - Best wings in Regina: https://wingorestaurants.com/best-wings-regina
 - Late night food in Regina: https://wingorestaurants.com/late-night-food-regina
 - Fried chicken in Regina: https://wingorestaurants.com/fried-chicken-regina
+- Best wings in Winnipeg: https://wingorestaurants.com/best-wings-winnipeg
+- Wing night deals in Winnipeg: https://wingorestaurants.com/best-wing-night-deals-winnipeg
+- Late night food in Winnipeg: https://wingorestaurants.com/late-night-food-winnipeg
+- Fried chicken in Winnipeg: https://wingorestaurants.com/fried-chicken-winnipeg
 - Catering: https://wingorestaurants.com/catering.html
 - FAQ: https://wingorestaurants.com/faq.html
 - Careers: https://wingorestaurants.com/careers.html

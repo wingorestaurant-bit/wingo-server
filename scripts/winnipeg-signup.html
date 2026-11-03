@@ -1,0 +1,48 @@
+<article class="post signup" id="signup">
+<span class="post-tag">🔔 Winnipeg Deals</span>
+<h2>Get Winnipeg deals first</h2>
+<p>Drop your email for Wing-O Winnipeg news: opening-week deals, new flavours and specials at <strong>1530 Dakota St</strong>.</p>
+<form id="wpg-form" novalidate>
+ <div class="row">
+  <div><label for="wpg-name">First name</label><input type="text" id="wpg-name" name="name" autocomplete="given-name" maxlength="60"></div>
+  <div><label for="wpg-email">Email *</label><input type="email" id="wpg-email" name="email" autocomplete="email" required maxlength="200"></div>
+ </div>
+ <div class="row">
+  <div><label for="wpg-phone">Phone (optional)</label><input type="tel" id="wpg-phone" name="phone" autocomplete="tel" maxlength="30"></div>
+  <div><label for="wpg-area">Your Winnipeg neighbourhood (optional)</label><input type="text" id="wpg-area" name="area" maxlength="80" placeholder="e.g. St. Vital, Transcona"></div>
+ </div>
+ <div class="hp" aria-hidden="true"><label>Website<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+ <label class="consent" for="wpg-consent" style="text-transform:none;letter-spacing:0;font-family:var(--font-body);color:#bbb;font-size:.85rem;"><input type="checkbox" id="wpg-consent" name="consent"> Yes, Wing-O Restaurants may email me about the Winnipeg opening and Wing-O deals. I can unsubscribe at any time.</label>
+ <button type="submit" id="wpg-btn">Sign Me Up 🔔</button>
+ <p class="small">We'll only use your details for Wing-O news. We never sell your info.</p>
+</form>
+<div class="msg" id="wpg-msg" role="status" aria-live="polite"></div>
+</article>
+<script>
+(function(){
+  var f = document.getElementById('wpg-form'), msg = document.getElementById('wpg-msg'), btn = document.getElementById('wpg-btn');
+  f.addEventListener('submit', function(e){
+    e.preventDefault();
+    msg.className = 'msg'; msg.textContent = '';
+    var data = { name: f.name.value.trim(), email: f.email.value.trim(), phone: f.phone.value.trim(),
+                 area: f.area.value.trim(), consent: f.consent.checked, website: f.website.value };
+    if (!data.email || data.email.indexOf('@') < 1) { msg.className = 'msg err'; msg.textContent = 'Please enter a valid email.'; return; }
+    if (!data.consent) { msg.className = 'msg err'; msg.textContent = 'Please tick the box so we can email you Winnipeg deals.'; return; }
+    btn.disabled = true; btn.textContent = 'Signing you up…';
+    fetch('/api/winnipeg/signup', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+      .then(function(r){ return r.json().then(function(d){ return { ok: r.ok, d: d }; }); })
+      .then(function(res){
+        if (res.ok && res.d.success) {
+          f.style.display = 'none';
+          msg.className = 'msg ok';
+          msg.textContent = res.d.already ? "You're already on the list. See you at Dakota St! 🍗" : "You're on the list! Watch your inbox for Winnipeg deals. 🍗";
+          if (window.gtag) gtag('event', 'winnipeg_signup');
+        } else {
+          msg.className = 'msg err'; msg.textContent = (res.d && res.d.error) || 'Something went wrong — please try again.';
+          btn.disabled = false; btn.textContent = 'Sign Me Up 🔔';
+        }
+      })
+      .catch(function(){ msg.className = 'msg err'; msg.textContent = 'Network error — please try again.'; btn.disabled = false; btn.textContent = 'Sign Me Up 🔔'; });
+  });
+})();
+</script>
