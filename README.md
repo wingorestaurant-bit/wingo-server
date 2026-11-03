@@ -130,3 +130,4 @@ Tag the friend who thinks they can do it 👇
 - Journey poster v4: one icon per story placed beside its own text, clean road ending above the farm, no text highlight boxes.
 - Winnipeg soft opening (Thu Nov 5): animated Story (16s, no WingO Movement part, 1080x1920, silent so music can be added in Instagram), still Story PNG, and the opening email HTML in winnipeg/soft-opening/.
 - Winnipeg soft opening date reveal Story (15s): countdown, rockets and fireworks revealing Thursday Nov 5, then address, hours and the Wing Night deal. In winnipeg/soft-opening/.
+- Date reveal Story v2: real photos (WINNIPEG sign, Human Rights museum + Esplanade Riel at night) with the real fireworks footage composited behind the buildings and reflected in the Red River.
