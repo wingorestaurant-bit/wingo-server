@@ -131,3 +131,4 @@ Tag the friend who thinks they can do it 👇
 - Winnipeg soft opening (Thu Nov 5): animated Story (16s, no WingO Movement part, 1080x1920, silent so music can be added in Instagram), still Story PNG, and the opening email HTML in winnipeg/soft-opening/.
 - Winnipeg soft opening date reveal Story (15s): countdown, rockets and fireworks revealing Thursday Nov 5, then address, hours and the Wing Night deal. In winnipeg/soft-opening/.
 - Date reveal Story v2: real photos (WINNIPEG sign, Human Rights museum + Esplanade Riel at night) with the real fireworks footage composited behind the buildings and reflected in the Red River.
+- Date reveal Story v3 (18.5s): adds the real 1530 Dakota St storefront photos with fireworks over the store.
