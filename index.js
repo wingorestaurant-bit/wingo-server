@@ -398,7 +398,7 @@ app.get('/api/check-first-order', async (req, res) => {
 // ── HALLOWEEN GHOST HUNT REWARD ───────────────────────────────
 // Customers who catch all 5 ghosts on the site get FREE small fries
 // on a $30+ order — once per phone number per Halloween season.
-// Season dates match public/halloween.js (Sep 25 – Nov 2, Regina time).
+// Season dates match public/halloween.js (Sep 25 – Nov 1, Regina time).
 const GHOST_HUNT_MIN_SUBTOTAL = 30.00;
 const GHOST_HUNT_FRIES_ITEM = { name: '🎃 FREE Fries (Ghost Hunt)', flavor: 'Small · Halloween Ghost Hunt reward', price: 0, qty: 1 };
 
@@ -406,7 +406,7 @@ function ghostHuntSeason() {
   const parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Regina', year: 'numeric', month: 'numeric', day: 'numeric' })
     .formatToParts(new Date()).reduce((o, p) => (o[p.type] = Number(p.value), o), {});
   const md = parts.month * 100 + parts.day;
-  return { active: md >= 925 && md <= 1102, year: parts.year };
+  return { active: md >= 925 && md <= 1101, year: parts.year };
 }
 
 async function ghostHuntRedeemed(phoneNorm, year) {

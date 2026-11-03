@@ -18,13 +18,14 @@
 //
 // SEASON: turns itself on between SEASON_START and SEASON_END.
 // Preview any time with ?halloween=1, force off with ?halloween=0.
-// To remove completely: delete the halloween.js <script> tag.
+// Turned off for 2026: the <script> tag was removed from index.html.
+// To bring it back next year, add <script src="/halloween.js?v=5" defer></script> before </body>.
 // ═══════════════════════════════════════════════════════════════
 (function(){
   'use strict';
 
   var SEASON_START = { month: 9, day: 25 };  // Sep 25 (months are 1-based here)
-  var SEASON_END   = { month: 11, day: 2 };  // Nov 2 (inclusive)
+  var SEASON_END   = { month: 11, day: 1 };  // Nov 1 (inclusive)
   var THREE_URL = 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
   var PREF_KEY = 'wingo_spooky_off';
 

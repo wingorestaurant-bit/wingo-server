@@ -2971,7 +2971,5 @@ showFirstOrderBanner();
 if(window._wingoHash==='#franchise')window.addEventListener('load',function(){if(typeof openFranchise==='function')openFranchise();});
 if(window._wingoCard)window.addEventListener('load',function(){fetch(API_BASE+'/api/loyalty/card/'+encodeURIComponent(window._wingoCard)).then(function(r){return r.json();}).then(function(d){if(d&&d.success){loySaveSession(d.member);openLoyalty();toast('Welcome back, '+d.member.name+'! 🍗');}}).catch(function(){});});
 </script>
-<!-- 🎃 HALLOWEEN MODE — seasonal (auto on Sep 25 – Nov 2). Remove this line to disable. -->
-<script src="/halloween.js?v=4" defer></script>
 </body>
 </html>
