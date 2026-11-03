@@ -87,7 +87,7 @@ const LOCATIONS = {
     merchantId: envTrim('CLOVER_MERCHANT_ID_WINNIPEG'),
     apiToken: envTrim('CLOVER_API_TOKEN_WINNIPEG'),
     address: "1530 Dakota St, Unit 4001, Winnipeg, MB",
-    phone: process.env.WINNIPEG_PHONE || "",
+    phone: process.env.WINNIPEG_PHONE || "204-255-4055",
     hours: process.env.WINNIPEG_HOURS || "Mon-Wed 11am-1am · Thu-Sun 11am-3am",
     onlinePayments: false,
     cloverPrivateKey: process.env.CLOVER_PRIVATE_KEY_WINNIPEG,

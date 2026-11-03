@@ -29,11 +29,11 @@
 </script>
 <!-- ═══════ END GOOGLE TAGS ═══════ -->
 
-<title>Best Chicken Wings &amp; Fried Chicken in Regina | Wing-O</title>
-<meta name="description" content="Crispy chicken wings, boneless wings &amp; fried chicken in Regina, SK. 135+ flavours, open till 3am Thu–Sun. Order online for pickup or delivery.">
+<title>Chicken Wings &amp; Fried Chicken in Regina &amp; Winnipeg | Wing-O</title>
+<meta name="description" content="Crispy chicken wings, boneless wings &amp; fried chicken in Regina, SK and Winnipeg, MB. 135+ flavours, open till 3am Thu–Sun. Order online for pickup or delivery.">
 <link rel="canonical" href="https://wingorestaurants.com/">
-<meta property="og:title" content="Best Chicken Wings &amp; Fried Chicken in Regina | Wing-O">
-<meta property="og:description" content="135+ wing flavours, boneless wings, chicken fingers and fried chicken burgers. Open till 3am Thu–Sun in Regina.">
+<meta property="og:title" content="Chicken Wings &amp; Fried Chicken in Regina &amp; Winnipeg | Wing-O">
+<meta property="og:description" content="135+ wing flavours, boneless wings, chicken fingers and fried chicken burgers. Open till 3am Thu–Sun in Regina and Winnipeg.">
 <meta property="og:image" content="https://wingorestaurants.com/images/logo.jpg">
 <meta property="og:url" content="https://wingorestaurants.com/">
 <meta property="og:type" content="website">
@@ -227,6 +227,66 @@
      ],
      "opens": "11:00",
      "closes": "22:00"
+    }
+   ],
+   "parentOrganization": {
+    "@type": "Organization",
+    "name": "Wing-O Restaurants",
+    "url": "https://wingorestaurants.com"
+   }
+  },
+  {
+   "@type": "Restaurant",
+   "@id": "https://wingorestaurants.com/winnipeg#restaurant",
+   "name": "Wing-O Winnipeg",
+   "url": "https://wingorestaurants.com/winnipeg",
+   "image": "https://wingorestaurants.com/images/logo.jpg",
+   "logo": "https://wingorestaurants.com/images/logo.jpg",
+   "telephone": "+1-204-255-4055",
+   "priceRange": "$$",
+   "servesCuisine": [
+    "Chicken Wings",
+    "Fried Chicken",
+    "Chicken Fingers",
+    "Burgers"
+   ],
+   "menu": "https://wingorestaurants.com/menu",
+   "hasMenu": "https://wingorestaurants.com/menu",
+   "acceptsReservations": false,
+   "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "1530 Dakota St, Unit 4001",
+    "addressLocality": "Winnipeg",
+    "addressRegion": "MB",
+    "addressCountry": "CA"
+   },
+   "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": 49.8235,
+    "longitude": -97.1035
+   },
+   "hasMap": "https://www.google.com/maps/search/?api=1&query=Wing-O%201530%20Dakota%20St%2C%20Unit%204001%2C%20Winnipeg%2C%20MB",
+   "openingHoursSpecification": [
+    {
+     "@type": "OpeningHoursSpecification",
+     "dayOfWeek": [
+      "Monday",
+      "Tuesday",
+      "Wednesday"
+     ],
+     "opens": "11:00",
+     "closes": "01:00"
+    },
+    {
+     "@type": "OpeningHoursSpecification",
+     "dayOfWeek": [
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+     ],
+     "opens": "11:00",
+     "closes": "03:00"
     }
    ],
    "parentOrganization": {
@@ -758,7 +818,7 @@ var LOCATION_STATUS = {}; // populated on load — {locationId: enabled}
 var DELIVERY_STATUS = {}; // {locationId: false} when delivery is turned off in /admin
 async function fetchLocationStatus(){try{var r=await fetch('/api/locations/status');var d=await r.json();LOCATION_STATUS=d.status||{};DELIVERY_STATUS=d.delivery||{};applyLocationStatusToCards();applyLocationStatusToCheckout();applyDeliveryAvailability();}catch(e){console.warn('Location status fetch failed:',e);}}
 function isLocationEnabled(loc){return LOCATION_STATUS[loc]!==false;}
-function applyLocationStatusToCards(){var cards=document.querySelectorAll('.lcard[data-loc]');cards.forEach(function(card){var loc=card.dataset.loc;if(!loc)return;var enabled=isLocationEnabled(loc);var badge=card.querySelector('.lbadge');if(card.dataset.soon){var more=card.querySelector('.lmore');if(badge){badge.className='lbadge '+(enabled?'lb-live':'lb-soon');badge.textContent=enabled?'✓ Online Ordering Live':'🚀 Coming Soon';}if(more){more.href='/winnipeg';more.textContent=enabled?'Details & directions →':'🔔 Notify me →';}return;}if(enabled){card.style.opacity='';card.style.filter='';if(badge){badge.className='lbadge lb-live';badge.textContent='✓ Online Ordering Live';}}else{card.style.opacity='.55';card.style.filter='grayscale(.6)';if(badge){badge.className='lbadge lb-soon';badge.textContent='⚠️ Temporarily Closed';}}});}
+function applyLocationStatusToCards(){var cards=document.querySelectorAll('.lcard[data-loc]');cards.forEach(function(card){var loc=card.dataset.loc;if(!loc)return;var enabled=isLocationEnabled(loc);var badge=card.querySelector('.lbadge');if(card.dataset.soon){var more=card.querySelector('.lmore');if(badge){badge.className='lbadge '+(enabled?'lb-live':'lb-soon');badge.textContent=enabled?'✓ Online Ordering Live':'🚀 Soft Opening Nov 5';}if(more){more.href='/winnipeg';more.textContent='Details & directions →';}return;}if(enabled){card.style.opacity='';card.style.filter='';if(badge){badge.className='lbadge lb-live';badge.textContent='✓ Online Ordering Live';}}else{card.style.opacity='.55';card.style.filter='grayscale(.6)';if(badge){badge.className='lbadge lb-soon';badge.textContent='⚠️ Temporarily Closed';}}});}
 function applyLocationStatusToCheckout(){var sel=document.getElementById('o-loc');if(!sel)return;Array.from(sel.options).forEach(function(opt){var loc=opt.value;if(!loc)return;if(!isLocationEnabled(loc)){opt.disabled=true;opt.style.display='none';}else{opt.disabled=false;opt.style.display='';}});if(sel.selectedOptions[0]&&sel.selectedOptions[0].disabled){var firstEnabled=Array.from(sel.options).find(function(o){return!o.disabled&&o.value;});if(firstEnabled){sel.value=firstEnabled.value;setLocation(firstEnabled.value);}}}
 function isDeliveryOn(loc){return DELIVERY_STATUS[loc]!==false;}
 function checkoutLocation(){var sel=document.getElementById('o-loc');return sel&&sel.value?sel.value:activeLocation;}
@@ -781,7 +841,7 @@ setInterval(fetchLocationStatus,30000);
 <div id="preorder-banner" class="preorder-banner">
   <p><span class="preorder-badge">Pre-Order</span> We are closed right now — but you can <strong>pre-order for when we open!</strong> Your order will be ready at our next opening time.</p>
 </div>
-<div class="wingo-post-strip" style="background:var(--paper-dark);text-align:center;padding:3px 1rem;font-family:var(--font-head);font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--ink-light);border-bottom:1px solid var(--paper-line);">The Wing-O Post · Regina, Saskatchewan · Est. 2024 · 135+ Flavors · More Than Wings</div>
+<div class="wingo-post-strip" style="background:var(--paper-dark);text-align:center;padding:3px 1rem;font-family:var(--font-head);font-size:.6rem;letter-spacing:3px;text-transform:uppercase;color:var(--ink-light);border-bottom:1px solid var(--paper-line);">The Wing-O Post · Born in Regina · Now in Winnipeg · Est. 2024 · 135+ Flavors · More Than Wings</div>
 <div id="first-order-banner" style="display:none;background:linear-gradient(90deg,#0D0D0D,#1A1208,#0D0D0D);color:white;text-align:center;padding:.5rem 1rem;font-family:var(--font-head);font-size:.78rem;letter-spacing:2px;font-weight:600;text-transform:uppercase;border-bottom:2px solid var(--yellow);cursor:pointer;" onclick="scrollToOrderFromBanner()"><span style="color:#F5A800;">🎉 NEW HERE?</span> First Order <span style="color:#F5A800;font-weight:800;">15% OFF</span> · Auto-Applied at Checkout · Min $25 →</div>
 <div class="announce" id="today-banner" onclick="openTodayDeal()" style="cursor:pointer;"></div>
   <div onclick="window.location.href='/careers.html'" style="background:linear-gradient(90deg,#0D0D0D,#2A1D0F,#0D0D0D);background-size:200% 100%;animation:gauntlet-shimmer 4s linear infinite;color:white;text-align:center;padding:.7rem 1rem;font-family:var(--font-head);font-size:.82rem;letter-spacing:2px;border-bottom:2px solid #F5A800;font-weight:700;text-transform:uppercase;cursor:pointer;">🔥 <span style="color:#F5A800;">WE'RE HIRING</span> — JOIN THE SAUCE BOSS CREW · <span style="color:#F5A800;">TAP TO APPLY →</span></div>
@@ -823,14 +883,14 @@ setInterval(fetchLocationStatus,30000);
   <div class="hero-content">
     <div class="hero-tag">🌾 Proudly Prairie · Regina's Original · More Than Wings</div>
     <img src="images/wingo-logo-new.png" alt="Wing-O" style="width:auto;max-height:190px;max-width:min(360px,70vw);margin:0 auto 1rem;display:block;">
-    <h1 class="hero-h1">Chicken Wings &amp; Fried Chicken in Regina</h1>
+    <h1 class="hero-h1">Chicken Wings &amp; Fried Chicken in Regina &amp; Winnipeg</h1>
     <div class="hero-btns">
       <a class="btn-red" href="#" onclick="document.getElementById('cat-section').scrollIntoView({behavior:'smooth'});return false;">Order Now 🔥</a>
       <a class="btn-ghost" href="#" onclick="showCat('wings');return false;">135+ Flavors</a>
     </div>
     <div class="hero-stats">
       <div class="stat"><div class="n">135+</div><div class="l">Flavors</div></div>
-      <div class="stat"><div class="n">5</div><div class="l">SK Locations</div></div>
+      <div class="stat"><div class="n">SK+MB</div><div class="l">Locations</div></div>
       <div class="stat"><div class="n">$7.99</div><div class="l">Wings From</div></div>
       <div class="stat"><div class="n">YQR</div><div class="l">Rooted</div></div>
     </div>
@@ -1114,6 +1174,9 @@ setInterval(fetchLocationStatus,30000);
     <p>Wing-O is Regina's home for crispy <strong>chicken wings</strong> — fried to order and tossed in your choice of <strong>135+ handcrafted sauces and dry rubs</strong>, from Honey Garlic and Maple BBQ to Devil's Kiss with Carolina Reaper. Not into bones? Our <strong>boneless wings</strong>, <strong>chicken fingers</strong> and hand-breaded <strong>fried chicken</strong> burgers take every flavour too.</p>
     <p>Find us on <a href="/regina-albert-st">Albert Street North</a> and <a href="/regina-east">University Park Drive in east Regina</a>, plus <a href="/regina-beach">Centre Street in Regina Beach</a>. Our Regina locations are open until 1 AM Monday to Wednesday and 3 AM Thursday to Sunday, with pickup in about 20 minutes and delivery anywhere in Regina.</p>
     <p class="seo-links"><a href="/menu">📋 Full menu &amp; prices</a><a href="/flavours">🔥 All 135+ flavours</a><a href="/best-wings-regina">🏆 Best wings in Regina</a><a href="/best-wing-night-deals-regina">💸 Wing night deals in Regina</a><a href="/late-night-food-regina">🌙 Late night food in Regina</a><a href="/fried-chicken-regina">🍗 Fried chicken in Regina</a></p>
+    <h2 style="margin-top:2rem;">Chicken Wings &amp; Fried Chicken in Winnipeg</h2>
+    <p>Wing-O is now in Manitoba. Our first Winnipeg location is at <a href="/winnipeg">1530 Dakota St, Unit 4001 in St. Vital</a>, with a soft opening on Thursday, November 5, 2026. Same 135+ flavours, same prices and the same daily deals as Regina, open until 1 AM Monday to Wednesday and 3 AM Thursday to Sunday. Call <a href="tel:+12042554055">204-255-4055</a>.</p>
+    <p class="seo-links"><a href="/winnipeg">📍 Wing-O Winnipeg</a><a href="/best-wings-winnipeg">🏆 Best wings in Winnipeg</a><a href="/best-wing-night-deals-winnipeg">💸 Wing night deals in Winnipeg</a><a href="/late-night-food-winnipeg">🌙 Late night food in Winnipeg</a><a href="/fried-chicken-winnipeg">🍗 Fried chicken in Winnipeg</a></p>
   </div>
 </section>
 <section class="loc-sec" id="locations">
@@ -1125,7 +1188,7 @@ setInterval(fetchLocationStatus,30000);
 <div class="lphone">📞 639-997-0553</div><a class="lmore" href="/regina-albert-st">Details &amp; directions →</a></div>
       <div class="lcard live" data-loc="east-regina"><span class="lbadge lb-live">✓ Online Ordering Live</span><div class="lname">East Regina</div><div class="laddr">534 University Park Drive<br>Regina, SK</div><div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div><div class="lphone">📞 306-522-2114</div><a class="lmore" href="/regina-east">Details &amp; directions →</a></div>
       <div class="lcard live" data-loc="regina-beach"><span class="lbadge lb-live">✓ Online Ordering Live</span><div class="lname">Regina Beach</div><div class="laddr">110 Centre St, Regina Beach, SK</div><div class="lhours">Every Day 11am-10pm</div><div class="lphone">📞 639-997-0553</div><a class="lmore" href="/regina-beach">Details &amp; directions →</a></div>
-      <div class="lcard" data-loc="winnipeg" data-soon="1" style="border-color:rgba(245,168,0,.5);"><span class="lbadge lb-soon">🚀 Coming Soon</span><div class="lname">Winnipeg</div><div class="laddr">1530 Dakota St, Unit 4001<br>Winnipeg, MB · Manitoba's first Wing-O!</div><div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div><a class="lmore" href="/winnipeg">🔔 Notify me →</a></div>
+      <div class="lcard" data-loc="winnipeg" data-soon="1" style="border-color:rgba(245,168,0,.5);"><span class="lbadge lb-soon">🚀 Soft Opening Nov 5</span><div class="lname">Winnipeg</div><div class="laddr">1530 Dakota St, Unit 4001<br>Winnipeg, MB · Manitoba's first Wing-O!</div><div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div><div class="lphone">📞 204-255-4055</div><a class="lmore" href="/winnipeg">Details &amp; directions →</a></div>
     </div>
   </div>
 </section>
@@ -1201,7 +1264,7 @@ setInterval(fetchLocationStatus,30000);
       </ul></div>
     </div>
     <div class="fbot">
-      <p>© 2026 Wing-O Restaurants Ltd. All rights reserved. &nbsp;·&nbsp; Regina, Saskatchewan &nbsp;·&nbsp; 🌾 Proudly Prairie</p>
+      <p>© 2026 Wing-O Restaurants Ltd. All rights reserved. &nbsp;·&nbsp; Regina, SK &nbsp;·&nbsp; Winnipeg, MB &nbsp;·&nbsp; 🌾 Proudly Prairie</p>
       <span style="font-size:.72rem;color:#555;">🍀 Powered by Clover POS</span>
       <button onclick="openPushAdmin()" style="background:none;border:none;color:#222;font-size:.65rem;cursor:pointer;padding:2px 6px;opacity:.3;" title="Push Admin">🔔</button>
     </div>
@@ -1301,7 +1364,7 @@ setInterval(fetchLocationStatus,30000);
           <div style="font-family:var(--font-head);font-size:.78rem;color:var(--yellow);letter-spacing:4px;text-transform:uppercase;margin-bottom:.5rem;font-weight:600;">From The Sauce Boss</div>
           <h2 style="font-family:var(--font-display);font-size:clamp(1.8rem,4vw,2.6rem);letter-spacing:2px;color:white;line-height:1;margin-bottom:1.25rem;">"I CAME WITH<br><span style="color:var(--red);">$800 AND HUNGER.</span><br>NOW I'M LOOKING FOR PARTNERS."</h2>
           <p style="color:#CCC;font-size:.95rem;line-height:1.7;margin-bottom:1rem;">In 2019 I landed in Regina with two bags and a dream. Spent 18 months obsessing over wings — flavors nobody had tried, sauces I built from scratch.</p>
-          <p style="color:#CCC;font-size:.95rem;line-height:1.7;margin-bottom:1rem;">Wing-O became Regina's first local wings eatery with 135+ flavors. One location became three. Saskatchewan is locked in, Winnipeg is next. <strong style="color:var(--yellow);">Now I'm taking this national.</strong></p>
+          <p style="color:#CCC;font-size:.95rem;line-height:1.7;margin-bottom:1rem;">Wing-O became Regina's first local wings eatery with 135+ flavors. One location became three. Saskatchewan is locked in, and now Winnipeg is here. <strong style="color:var(--yellow);">Now I'm taking this national.</strong></p>
           <p style="color:#CCC;font-size:.95rem;line-height:1.7;margin-bottom:1.25rem;">If you've got the hunger, the capital, and the city — let's build something legendary together.</p>
           <div style="display:inline-block;border-left:4px solid var(--red);padding-left:1rem;font-family:var(--font-serif);font-style:italic;color:var(--yellow);font-size:1rem;line-height:1.5;">"Don't just buy a franchise.<br>Become part of the movement."</div>
         </div>

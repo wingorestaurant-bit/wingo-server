@@ -11,7 +11,7 @@ import json, html, urllib.parse, os, re, subprocess
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, 'public')
 SITE = 'https://wingorestaurants.com'
-UPDATED = '2026-10-25'
+UPDATED = '2026-11-03'
 
 CITY_HOURS = [
     (['Monday', 'Tuesday', 'Wednesday'], '11:00', '01:00', 'Mon–Wed', '11 AM – 1 AM'),
@@ -22,7 +22,7 @@ BEACH_HOURS = [
 ]
 
 LOCS = [
-    dict(slug='regina-albert-st', key='albert-st', short='Albert Street',
+    dict(slug='regina-albert-st', region='SK', city_slug='regina', key='albert-st', short='Albert Street',
          name='Wing-O Albert Street', street='#3 - 155 Albert St N', city='Regina',
          phone='639-997-0553', lat=50.4501, lng=-104.6178, hours=CITY_HOURS, delivery=True,
          title='Chicken Wings & Fried Chicken, Albert St N Regina | Wing-O',
@@ -36,7 +36,7 @@ LOCS = [
          why=[("The original Wing-O", "This is the location that built the 135+ flavour vault — from Honey Garlic to Devil's Kiss."),
               ("Open late", "Open until 1 AM Monday to Wednesday and until 3 AM Thursday to Sunday."),
               ("Pickup or delivery", "Order online for pickup in about 20 minutes, or delivery anywhere in Regina for a flat $5.50.")]),
-    dict(slug='regina-east', key='east-regina', short='East Regina',
+    dict(slug='regina-east', region='SK', city_slug='regina', key='east-regina', short='East Regina',
          name='Wing-O East Regina', street='534 University Park Drive', city='Regina',
          phone='306-522-2114', lat=50.4282, lng=-104.5768, hours=CITY_HOURS, delivery=True,
          title='Chicken Wings & Fried Chicken in East Regina | Wing-O',
@@ -49,7 +49,7 @@ LOCS = [
          why=[("Same 135+ flavours", "Every sauce and dry rub from the Wing-O vault, made fresh to order."),
               ("Open late", "Open until 1 AM Monday to Wednesday and until 3 AM Thursday to Sunday."),
               ("Pickup or delivery", "Order online for pickup in about 20 minutes, or delivery anywhere in Regina for a flat $5.50.")]),
-    dict(slug='regina-beach', key='regina-beach', short='Regina Beach',
+    dict(slug='regina-beach', region='SK', city_slug='regina', key='regina-beach', short='Regina Beach',
          name='Wing-O Regina Beach', street='110 Centre St', city='Regina Beach',
          phone='639-997-0553', lat=50.5786, lng=-105.0008, hours=BEACH_HOURS, delivery=False,
          title='Chicken Wings in Regina Beach, SK | Wing-O Centre Street',
@@ -64,7 +64,29 @@ LOCS = [
          why=[("Lake-day wings", "Order ahead online and pick up on your way to the beach or the cabin."),
               ("Open every day", "11 AM to 10 PM, seven days a week."),
               ("Same 135+ flavours", "Every sauce and dry rub from the Wing-O vault, made fresh to order.")]),
+    dict(slug='winnipeg', key='winnipeg', short='Winnipeg', region='MB', city_slug='winnipeg',
+         name='Wing-O Winnipeg', street='1530 Dakota St, Unit 4001', city='Winnipeg',
+         phone='204-255-4055', lat=49.8235, lng=-97.1035, hours=CITY_HOURS, delivery=True,
+         title='Chicken Wings & Fried Chicken in Winnipeg | 1530 Dakota St | Wing-O',
+         desc='Wing-O Winnipeg at 1530 Dakota St, Unit 4001: crispy chicken wings, boneless wings and fried chicken burgers in 135+ flavours. Soft opening Thursday, Nov 5. Open till 3am Thu–Sun.',
+         h1='Chicken Wings in Winnipeg',
+         area='St. Vital and south Winnipeg',
+         notice=("Soft opening Thursday, November 5, 2026 at 11 AM. Our first night is Wing Night: "
+                 "buy an order of wings and get the second 50% off."),
+         intro=("Wing-O has landed in Manitoba. Our first Winnipeg location is at <strong>1530 Dakota St, "
+                "Unit 4001</strong> in St. Vital, bringing the 135+ flavour wing menu that Regina has been "
+                "lining up for since 2024. Pickup, delivery and late nights, same as back home."),
+         why=[("135+ flavours", "Every sauce and dry rub from the Wing-O vault, from Honey Dill (a Manitoba must) to Dead Angel with Carolina Reaper."),
+              ("Open late", "Open until 1 AM Monday to Wednesday and until 3 AM Thursday to Sunday."),
+              ("Pickup or delivery", "Order online for pickup in about 20 minutes, or delivery for a flat $5.50.")],
+         others_note=("Wing-O started in Regina, Saskatchewan. Visiting? Our Regina locations are open late too."),
+         extra='WPG_SIGNUP'),
 ]
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+# Extra blocks for a location page (the Winnipeg email sign-up form and its styles)
+EXTRA = {'WPG_SIGNUP': open(os.path.join(HERE, 'winnipeg-signup.html')).read()}
+EXTRA_CSS = {'WPG_SIGNUP': open(os.path.join(HERE, 'winnipeg-signup.css')).read()}
 
 CSS = """*{margin:0;padding:0;box-sizing:border-box;}
 :root{--black:#0D0D0D;--ink:#1A1208;--paper:#F4EBD7;--paper-dark:#E8DCC1;--paper-line:#C8B89A;--red:#E8190A;--red-deep:#A80F00;--yellow:#F5A800;--font-head:'Oswald',sans-serif;--font-display:'Bebas Neue',sans-serif;--font-serif:'Playfair Display',serif;--font-body:'Inter',sans-serif;}
@@ -124,8 +146,8 @@ footer a{color:var(--yellow);text-decoration:none;}"""
 
 FOOTER = """<footer>
 <div><img src="/images/wingo-logo-wide.png" alt="Wing-O" width="480" height="253" style="height:56px;width:auto;display:block;margin:0 auto .5rem;"></div>
-<div>© Wing-O Restaurants · Regina, Saskatchewan · More Than Wings</div>
-<div><a href="/regina-albert-st">Albert Street</a> · <a href="/regina-east">East Regina</a> · <a href="/regina-beach">Regina Beach</a></div>
+<div>© Wing-O Restaurants · Born in Regina, SK · Now in Winnipeg, MB · More Than Wings</div>
+<div><a href="/regina-albert-st">Albert Street</a> · <a href="/regina-east">East Regina</a> · <a href="/regina-beach">Regina Beach</a> · <a href="/winnipeg">Winnipeg</a></div>
 <div><a href="/">Order Online</a> · <a href="/menu">Menu</a> · <a href="/flavours">Flavours</a> · <a href="/blog.html">Blog</a> · <a href="/faq.html">FAQ</a> · <a href="/catering.html">Catering</a></div>
 </footer>"""
 
@@ -201,7 +223,7 @@ def restaurant_ld(L):
         "hasMenu": f"{SITE}/menu",
         "acceptsReservations": False,
         "address": {"@type": "PostalAddress", "streetAddress": L['street'], "addressLocality": L['city'],
-                    "addressRegion": "SK", "addressCountry": "CA"},
+                    "addressRegion": L['region'], "addressCountry": "CA"},
         "geo": {"@type": "GeoCoordinates", "latitude": L['lat'], "longitude": L['lng']},
         "hasMap": maps_link(L),
         "openingHoursSpecification": [{"@type": "OpeningHoursSpecification", "dayOfWeek": days, "opens": o, "closes": c}
@@ -211,7 +233,7 @@ def restaurant_ld(L):
 
 
 def full_addr(L):
-    return f"{L['street']}, {L['city']}, SK"
+    return f"{L['street']}, {L['city']}, {L['region']}"
 
 
 def maps_link(L):
@@ -219,16 +241,19 @@ def maps_link(L):
 
 
 def location_page(L):
+    wpg = L['city_slug'] == 'winnipeg'
     others = [o for o in LOCS if o is not L]
     hours_rows = ''.join(f'<tr><td>{lbl}</td><td>{txt}</td></tr>' for _, _, _, lbl, txt in L['hours'])
     dir_url = 'https://www.google.com/maps/dir/?api=1&destination=' + urllib.parse.quote(full_addr(L))
     embed = 'https://www.google.com/maps?q=' + urllib.parse.quote(f"Wing-O, {full_addr(L)}") + '&output=embed'
-    order_line = ('Pickup is ready in about 20 minutes, and we deliver anywhere in Regina for a flat $5.50.'
+    order_line = (('Pickup is ready in about 20 minutes, and delivery is a flat $5.50.' if wpg else
+                   'Pickup is ready in about 20 minutes, and we deliver anywhere in Regina for a flat $5.50.')
                   if L['delivery'] else 'Order ahead online and it will be hot and ready when you pull up.')
     menu_rows = ''.join(f'<div><span>{e(n)}</span><b>{p}</b></div>' for n, p in MENU_ITEMS)
     why = ''.join(f'<div><b>{e(t)}</b><span>{e(d)}</span></div>' for t, d in L['why'])
     faqs = [
         (f"Where is Wing-O {L['short']}?", f"Wing-O {L['short']} is at {full_addr(L)}."),
+    ] + ([("When does Wing-O open in Winnipeg?", L['notice'])] if L.get('notice') else []) + [
         (f"What are Wing-O {L['short']}'s hours?", ' · '.join(f"{lbl}: {txt}" for _, _, _, lbl, txt in L['hours']) + '.' + (' ' + L['season'] if L.get('season') else '')),
         (f"What is the phone number for Wing-O {L['short']}?", f"Call {L['phone']}."),
         ("Does Wing-O sell fried chicken?", "Yes. Along with bone-in and boneless wings, we serve crispy chicken fingers and hand-breaded fried chicken burgers like the Korean Fried Chicken and The Tough Guy."),
@@ -238,12 +263,19 @@ def location_page(L):
     faq_ld = {"@context": "https://schema.org", "@type": "FAQPage",
               "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faqs]}
     season = (f'<div class="callout"><div class="label">Seasonal hours</div>{e(L["season"])}</div>' if L.get('season') else '')
+    if L.get('notice'):
+        season += f'<div class="callout"><div class="label">Soft opening</div>{e(L["notice"])}</div>'
+    city = 'Winnipeg' if wpg else 'Regina'
+    sfx = 'winnipeg' if wpg else 'regina'
+    guides = (f'Looking for deals? Read <a href="/best-wing-night-deals-{sfx}">the best wing night deals in {city}</a>, '
+              f'<a href="/best-wings-{sfx}">the best wings in {city}</a> or <a href="/fried-chicken-{sfx}">where to get fried chicken in {city}</a>.')
+    extra = EXTRA.get(L.get('extra'), '')
     body = f"""<article class="post">
 <span class="post-tag">📍 {e(L['short'])}</span>
 <h2>Best wings in {e(L['area'])}</h2>
 {season}<p>{L['intro']}</p>
 <div class="info">
- <div class="box"><div class="label">Address</div><div class="val">{e(L['street'])}<br>{e(L['city'])}, SK</div></div>
+ <div class="box"><div class="label">Address</div><div class="val">{e(L['street'])}<br>{e(L['city'])}, {L['region']}</div></div>
  <div class="box"><div class="label">Phone</div><div class="val"><a href="tel:+1{L['phone'].replace('-', '')}">{L['phone']}</a></div></div>
  <div class="box"><div class="label">Hours</div><div class="val"><table class="hours">{hours_rows}</table></div></div>
 </div>
@@ -271,13 +303,18 @@ def location_page(L):
 <article class="post">
 <h2>Other Wing-O locations</h2>
 <div class="others">{''.join(f'<a href="/{o["slug"]}">{e(o["short"])}</a>' for o in others)}</div>
-<p style="margin-top:1rem;">Looking for deals? Read <a href="/best-wing-night-deals-regina">the best wing night deals in Regina</a> or <a href="/fried-chicken-regina">where to get fried chicken in Regina</a>.</p>
-</article>"""
+<p style="margin-top:1rem;">{guides}</p>
+{('<p>' + e(L['others_note']) + '</p>') if L.get('others_note') else ''}
+</article>
+{extra}"""
     ld = [restaurant_ld(L), faq_ld, breadcrumb_ld([('Home', '/'), (L['name'], '/' + L['slug'])])]
-    return page(L['slug'], L['title'], L['desc'], e(L['h1']).replace('Chicken Wings', '<span>Chicken Wings</span>', 1),
+    out = page(L['slug'], L['title'], L['desc'], e(L['h1']).replace('Chicken Wings', '<span>Chicken Wings</span>', 1),
                 f"{e(full_addr(L))} · {' · '.join(lbl + ' ' + txt for _, _, _, lbl, txt in L['hours'])}",
                 body, ld, [('Home', '/'), ('Locations', '/#locations'), (L['short'], None)],
                 btns=[('Order Online 🍗', '/', ''), (f"Call {L['phone']}", 'tel:+1' + L['phone'].replace('-', ''), 'ghost')])
+    if L.get('extra'):
+        out = out.replace('</style>', '\n' + EXTRA_CSS[L['extra']] + '\n</style>', 1)
+    return out
 
 
 def article_ld(slug, headline, desc):
@@ -293,6 +330,11 @@ LOC_BLOCK = """<div class="info">
  <div class="box"><div class="label">East Regina</div><div class="val">534 University Park Drive, Regina<br><a href="tel:+13065222114">306-522-2114</a><br>Mon–Wed 11 AM–1 AM · Thu–Sun 11 AM–3 AM<br><a href="/regina-east">Location details →</a></div></div>
  <div class="box"><div class="label">Regina Beach</div><div class="val">110 Centre St, Regina Beach<br><a href="tel:+16399970553">639-997-0553</a><br>Summer: every day 11 AM–10 PM (closed for the season)<br><a href="/regina-beach">Location details →</a></div></div>
 </div>"""
+WPG_BOX = """<div class="info">
+ <div class="box"><div class="label">Winnipeg</div><div class="val">1530 Dakota St, Unit 4001, Winnipeg, MB<br><a href="tel:+12042554055">204-255-4055</a><br>Mon–Wed 11 AM–1 AM · Thu–Sun 11 AM–3 AM<br>Soft opening Thursday, Nov 5, 2026<br><a href="/winnipeg">Location details →</a></div></div>
+</div>"""
+# every location, for pages shared by both cities (the menu)
+LOC_BLOCK_ALL = LOC_BLOCK[:-len('</div>')] + WPG_BOX[len('<div class="info">\n'):]
 
 
 def deals_post():
@@ -460,8 +502,8 @@ def page_x(*a, **k):
 
 def menu_page():
     slug = 'menu'
-    title = 'Wing-O Menu & Prices: Wings, Boneless, Burgers, Poutine | Regina'
-    desc = 'Full Wing-O menu with prices: bone-in and boneless chicken wings from $7.99, fried chicken burgers, combos, platters, poutine and sides. 135+ flavours. Regina, SK.'
+    title = 'Wing-O Menu & Prices: Wings, Boneless, Burgers, Poutine | Regina & Winnipeg'
+    desc = 'Full Wing-O menu with prices: bone-in and boneless chicken wings from $7.99, fried chicken burgers, combos, platters, poutine and sides. 135+ flavours. Regina, SK and Winnipeg, MB.'
     secs, ld_secs = '', []
     for key, label in MENU_SECTIONS:
         items = DATA['MENU'].get(key) or []
@@ -476,12 +518,12 @@ def menu_page():
     body = f"""<article class="post">
 <span class="post-tag">🍗 Full Menu</span>
 <h2>Wing-O menu with prices</h2>
-<p>Every wing order is tossed in your choice of <strong>135+ sauces and dry rubs</strong> (<a href="/flavours">see every flavour</a>). Prices are the same at our Regina locations and are in Canadian dollars, before GST and PST. Order online for pickup or delivery in Regina ($5.50 flat).</p>
+<p>Every wing order is tossed in your choice of <strong>135+ sauces and dry rubs</strong> (<a href="/flavours">see every flavour</a>). Prices are the same at every Wing-O in Regina and Winnipeg, in Canadian dollars, before GST and PST. Order online for pickup or delivery ($5.50 flat).</p>
 <div class="toc">{toc}</div>
 <p style="margin-top:1rem;"><a class="btn" href="/">Order Online</a> &nbsp; <a href="/best-wing-night-deals-regina">This week's deals →</a></p>
 </article>
 {secs}
-<article class="post"><h2>Where to order</h2>{LOC_BLOCK}</article>"""
+<article class="post"><h2>Where to order</h2>{LOC_BLOCK_ALL}</article>"""
     ld = [{"@context": "https://schema.org", "@type": "Menu", "@id": f"{SITE}/menu", "name": "Wing-O Menu", "url": f"{SITE}/menu",
            "inLanguage": "en-CA", "hasMenuSection": ld_secs},
           breadcrumb_ld([('Home', '/'), ('Menu', '/menu')])]
@@ -492,7 +534,7 @@ def menu_page():
 def flavours_page():
     slug = 'flavours'
     n = flavour_count()
-    title = f'All Wing-O Wing Flavours: {n} Sauces & Dry Rubs | Regina Wings'
+    title = f'All Wing-O Wing Flavours: {n} Sauces & Dry Rubs | Regina & Winnipeg'
     desc = (f"Every Wing-O wing flavour: {n} sauces and dry rubs from Honey Garlic and Honey Dill to Dead Angel (Carolina Reaper), "
             "plus house combos like Illegal Sauces. Heat level for each.")
     secs, all_names = '', []
@@ -531,7 +573,7 @@ def flavours_page():
                         body, ld, [('Home', '/'), ('Flavours', None)], btns=[('Order Online 🍗', '/', ''), ('Menu & Prices', '/menu', 'ghost')])
 
 
-def guide(slug, title, desc, headline, h1, hero, tag, sections, faqs, crumb):
+def guide(slug, title, desc, headline, h1, hero, tag, sections, faqs, crumb, loc_block=None):
     rows = ''.join(f'<h3>{e(h)}</h3><p>{p}</p>' for h, p in sections)
     faq_html = ''.join(f'<div class="faq-item"><div class="q">{e(q)}</div><div class="a">{e(a)}</div></div>' for q, a in faqs)
     body = f"""<article class="post">
@@ -541,7 +583,7 @@ def guide(slug, title, desc, headline, h1, hero, tag, sections, faqs, crumb):
 {rows}
 <a class="btn" href="/">Order Online</a>
 </article>
-<article class="post"><h2>Where to find us</h2>{LOC_BLOCK}</article>
+<article class="post"><h2>Where to find us</h2>{loc_block or LOC_BLOCK}</article>
 <article class="post"><h2>FAQ</h2>{faq_html}</article>"""
     faq_ld = {"@context": "https://schema.org", "@type": "FAQPage",
               "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faqs]}
@@ -580,23 +622,92 @@ def late_night_post():
         'Late Night Food in Regina')
 
 
+# ── Winnipeg guides: written for Winnipeg, not copies of the Regina pages ──
+WPG_DEALS = [('Sunday', '89¢ wings', 'Minimum 10. The cheapest way to feed a Jets game crowd.'),
+             ('Monday', 'Boneless wings, second order 50% off', 'Two orders, two flavours, half price on the second.'),
+             ('Tuesday', 'All-you-can-eat wings, $28.99', '5 PM to 10 PM, dine-in only.'),
+             ('Wednesday', 'Ribs, second order 50% off', 'Sticky, saucy and tossed in any flavour.'),
+             ('Thursday', 'Wing night: second order 50% off', 'Buy an order of wings and get the second half price. Our Winnipeg soft opening on November 5 is a Wing Night.'),
+             ('Friday', '3 orders of wings for $30', 'Three full orders, three flavours.'),
+             ('Saturday', '2 burgers for $20', 'Including our hand-breaded fried chicken burgers.')]
+
+
+def wpg_best_wings():
+    n = flavour_count()
+    return guide('best-wings-winnipeg', 'Best Chicken Wings in Winnipeg: 135+ Flavours at Wing-O, 1530 Dakota St',
+        'New to Winnipeg: Wing-O at 1530 Dakota St in St. Vital. 135+ wing flavours, crispy bone-in and boneless wings from $7.99, daily deals and hours until 3 AM Thu–Sun.',
+        'Looking for the Best Wings in Winnipeg? Meet Wing-O', 'Best <span>Wings</span> in Winnipeg', 'Regina\'s 135+ flavour wing spot, now on Dakota St.', '🏆 Winnipeg Food Guide',
+        [('New in St. Vital', 'Wing-O opens its first Manitoba location at <strong>1530 Dakota St, Unit 4001</strong>, with a soft opening on <strong>Thursday, November 5, 2026</strong>. If you\'ve searched for saucy wings in Winnipeg and come up short, this is the spot.'),
+         ('More flavours than anyone', f'135+ flavours, with {n} sauces and dry rubs on the current menu, all made from scratch. Honey Dill fans: we have it, plus Creamy Dill Pickle and a Honey Dill burger. <a href="/flavours">See every flavour →</a>'),
+         ('The wings', 'Crispy <strong>bone-in</strong> and <strong>boneless wings</strong>: half order $7.99, full order $13.99. Order two to five and pick a different flavour for each. Ribs, chicken fingers and cauliflower wings take every flavour too.'),
+         ('The deals', '89¢ wing Sunday, all-you-can-eat Tuesday ($28.99, dine-in) and Thursday Wing Night with the second order 50% off. <a href="/best-wing-night-deals-winnipeg">All Winnipeg deals →</a>'),
+         ('Open late', 'Open until <strong>1 AM Monday to Wednesday</strong> and <strong>3 AM Thursday to Sunday</strong>, with pickup and delivery.')],
+        [('Where can I get good wings in Winnipeg?', 'Wing-O at 1530 Dakota St, Unit 4001 (St. Vital) has 135+ wing flavours, bone-in and boneless wings from $7.99, and stays open until 3 AM Thursday to Sunday.'),
+         ('When does Wing-O open in Winnipeg?', 'The soft opening is Thursday, November 5, 2026 at 11 AM.'),
+         ('How much are wings at Wing-O Winnipeg?', 'A half order is $7.99 and a full order is $13.99, bone-in or boneless. Same prices as our Regina locations.'),
+         ('What is the phone number for Wing-O Winnipeg?', 'Call 204-255-4055.')],
+        'Best Wings in Winnipeg', loc_block=WPG_BOX)
+
+
+def wpg_deals():
+    rows = [(d + ' — ' + t, x) for d, t, x in WPG_DEALS] + [
+        ('Every day — the $10 lunch', 'Wings plus small fries, any flavour, for $10. 11 AM to 3:30 PM, pickup only.'),
+        ('After 11 PM — 10% off', 'Online orders placed after 11 PM get 10% off automatically.'),
+        ('First online order — 15% off', 'Your first order at wingorestaurants.com gets 15% off automatically on orders of $25 or more.')]
+    return guide('best-wing-night-deals-winnipeg', 'Wing Night Deals in Winnipeg: 89¢ Wings, AYCE Tuesday & More | Wing-O',
+        'Every Wing-O deal in Winnipeg, day by day: 89¢ wing Sunday, all-you-can-eat Tuesday, Thursday wing night (second order 50% off) and the $10 lunch at 1530 Dakota St.',
+        'Wing Night Deals in Winnipeg, Every Day of the Week', 'Wing Night <span>Deals</span> in Winnipeg', 'Seven days, seven deals at 1530 Dakota St.', '💸 Winnipeg Deals Guide',
+        rows,
+        [('What night is wing night in Winnipeg at Wing-O?', 'Thursday: buy an order of wings and get the second 50% off. Sunday is 89¢ wings (minimum 10) and Tuesday is all-you-can-eat wings for $28.99, dine-in, 5–10 PM.'),
+         ('Where can I get cheap wings in Winnipeg?', 'Wing-O at 1530 Dakota St: 89¢ wings on Sunday (minimum 10) and the $10 lunch (wings and small fries), 11 AM to 3:30 PM daily, pickup.'),
+         ('Is there all-you-can-eat wings in Winnipeg?', 'Yes. Wing-O Winnipeg runs all-you-can-eat wings every Tuesday from 5 PM to 10 PM for $28.99, dine-in only.')],
+        'Wing Night Deals in Winnipeg', loc_block=WPG_BOX)
+
+
+def wpg_late_night():
+    return guide('late-night-food-winnipeg', 'Late Night Food in Winnipeg: Wings Until 3 AM on Dakota St | Wing-O',
+        'Hungry after midnight in Winnipeg? Wing-O at 1530 Dakota St is open until 1 AM Mon–Wed and 3 AM Thu–Sun for wings, fried chicken burgers and poutine.',
+        'Late Night Food in Winnipeg: Wings Until 3 AM', 'Late Night <span>Food</span> in Winnipeg', 'St. Vital wings until 3 AM, Thursday to Sunday.', '🌙 Winnipeg Late Night Guide',
+        [('Open until 3 AM', 'Wing-O Winnipeg at <strong>1530 Dakota St, Unit 4001</strong> is open until <strong>1 AM Monday to Wednesday</strong> and <strong>3 AM Thursday to Sunday</strong>.'),
+         ('What to order after midnight', 'Wings in any of our 135+ flavours, fried chicken burgers, loaded poutine, mozza sticks and deep-fried Oreos and Mars bars. <a href="/menu">Full menu →</a>'),
+         ('10% off late-night orders', 'Online orders placed after 11 PM get <strong>10% off automatically</strong>.'),
+         ('Pickup or delivery', 'Order at wingorestaurants.com for pickup in about 20 minutes, or delivery for a flat $5.50.')],
+        [('What food is open late in Winnipeg?', 'Wing-O at 1530 Dakota St is open until 1 AM Monday to Wednesday and 3 AM Thursday to Sunday, serving wings, burgers and poutine.'),
+         ('Where can I get wings at 2 AM in Winnipeg?', 'Wing-O Winnipeg on Dakota St is open until 3 AM Thursday to Sunday.')],
+        'Late Night Food in Winnipeg', loc_block=WPG_BOX)
+
+
+def wpg_fried_chicken():
+    return guide('fried-chicken-winnipeg', 'Fried Chicken in Winnipeg: Wings, Fingers & Chicken Burgers | Wing-O',
+        'Fried chicken in Winnipeg at Wing-O, 1530 Dakota St: crispy bone-in and boneless wings, chicken fingers and hand-breaded fried chicken burgers like The Tough Guy and the Korean Fried Chicken.',
+        'Fried Chicken in Winnipeg: What to Order at Wing-O', '<span>Fried Chicken</span> in Winnipeg', 'Fried to order on Dakota St.', '🍗 Winnipeg Food Guide',
+        [('Fried chicken burgers', 'Hand-breaded chicken breast on a toasted bun with fries and a drink: the <strong>Korean Fried Chicken</strong> ($16.49), <strong>The Tough Guy</strong> in Carolina Reaper sauce ($18.99), <strong>The Dillinator</strong> with honey dill ($18.99), <strong>The Buffalo Stampede</strong> ($18.99) and <strong>The Sunset Crunch</strong> ($15.99).'),
+         ('Wings and boneless', 'Crispy bone-in and boneless wings in 135+ flavours. Half order $7.99, full $13.99.'),
+         ('Chicken fingers', 'Crispy chicken fingers with your choice of dip, $7.99 half or $13.99 full. A safe bet for kids.'),
+         ('Feeding a group', 'Combos run from $17.45 for one to $67.99 for four, and platters mix wings, fingers and sides. <a href="/catering.html">Catering →</a>')],
+        [('Where can I get fried chicken burgers in Winnipeg?', 'Wing-O at 1530 Dakota St, Unit 4001 serves five hand-breaded fried chicken burgers, from $15.99, with fries and a drink.'),
+         ('Does Wing-O Winnipeg deliver?', 'Yes. Order at wingorestaurants.com for delivery for a flat $5.50, or pickup in about 20 minutes.')],
+        'Fried Chicken in Winnipeg', loc_block=WPG_BOX)
+
+
 def llms_txt():
     groups = '\n'.join(f'- {g}: ' + ', '.join(split_flavour(f)[0] for f in fl) for g, fl in DATA['FLAVORS'].items())
     return f"""# Wing-O Restaurants
 
-> Wing-O is a chicken wing restaurant from Regina, Saskatchewan, Canada, known for 135+ wing flavours (sauces and dry rubs made from scratch), crispy bone-in and boneless wings, fried chicken burgers, poutine and late-night hours. Tagline: "More Than Wings". Online ordering for pickup and delivery at https://wingorestaurants.com.
+> Wing-O is a chicken wing restaurant from Regina, Saskatchewan, Canada, now also in Winnipeg, Manitoba, known for 135+ wing flavours (sauces and dry rubs made from scratch), crispy bone-in and boneless wings, fried chicken burgers, poutine and late-night hours. Tagline: "More Than Wings". Online ordering for pickup and delivery at https://wingorestaurants.com.
 
 ## Locations
 - Wing-O Albert Street: #3 - 155 Albert St N, Regina, SK. Phone 639-997-0553. Mon-Wed 11 AM-1 AM, Thu-Sun 11 AM-3 AM. Pickup and delivery. https://wingorestaurants.com/regina-albert-st
 - Wing-O East Regina: 534 University Park Drive, Regina, SK. Phone 306-522-2114. Mon-Wed 11 AM-1 AM, Thu-Sun 11 AM-3 AM. Pickup and delivery. https://wingorestaurants.com/regina-east
 - Wing-O Regina Beach: 110 Centre St, Regina Beach, SK. Summer location (every day 11 AM-10 PM in season), currently closed for the season. https://wingorestaurants.com/regina-beach
-- Wing-O Winnipeg: 1530 Dakota St, Unit 4001, Winnipeg, MB. Opening soon. https://wingorestaurants.com/winnipeg
+- Wing-O Winnipeg: 1530 Dakota St, Unit 4001, Winnipeg, MB (St. Vital). Phone 204-255-4055. Mon-Wed 11 AM-1 AM, Thu-Sun 11 AM-3 AM. Pickup and delivery. Soft opening Thursday, November 5, 2026. https://wingorestaurants.com/winnipeg
 
 ## Menu and prices (CAD)
+- Prices and weekly deals are the same in Regina and Winnipeg.
 - Bone-in or boneless wings: half order $7.99, full order $13.99. Ribs and chicken fingers the same.
 - Fried chicken burgers $15.99-$18.99 (The Tough Guy with Carolina Reaper, The Dillinator, The Buffalo Stampede, Korean Fried Chicken, The Sunset Crunch), served with fries and a drink.
 - Combos from $17.45 (for 1) to $67.99 (for 4). Platters $29.99-$56.99. Poutine from $8.99.
-- Delivery anywhere in Regina: $5.50 flat. First online order: 15% off orders of $25+. Online orders after 11 PM: 10% off.
+- Delivery: $5.50 flat (anywhere in Regina; Winnipeg from 1530 Dakota St). First online order: 15% off orders of $25+. Online orders after 11 PM: 10% off.
 - Full menu: https://wingorestaurants.com/menu
 
 ## Weekly deals
@@ -608,7 +719,7 @@ def llms_txt():
 - Friday: 3 orders of wings for $30
 - Saturday: 2 burgers for $20
 - Every day: $10 lunch (wings + small fries), 11 AM-3:30 PM, pickup
-- Details: https://wingorestaurants.com/best-wing-night-deals-regina
+- Details: https://wingorestaurants.com/best-wing-night-deals-regina (Regina) and https://wingorestaurants.com/best-wing-night-deals-winnipeg (Winnipeg)
 
 ## Flavours ({flavour_count()} sauces and dry rubs; hottest is Dead Angel, Carolina Reaper)
 {groups}
@@ -621,6 +732,10 @@ def llms_txt():
 - Best wings in Regina: https://wingorestaurants.com/best-wings-regina
 - Late night food in Regina: https://wingorestaurants.com/late-night-food-regina
 - Fried chicken in Regina: https://wingorestaurants.com/fried-chicken-regina
+- Best wings in Winnipeg: https://wingorestaurants.com/best-wings-winnipeg
+- Wing night deals in Winnipeg: https://wingorestaurants.com/best-wing-night-deals-winnipeg
+- Late night food in Winnipeg: https://wingorestaurants.com/late-night-food-winnipeg
+- Fried chicken in Winnipeg: https://wingorestaurants.com/fried-chicken-winnipeg
 - Catering: https://wingorestaurants.com/catering.html
 - FAQ: https://wingorestaurants.com/faq.html
 - Careers: https://wingorestaurants.com/careers.html
@@ -632,7 +747,9 @@ def llms_txt():
 SITEMAP_PAGES = [('/', 'daily', '1.0'), ('/menu', 'weekly', '0.9'), ('/flavours', 'weekly', '0.9'),
                  ('/regina-albert-st', 'monthly', '0.8'), ('/regina-east', 'monthly', '0.8'), ('/regina-beach', 'monthly', '0.7'),
                  ('/winnipeg', 'weekly', '0.8'), ('/best-wings-regina', 'monthly', '0.7'), ('/best-wing-night-deals-regina', 'weekly', '0.7'),
-                 ('/late-night-food-regina', 'monthly', '0.7'), ('/fried-chicken-regina', 'monthly', '0.6'), ('/catering.html', 'monthly', '0.6'),
+                 ('/late-night-food-regina', 'monthly', '0.7'), ('/fried-chicken-regina', 'monthly', '0.6'),
+                 ('/best-wings-winnipeg', 'monthly', '0.7'), ('/best-wing-night-deals-winnipeg', 'weekly', '0.7'),
+                 ('/late-night-food-winnipeg', 'monthly', '0.7'), ('/fried-chicken-winnipeg', 'monthly', '0.6'), ('/catering.html', 'monthly', '0.6'),
                  ('/careers.html', 'monthly', '0.5'), ('/blog.html', 'weekly', '0.5'), ('/faq.html', 'monthly', '0.5')]
 
 
@@ -646,7 +763,8 @@ if __name__ == '__main__':
     for L in LOCS:
         open(os.path.join(OUT, L['slug'] + '.html'), 'w').write(location_page(L))
         print('wrote', L['slug'])
-    for fn in (deals_post, fried_chicken_post, menu_page, flavours_page, best_wings_post, late_night_post):
+    for fn in (deals_post, fried_chicken_post, menu_page, flavours_page, best_wings_post, late_night_post,
+               wpg_best_wings, wpg_deals, wpg_late_night, wpg_fried_chicken):
         slug, h = fn()
         open(os.path.join(OUT, slug + '.html'), 'w').write(h)
         print('wrote', slug)
