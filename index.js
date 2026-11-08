@@ -452,7 +452,7 @@ app.get('/dashboard.html', (req, res) => { res.sendFile(path.join(__dirname, 'pu
 
 // ── PLACE ORDER ────────────────────────────────────────────────
 app.post('/api/orders', async (req, res) => {
-  const { locationId, orderType, customer, items, notes, subtotal, tax, total, preOrder, openTime } = req.body;
+  const { locationId, orderType, customer, items, notes, subtotal, tax, total, preOrder, openTime, scheduled } = req.body;
   if (!locationId || !LOCATIONS[locationId]) return res.status(400).json({ error: 'Invalid location' });
   // Check if location is enabled
   try {
@@ -573,7 +573,7 @@ app.post('/api/orders', async (req, res) => {
         <table style="width:100%;border-collapse:collapse;">
           <tr><td style="padding:6px 0;color:#888;font-size:13px;">Order #</td><td style="padding:6px 0;font-weight:bold;font-size:16px;color:#E8190A;">${orderNum}</td></tr>
           <tr><td style="padding:6px 0;color:#888;font-size:13px;">Location</td><td style="padding:6px 0;font-weight:bold;">${loc.name}</td></tr>
-          <tr><td style="padding:6px 0;color:#888;font-size:13px;">Type</td><td style="padding:6px 0;">${orderType === 'delivery' ? '🛵 Delivery' : '🏃 Pickup'}${preOrder ? ' <span style="background:#F5A800;color:#000;padding:2px 8px;border-radius:3px;font-size:11px;">PRE-ORDER — opens ' + openTime + '</span>' : ''}</td></tr>
+          <tr><td style="padding:6px 0;color:#888;font-size:13px;">Type</td><td style="padding:6px 0;">${orderType === 'delivery' ? '🛵 Delivery' : '🏃 Pickup'}${preOrder ? ' <span style="background:#F5A800;color:#000;padding:2px 8px;border-radius:3px;font-size:11px;">PRE-ORDER — ' + (scheduled ? 'for ' : 'opens ') + escHtml(openTime) + '</span>' : ''}</td></tr>
           <tr><td style="padding:6px 0;color:#888;font-size:13px;">Time</td><td style="padding:6px 0;">${timestamp}</td></tr>
           <tr><td style="padding:6px 0;color:#888;font-size:13px;">Name</td><td style="padding:6px 0;">${customer.firstName} ${customer.lastName || ''}</td></tr>
           <tr><td style="padding:6px 0;color:#888;font-size:13px;">Phone</td><td style="padding:6px 0;"><a href="tel:${customer.phone}" style="color:#E8190A;">${customer.phone}</a></td></tr>
@@ -599,7 +599,9 @@ app.post('/api/orders', async (req, res) => {
   // Fires only if customer provided their email at checkout
   if (customer.email && customer.email.includes('@')) {
     const etaText = preOrder
-      ? `Since we're closed right now, your order will be prepared when we open at <strong>${openTime}</strong>.`
+      ? (scheduled
+          ? `Your pre-order is booked for <strong>${escHtml(openTime)}</strong>. We'll have it ${orderType === 'delivery' ? 'on its way' : 'ready'} then.`
+          : `Since we're closed right now, your order will be prepared when we open at <strong>${escHtml(openTime)}</strong>.`)
       : `Should be ready in about <strong>${orderType === 'delivery' ? '30–45' : '15–20'} minutes</strong>.`;
     const whatsNext = orderType === 'delivery'
       ? `Sit tight — your food is being prepared. Have cash or card ready for the driver.`
