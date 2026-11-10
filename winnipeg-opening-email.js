@@ -1,6 +1,7 @@
 // Winnipeg grand opening email (Thursday, Nov 5 2026), sent from /winnipeg-admin.
 // Each recipient gets their own greeting and unsubscribe link.
 const ID = 'wpg-opening-2026-11-05';
+const LABEL = 'Grand opening (Nov 5)';
 const SUBJECT = "Winnipeg\u2026 it's your time to get saucy \u{1F525} (we open THURSDAY)";
 const esc = s => String(s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
@@ -107,4 +108,4 @@ function render({ name, unsubUrl }) {
 </html>`;
 }
 
-module.exports = { ID, SUBJECT, render };
+module.exports = { ID, LABEL, SUBJECT, render };
