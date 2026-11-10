@@ -55,7 +55,8 @@ tr.off td{color:#666;text-decoration:line-through;}
     <div class="stat"><b id="n-all">0</b><span>Total sign-ups</span></div>
   </div>
   <div class="card" id="camp">
-    <h2>📣 Grand opening email</h2>
+    <h2>📣 Email your Winnipeg list</h2>
+    <p class="subj">Email: <select id="c-pick" style="max-width:340px;padding:.4rem;border-radius:6px;"></select></p>
     <p class="subj">Subject: <b id="c-subj">…</b></p>
     <div class="row">
       <button class="alt" id="c-prev" style="margin-top:0;">👀 Preview</button>
@@ -93,10 +94,10 @@ tr.off td{color:#666;text-decoration:line-through;}
       })
       .catch(function(){ err.textContent = 'Network error.'; });
   }
-  // ── grand opening email ──
-  var pwUsed = '', poll = null;
+  // ── emails to the list ──
+  var pwUsed = '', poll = null, camp = '';
   function api(path, body){
-    body = body || {}; body.password = pwUsed;
+    body = body || {}; body.password = pwUsed; if (camp) body.campaign = camp;
     return fetch('/api/winnipeg/campaign/' + path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
       .then(function(r){ return r.json().then(function(d){ if (!r.ok) throw new Error(d.error || 'Something went wrong.'); return d; }); });
   }
@@ -104,18 +105,28 @@ tr.off td{color:#666;text-decoration:line-through;}
   function status(){
     return api('status').then(function(d){
       document.getElementById('c-subj').textContent = d.subject;
+      camp = d.campaign;
+      var pick = document.getElementById('c-pick');
+      if (!pick.options.length) d.campaigns.forEach(function(c){ var o = document.createElement('option'); o.value = c.id; o.textContent = c.label; pick.appendChild(o); });
+      pick.value = d.campaign;
       var btn = document.getElementById('c-send'), prog = document.getElementById('c-prog');
       var lines = ['✅ Sent: <b>' + d.sent + '</b> &nbsp; ⏳ Not sent yet: <b>' + d.pending + '</b>' + (d.failed ? ' &nbsp; ⚠️ Failed: <b>' + d.failed + '</b> (press Send again to retry them)' : '')];
       if (d.running) lines.push('Sending now… keep this page open to watch, or close it. It keeps going either way.');
       else if (d.last && d.last.finished && d.last.error) lines.push('Last send stopped: ' + esc(d.last.error));
       if (!d.emailReady) lines.push('⚠️ Email is not set up: add RESEND_API_KEY on Railway.');
       prog.innerHTML = lines.join('<br>');
+      if (d.running && d.runningCampaign && d.runningCampaign !== d.campaign) lines.push('Another email is sending right now. Wait for it to finish.');
       btn.disabled = d.running || !d.pending || !d.emailReady;
       btn.textContent = d.running ? 'Sending…' : d.pending ? '🚀 Send to all ' + d.pending + ' subscribed' : (d.sent ? '✅ Everyone has it' : 'No one to send to');
       if (d.running && !poll) poll = setInterval(status, 3000);
       if (!d.running && poll) { clearInterval(poll); poll = null; }
     }).catch(function(e){ cErr(e.message); });
   }
+  document.getElementById('c-pick').addEventListener('change', function(){
+    camp = this.value; cErr('');
+    document.getElementById('c-frame').style.display = 'none';
+    status();
+  });
   document.getElementById('c-prev').addEventListener('click', function(){
     cErr('');
     api('preview').then(function(d){ var f = document.getElementById('c-frame'); f.srcdoc = d.html; f.style.display = 'block'; }).catch(function(e){ cErr(e.message); });
@@ -128,7 +139,7 @@ tr.off td{color:#666;text-decoration:line-through;}
   });
   document.getElementById('c-send').addEventListener('click', function(){
     var n = (this.textContent.match(/\d+/) || ['0'])[0];
-    if (!confirm('Send the grand opening email to ' + n + ' people now?\n\nThis cannot be undone. Each person only gets it once.')) return;
+    var pk = document.getElementById('c-pick'); if (!confirm('Send "' + pk.options[pk.selectedIndex].text + '" to ' + n + ' people now?\n\nThis cannot be undone. Each person only gets it once.')) return;
     cErr(''); this.disabled = true;
     api('send', { confirm: 'SEND' }).then(function(){ return status(); }).then(function(){ if (!poll) poll = setInterval(status, 3000); })
       .catch(function(e){ cErr(e.message); status(); });
