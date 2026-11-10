@@ -299,13 +299,17 @@ PAY AT ${orderType === 'delivery' ? 'DELIVERY' : 'PICKUP'}
 
   for (const item of items) {
     try {
-      const itemName = item.flavor ? `${item.name} [${item.flavor}]` : item.name;
+      // Clover rejects very long line-item names, so big multi-flavour deals keep a short name
+      // and carry the flavours in the item note (the full list is also in the order note).
+      const fullName = item.flavor ? `${item.name} [${item.flavor}]` : item.name;
+      const itemName = fullName.length <= 127 ? fullName : item.name;
+      const itemNote = (item.flavor || '').slice(0, 255);
       const lineResp = await fetch(
         `https://api.clover.com/v3/merchants/${loc.merchantId}/orders/${cloverId}/line_items`,
         {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${loc.apiToken}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: itemName, price: Math.round(item.price * 100), unitQty: 1000, note: item.flavor || '' })
+          body: JSON.stringify({ name: itemName, price: Math.round(item.price * 100), unitQty: 1000, note: itemNote })
         }
       );
       const lineData = await lineResp.json();
@@ -317,7 +321,7 @@ PAY AT ${orderType === 'delivery' ? 'DELIVERY' : 'PICKUP'}
             {
               method: 'POST',
               headers: { 'Authorization': `Bearer ${loc.apiToken}`, 'Content-Type': 'application/json' },
-              body: JSON.stringify({ name: itemName, price: Math.round(item.price * 100), unitQty: 1000, note: item.flavor || '' })
+              body: JSON.stringify({ name: itemName, price: Math.round(item.price * 100), unitQty: 1000, note: itemNote })
             }
           );
         }
