@@ -249,6 +249,26 @@ async function autoAddStamp(phone, orderNum, customerName) {
 const noEmoji = /[\p{Extended_Pictographic}\u{1F1E6}-\u{1F1FF}\uFE0F\u200D\u20E3]/gu;
 const printable = t => String(t || '').replace(noEmoji, '').replace(/\s+/g, ' ').trim();
 
+// Clover's own GST/PST tax rates for a location, so taxes go on the bill and not the
+// kitchen ticket. Clover stores rates as whole numbers: 5% = 500000.
+const cloverTaxCache = {};
+async function cloverTaxRateIds(loc) {
+  const c = cloverTaxCache[loc.merchantId];
+  if (c && Date.now() - c.at < 6 * 60 * 60 * 1000) return c.ids;
+  let ids = null;
+  try {
+    const r = await fetch(`https://api.clover.com/v3/merchants/${loc.merchantId}/tax_rates?limit=100`, { headers: { 'Authorization': `Bearer ${loc.apiToken}` } });
+    const d = await r.json();
+    const rates = Array.isArray(d.elements) ? d.elements : [];
+    const pick = pct => rates.find(t => Number(t.rate) === Math.round(pct * 10000000));
+    const gst = pick(0.05), pst = pick(locPst(loc));
+    if (gst && pst) ids = [gst.id, pst.id];
+    else console.warn(`Clover tax rates for ${loc.name}: GST ${gst ? 'found' : 'missing'}, PST ${pst ? 'found' : 'missing'}; adding taxes as items instead`);
+  } catch (e) { console.warn('Clover tax rate lookup failed:', e.message); }
+  cloverTaxCache[loc.merchantId] = { at: Date.now(), ids };
+  return ids;
+}
+
 async function createCloverOrder(loc, orderNum, orderType, customer, items, subtotal, notes, timestamp) {
   if (!loc.merchantId || !loc.apiToken) {
     console.error(`Clover not set up for ${loc.name}: add its merchant ID and API token on Railway`);
@@ -283,6 +303,10 @@ async function createCloverOrder(loc, orderNum, orderType, customer, items, subt
   const cloverId = createData.id;
   console.log(`✓ Clover order created: ${cloverId}`);
 
+  // Use Clover's tax rates on each item when the location has them set up
+  let taxIds = await cloverTaxRateIds(loc);
+  let taxChecked = false;
+
   for (const item of items) {
     try {
       // Item name on its own line, flavours and notes printed underneath (like in-store tickets)
@@ -293,11 +317,21 @@ async function createCloverOrder(loc, orderNum, orderType, customer, items, subt
         {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${loc.apiToken}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: itemName, price: Math.round(item.price * 100), unitQty: 1000, note: itemNote })
+          body: JSON.stringify({ name: itemName, price: Math.round(item.price * 100), unitQty: 1000, note: itemNote, ...(taxIds ? { taxRates: taxIds.map(id => ({ id })) } : {}) })
         }
       );
       const lineData = await lineResp.json();
       console.log(`  Line item: ${itemName} — ${lineResp.status} — id:${lineData.id||'?'}`);
+      // Check once that Clover kept the tax rates; if not, fall back to tax items so no tax is lost
+      if (taxIds && !taxChecked && lineData.id) {
+        taxChecked = true;
+        try {
+          const chk = await fetch(`https://api.clover.com/v3/merchants/${loc.merchantId}/orders/${cloverId}/line_items/${lineData.id}?expand=taxRates`, { headers: { 'Authorization': `Bearer ${loc.apiToken}` } });
+          const cd = await chk.json();
+          const got = cd.taxRates && Array.isArray(cd.taxRates.elements) ? cd.taxRates.elements.length : 0;
+          if (got < taxIds.length) { console.warn(`Clover did not keep tax rates on ${cloverId}; adding taxes as items`); taxIds = null; }
+        } catch (e) { console.warn('Tax rate check failed:', e.message); taxIds = null; }
+      }
       if (item.qty > 1) {
         for (let q = 1; q < item.qty; q++) {
           await fetch(
@@ -305,7 +339,7 @@ async function createCloverOrder(loc, orderNum, orderType, customer, items, subt
             {
               method: 'POST',
               headers: { 'Authorization': `Bearer ${loc.apiToken}`, 'Content-Type': 'application/json' },
-              body: JSON.stringify({ name: itemName, price: Math.round(item.price * 100), unitQty: 1000, note: itemNote })
+              body: JSON.stringify({ name: itemName, price: Math.round(item.price * 100), unitQty: 1000, note: itemNote, ...(taxIds ? { taxRates: taxIds.map(id => ({ id })) } : {}) })
             }
           );
         }
@@ -313,12 +347,13 @@ async function createCloverOrder(loc, orderNum, orderType, customer, items, subt
     } catch (e) { console.warn('Line item error:', e.message); }
   }
 
-  // ── Add tax + delivery fee as line items so receipt total is correct ──
+  // ── Delivery fee (and taxes, if Clover's tax rates weren't used) as line items ──
   const subtotalNum = Number(subtotal);
   const gst = Math.round(subtotalNum * 0.05 * 100); // cents
   const pst = Math.round(subtotalNum * locPst(loc) * 100); // cents
 
-  const extras = [
+  // Only when Clover's own tax rates couldn't be used (they'd print on the kitchen ticket)
+  const extras = taxIds ? [] : [
     { name: 'GST (5%)', price: gst },
     { name: pstLabel(loc), price: pst }
   ];
