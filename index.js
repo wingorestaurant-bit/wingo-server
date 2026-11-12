@@ -245,37 +245,23 @@ async function autoAddStamp(phone, orderNum, customerName) {
 }
 
 // ── CREATE CLOVER ORDER ────────────────────────────────────────
+// Emoji and the invisible characters that join them; printers show these as "?"
+const noEmoji = /[\p{Extended_Pictographic}\u{1F1E6}-\u{1F1FF}\uFE0F\u200D\u20E3]/gu;
+const printable = t => String(t || '').replace(noEmoji, '').replace(/\s+/g, ' ').trim();
+
 async function createCloverOrder(loc, orderNum, orderType, customer, items, subtotal, notes, timestamp) {
   if (!loc.merchantId || !loc.apiToken) {
     console.error(`Clover not set up for ${loc.name}: add its merchant ID and API token on Railway`);
     return null;
   }
-  const orderNote = `
-=================================
-WING-O ONLINE ORDER
-=================================
-ORDER #: ${orderNum}
-TIME: ${timestamp}
-TYPE: ${orderType.toUpperCase()}
-LOCATION: ${loc.name}
----------------------------------
-CUSTOMER
-  Name:  ${customer.firstName} ${customer.lastName || ''}
-  Phone: ${customer.phone}
-  Email: ${customer.email || 'N/A'}
-${orderType === 'delivery' ? `  Deliver to: ${customer.address}` : '  PICKUP at store'}
----------------------------------
-ITEMS
-${items.map(i => `  ${i.name}${i.flavor ? ' [' + i.flavor + ']' : ''} x${i.qty}  $${(i.price * i.qty).toFixed(2)}`).join('\n')}
----------------------------------
-  Subtotal: $${Number(subtotal).toFixed(2)}
-  GST (5%): $${(Number(subtotal) * 0.05).toFixed(2)}
-  ${pstLabel(loc)}: $${(Number(subtotal) * locPst(loc)).toFixed(2)}
-${orderType === 'delivery' ? `  Delivery: $5.50` : ''}
----------------------------------
-${notes ? 'NOTES: ' + notes : ''}
-PAY AT ${orderType === 'delivery' ? 'DELIVERY' : 'PICKUP'}
-=================================`.trim();
+  // Keep the printed ticket short, like in-store tickets: order number, pickup time
+  // and the customer's notes only. Receipt printers can't print emoji (they come out as "?").
+  const cleanNote = String(notes || '').replace(noEmoji, '').replace(/\[\s*/g, '').replace(/\s*\]/g, '\n').replace(/[ \t]+/g, ' ').split('\n').map(l => l.trim()).filter(Boolean);
+  const orderNote = [
+    `${orderNum}${orderType === 'delivery' ? ' · DELIVERY' : ''}`,
+    ...(orderType === 'delivery' ? [`Deliver to: ${customer.address || ''}`, `Phone: ${customer.phone || ''}`] : []),
+    ...cleanNote,
+  ].join('\n');
 
   const createResp = await fetch(
     `https://api.clover.com/v3/merchants/${loc.merchantId}/orders`,
@@ -299,11 +285,9 @@ PAY AT ${orderType === 'delivery' ? 'DELIVERY' : 'PICKUP'}
 
   for (const item of items) {
     try {
-      // Clover rejects very long line-item names, so big multi-flavour deals keep a short name
-      // and carry the flavours in the item note (the full list is also in the order note).
-      const fullName = item.flavor ? `${item.name} [${item.flavor}]` : item.name;
-      const itemName = fullName.length <= 127 ? fullName : item.name;
-      const itemNote = (item.flavor || '').slice(0, 255);
+      // Item name on its own line, flavours and notes printed underneath (like in-store tickets)
+      const itemName = printable(item.name).slice(0, 127);
+      const itemNote = printable(item.flavor).slice(0, 255);
       const lineResp = await fetch(
         `https://api.clover.com/v3/merchants/${loc.merchantId}/orders/${cloverId}/line_items`,
         {
