@@ -249,6 +249,22 @@ async function autoAddStamp(phone, orderNum, customerName) {
 const noEmoji = /[\p{Extended_Pictographic}\u{1F1E6}-\u{1F1FF}\uFE0F\u200D\u20E3]/gu;
 const printable = t => String(t || '').replace(noEmoji, '').replace(/\s+/g, ' ').trim();
 
+// Ask Clover to print the order on the store's order printer as soon as it's complete,
+// so staff don't have to open it and press print. Turn off with CLOVER_AUTO_PRINT=off on Railway.
+async function printCloverOrder(loc, cloverId) {
+  if (String(process.env.CLOVER_AUTO_PRINT || '').toLowerCase() === 'off') return;
+  try {
+    const r = await fetch(`https://api.clover.com/v3/merchants/${loc.merchantId}/print_event`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${loc.apiToken}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orderRef: { id: cloverId } })
+    });
+    const d = await r.json().catch(() => ({}));
+    if (r.ok) console.log(`🖨️  Print sent for ${cloverId} (${loc.name}) — ${d.state || 'queued'}`);
+    else console.warn(`Auto-print failed for ${cloverId} (${loc.name}): ${r.status} ${JSON.stringify(d).slice(0, 200)}`);
+  } catch (e) { console.warn('Auto-print error:', e.message); }
+}
+
 async function createCloverOrder(loc, orderNum, orderType, customer, items, subtotal, notes, timestamp) {
   if (!loc.merchantId || !loc.apiToken) {
     console.error(`Clover not set up for ${loc.name}: add its merchant ID and API token on Railway`);
@@ -349,6 +365,7 @@ async function createCloverOrder(loc, orderNum, orderType, customer, items, subt
   }
 
   console.log(`✓ Line items + extras added to ${cloverId}`);
+  await printCloverOrder(loc, cloverId);
   return cloverId;
 }
 
