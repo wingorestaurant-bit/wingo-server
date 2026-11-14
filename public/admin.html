@@ -122,6 +122,25 @@
 
   <hr class="divider">
 
+  <!-- WAIT TIMES -->
+  <div class="section-title" style="margin-bottom:.5rem;">⏱️ Pickup Wait Time — Right Now</div>
+  <div class="loc-help">Tap the wait a pickup order has <strong>right now</strong>. Customers see it on the website, at checkout, after ordering and in their email. Delivery adds 15–30 min. Change it whenever it gets busy or quiet.</div>
+  <div id="wait-rows"></div>
+  <div class="msg" id="wait-msg"></div>
+
+  <hr class="divider">
+
+  <!-- SOLD OUT TODAY -->
+  <div class="section-title" style="margin-bottom:.5rem;">🚫 Sold Out Today</div>
+  <div class="loc-help">Run out of something? Turn it <strong>OFF</strong> and customers can't order it at that store. Everything comes back <strong>by itself at 5 AM</strong>, so nothing stays hidden by mistake.</div>
+  <select id="so-loc" onchange="renderSoldOut()" style="width:100%;padding:.75rem;border-radius:6px;border:1.5px solid #333;background:#111;color:#fff;font-size:1rem;margin-bottom:.6rem;">
+    <option value="winnipeg">Winnipeg</option><option value="albert-st">Albert Street</option><option value="east-regina">East Regina</option><option value="regina-beach">Regina Beach</option>
+  </select>
+  <div id="so-list" style="max-height:420px;overflow:auto;"></div>
+  <div class="msg" id="so-msg"></div>
+
+  <hr class="divider">
+
   <!-- CLOVER CONNECTION TEST -->
   <div class="section-title" style="margin-bottom:.5rem;">🔌 Clover Connection Test</div>
   <div class="loc-help">Checks that a location's Clover <strong>Merchant ID</strong> and <strong>API token</strong> on Railway work. It does <strong>not</strong> create an order.</div>
@@ -186,6 +205,8 @@ async function loadLocationStatus() {
     document.querySelectorAll('#del-toggles .loc-row').forEach(row => {
       updateLocRow(row, delivery[row.dataset.loc] !== false, 'DELIVERY ON', 'DELIVERY OFF');
     });
+    WAIT = d.wait || {}; SOLD = d.soldOut || {};
+    renderWait(); renderSoldOut();
   } catch (e) { console.warn('Load location status failed:', e); }
 }
 
@@ -293,6 +314,66 @@ async function testClover() {
   btn.disabled = false;
 }
 
+// ── WAIT TIMES + SOLD OUT ─────────────────────────────
+const LOC_NAMES = { 'winnipeg': 'Winnipeg', 'albert-st': 'Albert Street', 'east-regina': 'East Regina', 'regina-beach': 'Regina Beach' };
+const WAIT_CHOICES = [15, 20, 30, 45, 60, 90];
+let WAIT = {}, SOLD = {}, MENU_ITEMS = null;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+function adminPw(msgId) {
+  const pw = document.getElementById('password-input').value.trim();
+  if (!pw) { showLocMsg('⚠️ Enter admin password above first', 'err', msgId); document.getElementById('password-input').focus(); }
+  return pw;
+}
+function renderWait() {
+  const box = document.getElementById('wait-rows');
+  box.innerHTML = Object.keys(LOC_NAMES).map(loc => {
+    const cur = Number(WAIT[loc]) || 20;
+    return '<div class="loc-row" style="flex-wrap:wrap;gap:.5rem;"><span class="loc-name" style="min-width:120px;">' + LOC_NAMES[loc] + '</span><div style="display:flex;gap:.3rem;flex-wrap:wrap;">' +
+      WAIT_CHOICES.map(m => '<button onclick="setWait(\'' + loc + '\',' + m + ')" style="border:1.5px solid ' + (m === cur ? '#F5A800' : '#333') + ';background:' + (m === cur ? '#F5A800' : '#111') + ';color:' + (m === cur ? '#000' : '#ccc') + ';border-radius:6px;padding:.4rem .55rem;font-family:Oswald,sans-serif;font-size:.85rem;cursor:pointer;">' + m + ' min</button>').join('') +
+      '</div></div>';
+  }).join('');
+}
+async function setWait(loc, mins) {
+  const password = adminPw('wait-msg'); if (!password) return;
+  try {
+    const r = await fetch(API + '/api/locations/wait', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ locationId: loc, mins, password }) });
+    const d = await r.json();
+    if (d.success) { WAIT[loc] = mins; renderWait(); showLocMsg('✓ ' + LOC_NAMES[loc] + ' pickup wait is now ~' + mins + ' min', 'ok', 'wait-msg'); }
+    else showLocMsg('✗ ' + (d.error || 'Failed — check password'), 'err', 'wait-msg');
+  } catch (e) { showLocMsg('✗ Server error — try again', 'err', 'wait-msg'); }
+}
+// The menu lives in the main page; read it from there so this list always matches the website.
+async function loadMenuItems() {
+  try {
+    const html = await (await fetch('/')).text();
+    const a = html.indexOf('var MENU = {'), b = html.indexOf('\n};', a);
+    const menu = Function('"use strict";return (' + html.slice(a + 11, b + 2) + ')')();
+    MENU_ITEMS = [];
+    Object.keys(menu).forEach(cat => (menu[cat] || []).forEach(it => { if (!MENU_ITEMS.some(x => x.id === it.id)) MENU_ITEMS.push({ id: it.id, name: it.name, cat }); }));
+  } catch (e) { MENU_ITEMS = []; console.warn('Menu load failed', e); }
+  renderSoldOut();
+}
+function renderSoldOut() {
+  const box = document.getElementById('so-list'); if (!box) return;
+  if (!MENU_ITEMS) { box.innerHTML = '<div class="loc-help">Loading menu…</div>'; return; }
+  const loc = document.getElementById('so-loc').value, gone = SOLD[loc] || [];
+  box.innerHTML = MENU_ITEMS.map(it => {
+    const out = gone.includes(it.id);
+    return '<div class="loc-row' + (out ? ' off' : '') + '"><div class="loc-info"><span class="loc-name" style="text-transform:none;">' + esc(it.name) + '</span><span class="loc-status ' + (out ? 'off' : 'on') + '">' + (out ? 'SOLD OUT' : 'AVAILABLE') + '</span></div>' +
+      '<div class="toggle ' + (out ? 'off' : 'on') + '" onclick="toggleSoldOut(\'' + it.id + '\',' + !out + ')"></div></div>';
+  }).join('');
+}
+async function toggleSoldOut(itemId, soldOut) {
+  const password = adminPw('so-msg'); if (!password) return;
+  const loc = document.getElementById('so-loc').value;
+  try {
+    const r = await fetch(API + '/api/locations/soldout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ locationId: loc, itemId, soldOut, password }) });
+    const d = await r.json();
+    if (d.success) { SOLD[loc] = d.soldOut; renderSoldOut(); const it = MENU_ITEMS.find(x => x.id === itemId); showLocMsg('✓ ' + (it ? it.name : itemId) + (soldOut ? ' is SOLD OUT today at ' : ' is available again at ') + LOC_NAMES[loc], 'ok', 'so-msg'); }
+    else showLocMsg('✗ ' + (d.error || 'Failed — check password'), 'err', 'so-msg');
+  } catch (e) { showLocMsg('✗ Server error — try again', 'err', 'so-msg'); }
+}
+
 function showLocMsg(text, type, id) {
   const el = document.getElementById(id || 'loc-msg');
   el.textContent = text;
@@ -370,6 +451,7 @@ function showMsg(text, type) {
 
 // Initial loads
 loadLocationStatus();
+loadMenuItems();
 loadCurrent();
 setInterval(loadLocationStatus, 10000);
 setInterval(loadCurrent, 5000);
