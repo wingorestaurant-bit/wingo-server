@@ -477,6 +477,13 @@ app.post('/api/orders', async (req, res) => {
   } catch (e) { /* fail-open if DB check fails */ }
   if (!customer?.firstName || !customer?.phone) return res.status(400).json({ error: 'Missing customer info' });
   if (!items || !items.length) return res.status(400).json({ error: 'No items' });
+  // Items staff marked sold out today at this store can't be ordered
+  try {
+    const gone = (await getLiveSettings()).soldOut[locationId] || [];
+    const hit = items.filter(i => i && i.id && gone.includes(String(i.id)));
+    if (hit.length) return res.status(409).json({ error: `Sorry, ${hit.map(i => i.name).join(', ')} ${hit.length > 1 ? 'are' : 'is'} sold out at this location today. Please remove ${hit.length > 1 ? 'them' : 'it'} from your cart.`, soldOut: hit.map(i => i.id) });
+  } catch (e) { /* fail-open */ }
+  const waitMins = await waitMinsFor(locationId);
 
   const loc = LOCATIONS[locationId];
   const orderNum = 'WO-' + String(Math.floor(1000 + Math.random() * 9000));
@@ -607,7 +614,9 @@ app.post('/api/orders', async (req, res) => {
       ? (scheduled
           ? `Your pre-order is booked for <strong>${escHtml(openTime)}</strong>. We'll have it ${orderType === 'delivery' ? 'on its way' : 'ready'} then.`
           : `Since we're closed right now, your order will be prepared when we open at <strong>${escHtml(openTime)}</strong>.`)
-      : `Should be ready in about <strong>${orderType === 'delivery' ? '30–45' : '15–20'} minutes</strong>.`;
+      : (orderType === 'delivery'
+          ? `Should be at your door in about <strong>${waitMins + 15}–${waitMins + 30} minutes</strong>.`
+          : `Should be ready in about <strong>${waitMins} minutes</strong>.`);
     const whatsNext = orderType === 'delivery'
       ? `Sit tight — your food is being prepared. Have cash or card ready for the driver.`
       : `Come pick up at <strong style="color:#F5A800;">${loc.address}</strong>. Look for the Wing-O logo.`;
@@ -1056,7 +1065,8 @@ app.get('/api/locations/status', async (req, res) => {
     if (!database) return res.json({ status: effectiveStatus({}, 'startsOff'), delivery: effectiveStatus({}, 'startsOff') });
     const doc = await database.collection('settings').findOne({ key: 'location_status' });
     const del = await database.collection('settings').findOne({ key: 'delivery_status' });
-    res.json({ status: effectiveStatus(doc?.status, 'startsOff'), delivery: effectiveStatus(del?.status, 'startsOff') });
+    const live = await getLiveSettings();
+    res.json({ status: effectiveStatus(doc?.status, 'startsOff'), delivery: effectiveStatus(del?.status, 'startsOff'), wait: live.wait, soldOut: live.soldOut });
   } catch (e) {
     res.json({ status: effectiveStatus({}, 'startsOff'), delivery: effectiveStatus({}, 'startsOff') });
   }
@@ -1105,6 +1115,85 @@ app.post('/api/locations/status', async (req, res) => {
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
+});
+
+// ── LIVE WAIT TIMES + SOLD-OUT ITEMS (set by staff in /admin) ──────────
+// Wait: minutes until a pickup order is ready, per location (default 20).
+// Sold out: menu item ids per location. A sold-out mark only lasts for the current
+// business day: it clears by itself at 5 AM store time, so nothing stays hidden by mistake.
+const DEFAULT_WAIT_MINS = 20;
+const WAIT_CHOICES = [15, 20, 30, 45, 60, 90];
+let liveCache = { at: 0, wait: {}, soldOutRaw: {} };
+function businessDayStart(locId) {
+  const tz = locTz(LOCATIONS[locId]);
+  const now = new Date();
+  const wall = new Date(now.toLocaleString('en-US', { timeZone: tz }));
+  const start = new Date(wall); start.setHours(5, 0, 0, 0);
+  if (wall < start) start.setDate(start.getDate() - 1);
+  return now.getTime() - (wall.getTime() - start.getTime());   // back to real time
+}
+function activeSoldOut(raw) {
+  const out = {};
+  for (const [loc, items] of Object.entries(raw || {})) {
+    if (!LOCATIONS[loc]) continue;
+    const since = businessDayStart(loc);
+    const ids = Object.entries(items || {}).filter(([, at]) => new Date(at).getTime() >= since).map(([id]) => id);
+    if (ids.length) out[loc] = ids;
+  }
+  return out;
+}
+async function getLiveSettings(fresh) {
+  if (fresh || Date.now() - liveCache.at > 15000) {
+    try {
+      const database = await connectDB();
+      if (database) {
+        const [w, s] = await Promise.all([
+          database.collection('settings').findOne({ key: 'wait_times' }),
+          database.collection('settings').findOne({ key: 'sold_out' }),
+        ]);
+        liveCache = { at: Date.now(), wait: w?.wait || {}, soldOutRaw: s?.items || {} };
+      }
+    } catch (e) { console.warn('Live settings load failed:', e.message); }
+  }
+  return { wait: liveCache.wait, soldOut: activeSoldOut(liveCache.soldOutRaw) };
+}
+async function waitMinsFor(locId) {
+  const { wait } = await getLiveSettings();
+  return Number(wait[locId]) || DEFAULT_WAIT_MINS;
+}
+
+app.post('/api/locations/wait', async (req, res) => {
+  const { locationId, mins, password } = req.body || {};
+  if (!isAdmin(password)) return res.status(401).json({ error: 'Wrong password' });
+  if (!locationId || !LOCATIONS[locationId]) return res.status(400).json({ error: 'Invalid location' });
+  const m = Number(mins);
+  if (!WAIT_CHOICES.includes(m)) return res.status(400).json({ error: 'Pick one of: ' + WAIT_CHOICES.join(', ') + ' minutes' });
+  try {
+    const database = await connectDB();
+    if (!database) return res.status(500).json({ error: 'Database unavailable' });
+    await database.collection('settings').updateOne({ key: 'wait_times' }, { $set: { [`wait.${locationId}`]: m, updatedAt: new Date() } }, { upsert: true });
+    await getLiveSettings(true);
+    console.log(`⏱️ Wait time ${locationId} → ${m} min`);
+    res.json({ success: true, locationId, mins: m });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.post('/api/locations/soldout', async (req, res) => {
+  const { locationId, itemId, soldOut, password } = req.body || {};
+  if (!isAdmin(password)) return res.status(401).json({ error: 'Wrong password' });
+  if (!locationId || !LOCATIONS[locationId]) return res.status(400).json({ error: 'Invalid location' });
+  if (!/^[a-z0-9-]{1,20}$/i.test(String(itemId || ''))) return res.status(400).json({ error: 'Invalid item' });
+  try {
+    const database = await connectDB();
+    if (!database) return res.status(500).json({ error: 'Database unavailable' });
+    const field = `items.${locationId}.${itemId}`;
+    await database.collection('settings').updateOne({ key: 'sold_out' },
+      soldOut ? { $set: { [field]: new Date(), updatedAt: new Date() } } : { $unset: { [field]: '' }, $set: { updatedAt: new Date() } },
+      { upsert: true });
+    const live = await getLiveSettings(true);
+    console.log(`🚫 ${locationId} ${itemId} → ${soldOut ? 'SOLD OUT' : 'available'}`);
+    res.json({ success: true, soldOut: live.soldOut[locationId] || [] });
+  } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
 // ── LOCATIONS ─────────────────────────────────────────────────
