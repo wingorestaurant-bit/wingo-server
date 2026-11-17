@@ -26,7 +26,7 @@ LOCS = [
          name='Wing-O Albert Street', street='#3 - 155 Albert St N', city='Regina',
          phone='639-997-0553', lat=50.4501, lng=-104.6178, hours=CITY_HOURS, delivery=True,
          title='Chicken Wings & Fried Chicken, Albert St N Regina | Wing-O',
-         desc='Wing-O Albert Street: crispy chicken wings, boneless wings and fried chicken burgers at 155 Albert St N, Regina. 135+ flavours, open till 3am Thu–Sun. Order online.',
+         desc='Wing-O Albert Street: crispy chicken wings, boneless wings and fried chicken burgers at 155 Albert St N, Regina. 135+ flavours, open till 3am Thu–Sun.',
          h1='Chicken Wings on Albert Street, Regina',
          area='north-central Regina',
          intro=("Our Albert Street kitchen is where Wing-O started, and it's still where a lot of Regina "
@@ -68,7 +68,7 @@ LOCS = [
          name='Wing-O Winnipeg', street='1530 Dakota St, Unit 4001', city='Winnipeg',
          phone='204-255-4055', lat=49.8235, lng=-97.1035, hours=CITY_HOURS, delivery=True,
          title='Chicken Wings & Fried Chicken in Winnipeg | 1530 Dakota St | Wing-O',
-         desc='Wing-O Winnipeg at 1530 Dakota St, Unit 4001: crispy chicken wings, boneless wings and fried chicken burgers in 135+ flavours. Now open in St. Vital, till 3am Thu–Sun.',
+         desc='Wing-O Winnipeg, 1530 Dakota St, Unit 4001: crispy chicken wings, boneless wings and fried chicken burgers in 135+ flavours. St. Vital, open till 3am Thu–Sun.',
          h1='Chicken Wings in Winnipeg',
          area='St. Vital and south Winnipeg',
          notice=("Now open in St. Vital: every day from 11 AM, until 1 AM Monday to Wednesday and 3 AM "
@@ -514,8 +514,8 @@ def page_x(*a, **k):
 
 def menu_page():
     slug = 'menu'
-    title = 'Wing-O Menu & Prices: Wings, Boneless, Burgers, Poutine | Regina & Winnipeg'
-    desc = 'Full Wing-O menu with prices: bone-in and boneless chicken wings from $7.99, fried chicken burgers, combos, platters, poutine and sides. 135+ flavours. Regina, SK and Winnipeg, MB.'
+    title = 'Wing-O Menu & Prices: Wings, Burgers, Poutine | Wing-O'
+    desc = 'Wing-O menu with prices: bone-in and boneless wings from $7.99, fried chicken burgers, combos, platters, poutine and sides. 135+ flavours. Regina & Winnipeg.'
     secs, ld_secs = '', []
     for key, label in MENU_SECTIONS:
         items = DATA['MENU'].get(key) or []
@@ -546,9 +546,9 @@ def menu_page():
 def flavours_page():
     slug = 'flavours'
     n = flavour_count()
-    title = f'All Wing-O Wing Flavours: {n} Sauces & Dry Rubs | Regina & Winnipeg'
-    desc = (f"Every Wing-O wing flavour: {n} sauces and dry rubs from Honey Garlic and Honey Dill to Dead Angel (Carolina Reaper), "
-            "plus house combos like Illegal Sauces. Heat level for each.")
+    title = f'All {n} Wing-O Wing Flavours: Sauces & Dry Rubs | Wing-O'
+    desc = (f"Every Wing-O wing flavour: {n} sauces and dry rubs, from Honey Garlic and Honey Dill to Dead Angel (Carolina Reaper), "
+            "with the heat level for each.")
     secs, all_names = '', []
     for group, flavours in DATA['FLAVORS'].items():
         cells = ''
@@ -646,8 +646,8 @@ WPG_DEALS = [('Sunday', '89¢ wings', 'Minimum 10. The cheapest way to feed a Je
 
 def wpg_best_wings():
     n = flavour_count()
-    return guide('best-wings-winnipeg', 'Best Chicken Wings in Winnipeg: 135+ Flavours at Wing-O, 1530 Dakota St',
-        'New to Winnipeg: Wing-O at 1530 Dakota St in St. Vital. 135+ wing flavours, crispy bone-in and boneless wings from $7.99, daily deals and hours until 3 AM Thu–Sun.',
+    return guide('best-wings-winnipeg', 'Best Chicken Wings in Winnipeg: 135+ Flavours | Wing-O',
+        'Wing-O at 1530 Dakota St in St. Vital: 135+ wing flavours, crispy bone-in and boneless wings from $7.99, daily deals, open until 3 AM Thu–Sun.',
         'Looking for the Best Wings in Winnipeg? Meet Wing-O', 'Best <span>Wings</span> in Winnipeg', 'Regina\'s 135+ flavour wing spot, now on Dakota St.', '🏆 Winnipeg Food Guide',
         [('New in St. Vital', 'Wing-O\'s first Manitoba location is <strong>now open</strong> at <strong>1530 Dakota St, Unit 4001</strong>. If you\'ve searched for saucy wings in Winnipeg and come up short, this is the spot.'),
          ('More flavours than anyone', f'135+ flavours, with {n} sauces and dry rubs on the current menu, all made from scratch. Honey Dill fans: we have it, plus Creamy Dill Pickle and a Honey Dill burger. <a href="/flavours">See every flavour →</a>'),
@@ -667,7 +667,7 @@ def wpg_deals():
         ('After 11 PM — 10% off', 'Online orders placed after 11 PM get 10% off automatically.'),
         ('First online order — 15% off', 'Your first order at wingorestaurants.com gets 15% off automatically on orders of $25 or more.')]
     return guide('best-wing-night-deals-winnipeg', 'Wing Night Deals in Winnipeg: 89¢ Wings, AYCE Tuesday & More | Wing-O',
-        'Every Wing-O deal in Winnipeg, day by day: 89¢ wing Sunday, all-you-can-eat Tuesday, Thursday wing night (second order 50% off) and the $10 lunch at 1530 Dakota St.',
+        'Wing-O deals in Winnipeg, day by day: 89¢ wing Sunday, all-you-can-eat Tuesday, Thursday wing night and the $10 lunch at 1530 Dakota St.',
         'Wing Night Deals in Winnipeg, Every Day of the Week', 'Wing Night <span>Deals</span> in Winnipeg', 'Seven days, seven deals at 1530 Dakota St.', '💸 Winnipeg Deals Guide',
         rows,
         [('What night is wing night in Winnipeg at Wing-O?', 'Thursday: buy an order of wings and get the second 50% off. Sunday is 89¢ wings (minimum 10) and Tuesday is all-you-can-eat wings for $28.99, dine-in, 5–10 PM.'),
@@ -691,7 +691,7 @@ def wpg_late_night():
 
 def wpg_fried_chicken():
     return guide('fried-chicken-winnipeg', 'Fried Chicken in Winnipeg: Wings, Fingers & Chicken Burgers | Wing-O',
-        'Fried chicken in Winnipeg at Wing-O, 1530 Dakota St: crispy bone-in and boneless wings, chicken fingers and hand-breaded fried chicken burgers like The Tough Guy and the Korean Fried Chicken.',
+        'Fried chicken in Winnipeg at Wing-O, 1530 Dakota St: crispy wings, chicken fingers and hand-breaded chicken burgers like The Tough Guy and the Korean Fried Chicken.',
         'Fried Chicken in Winnipeg: What to Order at Wing-O', '<span>Fried Chicken</span> in Winnipeg', 'Fried to order on Dakota St.', '🍗 Winnipeg Food Guide',
         [('Fried chicken burgers', 'Hand-breaded chicken breast on a toasted bun with fries and a drink: the <strong>Korean Fried Chicken</strong> ($16.49), <strong>The Tough Guy</strong> in Carolina Reaper sauce ($18.99), <strong>The Dillinator</strong> with honey dill ($18.99), <strong>The Buffalo Stampede</strong> ($18.99) and <strong>The Sunset Crunch</strong> ($15.99).'),
          ('Wings and boneless', 'Crispy bone-in and boneless wings in 135+ flavours. Half order $7.99, full $13.99.'),
@@ -756,7 +756,7 @@ def llms_txt():
 """
 
 
-SITEMAP_PAGES = [('/', 'daily', '1.0'), ('/menu', 'weekly', '0.9'), ('/flavours', 'weekly', '0.9'),
+SITEMAP_PAGES = [('/', 'daily', '1.0'), ('/order', 'daily', '0.9'), ('/menu', 'weekly', '0.9'), ('/flavours', 'weekly', '0.9'),
                  ('/regina-albert-st', 'monthly', '0.8'), ('/regina-east', 'monthly', '0.8'), ('/regina-beach', 'monthly', '0.7'),
                  ('/winnipeg', 'weekly', '0.8'), ('/best-wings-regina', 'monthly', '0.7'), ('/best-wing-night-deals-regina', 'weekly', '0.7'),
                  ('/late-night-food-regina', 'monthly', '0.7'), ('/fried-chicken-regina', 'monthly', '0.6'),

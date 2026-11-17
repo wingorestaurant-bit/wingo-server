@@ -338,13 +338,13 @@ img{display:block;max-width:100%;}
 #mast{padding:26px 0 0;text-align:center;}
 .edline{display:flex;justify-content:space-between;gap:10px;border-top:3px double var(--rule);border-bottom:1px solid var(--rule);padding:6px 2px 5px;font:11.5px/1.3 "Special Elite",monospace;text-transform:uppercase;letter-spacing:.5px;}
 .edline span:nth-child(2){flex:1;text-align:center;}
-#mast h1{font-family:"UnifrakturCook",serif;font-weight:700;font-size:clamp(40px,9.4vw,112px);line-height:.95;margin:14px 0 8px;letter-spacing:-.5px;position:relative;display:inline-block;}
-#mast h1 .drip{position:absolute;left:3%;width:94%;top:79%;height:auto;overflow:visible;pointer-events:none;}
+#mast .mh1{font-family:"UnifrakturCook",serif;font-weight:700;font-size:clamp(40px,9.4vw,112px);line-height:.95;margin:14px 0 8px;letter-spacing:-.5px;position:relative;display:inline-block;}
+#mast .mh1 .drip{position:absolute;left:3%;width:94%;top:79%;height:auto;overflow:visible;pointer-events:none;}
 #mast{overflow-x:clip;}
-#mast h1 .drip .st,#mast h1 .drip .bl,#mast h1 .drip .fd{transform-box:fill-box;}
-#mast h1 .drip .st{transform-origin:50% 0;animation:dst var(--t) cubic-bezier(.45,0,.2,1) var(--d) infinite;}
-#mast h1 .drip .bl{animation:dbl var(--t) cubic-bezier(.45,0,.2,1) var(--d) infinite;}
-#mast h1 .drip .fd{opacity:0;animation:dfd var(--t) cubic-bezier(.5,0,.9,.6) var(--d) infinite;}
+#mast .mh1 .drip .st,#mast .mh1 .drip .bl,#mast .mh1 .drip .fd{transform-box:fill-box;}
+#mast .mh1 .drip .st{transform-origin:50% 0;animation:dst var(--t) cubic-bezier(.45,0,.2,1) var(--d) infinite;}
+#mast .mh1 .drip .bl{animation:dbl var(--t) cubic-bezier(.45,0,.2,1) var(--d) infinite;}
+#mast .mh1 .drip .fd{opacity:0;animation:dfd var(--t) cubic-bezier(.5,0,.9,.6) var(--d) infinite;}
 @keyframes dst{0%{transform:scaleY(.25);}70%{transform:scaleY(1);}74%{transform:scaleY(.82);}100%{transform:scaleY(.25);}}
 @keyframes dbl{0%{transform:translateY(calc(var(--L) * -.75)) scale(.9);}70%{transform:translateY(0) scale(1.05,1.12);}74%{transform:translateY(calc(var(--L) * -.18)) scale(.9);}100%{transform:translateY(calc(var(--L) * -.75)) scale(.9);}}
 @keyframes dfd{0%,69%{opacity:0;transform:translateY(0) scale(1);}70%{opacity:1;transform:translateY(0) scale(1);}86%{opacity:1;transform:translateY(95px) scale(.8,1.15);}88%,100%{opacity:0;transform:translateY(110px) scale(.6);}}
@@ -540,6 +540,16 @@ section{scroll-margin-top:64px;}
 @media (max-width:900px){.notices{grid-template-columns:1fr;}.fr{grid-template-columns:1fr;}}
 @media (max-width:600px){.notice{grid-template-columns:1fr;}.notice .im{border-right:0;border-bottom:3px solid var(--ink);aspect-ratio:16/9;}.notice .price{top:-12px;right:6px;}}
 
+
+/* SEO headline under the masthead + footer site links */
+h1.tagline{font-weight:700;}
+h1.tagline .tq{font-weight:700;opacity:.85;}
+.flinks{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;text-align:left;margin:26px auto 0;max-width:980px;border-top:1px solid rgba(242,232,211,.25);padding-top:20px;}
+.flinks div{display:flex;flex-direction:column;gap:6px;}
+.flinks b{font-family:Oswald,sans-serif;font-weight:700;font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--mustard);}
+.flinks a{font:13px "Special Elite",monospace;color:#f2e8d3;opacity:.85;text-decoration:none;}
+.flinks a:hover{opacity:1;text-decoration:underline;}
+@media (max-width:900px){.flinks{grid-template-columns:repeat(2,1fr);}}
 /* ── footer ── */
 footer{background:var(--ink);color:var(--paper);margin-top:50px;padding:36px 0 110px;text-align:center;}
 footer .mh{font-family:"UnifrakturCook";font-size:42px;}
@@ -623,7 +633,7 @@ footer a{color:var(--mustard);}
 
 <header id="mast" class="wrap">
   <div class="edline"><span>Vol. IV · No. <span id="issue">1</span></span><span id="today">—</span><span>Price: one napkin (or 12)</span></div>
-  <h1>The Sauce Boss Times
+  <div class="mh1" role="img" aria-label="The Sauce Boss Times">The Sauce Boss Times
     <svg class="drip" viewBox="0 0 1000 200" aria-hidden="true">
       <defs>
         <linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7a1404"/><stop offset=".35" stop-color="#b8270a"/><stop offset="1" stop-color="#d9450f"/></linearGradient>
@@ -651,8 +661,8 @@ footer a{color:var(--mustard);}
         <g class="dp" style="--t:7.3s;--d:-1.2s;--L:40px"><rect class="st" x="923.0" y="2" width="14" height="40" rx="7.0"/><circle class="bl" cx="930" cy="37" r="8.7"/></g>
       </g>
     </svg>
-  </h1>
-  <div class="tagline">“All the wings that's fit to sauce.” — Regina &amp; Winnipeg Edition</div>
+  </div>
+  <h1 class="tagline">Chicken Wings &amp; Fried Chicken in Regina &amp; Winnipeg<span class="tq"> · “All the wings that's fit to sauce.”</span></h1>
   <div class="edline2"><span>135+ FLAVOURS</span><span>·</span><span>4 STORES</span><span>·</span><span>2 PROVINCES</span><span>·</span><span>OPEN LATE</span></div>
 </header>
 
@@ -854,6 +864,13 @@ footer a{color:var(--mustard);}
     <div class="mh">The Sauce Boss Times</div>
     <p>Printed fresh daily by Wing-O Restaurants · Regina · Regina Beach · Winnipeg<br>
     <a href="/order">Order online</a> · <a href="https://instagram.com/wingorestaurants" target="_blank" rel="noopener">Instagram</a> · <a href="/catering.html">Catering</a> · <a href="/order#franchise">Own a Wing-O</a></p>
+    <nav class="flinks" aria-label="Site pages">
+      <div><b>Stores</b><a href="/regina-albert-st">Albert St, Regina</a><a href="/regina-east">East Regina</a><a href="/regina-beach">Regina Beach</a><a href="/winnipeg">Winnipeg</a></div>
+      <div><b>Menu</b><a href="/menu">Menu &amp; prices</a><a href="/flavours">All flavours</a><a href="/order">Order online</a><a href="/catering.html">Catering</a></div>
+      <div><b>Regina guides</b><a href="/best-wings-regina">Best wings in Regina</a><a href="/best-wing-night-deals-regina">Wing night deals</a><a href="/late-night-food-regina">Late night food</a><a href="/fried-chicken-regina">Fried chicken</a></div>
+      <div><b>Winnipeg guides</b><a href="/best-wings-winnipeg">Best wings in Winnipeg</a><a href="/best-wing-night-deals-winnipeg">Wing night deals</a><a href="/late-night-food-winnipeg">Late night food</a><a href="/fried-chicken-winnipeg">Fried chicken</a></div>
+      <div><b>Wing-O</b><a href="/blog.html">Blog</a><a href="/faq.html">FAQ</a><a href="/careers.html">Careers</a><a href="/contest">Free wings contest</a></div>
+    </nav>
   </div>
 </footer>
 
@@ -866,10 +883,10 @@ footer a{color:var(--mustard);}
 var SAUCES=[["Flirty Ones",[["Devil's Kiss",4],["Honey Garlic",0],["Lemon Pepper",1],["Buffalo",3],["Buffalo Ranch",3],["BBQ Ranch",1],["Honey Dill",0],["Greek Dry",1],["Greek Wet",1],["Teriyaki",0],["Creamy Dill Pickle",2],["Medium",3]]],["Second Round",[["Tangy Thai (Sweet Spicy Thai + Buffalo)",3],["California Ranch (Sweet Spicy Thai + Ranch)",0],["Curry Bean (Pineapple Curry + Caribbean Jerk)",3],["Thai Twilight (Sweet Spicy Thai + Pineapple Curry)",0],["Sweet Grenade (Sweet Spicy Thai + Hot)",4],["Hot Hickey (Teriyaki + BBQ + Hot)",3],["Dill Drip Diva (Honey Dill + Hot)",3],["Maple Mirage (Medium + Maple BBQ)",3],["Sweet Escape Surge (Devil's Kiss + Sweet Spicy Thai)",4],["Prairie Heat (Buffalo + Garlic Parmesan)",3]]],["Rub It",[["All Dressed",2],["Dry BBQ",0],["Dry Buffalo",3],["Dry Cajun",3],["Creole",3],["Dill Pickle",2],["Greek",1],["Hickory",1],["Italian",1],["Lemon Pepper",1],["Ketchup",0],["Mango Habanero",4],["Citrus Pepper",1],["Maple Bacon",0],["Montreal Style",1],["Parmesan",1],["Salt & Pepper",2],["Salt & Vinegar",2],["Sour Cream & Chives",1],["White Cheddar",1],["Sriracha",4],["Hot & Honey Dry",3],["Applewood BBQ",0],["Brown Bourbon",0],["Hot BBQ",3],["The Garlic Vault",2]]],["Have To Do It",[["Ranch",1],["Creamy Greek",1],["Honey Mustard",0],["Blue Cheese",1],["Cajun",3],["Herb and Garlic",1],["Pizza Wings",1],["Parmesan Dry",1],["Garlic Parmesan",1],["Creamy Chipotle",3]]],["Sweet Melodious",[["Apricot Honey",0],["Orange Ginger",0],["Plum",0],["Pineapple Curry",0],["Sunburn Samurai (Pineapple Curry + Teriyaki)",0],["Raspberry Pepper",0],["Strawberry",0],["Sweet and Spicy Thai",3],["Sweet and Sour",0],["Juicy Melons (Mustard Melon + Teriyaki)",0]]],["Illegal Sauces",[["Hot Fantasy (Jalapeno Cheddar)",3],["Grefflo (Greek + Buffalo)",3],["Citrus Twist (Medium + Dry Lemon Pepper)",3],["Illegal Pizza (Pizza + Hot + Italian)",3],["Honeyaki Harmony (Teriyaki + Honey Garlic)",0],["Chinese Bull (Teriyaki + BBQ)",0],["Mystic Garlic (Teriyaki + Herb & Garlic)",0],["Blue Buzz (Blue Cheese + Honey Garlic)",0],["Creamy Lemon (Ranch + Dry Lemon Pepper)",1],["Pepper Pleasure (Caesar + BBQ + Parmesan)",1],["Tour of Italy (Ranch + Italian)",1],["Honey Ranch Bliss (Ranch + Honey Garlic + Honey Mustard)",0],["Cajun Cream (Ranch + Dry Cajun)",3],["Canadian Greek (Ranch + Dry Greek)",1],["Parmesan Prestige (Caesar + Honey Garlic + Parmesan)",0],["Creamy Bliss (Caesar + Parmesan)",1],["Influencer (Ranch + Salt & Pepper)",2],["Mid-Majestic (Caesar + Honey Dill + Medium)",3],["Zesty Twist (Sea Salt + Lime Juice)",2],["Sweet Heat (Sweet Spicy Thai + BBQ)",3],["Wrench It Up (Ranch + Mango Habanero)",4],["Thai Coconut Crush (Sweet Thai + Ranch + Coconut)",0],["Scotch's Up (Mango + Caribbean Jerk)",3],["Dill Rancher (Hot Fantasy + Honey Dill + Ranch)",3],["Citrus Sting (Honey Garlic + Lemon Pepper)",0],["Japanese Twist (Teriyaki + Honey Mustard)",0],["Dill Inferno (Buffalo + Creamy Dill Pickle)",3],["Cream of the Zing (Creamy Bliss + Lemon Pepper)",1],["Prarie Gold (Honey Garlic + Dry Dill)",0]]],["BBQ Intimacy",[["BBQ",0],["Forty Creek BBQ",0],["Honey BBQ",0],["Hot BBQ",3],["Maple BBQ",0],["Mesquite BBQ",0],["South Pacific BBQ",0],["Southwestern BBQ",3],["Sultry Caesar (BBQ + Caesar)",0],["Sapphire Smoke (Blue Cheese + BBQ)",0],["Tropical Tinder (BBQ + Pineapple Curry)",0],["BBQ Bunt (BBQ + Honey Garlic)",0],["Mustard Melons (BBQ + Honey Mustard)",0],["Soul Kiss (BBQ + Hickory)",0],["Maple Meltdown (Maple BBQ + Garlic Parmesan)",0],["Smoke Bee Kiss (Honey Dill + Hickory)",0],["Smoke & Sting (Applewood BBQ + Honey Mustard)",0]]],["Hot As Hell",[["Dead Angel (Carolina Reaper)",4],["Spicy Mammilla (Caesar + Dead Angel + Ranch)",4],["Sizzle Caesar (Caesar + Parmesan + Hot)",3],["Caribbean Connection (Medium + BBQ + Caribbean Jerk)",3],["Tropical Temptation (Medium + BBQ + Mango Habanero)",4],["BBQ Seduction (BBQ + Caribbean Jerk)",3],["Sentimental Sauce (Hot + Honey Mustard)",3],["Cobalt Kiss (Blue Cheese + Hot)",3],["Dragon Dip (Teriyaki + Hot)",3],["Mild",1],["Hot",4],["Honey Buffalo",3],["Honey Is Hot",3],["Honey's Too Hot",4],["Not So Hot",1],["African Pepper",4],["Island on Fire (Hot + Thousand Island + Cajun)",4]]]];
 var HEAT=[{k:'Sweet',c:'#e8a317'},{k:'Mild',c:'#7aa63a'},{k:'Neutral',c:'#9a8f80'},{k:'Medium',c:'#e2701d'},{k:'Spicy',c:'#c8160c'}];
 var STORES=[
-  {id:'albert-st',city:'Regina',name:'Albert St',addr:'#3 155 Albert St N',phone:'639-997-0553',tz:'America/Regina',map:'155+Albert+St+N+Regina'},
-  {id:'east-regina',city:'East Regina',name:'University Park',addr:'534 University Park Dr',phone:'306-522-2114',tz:'America/Regina',map:'534+University+Park+Dr+Regina'},
-  {id:'winnipeg',city:'Winnipeg',name:'Dakota St',addr:'1530 Dakota St, Unit 4001',phone:'204-255-4055',tz:'America/Winnipeg',map:'1530+Dakota+St+Winnipeg'},
-  {id:'regina-beach',city:'Regina Beach',name:'Centre St',addr:'110 Centre St',phone:'',tz:'America/Regina',season:true,map:'110+Centre+St+Regina+Beach'}
+  {id:'albert-st',page:'/regina-albert-st',city:'Regina',name:'Albert St',addr:'#3 155 Albert St N',phone:'639-997-0553',tz:'America/Regina',map:'155+Albert+St+N+Regina'},
+  {id:'east-regina',page:'/regina-east',city:'East Regina',name:'University Park',addr:'534 University Park Dr',phone:'306-522-2114',tz:'America/Regina',map:'534+University+Park+Dr+Regina'},
+  {id:'winnipeg',page:'/winnipeg',city:'Winnipeg',name:'Dakota St',addr:'1530 Dakota St, Unit 4001',phone:'204-255-4055',tz:'America/Winnipeg',map:'1530+Dakota+St+Winnipeg'},
+  {id:'regina-beach',page:'/regina-beach',city:'Regina Beach',name:'Centre St',addr:'110 Centre St',phone:'',tz:'America/Regina',season:true,map:'110+Centre+St+Regina+Beach'}
 ];
 var HRS={0:[11,27],1:[11,25],2:[11,25],3:[11,25],4:[11,27],5:[11,27],6:[11,27]};
 var DEALS=[
@@ -1000,14 +1017,14 @@ function flyTo(from,done){
 }
 
 /* instagram strip (own photos until the IG feed is connected) */
-$('ig').innerHTML=['wings-bowls.jpg','platter-making-love.jpg','boneless-sauce.jpg','burger-tough-guy.jpg','mozza-sticks.jpg','wings-half.jpg'].map(function(f){return '<a href="https://instagram.com/wingorestaurants" target="_blank" rel="noopener"><img loading="lazy" src="/images/'+f+'" alt=""></a>';}).join('');
+$('ig').innerHTML=['wings-bowls.jpg','platter-making-love.jpg','boneless-sauce.jpg','burger-tough-guy.jpg','mozza-sticks.jpg','wings-half.jpg'].map(function(f){return '<a href="https://instagram.com/wingorestaurants" target="_blank" rel="noopener"><img loading="lazy" src="/images/'+f+'" alt="Wing-O wings, burgers and sides, tagged #BESAUCY"></a>';}).join('');
 
 /* locations */
 $('lgrid').innerHTML=STORES.map(function(s){
   var o=isOpen(s),st=s.season?'<span class="st closed">Closed for the season · See ya next summer ☀</span>':o?'<span class="st open">● Open now · till '+closesAt(s)+'</span>':'<span class="st closed">Closed · opens 11 AM</span>';
   return '<div class="loc rv'+(s.season?' season':'')+'"><div class="city">'+s.city+'</div><h4>'+s.name+'</h4><p>'+s.addr+(s.phone?'<br>'+s.phone:'')+'</p>'+st+
     '<p class="type" style="font-size:12px;">'+(s.season?'Every day 11 AM–10 PM in summer':'Mon–Wed 11 AM–1 AM<br>Thu–Sun 11 AM–3 AM')+(s.tz==='America/Winnipeg'?' · Winnipeg time':'')+'</p>'+
-    '<div class="acts">'+(s.season?'':'<a href="/order" onclick="pick(\''+s.id+'\')">Order here</a>')+(s.phone?'<a href="tel:'+s.phone.replace(/-/g,'')+'">Call</a>':'')+'<a target="_blank" rel="noopener" href="https://maps.google.com/?q='+s.map+'">Map</a></div></div>';
+    '<div class="acts"><a href="'+s.page+'">Store info</a>'+(s.season?'':'<a href="/order" onclick="pick(\''+s.id+'\')">Order here</a>')+(s.phone?'<a href="tel:'+s.phone.replace(/-/g,'')+'">Call</a>':'')+'<a target="_blank" rel="noopener" href="https://maps.google.com/?q='+s.map+'">Map</a></div></div>';
 }).join('');
 function pick(id){try{localStorage.setItem('wingo_store',id);}catch(e){}}
 
