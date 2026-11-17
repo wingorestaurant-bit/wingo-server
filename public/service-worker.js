@@ -6,7 +6,7 @@
 // HTML files always check network first (so updates appear instantly).
 // Static assets (images/fonts) use cache-first (fast, rarely change).
 // ─────────────────────────────────────────────────────────────────
-const CACHE_VERSION = 'v21';
+const CACHE_VERSION = 'v22';
 const CACHE_NAME = `wingo-${CACHE_VERSION}`;
 
 // ── PUSH NOTIFICATION HANDLER ──────────────────────────────────
@@ -57,6 +57,7 @@ self.addEventListener('notificationclick', event => {
 // doesn't download every photo in the background on a phone's data plan.
 const CORE_CACHE = [
   '/',
+  '/order',
   '/index.html',
   '/images/logo.jpg',
   '/images/wingo-logo-wide.png'

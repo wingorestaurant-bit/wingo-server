@@ -20,6 +20,23 @@ const app = express();
 try { app.use(require('compression')()); } catch (e) { console.warn('⚠️ compression not available:', e.message); }
 app.use(cors());
 app.use(express.json());
+// Home page = the Sauce Boss Times front page (home.html). Ordering (cart, checkout) lives at /order
+// (index.html). Old links that carry app data in the URL (?card=, ?ref=, etc.) go straight to /order;
+// ad/social tracking tags (utm_*, fbclid, ...) stay on the home page.
+const HOME_KEEP_PARAMS = /^(utm_\w+|fbclid|gclid|igsh|igshid|mibextid|ttclid|msclkid)$/;
+app.get('/', (req, res) => {
+  const keys = Object.keys(req.query || {});
+  if (keys.some(k => !HOME_KEEP_PARAMS.test(k))) {
+    const q = req.originalUrl.indexOf('?');
+    return res.redirect(302, '/order' + req.originalUrl.slice(q));
+  }
+  res.setHeader('Cache-Control', 'no-cache');
+  res.sendFile(path.join(__dirname, 'public', 'home.html'));
+});
+app.get('/order', (req, res) => {
+  res.setHeader('Cache-Control', 'no-cache');
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 // extensions: lets clean URLs like /regina-albert-st serve regina-albert-st.html (SEO pages)
 // Photos and fonts: phones keep them for a week instead of re-checking every visit.
 // Pages and the service worker: always re-checked, so site updates show up right away.
@@ -275,7 +292,101 @@ async function printCloverOrder(loc, cloverId) {
   } catch (e) { console.warn('Auto-print error:', e.message); }
 }
 
-async function createCloverOrder(loc, orderNum, orderType, customer, items, subtotal, notes, timestamp) {
+// discounts: [{ name, amount }] in dollars (first-order 15%, late night 10%). They go on the Clover
+// order as real discounts, and GST/PST are worked out on the discounted subtotal, so the POS total
+// matches what the customer saw at checkout.
+// ── CLOVER TAX ─────────────────────────────────────────────────
+// GST/PST must be booked in Clover as TAX, not as sales items, or the accounting reports are wrong.
+// So orders go in through Clover's atomic order API with the store's own GST/PST tax rates on each
+// item; Clover works out the tax and the totals itself. If the rates aren't set up in Clover, the
+// call fails, or Clover's total doesn't match ours, the order is removed and re-sent the old way
+// (taxes as items) so no order or tax is ever lost. CLOVER_TAX_MODE=items on Railway forces the old way.
+const cloverTaxCache = {};
+async function cloverTaxRateIds(loc) {
+  const c = cloverTaxCache[loc.merchantId];
+  if (c && Date.now() - c.at < (c.ids ? 6 * 3600e3 : 10 * 60e3)) return c.ids;
+  let ids = null;
+  try {
+    const r = await fetch(`https://api.clover.com/v3/merchants/${loc.merchantId}/tax_rates?limit=100`, { headers: { 'Authorization': `Bearer ${loc.apiToken}` } });
+    const d = await r.json();
+    const rates = Array.isArray(d.elements) ? d.elements : [];
+    // Clover stores rates as whole numbers: 5% = 500000
+    const byRate = pct => rates.find(t => Number(t.rate) === Math.round(pct * 10000000));
+    const gst = byRate(0.05), pst = byRate(locPst(loc)), both = byRate(0.05 + locPst(loc));
+    if (gst && pst) ids = [gst.id, pst.id];
+    else if (both) ids = [both.id];
+    console.log(`Clover tax rates for ${loc.name}: ${ids ? (ids.length === 2 ? 'GST + PST found' : 'combined GST+PST found')
+      : 'GST/PST not found (' + rates.map(t => `${t.name} ${Number(t.rate) / 100000}%`).join(', ') + ') — taxes will go in as items'}`);
+  } catch (e) { console.warn('Clover tax rate lookup failed:', e.message); }
+  cloverTaxCache[loc.merchantId] = { at: Date.now(), ids };
+  return ids;
+}
+
+async function createCloverOrder(loc, orderNum, orderType, customer, items, subtotal, notes, timestamp, discounts = []) {
+  if (!loc.merchantId || !loc.apiToken) return createCloverOrderItems(loc, orderNum, orderType, customer, items, subtotal, notes, timestamp, discounts);
+  if (String(process.env.CLOVER_TAX_MODE || '').toLowerCase() !== 'items') {
+    try {
+      const taxIds = await cloverTaxRateIds(loc);
+      if (taxIds) {
+        const id = await createCloverAtomicOrder(loc, orderNum, orderType, customer, items, subtotal, notes, discounts, taxIds);
+        if (id) { await printCloverOrder(loc, id); return id; }
+      }
+    } catch (e) { console.warn('Clover tax-rate order failed, using tax items:', e.message); }
+  }
+  return createCloverOrderItems(loc, orderNum, orderType, customer, items, subtotal, notes, timestamp, discounts);
+}
+
+async function createCloverAtomicOrder(loc, orderNum, orderType, customer, items, subtotal, notes, discounts, taxIds) {
+  const base = `https://api.clover.com/v3/merchants/${loc.merchantId}`;
+  const H = { 'Authorization': `Bearer ${loc.apiToken}`, 'Content-Type': 'application/json' };
+  const cleanNote = String(notes || '').replace(noEmoji, '').replace(/\[\s*/g, '').replace(/\s*\]/g, '\n').replace(/[ \t]+/g, ' ').split('\n').map(l => l.trim()).filter(Boolean);
+  const note = [
+    `${orderNum}${orderType === 'delivery' ? ' · DELIVERY' : ''}`,
+    ...(orderType === 'delivery' ? [`Deliver to: ${customer.address || ''}`, `Phone: ${customer.phone || ''}`] : []),
+    ...cleanNote,
+  ].join('\n');
+  const title = `Online ${orderType} — ${customer.firstName} ${customer.lastName || ''}`;
+  const taxRates = taxIds.map(id => ({ id }));
+
+  // One line per unit, like in-store tickets; every food item carries the store's GST/PST rates
+  const lineItems = [];
+  for (const item of items) {
+    const li = { name: printable(item.name).slice(0, 127), price: Math.round(item.price * 100), unitQty: 1000, note: printable(item.flavor).slice(0, 255), taxRates };
+    for (let q = 0; q < Math.max(1, Number(item.qty) || 1); q++) lineItems.push({ ...li });
+  }
+  if (orderType === 'delivery') lineItems.push({ name: 'Delivery Fee', price: 550, unitQty: 1000 });
+  const discCents = discounts.map(d => Math.round(Number(d.amount) * 100)).filter(c => c > 0);
+  const cartDiscounts = discounts.filter(d => Math.round(Number(d.amount) * 100) > 0).map(d => ({ name: printable(d.name).slice(0, 127), amount: -Math.round(Number(d.amount) * 100) }));
+
+  // What the customer was charged, to check Clover agrees
+  const itemCents = lineItems.filter(l => l.taxRates).reduce((s, l) => s + l.price, 0);
+  const taxable = Math.max(0, itemCents - discCents.reduce((s, c) => s + c, 0));
+  const expected = taxable + Math.round(taxable * 0.05) + Math.round(taxable * locPst(loc)) + (orderType === 'delivery' ? 550 : 0);
+
+  const r = await fetch(`${base}/atomic_order/orders`, {
+    method: 'POST', headers: H,
+    body: JSON.stringify({ orderCart: { title, note, groupLineItems: false, lineItems, ...(cartDiscounts.length ? { discounts: cartDiscounts } : {}) } })
+  });
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok || !d.id) { console.warn(`Clover atomic order failed (${r.status}): ${JSON.stringify(d).slice(0, 300)} — using tax items`); return null; }
+  const id = d.id;
+
+  // Open it like other online orders, then make sure Clover kept every item and priced it like we did
+  await fetch(`${base}/orders/${id}`, { method: 'POST', headers: H, body: JSON.stringify({ state: 'open', title, note }) }).catch(() => {});
+  const chk = await (await fetch(`${base}/orders/${id}?expand=lineItems`, { headers: { 'Authorization': H.Authorization } })).json().catch(() => ({}));
+  const count = chk.lineItems && Array.isArray(chk.lineItems.elements) ? chk.lineItems.elements.length : 0;
+  const total = Number(chk.total);
+  if (count !== lineItems.length || !(Math.abs(total - expected) <= 5)) {
+    console.warn(`Clover order ${id} doesn't match (items ${count}/${lineItems.length}, total ${total} vs ${expected} cents) — removing it and using tax items`);
+    await fetch(`${base}/orders/${id}`, { method: 'DELETE', headers: { 'Authorization': H.Authorization } }).catch(() => {});
+    return null;
+  }
+  console.log(`✓ Clover order ${id} with GST/PST as tax — $${(total / 100).toFixed(2)}`);
+  return id;
+}
+
+// The old way: items, discounts, then GST/PST as items. Used when Clover's tax rates can't be.
+async function createCloverOrderItems(loc, orderNum, orderType, customer, items, subtotal, notes, timestamp, discounts = []) {
   if (!loc.merchantId || !loc.apiToken) {
     console.error(`Clover not set up for ${loc.name}: add its merchant ID and API token on Railway`);
     return null;
@@ -339,8 +450,38 @@ async function createCloverOrder(loc, orderNum, orderType, customer, items, subt
     } catch (e) { console.warn('Line item error:', e.message); }
   }
 
+  // ── Discounts (first-order 15%, late night 10%) ──
+  // Added as order discounts; if Clover refuses, fall back to a negative line item so the total is still right.
+  for (const d of discounts) {
+    const cents = Math.round(Number(d.amount) * 100);
+    if (!(cents > 0)) continue;
+    const name = printable(d.name).slice(0, 127);
+    try {
+      const dResp = await fetch(
+        `https://api.clover.com/v3/merchants/${loc.merchantId}/orders/${cloverId}/discounts`,
+        {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${loc.apiToken}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, amount: -cents })
+        }
+      );
+      if (dResp.ok) { console.log(`  Discount: ${name} −$${(cents / 100).toFixed(2)}`); continue; }
+      console.warn(`  Discount endpoint ${dResp.status}, adding as line item instead`);
+      await fetch(
+        `https://api.clover.com/v3/merchants/${loc.merchantId}/orders/${cloverId}/line_items`,
+        {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${loc.apiToken}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, price: -cents, unitQty: 1000 })
+        }
+      );
+    } catch (e) { console.warn(`Failed to add discount ${name}:`, e.message); }
+  }
+
   // ── Add tax + delivery fee as line items so receipt total is correct ──
-  const subtotalNum = Number(subtotal);
+  // Tax is on the subtotal after discounts.
+  const discountTotal = discounts.reduce((s, d) => s + (Number(d.amount) || 0), 0);
+  const subtotalNum = Math.max(0, Number(subtotal) - discountTotal);
   const gst = Math.round(subtotalNum * 0.05 * 100); // cents
   const pst = Math.round(subtotalNum * locPst(loc) * 100); // cents
 
@@ -552,9 +693,27 @@ app.post('/api/orders', async (req, res) => {
 
   console.log(`\n[${timestamp}] Order ${orderNum} for ${customer.firstName} at ${loc.name}`);
 
+  // ── PRICE THE ORDER HERE so Clover, the emails and Mongo all show the discounted total ──
+  // Late night 10% is worked out in the browser (only some items qualify); cap it at 10% of the subtotal.
+  // The first-order 15% is the server-validated amount above.
+  const round2 = n => Math.round(n * 100) / 100;
+  const subNum = Number(subtotal) || 0;
+  const lateNightOff = round2(Math.min(Math.max(Number(req.body.discount) || 0, 0), subNum * 0.10));
+  const discounts = [];
+  if (lateNightOff > 0) discounts.push({ name: 'Late Night 10% Off', amount: lateNightOff });
+  if (discountApplied > 0) discounts.push({ name: 'First Order 15% Off', amount: discountApplied });
+  const discountSum = round2(discounts.reduce((s, d) => s + d.amount, 0));
+  const taxable = Math.max(0, round2(subNum - discountSum));
+  const gstAmt = round2(taxable * 0.05);
+  const pstAmt = round2(taxable * locPst(loc));
+  const delFeeAmt = orderType === 'delivery' ? 5.50 : 0;
+  const finalTax = round2(gstAmt + pstAmt);
+  const finalTotal = round2(taxable + finalTax + delFeeAmt);
+  const discountRowsHtml = (style) => discounts.map(d => `<div style="${style}"><span>${d.name}</span><span>−$${d.amount.toFixed(2)}</span></div>`).join('');
+
   let cloverId = null, cloverSuccess = false;
   try {
-    cloverId = await createCloverOrder(loc, orderNum, orderType, customer, items, subtotal, notes, timestamp);
+    cloverId = await createCloverOrder(loc, orderNum, orderType, customer, items, subtotal, notes, timestamp, discounts);
     cloverSuccess = !!cloverId;
   } catch (e) { console.error('Clover error:', e.message); }
 
@@ -571,7 +730,7 @@ app.post('/api/orders', async (req, res) => {
         notes: (ghostHuntFries ? '🎃 GHOST HUNT — FREE SMALL FRIES · ' : '') + (contestRedemption
           ? ('🏆 FREE WINGS WINNER · ' + contestRedemption.label + ' · ' + (notes || ''))
           : (notes || '')),
-        subtotal: Number(subtotal), tax: Number(tax), total: Number(total),
+        subtotal: Number(subtotal), tax: finalTax, total: finalTotal, discounts,
         preOrder: !!preOrder, openTime: openTime || null, cloverId, cloverSuccess,
         firstOrderDiscount: discountApplied, discountValidated,
         contestRedemption: contestRedemption || null,
@@ -589,7 +748,7 @@ app.post('/api/orders', async (req, res) => {
 
   sendEmail({
     to: 'besaucy@wingorestaurants.com',
-    subject: `${preOrder ? '⏰ PRE-ORDER' : '🍗 New Order'} ${orderNum} — ${loc.name} — $${Number(total).toFixed(2)}`,
+    subject: `${preOrder ? '⏰ PRE-ORDER' : '🍗 New Order'} ${orderNum} — ${loc.name} — $${finalTotal.toFixed(2)}`,
     html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">
       <div style="background:#0D0D0D;padding:20px;text-align:center;"><h1 style="color:#E8190A;font-size:28px;margin:0;">WING-O</h1><p style="color:#888;margin:4px 0 0;font-size:12px;letter-spacing:2px;">${preOrder ? '⏰ PRE-ORDER' : 'New Online Order'}</p></div>
       <div style="background:#F5F0E8;padding:24px;">
@@ -609,9 +768,11 @@ app.post('/api/orders', async (req, res) => {
         ${items.map(i => `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #E8E0D0;"><div><div style="font-weight:bold;font-size:14px;">${i.name} x${i.qty}</div>${i.flavor ? `<div style="color:#E8190A;font-size:12px;">${i.flavor}</div>` : ''}</div><div style="font-weight:bold;">$${(i.price * i.qty).toFixed(2)}</div></div>`).join('')}
         <div style="margin-top:12px;">
           <div style="display:flex;justify-content:space-between;padding:4px 0;color:#888;font-size:13px;"><span>Subtotal</span><span>$${Number(subtotal).toFixed(2)}</span></div>
-          <div style="display:flex;justify-content:space-between;padding:4px 0;color:#888;font-size:13px;"><span>GST (5%)</span><span>$${(Number(subtotal)*0.05).toFixed(2)}</span></div>
-          <div style="display:flex;justify-content:space-between;padding:4px 0;color:#888;font-size:13px;"><span>${pstLabel(loc)}</span><span>$${(Number(subtotal)*locPst(loc)).toFixed(2)}</span></div>
-          <div style="display:flex;justify-content:space-between;padding:8px 0;font-weight:bold;font-size:18px;border-top:2px solid #0D0D0D;margin-top:8px;"><span>TOTAL DUE AT ${orderType === 'delivery' ? 'DELIVERY' : 'PICKUP'}</span><span style="color:#E8190A;">$${Number(total).toFixed(2)}</span></div>
+          ${discountRowsHtml('display:flex;justify-content:space-between;padding:4px 0;color:#2D8A3E;font-size:13px;font-weight:bold;')}
+          <div style="display:flex;justify-content:space-between;padding:4px 0;color:#888;font-size:13px;"><span>GST (5%)</span><span>$${gstAmt.toFixed(2)}</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;color:#888;font-size:13px;"><span>${pstLabel(loc)}</span><span>$${pstAmt.toFixed(2)}</span></div>
+          ${delFeeAmt > 0 ? `<div style="display:flex;justify-content:space-between;padding:4px 0;color:#888;font-size:13px;"><span>Delivery</span><span>$${delFeeAmt.toFixed(2)}</span></div>` : ''}
+          <div style="display:flex;justify-content:space-between;padding:8px 0;font-weight:bold;font-size:18px;border-top:2px solid #0D0D0D;margin-top:8px;"><span>TOTAL DUE AT ${orderType === 'delivery' ? 'DELIVERY' : 'PICKUP'}</span><span style="color:#E8190A;">$${finalTotal.toFixed(2)}</span></div>
         </div>
         ${notes ? `<div style="background:#FFF8EE;border:1px solid #F5D98A;border-radius:6px;padding:10px;margin-top:12px;"><strong>Notes:</strong> ${notes}</div>` : ''}
       </div>
@@ -661,10 +822,11 @@ app.post('/api/orders', async (req, res) => {
             ${items.map(i => `<div style="padding:10px 0;border-bottom:1px solid #E8DCC1;"><div style="display:flex;justify-content:space-between;align-items:flex-start;"><div style="flex:1;"><div style="font-weight:bold;font-size:14px;color:#1A1208;">${i.name} <span style="color:#888;font-weight:normal;">×${i.qty}</span></div>${i.flavor ? `<div style="color:#E8190A;font-size:12px;margin-top:3px;">${i.flavor}</div>` : ''}</div><div style="font-weight:bold;color:#1A1208;font-size:14px;margin-left:12px;">$${(i.price * i.qty).toFixed(2)}</div></div></div>`).join('')}
             <div style="padding-top:14px;">
               <div style="display:flex;justify-content:space-between;padding:3px 0;color:#666;font-size:13px;"><span>Subtotal</span><span>$${Number(subtotal).toFixed(2)}</span></div>
-              <div style="display:flex;justify-content:space-between;padding:3px 0;color:#666;font-size:13px;"><span>Tax (GST + PST)</span><span>$${Number(tax || 0).toFixed(2)}</span></div>
+              ${discountRowsHtml('display:flex;justify-content:space-between;padding:3px 0;color:#2D8A3E;font-size:13px;font-weight:bold;')}
+              <div style="display:flex;justify-content:space-between;padding:3px 0;color:#666;font-size:13px;"><span>Tax (GST + PST)</span><span>$${finalTax.toFixed(2)}</span></div>
               ${delFee > 0 ? `<div style="display:flex;justify-content:space-between;padding:3px 0;color:#666;font-size:13px;"><span>Delivery</span><span>$${delFee.toFixed(2)}</span></div>` : ''}
               ${tipAmt > 0 ? `<div style="display:flex;justify-content:space-between;padding:3px 0;color:#2D8A3E;font-size:13px;font-weight:bold;"><span>💸 Tip</span><span>$${tipAmt.toFixed(2)}</span></div>` : ''}
-              <div style="display:flex;justify-content:space-between;padding:10px 0 4px;font-weight:bold;font-size:18px;border-top:2px solid #1A1208;margin-top:8px;"><span>TOTAL</span><span style="color:#E8190A;">$${Number(total).toFixed(2)}</span></div>
+              <div style="display:flex;justify-content:space-between;padding:10px 0 4px;font-weight:bold;font-size:18px;border-top:2px solid #1A1208;margin-top:8px;"><span>TOTAL</span><span style="color:#E8190A;">$${finalTotal.toFixed(2)}</span></div>
               <div style="text-align:center;font-size:11px;color:#F5A800;letter-spacing:2px;margin-top:8px;font-weight:bold;">💰 PAY AT ${orderType === 'delivery' ? 'DELIVERY' : 'PICKUP'}</div>
             </div>
           </div>
@@ -696,7 +858,7 @@ app.post('/api/orders', async (req, res) => {
   res.json({
     success: true, orderNum, cloverId, cloverSuccess,
     message: cloverSuccess ? `Order sent to ${loc.name} kitchen!` : 'Order recorded!',
-    customer: customer.firstName, total: Number(total).toFixed(2),
+    customer: customer.firstName, total: finalTotal.toFixed(2),
     phone: customer.phone, orderType, location: loc.name,
     stampAdded: !!stampResult, gotFreeWings: stampResult?.gotFree || false, loyaltyStamps: stampResult?.stamps,
     discountApplied, discountValidated,

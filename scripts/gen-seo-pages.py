@@ -161,6 +161,17 @@ def e(s):
     return html.escape(s, quote=True)
 
 
+# "Order…" links go straight to the ordering app (/order), not the home page. Store pages pre-pick
+# their store (the app reads ?store= and remembers it). Regina Beach is seasonal, so it just opens /order.
+ORDER_STORE = {'regina-albert-st': 'albert-st', 'regina-east': 'east-regina', 'winnipeg': 'winnipeg'}
+
+
+def order_links(slug, html_out):
+    store = ORDER_STORE.get(slug) or ('winnipeg' if slug.endswith('-winnipeg') else '')
+    url = '/order' + (f'?store={store}' if store else '')
+    return re.sub(r'(<a\b[^>]*?)href="/"([^>]*>\s*Order)', lambda m: f'{m.group(1)}href="{url}"{m.group(2)}', html_out)
+
+
 def page(slug, title, desc, h1_html, hero_p, body, ld, crumbs, btns=None, og_type='website'):
     url = f'{SITE}/{slug}'
     lds = '\n'.join(f'<script type="application/ld+json">\n{json.dumps(x, ensure_ascii=False, indent=1)}\n</script>' for x in ld)
@@ -168,7 +179,7 @@ def page(slug, title, desc, h1_html, hero_p, body, ld, crumbs, btns=None, og_typ
     btn_html = ''
     if btns:
         btn_html = '<div class="btns">' + ''.join(f'<a class="btn{(" " + c) if c else ""}" href="{h}">{t}</a>' for t, h, c in btns) + '</div>'
-    return f"""<!DOCTYPE html>
+    return order_links(slug, f"""<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -202,7 +213,7 @@ def page(slug, title, desc, h1_html, hero_p, body, ld, crumbs, btns=None, og_typ
 {FOOTER}
 </body>
 </html>
-"""
+""")
 
 
 def breadcrumb_ld(items):

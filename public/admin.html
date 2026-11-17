@@ -345,7 +345,7 @@ async function setWait(loc, mins) {
 // The menu lives in the main page; read it from there so this list always matches the website.
 async function loadMenuItems() {
   try {
-    const html = await (await fetch('/')).text();
+    const html = await (await fetch('/order')).text();
     const a = html.indexOf('var MENU = {'), b = html.indexOf('\n};', a);
     const menu = Function('"use strict";return (' + html.slice(a + 11, b + 2) + ')')();
     MENU_ITEMS = [];

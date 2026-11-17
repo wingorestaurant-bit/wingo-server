@@ -2,7 +2,7 @@
   "name": "Wing-O — More Than Wings",
   "short_name": "Wing-O",
   "description": "Order wings online from Wing-O. 125+ flavors, 5 SK locations. Regina's original wings eatery.",
-  "start_url": "/",
+  "start_url": "/order",
   "display": "standalone",
   "background_color": "#0D0D0D",
   "theme_color": "#E8190A",
