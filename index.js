@@ -292,7 +292,10 @@ async function printCloverOrder(loc, cloverId) {
   } catch (e) { console.warn('Auto-print error:', e.message); }
 }
 
-async function createCloverOrder(loc, orderNum, orderType, customer, items, subtotal, notes, timestamp) {
+// discounts: [{ name, amount }] in dollars (first-order 15%, late night 10%). They go on the Clover
+// order as real discounts, and GST/PST are worked out on the discounted subtotal, so the POS total
+// matches what the customer saw at checkout.
+async function createCloverOrder(loc, orderNum, orderType, customer, items, subtotal, notes, timestamp, discounts = []) {
   if (!loc.merchantId || !loc.apiToken) {
     console.error(`Clover not set up for ${loc.name}: add its merchant ID and API token on Railway`);
     return null;
@@ -356,8 +359,38 @@ async function createCloverOrder(loc, orderNum, orderType, customer, items, subt
     } catch (e) { console.warn('Line item error:', e.message); }
   }
 
+  // ── Discounts (first-order 15%, late night 10%) ──
+  // Added as order discounts; if Clover refuses, fall back to a negative line item so the total is still right.
+  for (const d of discounts) {
+    const cents = Math.round(Number(d.amount) * 100);
+    if (!(cents > 0)) continue;
+    const name = printable(d.name).slice(0, 127);
+    try {
+      const dResp = await fetch(
+        `https://api.clover.com/v3/merchants/${loc.merchantId}/orders/${cloverId}/discounts`,
+        {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${loc.apiToken}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, amount: -cents })
+        }
+      );
+      if (dResp.ok) { console.log(`  Discount: ${name} −$${(cents / 100).toFixed(2)}`); continue; }
+      console.warn(`  Discount endpoint ${dResp.status}, adding as line item instead`);
+      await fetch(
+        `https://api.clover.com/v3/merchants/${loc.merchantId}/orders/${cloverId}/line_items`,
+        {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${loc.apiToken}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, price: -cents, unitQty: 1000 })
+        }
+      );
+    } catch (e) { console.warn(`Failed to add discount ${name}:`, e.message); }
+  }
+
   // ── Add tax + delivery fee as line items so receipt total is correct ──
-  const subtotalNum = Number(subtotal);
+  // Tax is on the subtotal after discounts.
+  const discountTotal = discounts.reduce((s, d) => s + (Number(d.amount) || 0), 0);
+  const subtotalNum = Math.max(0, Number(subtotal) - discountTotal);
   const gst = Math.round(subtotalNum * 0.05 * 100); // cents
   const pst = Math.round(subtotalNum * locPst(loc) * 100); // cents
 
@@ -569,9 +602,27 @@ app.post('/api/orders', async (req, res) => {
 
   console.log(`\n[${timestamp}] Order ${orderNum} for ${customer.firstName} at ${loc.name}`);
 
+  // ── PRICE THE ORDER HERE so Clover, the emails and Mongo all show the discounted total ──
+  // Late night 10% is worked out in the browser (only some items qualify); cap it at 10% of the subtotal.
+  // The first-order 15% is the server-validated amount above.
+  const round2 = n => Math.round(n * 100) / 100;
+  const subNum = Number(subtotal) || 0;
+  const lateNightOff = round2(Math.min(Math.max(Number(req.body.discount) || 0, 0), subNum * 0.10));
+  const discounts = [];
+  if (lateNightOff > 0) discounts.push({ name: 'Late Night 10% Off', amount: lateNightOff });
+  if (discountApplied > 0) discounts.push({ name: 'First Order 15% Off', amount: discountApplied });
+  const discountSum = round2(discounts.reduce((s, d) => s + d.amount, 0));
+  const taxable = Math.max(0, round2(subNum - discountSum));
+  const gstAmt = round2(taxable * 0.05);
+  const pstAmt = round2(taxable * locPst(loc));
+  const delFeeAmt = orderType === 'delivery' ? 5.50 : 0;
+  const finalTax = round2(gstAmt + pstAmt);
+  const finalTotal = round2(taxable + finalTax + delFeeAmt);
+  const discountRowsHtml = (style) => discounts.map(d => `<div style="${style}"><span>${d.name}</span><span>−$${d.amount.toFixed(2)}</span></div>`).join('');
+
   let cloverId = null, cloverSuccess = false;
   try {
-    cloverId = await createCloverOrder(loc, orderNum, orderType, customer, items, subtotal, notes, timestamp);
+    cloverId = await createCloverOrder(loc, orderNum, orderType, customer, items, subtotal, notes, timestamp, discounts);
     cloverSuccess = !!cloverId;
   } catch (e) { console.error('Clover error:', e.message); }
 
@@ -588,7 +639,7 @@ app.post('/api/orders', async (req, res) => {
         notes: (ghostHuntFries ? '🎃 GHOST HUNT — FREE SMALL FRIES · ' : '') + (contestRedemption
           ? ('🏆 FREE WINGS WINNER · ' + contestRedemption.label + ' · ' + (notes || ''))
           : (notes || '')),
-        subtotal: Number(subtotal), tax: Number(tax), total: Number(total),
+        subtotal: Number(subtotal), tax: finalTax, total: finalTotal, discounts,
         preOrder: !!preOrder, openTime: openTime || null, cloverId, cloverSuccess,
         firstOrderDiscount: discountApplied, discountValidated,
         contestRedemption: contestRedemption || null,
@@ -606,7 +657,7 @@ app.post('/api/orders', async (req, res) => {
 
   sendEmail({
     to: 'besaucy@wingorestaurants.com',
-    subject: `${preOrder ? '⏰ PRE-ORDER' : '🍗 New Order'} ${orderNum} — ${loc.name} — $${Number(total).toFixed(2)}`,
+    subject: `${preOrder ? '⏰ PRE-ORDER' : '🍗 New Order'} ${orderNum} — ${loc.name} — $${finalTotal.toFixed(2)}`,
     html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">
       <div style="background:#0D0D0D;padding:20px;text-align:center;"><h1 style="color:#E8190A;font-size:28px;margin:0;">WING-O</h1><p style="color:#888;margin:4px 0 0;font-size:12px;letter-spacing:2px;">${preOrder ? '⏰ PRE-ORDER' : 'New Online Order'}</p></div>
       <div style="background:#F5F0E8;padding:24px;">
@@ -626,9 +677,11 @@ app.post('/api/orders', async (req, res) => {
         ${items.map(i => `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #E8E0D0;"><div><div style="font-weight:bold;font-size:14px;">${i.name} x${i.qty}</div>${i.flavor ? `<div style="color:#E8190A;font-size:12px;">${i.flavor}</div>` : ''}</div><div style="font-weight:bold;">$${(i.price * i.qty).toFixed(2)}</div></div>`).join('')}
         <div style="margin-top:12px;">
           <div style="display:flex;justify-content:space-between;padding:4px 0;color:#888;font-size:13px;"><span>Subtotal</span><span>$${Number(subtotal).toFixed(2)}</span></div>
-          <div style="display:flex;justify-content:space-between;padding:4px 0;color:#888;font-size:13px;"><span>GST (5%)</span><span>$${(Number(subtotal)*0.05).toFixed(2)}</span></div>
-          <div style="display:flex;justify-content:space-between;padding:4px 0;color:#888;font-size:13px;"><span>${pstLabel(loc)}</span><span>$${(Number(subtotal)*locPst(loc)).toFixed(2)}</span></div>
-          <div style="display:flex;justify-content:space-between;padding:8px 0;font-weight:bold;font-size:18px;border-top:2px solid #0D0D0D;margin-top:8px;"><span>TOTAL DUE AT ${orderType === 'delivery' ? 'DELIVERY' : 'PICKUP'}</span><span style="color:#E8190A;">$${Number(total).toFixed(2)}</span></div>
+          ${discountRowsHtml('display:flex;justify-content:space-between;padding:4px 0;color:#2D8A3E;font-size:13px;font-weight:bold;')}
+          <div style="display:flex;justify-content:space-between;padding:4px 0;color:#888;font-size:13px;"><span>GST (5%)</span><span>$${gstAmt.toFixed(2)}</span></div>
+          <div style="display:flex;justify-content:space-between;padding:4px 0;color:#888;font-size:13px;"><span>${pstLabel(loc)}</span><span>$${pstAmt.toFixed(2)}</span></div>
+          ${delFeeAmt > 0 ? `<div style="display:flex;justify-content:space-between;padding:4px 0;color:#888;font-size:13px;"><span>Delivery</span><span>$${delFeeAmt.toFixed(2)}</span></div>` : ''}
+          <div style="display:flex;justify-content:space-between;padding:8px 0;font-weight:bold;font-size:18px;border-top:2px solid #0D0D0D;margin-top:8px;"><span>TOTAL DUE AT ${orderType === 'delivery' ? 'DELIVERY' : 'PICKUP'}</span><span style="color:#E8190A;">$${finalTotal.toFixed(2)}</span></div>
         </div>
         ${notes ? `<div style="background:#FFF8EE;border:1px solid #F5D98A;border-radius:6px;padding:10px;margin-top:12px;"><strong>Notes:</strong> ${notes}</div>` : ''}
       </div>
@@ -678,10 +731,11 @@ app.post('/api/orders', async (req, res) => {
             ${items.map(i => `<div style="padding:10px 0;border-bottom:1px solid #E8DCC1;"><div style="display:flex;justify-content:space-between;align-items:flex-start;"><div style="flex:1;"><div style="font-weight:bold;font-size:14px;color:#1A1208;">${i.name} <span style="color:#888;font-weight:normal;">×${i.qty}</span></div>${i.flavor ? `<div style="color:#E8190A;font-size:12px;margin-top:3px;">${i.flavor}</div>` : ''}</div><div style="font-weight:bold;color:#1A1208;font-size:14px;margin-left:12px;">$${(i.price * i.qty).toFixed(2)}</div></div></div>`).join('')}
             <div style="padding-top:14px;">
               <div style="display:flex;justify-content:space-between;padding:3px 0;color:#666;font-size:13px;"><span>Subtotal</span><span>$${Number(subtotal).toFixed(2)}</span></div>
-              <div style="display:flex;justify-content:space-between;padding:3px 0;color:#666;font-size:13px;"><span>Tax (GST + PST)</span><span>$${Number(tax || 0).toFixed(2)}</span></div>
+              ${discountRowsHtml('display:flex;justify-content:space-between;padding:3px 0;color:#2D8A3E;font-size:13px;font-weight:bold;')}
+              <div style="display:flex;justify-content:space-between;padding:3px 0;color:#666;font-size:13px;"><span>Tax (GST + PST)</span><span>$${finalTax.toFixed(2)}</span></div>
               ${delFee > 0 ? `<div style="display:flex;justify-content:space-between;padding:3px 0;color:#666;font-size:13px;"><span>Delivery</span><span>$${delFee.toFixed(2)}</span></div>` : ''}
               ${tipAmt > 0 ? `<div style="display:flex;justify-content:space-between;padding:3px 0;color:#2D8A3E;font-size:13px;font-weight:bold;"><span>💸 Tip</span><span>$${tipAmt.toFixed(2)}</span></div>` : ''}
-              <div style="display:flex;justify-content:space-between;padding:10px 0 4px;font-weight:bold;font-size:18px;border-top:2px solid #1A1208;margin-top:8px;"><span>TOTAL</span><span style="color:#E8190A;">$${Number(total).toFixed(2)}</span></div>
+              <div style="display:flex;justify-content:space-between;padding:10px 0 4px;font-weight:bold;font-size:18px;border-top:2px solid #1A1208;margin-top:8px;"><span>TOTAL</span><span style="color:#E8190A;">$${finalTotal.toFixed(2)}</span></div>
               <div style="text-align:center;font-size:11px;color:#F5A800;letter-spacing:2px;margin-top:8px;font-weight:bold;">💰 PAY AT ${orderType === 'delivery' ? 'DELIVERY' : 'PICKUP'}</div>
             </div>
           </div>
@@ -713,7 +767,7 @@ app.post('/api/orders', async (req, res) => {
   res.json({
     success: true, orderNum, cloverId, cloverSuccess,
     message: cloverSuccess ? `Order sent to ${loc.name} kitchen!` : 'Order recorded!',
-    customer: customer.firstName, total: Number(total).toFixed(2),
+    customer: customer.firstName, total: finalTotal.toFixed(2),
     phone: customer.phone, orderType, location: loc.name,
     stampAdded: !!stampResult, gotFreeWings: stampResult?.gotFree || false, loyaltyStamps: stampResult?.stamps,
     discountApplied, discountValidated,
