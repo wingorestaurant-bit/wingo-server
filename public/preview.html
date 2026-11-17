@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
-<title>The Sauce Times · Wing-O (Preview)</title>
+<title>The Sauce Boss Times · Wing-O (Preview)</title>
 <link rel="icon" href="/images/logo.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@500;700&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Permanent+Marker&family=Special+Elite&family=UnifrakturCook:wght@700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
@@ -58,13 +58,17 @@ img{display:block;max-width:100%;}
 #mast{padding:26px 0 0;text-align:center;}
 .edline{display:flex;justify-content:space-between;gap:10px;border-top:3px double var(--rule);border-bottom:1px solid var(--rule);padding:6px 2px 5px;font:11.5px/1.3 "Special Elite",monospace;text-transform:uppercase;letter-spacing:.5px;}
 .edline span:nth-child(2){flex:1;text-align:center;}
-#mast h1{font-family:"UnifrakturCook",serif;font-weight:700;font-size:clamp(50px,11vw,132px);line-height:.95;margin:14px 0 8px;letter-spacing:-.5px;position:relative;display:inline-block;}
-#mast h1 .drip{position:absolute;left:4%;width:92%;top:88%;height:60px;pointer-events:none;}
+#mast h1{font-family:"UnifrakturCook",serif;font-weight:700;font-size:clamp(40px,9.4vw,112px);line-height:.95;margin:14px 0 8px;letter-spacing:-.5px;position:relative;display:inline-block;}
+#mast h1 .drip{position:absolute;left:3%;width:94%;top:79%;height:auto;overflow:visible;pointer-events:none;}
 #mast{overflow-x:clip;}
-#mast h1 .drip path{fill:var(--red);}
-#mast h1 .drip .d{transform-origin:top;animation:drip 3.8s ease-in-out infinite;}
-@keyframes drip{0%,15%{transform:scaleY(.15);}55%{transform:scaleY(1);}80%,100%{transform:scaleY(.9);}}
-.tagline{font-family:"Playfair Display";font-style:italic;font-weight:700;font-size:clamp(15px,2.4vw,20px);margin:44px 0 12px;}
+#mast h1 .drip .st,#mast h1 .drip .bl,#mast h1 .drip .fd{transform-box:fill-box;}
+#mast h1 .drip .st{transform-origin:50% 0;animation:dst var(--t) cubic-bezier(.45,0,.2,1) var(--d) infinite;}
+#mast h1 .drip .bl{animation:dbl var(--t) cubic-bezier(.45,0,.2,1) var(--d) infinite;}
+#mast h1 .drip .fd{opacity:0;animation:dfd var(--t) cubic-bezier(.5,0,.9,.6) var(--d) infinite;}
+@keyframes dst{0%{transform:scaleY(.25);}70%{transform:scaleY(1);}74%{transform:scaleY(.82);}100%{transform:scaleY(.25);}}
+@keyframes dbl{0%{transform:translateY(calc(var(--L) * -.75)) scale(.9);}70%{transform:translateY(0) scale(1.05,1.12);}74%{transform:translateY(calc(var(--L) * -.18)) scale(.9);}100%{transform:translateY(calc(var(--L) * -.75)) scale(.9);}}
+@keyframes dfd{0%,69%{opacity:0;transform:translateY(0) scale(1);}70%{opacity:1;transform:translateY(0) scale(1);}86%{opacity:1;transform:translateY(95px) scale(.8,1.15);}88%,100%{opacity:0;transform:translateY(110px) scale(.6);}}
+.tagline{font-family:"Playfair Display";font-style:italic;font-weight:700;font-size:clamp(15px,2.4vw,20px);margin:clamp(26px,6.5vw,78px) 0 12px;}
 .edline2{border-top:1px solid var(--rule);border-bottom:3px double var(--rule);padding:6px 0 5px;font:12px "Special Elite",monospace;display:flex;justify-content:center;gap:18px;flex-wrap:wrap;}
 
 /* ── front page ── */
@@ -303,14 +307,33 @@ footer a{color:var(--mustard);}
 
 <header id="mast" class="wrap">
   <div class="edline"><span>Vol. IV · No. <span id="issue">1</span></span><span id="today">—</span><span>Price: one napkin (or 12)</span></div>
-  <h1>The Sauce Times
-    <svg class="drip" viewBox="0 0 600 60" preserveAspectRatio="none">
-      <path d="M0 0H600V4H0Z"/>
-      <path class="d" d="M60 2c0 10 4 22 6 30c2 8 10 8 12 0c2-8 4-20 4-30Z"/>
-      <path class="d" style="animation-delay:.9s" d="M188 2c0 14 3 32 6 40c3 9 12 9 14 0c2-9 3-26 3-40Z"/>
-      <path class="d" style="animation-delay:1.6s" d="M330 2c0 8 2 16 4 22c2 6 9 6 10 0c2-6 3-14 3-22Z"/>
-      <path class="d" style="animation-delay:.4s" d="M452 2c0 16 4 36 7 44c3 9 13 9 15 0c2-9 3-28 3-44Z"/>
-      <path class="d" style="animation-delay:2.2s" d="M545 2c0 9 2 18 4 24c2 6 9 6 10 0c1-6 2-15 2-24Z"/>
+  <h1>The Sauce Boss Times
+    <svg class="drip" viewBox="0 0 1000 200" aria-hidden="true">
+      <defs>
+        <linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7a1404"/><stop offset=".35" stop-color="#b8270a"/><stop offset="1" stop-color="#d9450f"/></linearGradient>
+        <filter id="sauce" x="-5%" y="-20%" width="110%" height="160%" color-interpolation-filters="sRGB">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b"/>
+          <feColorMatrix in="b" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 26 -11" result="goo"/>
+          <feGaussianBlur in="goo" stdDeviation="2.6" result="gb"/>
+          <feSpecularLighting in="gb" surfaceScale="5" specularConstant="1.05" specularExponent="26" lighting-color="#fff4e0" result="spec"><fePointLight x="380" y="-160" z="260"/></feSpecularLighting>
+          <feComposite in="spec" in2="goo" operator="in" result="si"/>
+          <feComposite in="goo" in2="si" operator="arithmetic" k2="1" k3=".85" result="lit"/>
+          <feDropShadow in="lit" dx="0" dy="3" stdDeviation="2.2" flood-color="#2b0700" flood-opacity=".38"/>
+        </filter>
+      </defs>
+      <g filter="url(#sauce)" fill="url(#sg)">
+        <path d="M8 6C40 1 90 9 140 5S240 2 300 8 400 3 460 7 560 12 620 6 720 2 790 8 900 4 992 7c6 2 6 9 0 11-50 4-100-2-160 3S700 15 640 19 520 13 460 18 340 12 280 17 160 11 100 16 20 13 8 17c-8-3-8-9 0-11Z"/>
+        <g class="dp" style="--t:7.0s;--d:-0.0s;--L:38px"><rect class="st" x="63.0" y="2" width="14" height="38" rx="7.0"/><circle class="bl" cx="70" cy="35" r="8.7"/></g>
+        <g class="dp" style="--t:8.7s;--d:-6.4s;--L:70px"><rect class="st" x="165.0" y="2" width="20" height="70" rx="10.0"/><circle class="bl" cx="175" cy="66" r="12.4"/><circle class="fd" cx="175" cy="76" r="9.0"/></g>
+        <g class="dp" style="--t:10.4s;--d:-5.8s;--L:24px"><rect class="st" x="257.0" y="2" width="10" height="24" rx="5.0"/><circle class="bl" cx="262" cy="22" r="6.2"/></g>
+        <g class="dp" style="--t:7.1s;--d:-0.2s;--L:52px"><rect class="st" x="352.0" y="2" width="16" height="52" rx="8.0"/><circle class="bl" cx="360" cy="49" r="9.9"/><circle class="fd" cx="360" cy="57" r="7.2"/></g>
+        <g class="dp" style="--t:8.8s;--d:-8.4s;--L:86px"><rect class="st" x="459.0" y="2" width="22" height="86" rx="11.0"/><circle class="bl" cx="470" cy="82" r="13.6"/><circle class="fd" cx="470" cy="93" r="9.9"/></g>
+        <g class="dp" style="--t:10.5s;--d:-9.5s;--L:30px"><rect class="st" x="554.0" y="2" width="12" height="30" rx="6.0"/><circle class="bl" cx="560" cy="28" r="7.4"/></g>
+        <g class="dp" style="--t:7.2s;--d:-0.6s;--L:60px"><rect class="st" x="646.0" y="2" width="18" height="60" rx="9.0"/><circle class="bl" cx="655" cy="56" r="11.2"/><circle class="fd" cx="655" cy="65" r="8.1"/></g>
+        <g class="dp" style="--t:8.9s;--d:-1.7s;--L:26px"><rect class="st" x="755.0" y="2" width="10" height="26" rx="5.0"/><circle class="bl" cx="760" cy="24" r="6.2"/></g>
+        <g class="dp" style="--t:10.6s;--d:-2.8s;--L:74px"><rect class="st" x="830.0" y="2" width="20" height="74" rx="10.0"/><circle class="bl" cx="840" cy="70" r="12.4"/><circle class="fd" cx="840" cy="80" r="9.0"/></g>
+        <g class="dp" style="--t:7.3s;--d:-1.2s;--L:40px"><rect class="st" x="923.0" y="2" width="14" height="40" rx="7.0"/><circle class="bl" cx="930" cy="37" r="8.7"/></g>
+      </g>
     </svg>
   </h1>
   <div class="tagline">“All the wings that's fit to sauce.” — Regina &amp; Winnipeg Edition</div>
@@ -462,7 +485,7 @@ footer a{color:var(--mustard);}
 
 <footer>
   <div class="wrap">
-    <div class="mh">The Sauce Times</div>
+    <div class="mh">The Sauce Boss Times</div>
     <p>Printed fresh daily by Wing-O Restaurants · Regina · Regina Beach · Winnipeg<br>
     <a href="/">Order online</a> · <a href="https://instagram.com/wingorestaurants" target="_blank" rel="noopener">Instagram</a> · <a href="/#franchise">Own a Wing-O</a></p>
   </div>
