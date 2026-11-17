@@ -20,6 +20,23 @@ const app = express();
 try { app.use(require('compression')()); } catch (e) { console.warn('⚠️ compression not available:', e.message); }
 app.use(cors());
 app.use(express.json());
+// Home page = the Sauce Boss Times front page (home.html). Ordering (cart, checkout) lives at /order
+// (index.html). Old links that carry app data in the URL (?card=, ?ref=, etc.) go straight to /order;
+// ad/social tracking tags (utm_*, fbclid, ...) stay on the home page.
+const HOME_KEEP_PARAMS = /^(utm_\w+|fbclid|gclid|igsh|igshid|mibextid|ttclid|msclkid)$/;
+app.get('/', (req, res) => {
+  const keys = Object.keys(req.query || {});
+  if (keys.some(k => !HOME_KEEP_PARAMS.test(k))) {
+    const q = req.originalUrl.indexOf('?');
+    return res.redirect(302, '/order' + req.originalUrl.slice(q));
+  }
+  res.setHeader('Cache-Control', 'no-cache');
+  res.sendFile(path.join(__dirname, 'public', 'home.html'));
+});
+app.get('/order', (req, res) => {
+  res.setHeader('Cache-Control', 'no-cache');
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 // extensions: lets clean URLs like /regina-albert-st serve regina-albert-st.html (SEO pages)
 // Photos and fonts: phones keep them for a week instead of re-checking every visit.
 // Pages and the service worker: always re-checked, so site updates show up right away.
