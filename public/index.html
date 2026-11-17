@@ -851,7 +851,7 @@ function waitFor(loc){return Number(WAIT_TIMES[loc||activeLocation])||20;}
 function isSoldOut(id,loc){return (SOLD_OUT[loc||activeLocation]||[]).indexOf(id)>=0;}
 async function fetchLocationStatus(){try{var r=await fetch('/api/locations/status');var d=await r.json();LOCATION_STATUS=d.status||{};DELIVERY_STATUS=d.delivery||{};var _so=JSON.stringify(SOLD_OUT);WAIT_TIMES=d.wait||{};SOLD_OUT=d.soldOut||{};if(Array.isArray(d.seasonClosed))SEASON_CLOSED=d.seasonClosed;if(typeof renderStorePicker==='function')renderStorePicker();applyLocationStatusToCards();if(typeof applyLiveSettings==='function')applyLiveSettings(_so!==JSON.stringify(SOLD_OUT));applyLocationStatusToCheckout();applyDeliveryAvailability();}catch(e){console.warn('Location status fetch failed:',e);}}
 function isLocationEnabled(loc){return LOCATION_STATUS[loc]!==false&&!isSeasonClosed(loc);}
-function applyLocationStatusToCards(){var cards=document.querySelectorAll('.lcard[data-loc]');cards.forEach(function(card){var loc=card.dataset.loc;if(!loc)return;var enabled=isLocationEnabled(loc);var badge=card.querySelector('.lbadge');if(card.dataset.soon){var more=card.querySelector('.lmore');if(badge){badge.className='lbadge '+(enabled?'lb-live':'lb-soon');badge.textContent=enabled?'✓ Online Ordering Live':'🚀 Soft Opening Nov 5';}if(more){more.href='/winnipeg';more.textContent='Details & directions →';}return;}if(enabled){card.style.opacity='';card.style.filter='';if(badge){badge.className='lbadge lb-live';badge.textContent='✓ Online Ordering Live';}}else{card.style.opacity='.55';card.style.filter='grayscale(.6)';if(badge){badge.className='lbadge lb-soon';badge.textContent=isSeasonClosed(loc)?'☀️ Closed for the season · See ya next summer!':'⚠️ Temporarily Closed';}}});}
+function applyLocationStatusToCards(){var cards=document.querySelectorAll('.lcard[data-loc]');cards.forEach(function(card){var loc=card.dataset.loc;if(!loc)return;var enabled=isLocationEnabled(loc);var badge=card.querySelector('.lbadge');if(card.dataset.soon){var more=card.querySelector('.lmore');if(badge){badge.className='lbadge '+(enabled?'lb-live':'lb-soon');badge.textContent=enabled?'✓ Online Ordering Live':'⚠️ Temporarily Closed';}if(more){more.href='/winnipeg';more.textContent='Details & directions →';}return;}if(enabled){card.style.opacity='';card.style.filter='';if(badge){badge.className='lbadge lb-live';badge.textContent='✓ Online Ordering Live';}}else{card.style.opacity='.55';card.style.filter='grayscale(.6)';if(badge){badge.className='lbadge lb-soon';badge.textContent=isSeasonClosed(loc)?'☀️ Closed for the season · See ya next summer!':'⚠️ Temporarily Closed';}}});}
 function applyLocationStatusToCheckout(){var sel=document.getElementById('o-loc');if(!sel)return;Array.from(sel.options).forEach(function(opt){var loc=opt.value;if(!loc)return;if(!isLocationEnabled(loc)){opt.disabled=true;opt.style.display='none';}else{opt.disabled=false;opt.style.display='';}});if(sel.selectedOptions[0]&&sel.selectedOptions[0].disabled){var firstEnabled=Array.from(sel.options).find(function(o){return!o.disabled&&o.value;});if(firstEnabled){sel.value=firstEnabled.value;setLocation(firstEnabled.value);}}}
 function isDeliveryOn(loc){return DELIVERY_STATUS[loc]!==false;}
 function checkoutLocation(){var sel=document.getElementById('o-loc');return sel&&sel.value?sel.value:activeLocation;}
@@ -1311,7 +1311,7 @@ function cartHasGameNight(){return cart.some(function(it){return it.gameNight;})
     <p>Find us on <a href="/regina-albert-st">Albert Street North</a> and <a href="/regina-east">University Park Drive in east Regina</a>, plus <a href="/regina-beach">Centre Street in Regina Beach</a>. Our Regina locations are open until 1 AM Monday to Wednesday and 3 AM Thursday to Sunday, with pickup in about 20 minutes and delivery anywhere in Regina.</p>
     <p class="seo-links"><a href="/menu">📋 Full menu &amp; prices</a><a href="/flavours">🔥 All 135+ flavours</a><a href="/best-wings-regina">🏆 Best wings in Regina</a><a href="/best-wing-night-deals-regina">💸 Wing night deals in Regina</a><a href="/late-night-food-regina">🌙 Late night food in Regina</a><a href="/fried-chicken-regina">🍗 Fried chicken in Regina</a></p>
     <h2 style="margin-top:2rem;">Chicken Wings &amp; Fried Chicken in Winnipeg</h2>
-    <p>Wing-O is now in Manitoba. Our first Winnipeg location is at <a href="/winnipeg">1530 Dakota St, Unit 4001 in St. Vital</a>, with a soft opening on Thursday, November 5, 2026. Same 135+ flavours, same prices and the same daily deals as Regina, open until 1 AM Monday to Wednesday and 3 AM Thursday to Sunday. Call <a href="tel:+12042554055">204-255-4055</a>.</p>
+    <p>Wing-O is now in Manitoba. Our first Winnipeg location is at <a href="/winnipeg">1530 Dakota St, Unit 4001 in St. Vital</a>, now open. Same 135+ flavours, same prices and the same daily deals as Regina, open until 1 AM Monday to Wednesday and 3 AM Thursday to Sunday. Call <a href="tel:+12042554055">204-255-4055</a>.</p>
     <p class="seo-links"><a href="/winnipeg">📍 Wing-O Winnipeg</a><a href="/best-wings-winnipeg">🏆 Best wings in Winnipeg</a><a href="/best-wing-night-deals-winnipeg">💸 Wing night deals in Winnipeg</a><a href="/late-night-food-winnipeg">🌙 Late night food in Winnipeg</a><a href="/fried-chicken-winnipeg">🍗 Fried chicken in Winnipeg</a></p>
   </div>
 </section>
@@ -1324,7 +1324,7 @@ function cartHasGameNight(){return cart.some(function(it){return it.gameNight;})
 <div class="lphone">📞 639-997-0553</div><a class="lmore" href="/regina-albert-st">Details &amp; directions →</a></div>
       <div class="lcard live" data-loc="east-regina"><span class="lbadge lb-live">✓ Online Ordering Live</span><div class="lname">East Regina</div><div class="laddr">534 University Park Drive<br>Regina, SK</div><div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div><div class="lphone">📞 306-522-2114</div><a class="lmore" href="/regina-east">Details &amp; directions →</a></div>
       <div class="lcard live" data-loc="regina-beach"><span class="lbadge lb-live">✓ Online Ordering Live</span><div class="lname">Regina Beach</div><div class="laddr">110 Centre St, Regina Beach, SK</div><div class="lhours">Every Day 11am-10pm</div><div class="lphone">📞 639-997-0553</div><a class="lmore" href="/regina-beach">Details &amp; directions →</a></div>
-      <div class="lcard" data-loc="winnipeg" data-soon="1" style="border-color:rgba(245,168,0,.5);"><span class="lbadge lb-soon">🚀 Soft Opening Nov 5</span><div class="lname">Winnipeg</div><div class="laddr">1530 Dakota St, Unit 4001<br>Winnipeg, MB · Manitoba's first Wing-O!</div><div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div><div class="lphone">📞 204-255-4055</div><a class="lmore" href="/winnipeg">Details &amp; directions →</a></div>
+      <div class="lcard" data-loc="winnipeg" data-soon="1" style="border-color:rgba(245,168,0,.5);"><span class="lbadge lb-live">✓ Online Ordering Live</span><div class="lname">Winnipeg</div><div class="laddr">1530 Dakota St, Unit 4001<br>Winnipeg, MB · Manitoba's first Wing-O!</div><div class="lhours">Mon–Wed 11am–1am · Thu–Sun 11am–3am</div><div class="lphone">📞 204-255-4055</div><a class="lmore" href="/winnipeg">Details &amp; directions →</a></div>
     </div>
   </div>
 </section>
@@ -1383,7 +1383,9 @@ function cartHasGameNight(){return cart.some(function(it){return it.gameNight;})
       </ul></div>
       <div class="fc"><h4>Locations</h4><ul>
         <li><a href="/regina-albert-st">Albert St — Regina</a></li>
-        <li><a href="/regina-east">East Regina</a></li><li><a href="/regina-beach">Regina Beach</a></li>
+        <li><a href="/regina-east">East Regina</a></li>
+        <li><a href="/winnipeg">Dakota St — Winnipeg</a></li>
+        <li><a href="/regina-beach">Regina Beach</a> <span style="font-size:.75em;color:#777;">(summer)</span></li>
       </ul></div>
       <div class="fc"><h4>Connect</h4><ul>
         <li><a href="https://www.instagram.com/wingorestaurants?igsh=dndtenNwZXh6emZk&utm_source=qr" target="_blank" style="color:#555;text-decoration:none;">📸 Instagram</a></li>
@@ -1396,7 +1398,7 @@ function cartHasGameNight(){return cart.some(function(it){return it.gameNight;})
         <li><a href="/careers.html" style="color:#F5A800;text-decoration:none;font-weight:600;">🔥 We're Hiring</a></li>
         <li onclick="openFranchise()" style="cursor:pointer;color:#555;">🚀 Franchise Info</li>
         <li><a href="mailto:besaucy@wingorestaurants.com" style="color:#555;text-decoration:none;">besaucy@wingorestaurants.com</a></li>
-        <!-- TEMP PHONE --><li><a href="tel:6399970553" style="color:#555;text-decoration:none;">639-997-0553</a></li>
+        <!-- TEMP PHONE --><li><a href="tel:6399970553" style="color:#555;text-decoration:none;">639-997-0553 (Regina)</a></li><li><a href="tel:2042554055" style="color:#555;text-decoration:none;">204-255-4055 (Winnipeg)</a></li>
       </ul></div>
     </div>
     <div class="fbot">

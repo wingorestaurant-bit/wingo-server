@@ -68,11 +68,11 @@ LOCS = [
          name='Wing-O Winnipeg', street='1530 Dakota St, Unit 4001', city='Winnipeg',
          phone='204-255-4055', lat=49.8235, lng=-97.1035, hours=CITY_HOURS, delivery=True,
          title='Chicken Wings & Fried Chicken in Winnipeg | 1530 Dakota St | Wing-O',
-         desc='Wing-O Winnipeg at 1530 Dakota St, Unit 4001: crispy chicken wings, boneless wings and fried chicken burgers in 135+ flavours. Soft opening Thursday, Nov 5. Open till 3am Thu–Sun.',
+         desc='Wing-O Winnipeg at 1530 Dakota St, Unit 4001: crispy chicken wings, boneless wings and fried chicken burgers in 135+ flavours. Now open in St. Vital, till 3am Thu–Sun.',
          h1='Chicken Wings in Winnipeg',
          area='St. Vital and south Winnipeg',
-         notice=("Soft opening Thursday, November 5, 2026 at 11 AM. Our first night is Wing Night: "
-                 "buy an order of wings and get the second 50% off."),
+         notice=("Now open in St. Vital: every day from 11 AM, until 1 AM Monday to Wednesday and 3 AM "
+                 "Thursday to Sunday. Every Thursday is Wing Night: buy an order of wings and get the second 50% off."),
          intro=("Wing-O has landed in Manitoba. Our first Winnipeg location is at <strong>1530 Dakota St, "
                 "Unit 4001</strong> in St. Vital, bringing the 135+ flavour wing menu that Regina has been "
                 "lining up for since 2024. Pickup, delivery and late nights, same as back home."),
@@ -253,7 +253,7 @@ def location_page(L):
     why = ''.join(f'<div><b>{e(t)}</b><span>{e(d)}</span></div>' for t, d in L['why'])
     faqs = [
         (f"Where is Wing-O {L['short']}?", f"Wing-O {L['short']} is at {full_addr(L)}."),
-    ] + ([("When does Wing-O open in Winnipeg?", L['notice'])] if L.get('notice') else []) + [
+    ] + ([("When is Wing-O Winnipeg open?", L['notice'])] if L.get('notice') else []) + [
         (f"What are Wing-O {L['short']}'s hours?", ' · '.join(f"{lbl}: {txt}" for _, _, _, lbl, txt in L['hours']) + '.' + (' ' + L['season'] if L.get('season') else '')),
         (f"What is the phone number for Wing-O {L['short']}?", f"Call {L['phone']}."),
         ("Does Wing-O sell fried chicken?", "Yes. Along with bone-in and boneless wings, we serve crispy chicken fingers and hand-breaded fried chicken burgers like the Korean Fried Chicken and The Tough Guy."),
@@ -264,7 +264,7 @@ def location_page(L):
               "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faqs]}
     season = (f'<div class="callout"><div class="label">Seasonal hours</div>{e(L["season"])}</div>' if L.get('season') else '')
     if L.get('notice'):
-        season += f'<div class="callout"><div class="label">Soft opening</div>{e(L["notice"])}</div>'
+        season += f'<div class="callout"><div class="label">Now open</div>{e(L["notice"])}</div>'
     city = 'Winnipeg' if wpg else 'Regina'
     sfx = 'winnipeg' if wpg else 'regina'
     guides = (f'Looking for deals? Read <a href="/best-wing-night-deals-{sfx}">the best wing night deals in {city}</a>, '
@@ -331,7 +331,7 @@ LOC_BLOCK = """<div class="info">
  <div class="box"><div class="label">Regina Beach</div><div class="val">110 Centre St, Regina Beach<br><a href="tel:+16399970553">639-997-0553</a><br>Summer: every day 11 AM–10 PM (closed for the season)<br><a href="/regina-beach">Location details →</a></div></div>
 </div>"""
 WPG_BOX = """<div class="info">
- <div class="box"><div class="label">Winnipeg</div><div class="val">1530 Dakota St, Unit 4001, Winnipeg, MB<br><a href="tel:+12042554055">204-255-4055</a><br>Mon–Wed 11 AM–1 AM · Thu–Sun 11 AM–3 AM<br>Soft opening Thursday, Nov 5, 2026<br><a href="/winnipeg">Location details →</a></div></div>
+ <div class="box"><div class="label">Winnipeg</div><div class="val">1530 Dakota St, Unit 4001, Winnipeg, MB<br><a href="tel:+12042554055">204-255-4055</a><br>Mon–Wed 11 AM–1 AM · Thu–Sun 11 AM–3 AM<br>Now open<br><a href="/winnipeg">Location details →</a></div></div>
 </div>"""
 # every location, for pages shared by both cities (the menu)
 LOC_BLOCK_ALL = LOC_BLOCK[:-len('</div>')] + WPG_BOX[len('<div class="info">\n'):]
@@ -627,7 +627,7 @@ WPG_DEALS = [('Sunday', '89¢ wings', 'Minimum 10. The cheapest way to feed a Je
              ('Monday', 'Boneless wings, second order 50% off', 'Two orders, two flavours, half price on the second.'),
              ('Tuesday', 'All-you-can-eat wings, $28.99', '5 PM to 10 PM, dine-in only.'),
              ('Wednesday', 'Ribs, second order 50% off', 'Sticky, saucy and tossed in any flavour.'),
-             ('Thursday', 'Wing night: second order 50% off', 'Buy an order of wings and get the second half price. Our Winnipeg soft opening on November 5 is a Wing Night.'),
+             ('Thursday', 'Wing night: second order 50% off', 'Buy an order of wings and get the second half price. Same deal at our Winnipeg store on Dakota St.'),
              ('Friday', '3 orders of wings for $30', 'Three full orders, three flavours.'),
              ('Saturday', '2 burgers for $20', 'Including our hand-breaded fried chicken burgers.')]
 
@@ -637,13 +637,13 @@ def wpg_best_wings():
     return guide('best-wings-winnipeg', 'Best Chicken Wings in Winnipeg: 135+ Flavours at Wing-O, 1530 Dakota St',
         'New to Winnipeg: Wing-O at 1530 Dakota St in St. Vital. 135+ wing flavours, crispy bone-in and boneless wings from $7.99, daily deals and hours until 3 AM Thu–Sun.',
         'Looking for the Best Wings in Winnipeg? Meet Wing-O', 'Best <span>Wings</span> in Winnipeg', 'Regina\'s 135+ flavour wing spot, now on Dakota St.', '🏆 Winnipeg Food Guide',
-        [('New in St. Vital', 'Wing-O opens its first Manitoba location at <strong>1530 Dakota St, Unit 4001</strong>, with a soft opening on <strong>Thursday, November 5, 2026</strong>. If you\'ve searched for saucy wings in Winnipeg and come up short, this is the spot.'),
+        [('New in St. Vital', 'Wing-O\'s first Manitoba location is <strong>now open</strong> at <strong>1530 Dakota St, Unit 4001</strong>. If you\'ve searched for saucy wings in Winnipeg and come up short, this is the spot.'),
          ('More flavours than anyone', f'135+ flavours, with {n} sauces and dry rubs on the current menu, all made from scratch. Honey Dill fans: we have it, plus Creamy Dill Pickle and a Honey Dill burger. <a href="/flavours">See every flavour →</a>'),
          ('The wings', 'Crispy <strong>bone-in</strong> and <strong>boneless wings</strong>: half order $7.99, full order $13.99. Order two to five and pick a different flavour for each. Ribs, chicken fingers and cauliflower wings take every flavour too.'),
          ('The deals', '89¢ wing Sunday, all-you-can-eat Tuesday ($28.99, dine-in) and Thursday Wing Night with the second order 50% off. <a href="/best-wing-night-deals-winnipeg">All Winnipeg deals →</a>'),
          ('Open late', 'Open until <strong>1 AM Monday to Wednesday</strong> and <strong>3 AM Thursday to Sunday</strong>, with pickup and delivery.')],
         [('Where can I get good wings in Winnipeg?', 'Wing-O at 1530 Dakota St, Unit 4001 (St. Vital) has 135+ wing flavours, bone-in and boneless wings from $7.99, and stays open until 3 AM Thursday to Sunday.'),
-         ('When does Wing-O open in Winnipeg?', 'The soft opening is Thursday, November 5, 2026 at 11 AM.'),
+         ('When is Wing-O Winnipeg open?', 'Every day from 11 AM: until 1 AM Monday to Wednesday and until 3 AM Thursday to Sunday.'),
          ('How much are wings at Wing-O Winnipeg?', 'A half order is $7.99 and a full order is $13.99, bone-in or boneless. Same prices as our Regina locations.'),
          ('What is the phone number for Wing-O Winnipeg?', 'Call 204-255-4055.')],
         'Best Wings in Winnipeg', loc_block=WPG_BOX)
@@ -700,7 +700,7 @@ def llms_txt():
 - Wing-O Albert Street: #3 - 155 Albert St N, Regina, SK. Phone 639-997-0553. Mon-Wed 11 AM-1 AM, Thu-Sun 11 AM-3 AM. Pickup and delivery. https://wingorestaurants.com/regina-albert-st
 - Wing-O East Regina: 534 University Park Drive, Regina, SK. Phone 306-522-2114. Mon-Wed 11 AM-1 AM, Thu-Sun 11 AM-3 AM. Pickup and delivery. https://wingorestaurants.com/regina-east
 - Wing-O Regina Beach: 110 Centre St, Regina Beach, SK. Summer location (every day 11 AM-10 PM in season), currently closed for the season. https://wingorestaurants.com/regina-beach
-- Wing-O Winnipeg: 1530 Dakota St, Unit 4001, Winnipeg, MB (St. Vital). Phone 204-255-4055. Mon-Wed 11 AM-1 AM, Thu-Sun 11 AM-3 AM. Pickup and delivery. Soft opening Thursday, November 5, 2026. https://wingorestaurants.com/winnipeg
+- Wing-O Winnipeg: 1530 Dakota St, Unit 4001, Winnipeg, MB (St. Vital). Phone 204-255-4055. Mon-Wed 11 AM-1 AM, Thu-Sun 11 AM-3 AM. Pickup and delivery. Open since November 5, 2026. https://wingorestaurants.com/winnipeg
 
 ## Menu and prices (CAD)
 - Prices and weekly deals are the same in Regina and Winnipeg.
