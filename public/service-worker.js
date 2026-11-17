@@ -6,7 +6,7 @@
 // HTML files always check network first (so updates appear instantly).
 // Static assets (images/fonts) use cache-first (fast, rarely change).
 // ─────────────────────────────────────────────────────────────────
-const CACHE_VERSION = 'v16';
+const CACHE_VERSION = 'v17';
 const CACHE_NAME = `wingo-${CACHE_VERSION}`;
 
 // ── PUSH NOTIFICATION HANDLER ──────────────────────────────────
@@ -52,36 +52,14 @@ self.addEventListener('notificationclick', event => {
 });
 
 // Core files to cache for offline use
+// Core files to cache for offline use. Kept tiny on purpose: menu photos are cached
+// the first time a customer actually sees them (cache-first below), so a first visit
+// doesn't download every photo in the background on a phone's data plan.
 const CORE_CACHE = [
   '/',
   '/index.html',
   '/images/logo.jpg',
-  '/images/neon-logo.jpg',
-  '/images/wings-hero.jpg',
-  '/images/wings-half.jpg',
-  '/images/ribs.jpg',
-  '/images/boneless-wings.jpg',
-  '/images/boneless-sauce.jpg',
-  '/images/burger-tough-guy.jpg',
-  '/images/burger-dillinator.jpg',
-  '/images/burger.jpg',
-  '/images/combo1.jpg',
-  '/images/poutine.jpg',
-  '/images/salad.jpg',
-  '/images/platter-bit-of.jpg',
-  '/images/platter-making-love.jpg',
-  '/images/oreo.jpg',
-  '/images/lunch-deal.jpg',
-  '/images/curly-fries.jpg',
-  '/images/pickle-spears.jpg',
-  '/images/empanadas.jpg',
-  '/images/jalapeno-poppers.jpg',
-  '/images/mini-perogies.jpg',
-  '/images/mozza-sticks.jpg',
-  '/images/dumplings.jpg',
-  '/images/cookie-dough.jpg',
-  '/images/mars-1pc.jpg',
-  '/images/proudly-prairie.png'
+  '/images/wingo-logo-wide.png'
 ];
 
 // Install — cache core files, take over immediately

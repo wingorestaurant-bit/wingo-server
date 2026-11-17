@@ -16,10 +16,20 @@ try {
 }
 
 const app = express();
+// Compress pages and data (the home page is ~4x smaller). Optional: the site still runs without it.
+try { app.use(require('compression')()); } catch (e) { console.warn('⚠️ compression not available:', e.message); }
 app.use(cors());
 app.use(express.json());
 // extensions: lets clean URLs like /regina-albert-st serve regina-albert-st.html (SEO pages)
-app.use(express.static(path.join(__dirname, 'public'), { extensions: ['html'] }));
+// Photos and fonts: phones keep them for a week instead of re-checking every visit.
+// Pages and the service worker: always re-checked, so site updates show up right away.
+app.use(express.static(path.join(__dirname, 'public'), {
+  extensions: ['html'],
+  setHeaders(res, filePath) {
+    if (/\.(jpe?g|png|webp|gif|svg|ico|woff2?|ttf|mp4|webm)$/i.test(filePath)) res.setHeader('Cache-Control', 'public, max-age=604800');
+    else if (/(\.html|service-worker\.js|manifest\.json)$/i.test(filePath)) res.setHeader('Cache-Control', 'no-cache');
+  }
+}));
 
 // ── MONGODB CONNECTION ────────────────────────────────────────
 const MONGO_URI = process.env.MONGODB_URI;
