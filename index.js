@@ -469,6 +469,7 @@ app.get('/dashboard.html', (req, res) => { res.sendFile(path.join(__dirname, 'pu
 app.post('/api/orders', async (req, res) => {
   const { locationId, orderType, customer, items, notes, subtotal, tax, total, preOrder, openTime, scheduled } = req.body;
   if (!locationId || !LOCATIONS[locationId]) return res.status(400).json({ error: 'Invalid location' });
+  if (SEASON_CLOSED.includes(locationId)) return res.status(400).json({ error: `${LOCATIONS[locationId].name} is closed for the season. See ya next summer! Please pick another location.` });
   // Check if location is enabled
   try {
     const database = await connectDB();
@@ -1076,7 +1077,7 @@ app.get('/api/locations/status', async (req, res) => {
     const doc = await database.collection('settings').findOne({ key: 'location_status' });
     const del = await database.collection('settings').findOne({ key: 'delivery_status' });
     const live = await getLiveSettings();
-    res.json({ status: effectiveStatus(doc?.status, 'startsOff'), delivery: effectiveStatus(del?.status, 'startsOff'), wait: live.wait, soldOut: live.soldOut });
+    res.json({ status: effectiveStatus(doc?.status, 'startsOff'), delivery: effectiveStatus(del?.status, 'startsOff'), wait: live.wait, soldOut: live.soldOut, seasonClosed: SEASON_CLOSED });
   } catch (e) {
     res.json({ status: effectiveStatus({}, 'startsOff'), delivery: effectiveStatus({}, 'startsOff') });
   }
@@ -1126,6 +1127,13 @@ app.post('/api/locations/status', async (req, res) => {
     res.status(500).json({ error: e.message });
   }
 });
+
+// ── SEASONAL STORES ───────────────────────────────────────────
+// Stores closed for the season (no online orders; the site says "See ya next summer").
+// Railway variable SEASON_CLOSED: comma-separated store ids. Not set = Regina Beach is closed.
+// To reopen Regina Beach for summer, set SEASON_CLOSED to "none".
+const SEASON_CLOSED = String(process.env.SEASON_CLOSED ?? 'regina-beach')
+  .split(',').map(s => s.trim()).filter(id => LOCATIONS[id]);
 
 // ── LIVE WAIT TIMES + SOLD-OUT ITEMS (set by staff in /admin) ──────────
 // Wait: minutes until a pickup order is ready, per location (default 20).
