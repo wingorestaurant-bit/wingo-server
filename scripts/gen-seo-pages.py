@@ -202,6 +202,7 @@ def page(slug, title, desc, h1_html, hero_p, body, ld, crumbs, btns=None, og_typ
 <style>
 {CSS}
 </style>
+<link rel="stylesheet" href="/times.css?v=1">
 </head>
 <body>
 <nav><div class="nav-inner"><a href="/" aria-label="Wing-O home"><img src="/images/wingo-logo-wide.png" alt="Wing-O — More Than Wings" width="480" height="253" style="height:40px;width:auto;display:block;"></a><a href="/" class="back">Order Online →</a></div></nav>
