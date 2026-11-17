@@ -295,7 +295,98 @@ async function printCloverOrder(loc, cloverId) {
 // discounts: [{ name, amount }] in dollars (first-order 15%, late night 10%). They go on the Clover
 // order as real discounts, and GST/PST are worked out on the discounted subtotal, so the POS total
 // matches what the customer saw at checkout.
+// ── CLOVER TAX ─────────────────────────────────────────────────
+// GST/PST must be booked in Clover as TAX, not as sales items, or the accounting reports are wrong.
+// So orders go in through Clover's atomic order API with the store's own GST/PST tax rates on each
+// item; Clover works out the tax and the totals itself. If the rates aren't set up in Clover, the
+// call fails, or Clover's total doesn't match ours, the order is removed and re-sent the old way
+// (taxes as items) so no order or tax is ever lost. CLOVER_TAX_MODE=items on Railway forces the old way.
+const cloverTaxCache = {};
+async function cloverTaxRateIds(loc) {
+  const c = cloverTaxCache[loc.merchantId];
+  if (c && Date.now() - c.at < (c.ids ? 6 * 3600e3 : 10 * 60e3)) return c.ids;
+  let ids = null;
+  try {
+    const r = await fetch(`https://api.clover.com/v3/merchants/${loc.merchantId}/tax_rates?limit=100`, { headers: { 'Authorization': `Bearer ${loc.apiToken}` } });
+    const d = await r.json();
+    const rates = Array.isArray(d.elements) ? d.elements : [];
+    // Clover stores rates as whole numbers: 5% = 500000
+    const byRate = pct => rates.find(t => Number(t.rate) === Math.round(pct * 10000000));
+    const gst = byRate(0.05), pst = byRate(locPst(loc)), both = byRate(0.05 + locPst(loc));
+    if (gst && pst) ids = [gst.id, pst.id];
+    else if (both) ids = [both.id];
+    console.log(`Clover tax rates for ${loc.name}: ${ids ? (ids.length === 2 ? 'GST + PST found' : 'combined GST+PST found')
+      : 'GST/PST not found (' + rates.map(t => `${t.name} ${Number(t.rate) / 100000}%`).join(', ') + ') — taxes will go in as items'}`);
+  } catch (e) { console.warn('Clover tax rate lookup failed:', e.message); }
+  cloverTaxCache[loc.merchantId] = { at: Date.now(), ids };
+  return ids;
+}
+
 async function createCloverOrder(loc, orderNum, orderType, customer, items, subtotal, notes, timestamp, discounts = []) {
+  if (!loc.merchantId || !loc.apiToken) return createCloverOrderItems(loc, orderNum, orderType, customer, items, subtotal, notes, timestamp, discounts);
+  if (String(process.env.CLOVER_TAX_MODE || '').toLowerCase() !== 'items') {
+    try {
+      const taxIds = await cloverTaxRateIds(loc);
+      if (taxIds) {
+        const id = await createCloverAtomicOrder(loc, orderNum, orderType, customer, items, subtotal, notes, discounts, taxIds);
+        if (id) { await printCloverOrder(loc, id); return id; }
+      }
+    } catch (e) { console.warn('Clover tax-rate order failed, using tax items:', e.message); }
+  }
+  return createCloverOrderItems(loc, orderNum, orderType, customer, items, subtotal, notes, timestamp, discounts);
+}
+
+async function createCloverAtomicOrder(loc, orderNum, orderType, customer, items, subtotal, notes, discounts, taxIds) {
+  const base = `https://api.clover.com/v3/merchants/${loc.merchantId}`;
+  const H = { 'Authorization': `Bearer ${loc.apiToken}`, 'Content-Type': 'application/json' };
+  const cleanNote = String(notes || '').replace(noEmoji, '').replace(/\[\s*/g, '').replace(/\s*\]/g, '\n').replace(/[ \t]+/g, ' ').split('\n').map(l => l.trim()).filter(Boolean);
+  const note = [
+    `${orderNum}${orderType === 'delivery' ? ' · DELIVERY' : ''}`,
+    ...(orderType === 'delivery' ? [`Deliver to: ${customer.address || ''}`, `Phone: ${customer.phone || ''}`] : []),
+    ...cleanNote,
+  ].join('\n');
+  const title = `Online ${orderType} — ${customer.firstName} ${customer.lastName || ''}`;
+  const taxRates = taxIds.map(id => ({ id }));
+
+  // One line per unit, like in-store tickets; every food item carries the store's GST/PST rates
+  const lineItems = [];
+  for (const item of items) {
+    const li = { name: printable(item.name).slice(0, 127), price: Math.round(item.price * 100), unitQty: 1000, note: printable(item.flavor).slice(0, 255), taxRates };
+    for (let q = 0; q < Math.max(1, Number(item.qty) || 1); q++) lineItems.push({ ...li });
+  }
+  if (orderType === 'delivery') lineItems.push({ name: 'Delivery Fee', price: 550, unitQty: 1000 });
+  const discCents = discounts.map(d => Math.round(Number(d.amount) * 100)).filter(c => c > 0);
+  const cartDiscounts = discounts.filter(d => Math.round(Number(d.amount) * 100) > 0).map(d => ({ name: printable(d.name).slice(0, 127), amount: -Math.round(Number(d.amount) * 100) }));
+
+  // What the customer was charged, to check Clover agrees
+  const itemCents = lineItems.filter(l => l.taxRates).reduce((s, l) => s + l.price, 0);
+  const taxable = Math.max(0, itemCents - discCents.reduce((s, c) => s + c, 0));
+  const expected = taxable + Math.round(taxable * 0.05) + Math.round(taxable * locPst(loc)) + (orderType === 'delivery' ? 550 : 0);
+
+  const r = await fetch(`${base}/atomic_order/orders`, {
+    method: 'POST', headers: H,
+    body: JSON.stringify({ orderCart: { title, note, groupLineItems: false, lineItems, ...(cartDiscounts.length ? { discounts: cartDiscounts } : {}) } })
+  });
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok || !d.id) { console.warn(`Clover atomic order failed (${r.status}): ${JSON.stringify(d).slice(0, 300)} — using tax items`); return null; }
+  const id = d.id;
+
+  // Open it like other online orders, then make sure Clover kept every item and priced it like we did
+  await fetch(`${base}/orders/${id}`, { method: 'POST', headers: H, body: JSON.stringify({ state: 'open', title, note }) }).catch(() => {});
+  const chk = await (await fetch(`${base}/orders/${id}?expand=lineItems`, { headers: { 'Authorization': H.Authorization } })).json().catch(() => ({}));
+  const count = chk.lineItems && Array.isArray(chk.lineItems.elements) ? chk.lineItems.elements.length : 0;
+  const total = Number(chk.total);
+  if (count !== lineItems.length || !(Math.abs(total - expected) <= 5)) {
+    console.warn(`Clover order ${id} doesn't match (items ${count}/${lineItems.length}, total ${total} vs ${expected} cents) — removing it and using tax items`);
+    await fetch(`${base}/orders/${id}`, { method: 'DELETE', headers: { 'Authorization': H.Authorization } }).catch(() => {});
+    return null;
+  }
+  console.log(`✓ Clover order ${id} with GST/PST as tax — $${(total / 100).toFixed(2)}`);
+  return id;
+}
+
+// The old way: items, discounts, then GST/PST as items. Used when Clover's tax rates can't be.
+async function createCloverOrderItems(loc, orderNum, orderType, customer, items, subtotal, notes, timestamp, discounts = []) {
   if (!loc.merchantId || !loc.apiToken) {
     console.error(`Clover not set up for ${loc.name}: add its merchant ID and API token on Railway`);
     return null;
