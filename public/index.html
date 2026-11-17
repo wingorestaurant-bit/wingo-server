@@ -3214,7 +3214,7 @@ showFirstOrderBanner();
 // Deep link: wingorestaurants.com/#franchise opens the franchise page (used by /winnipeg)
 if(window._wingoHash==='#franchise')window.addEventListener('load',function(){if(typeof openFranchise==='function')openFranchise();});
 // Deep links from /preview and posts: /#cat-wings opens that menu section, /#deal opens today's deal
-(function(h){if(!h)return;var m=h.match(/^#cat-([a-z]+)$/);if(m)window.addEventListener('load',function(){if(typeof showCat==='function'&&typeof MENU!=='undefined'&&MENU[m[1]])showCat(m[1]);});else if(h==='#deal')window.addEventListener('load',function(){setTimeout(function(){if(typeof window.openTodayDeal==='function')window.openTodayDeal();},300);});})(window._wingoHash);
+(function(h){if(!h)return;var m=h.match(/^#cat-([a-z]+)$/);if(m)window.addEventListener('load',function(){if(typeof showCat==='function'&&typeof MENU!=='undefined'&&MENU[m[1]])showCat(m[1]);});else if(h==='#lunch')window.addEventListener('load',function(){setTimeout(function(){if(typeof openLunchDeal==='function')openLunchDeal();},300);});else if(h==='#deal')window.addEventListener('load',function(){setTimeout(function(){if(typeof window.openTodayDeal==='function')window.openTodayDeal();},300);});})(window._wingoHash);
 if(window._wingoCard)window.addEventListener('load',function(){fetch(API_BASE+'/api/loyalty/card/'+encodeURIComponent(window._wingoCard)).then(function(r){return r.json();}).then(function(d){if(d&&d.success){loySaveSession(d.member);openLoyalty();toast('Welcome back, '+d.member.name+'! 🍗');}}).catch(function(){});});
 </script>
 

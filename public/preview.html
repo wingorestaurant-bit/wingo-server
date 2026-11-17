@@ -41,12 +41,13 @@ img{display:block;max-width:100%;}
 #nav{position:sticky;top:0;z-index:25;background:rgba(242,232,211,.93);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-bottom:1px solid rgba(27,21,18,.15);}
 #nav .wrap{display:flex;align-items:center;gap:12px;height:62px;}
 #nav .logo{height:44px;width:auto;}
-#nav .links{display:flex;gap:22px;margin-left:18px;font-family:Oswald;font-weight:500;font-size:14px;letter-spacing:1.5px;text-transform:uppercase;}
+#nav .links{display:flex;gap:18px;margin-left:14px;font-family:Oswald;font-weight:500;font-size:14px;letter-spacing:1.5px;text-transform:uppercase;}
 #nav .links a{text-decoration:none;opacity:.8;}
 #nav .links a:hover{opacity:1;color:var(--red);}
 #store{margin-left:auto;display:flex;align-items:center;gap:6px;border:2px solid var(--ink);border-radius:30px;padding:5px 12px 4px;font-family:Oswald;font-weight:500;font-size:13px;letter-spacing:.5px;background:transparent;cursor:pointer;color:var(--ink);white-space:nowrap;max-width:46vw;overflow:hidden;text-overflow:ellipsis;}
 #store i{width:8px;height:8px;border-radius:50%;background:#2a9d4b;flex:none;box-shadow:0 0 0 3px rgba(42,157,75,.2);}
 #store i.off{background:#999;box-shadow:none;}
+.mlinks{display:none;}
 .order{display:inline-flex;align-items:center;gap:8px;background:var(--red);color:#fff;text-decoration:none;font-family:"Bebas Neue";font-size:21px;letter-spacing:2px;padding:9px 20px 6px;border-radius:4px;box-shadow:3px 3px 0 var(--ink);border:2px solid var(--ink);transition:transform .15s,box-shadow .15s;}
 .order:hover{transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--ink);}
 .order:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink);}
@@ -167,6 +168,12 @@ section{scroll-margin-top:64px;}
 .btl .neck{width:14px;height:12px;background:var(--c);opacity:.9;}
 .btl .body{width:52px;height:84px;border-radius:12px 12px 6px 6px;background:linear-gradient(90deg,rgba(255,255,255,.25),transparent 30%,transparent 70%,rgba(0,0,0,.25)),var(--c);display:flex;align-items:center;justify-content:center;padding:0 3px;box-shadow:inset 0 -6px 0 rgba(0,0,0,.2);}
 .btl .lab{background:#fffaf0;color:var(--ink);font:700 9.5px/1.05 Oswald,sans-serif;text-transform:uppercase;padding:5px 2px;width:100%;text-align:center;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);word-break:break-word;}
+.btl.shk .lid{width:46px;height:14px;border-radius:5px 5px 2px 2px;background:radial-gradient(circle,#222 1.4px,transparent 1.6px) 3px 2px/8px 5px,linear-gradient(#d9d9d9,#8f8f8f);border:1px solid #555;}
+.btl.shk .jar{width:50px;height:70px;border-radius:4px 4px 8px 8px;display:flex;align-items:center;padding:0 3px;
+  background:linear-gradient(90deg,rgba(255,255,255,.35),rgba(255,255,255,.05) 25%,transparent 70%,rgba(0,0,0,.2)),
+  radial-gradient(rgba(0,0,0,.28) 1px,transparent 1.3px) 0 0/5px 5px,radial-gradient(rgba(255,255,255,.3) 1px,transparent 1.3px) 2px 3px/6px 6px,
+  linear-gradient(transparent 22%,var(--c) 22%);background-color:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.35);}
+.shelf h5 small{font-size:15px;color:var(--paper);opacity:.7;letter-spacing:1px;}
 .btl.dim{opacity:.13;filter:grayscale(1);pointer-events:none;}
 .btl.pop{animation:popb .5s;}
 @keyframes popb{40%{transform:translateY(-14px) scale(1.12);}}
@@ -190,7 +197,7 @@ section{scroll-margin-top:64px;}
 .pad{background:#fffdf4;background-image:repeating-linear-gradient(transparent 0 31px,#a7c4e6 31px 32px);border-left:3px solid #e48b8b;padding:22px 24px 22px 30px;box-shadow:6px 8px 0 rgba(27,21,18,.18);transform:rotate(.6deg);position:relative;}
 .pad:before{content:'';position:absolute;top:-14px;left:50%;width:110px;height:28px;margin-left:-55px;background:rgba(255,230,140,.75);transform:rotate(-3deg);}
 .pad p{font-family:"Permanent Marker";font-size:19px;line-height:32px;color:#24324a;}
-.pad .sig{height:56px;width:auto;margin-top:8px;mix-blend-mode:multiply;}
+.pad .sig{height:84px;width:auto;margin:4px 0 -8px -6px;transform:rotate(-4deg);}
 .picks{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;max-width:900px;margin:34px auto 0;}
 .sticky{background:#fff27a;padding:16px 14px 18px;box-shadow:4px 6px 0 rgba(27,21,18,.2);font-family:"Permanent Marker";color:#2a2a2a;text-decoration:none;display:block;transition:transform .2s;}
 .sticky:nth-child(1){transform:rotate(-2.5deg);}
@@ -230,6 +237,30 @@ section{scroll-margin-top:64px;}
 .loc .acts a{font-family:Oswald;font-weight:500;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;border:1.5px solid var(--ink);padding:6px 10px;text-decoration:none;}
 .loc.season{background:repeating-linear-gradient(-45deg,transparent 0 12px,rgba(27,21,18,.04) 12px 24px);}
 
+
+/* ── notices (lunch / catering) ── */
+.notices{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+.notice{display:grid;grid-template-columns:44% 1fr;border:3px solid var(--ink);background:#fffaf0;text-decoration:none;box-shadow:6px 6px 0 var(--ink);transition:transform .2s,box-shadow .2s;position:relative;}
+.notice:hover{transform:translate(-3px,-3px);box-shadow:9px 9px 0 var(--ink);}
+.notice .im{overflow:hidden;border-right:3px solid var(--ink);}
+.notice .im img{width:100%;height:100%;object-fit:cover;}
+.notice .nb{padding:16px 16px 18px;display:flex;flex-direction:column;align-items:flex-start;}
+.notice h3{font-family:"Bebas Neue";font-weight:400;font-size:38px;line-height:.92;margin:2px 0 6px;}
+.notice p{font-size:14.5px;line-height:1.45;margin-bottom:12px;flex:1;}
+.notice .price{position:absolute;top:-16px;right:-12px;width:76px;height:76px;border-radius:50%;background:var(--mustard);border:3px solid var(--ink);display:flex;align-items:center;justify-content:center;font:400 34px "Bebas Neue";transform:rotate(10deg);}
+/* ── franchise ── */
+#franchise{background:var(--ink);color:var(--paper);margin-top:50px;padding:46px 0;border-top:6px double var(--mustard);border-bottom:6px double var(--mustard);}
+.fr{display:grid;grid-template-columns:1.4fr 1fr;gap:30px;align-items:center;}
+.fr h2{font-family:"Playfair Display";font-weight:900;font-size:clamp(36px,6vw,64px);line-height:1;margin:6px 0 14px;}
+.fr h2 span{color:var(--mustard);font-style:italic;}
+.fr p{font-size:16px;line-height:1.55;margin-bottom:18px;opacity:.9;max-width:560px;}
+.frr{display:grid;grid-template-columns:1fr 1fr;border:1.5px solid rgba(242,232,211,.4);}
+.frr div{padding:16px;border:1px solid rgba(242,232,211,.2);text-align:center;}
+.frr b{display:block;font:400 48px/1 "Bebas Neue";color:var(--mustard);}
+.frr span{font:12px "Special Elite",monospace;}
+@media (max-width:900px){.notices{grid-template-columns:1fr;}.fr{grid-template-columns:1fr;}}
+@media (max-width:600px){.notice{grid-template-columns:1fr;}.notice .im{border-right:0;border-bottom:3px solid var(--ink);aspect-ratio:16/9;}.notice .price{top:-12px;right:6px;}}
+
 /* ── footer ── */
 footer{background:var(--ink);color:var(--paper);margin-top:50px;padding:36px 0 110px;text-align:center;}
 footer .mh{font-family:"UnifrakturCook";font-size:42px;}
@@ -248,6 +279,11 @@ footer a{color:var(--mustard);}
 
 @media (max-width:900px){
   #nav .links{display:none;}
+  .mlinks{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:0 16px 9px;}
+  .mlinks::-webkit-scrollbar{display:none;}
+  .mlinks a{flex:none;font-family:Oswald;font-weight:500;font-size:12.5px;letter-spacing:1px;text-transform:uppercase;text-decoration:none;border:1.5px solid var(--ink);border-radius:30px;padding:5px 11px;}
+  .mlinks a[href="#franchise"]{background:var(--ink);color:var(--mustard);}
+  section{scroll-margin-top:104px;}
   #front{grid-template-columns:1fr;}
   #front > div{padding:0;}
   #front > div + div{border-left:0;border-top:1px solid var(--rule);padding-top:18px;margin-top:18px;}
@@ -300,10 +336,12 @@ footer a{color:var(--mustard);}
 
 <span id="top"></span><nav id="nav"><div class="wrap">
   <a href="#top"><img class="logo" src="/images/wingo-logo-wide.png" alt="Wing-O"></a>
-  <div class="links"><a href="#menu">Menu</a><a href="#wall">Sauce Wall</a><a href="#boss">Sauce Boss</a><a href="#locs">Stores</a></div>
+  <div class="links"><a href="#menu">Menu</a><a href="#lunch">Lunch $10</a><a href="/catering.html">Catering</a><a href="#wall">Sauce Wall</a><a href="#franchise">Franchise</a><a href="#locs">Stores</a></div>
   <button id="store" onclick="location.href='#locs'"><i></i><span>Pick your store</span></button>
   <a class="order" id="ordbtn" href="/">Order</a>
-</div></nav>
+</div>
+  <div class="mlinks"><a href="#menu">Menu</a><a href="#lunch">Lunch $10</a><a href="/catering.html">Catering</a><a href="#wall">Sauce Wall</a><a href="#franchise">Own a Wing-O</a><a href="#locs">Stores</a></div>
+</nav>
 
 <header id="mast" class="wrap">
   <div class="edline"><span>Vol. IV · No. <span id="issue">1</span></span><span id="today">—</span><span>Price: one napkin (or 12)</span></div>
@@ -374,6 +412,7 @@ footer a{color:var(--mustard);}
       <div class="kicker">Box score</div>
       <table class="boxscore">
         <tr><td>Flavours on the wall</td><td>135+</td></tr>
+        <tr><td>Wings sold</td><td>1M+</td></tr>
         <tr><td>AYCE wing record</td><td>96</td></tr>
         <tr><td>Stores</td><td>4</td></tr>
         <tr><td>Provinces</td><td>2</td></tr>
@@ -402,6 +441,34 @@ footer a{color:var(--mustard);}
   </div>
 </section>
 
+
+<!-- LUNCH + CATERING -->
+<section class="sec wrap" id="lunch">
+  <div class="sh"><h2><small>Section A2 · Notices</small>Lunch &amp; Catering</h2></div>
+  <div class="notices">
+    <a class="notice rv" href="/#lunch">
+      <div class="im"><img loading="lazy" src="/images/lunch-deal.jpg" alt="Wing-O $10 lunch deal"></div>
+      <div class="nb">
+        <div class="kicker">Every day · 11:00 AM – 3:30 PM</div>
+        <h3>The $10 Lunch Deal</h3>
+        <p>One order of wings in any of 135+ flavours plus small fries. Ten bucks. Seven days a week. Pickup only, order ahead online.</p>
+        <span class="price">$10</span>
+        <span class="order">Order lunch →</span>
+      </div>
+    </a>
+    <a class="notice rv" href="/catering.html">
+      <div class="im"><img loading="lazy" src="/images/wings-bowls.jpg" alt="Wing-O catering trays"></div>
+      <div class="nb">
+        <div class="kicker">Catering &amp; Corporate</div>
+        <h3>Feeding A Crowd?</h3>
+        <p>Office lunches, game days, birthdays, job sites. Wings, apps and salads packed in labelled trays. Bone-in, boneless or half &amp; half. 48 hours notice.</p>
+        <span class="order">Build your bundle →</span>
+        <div class="byline" style="margin-top:8px;">Takes 60 seconds · see your price instantly</div>
+      </div>
+    </a>
+  </div>
+</section>
+
 <!-- MENU CLASSIFIEDS -->
 <section class="sec wrap" id="menu">
   <div class="sh"><h2><small>Section B · Classifieds</small>The Menu</h2></div>
@@ -413,7 +480,7 @@ footer a{color:var(--mustard);}
   <div class="wrap">
     <div class="sh"><h2><small>Section C · Interactive</small>The Sauce Wall</h2></div>
     <div class="wall-ctl" id="heat"></div>
-    <div class="wall-ctl"><input id="q" type="search" placeholder="Search 131 sauces… try “garlic”"></div>
+    <div class="wall-ctl"><input id="q" type="search" placeholder="Search 131 sauces &amp; rubs… try “garlic”"></div>
     <div class="count" id="cnt"></div>
     <div id="shelves"></div>
   </div>
@@ -437,7 +504,7 @@ footer a{color:var(--mustard);}
       <p>Hey you. Yeah, you with the sauce on your thumb.</p>
       <p>We started Wing-O because wings deserve better than “mild, medium, hot.” Now we're in Regina, Regina Beach and Winnipeg, and the rule hasn't changed: toss it fresh, sauce it loud, and never send out a wing we wouldn't eat at 2 AM ourselves.</p>
       <p>Here are my picks this week. Don't tell the other sauces.</p>
-      <img class="sig" src="/images/sig.jpg" alt="Sauce Boss signature">
+      <img class="sig" src="/images/sig-clean.png" alt="Sauce Boss signature">
     </div>
   </div>
   <div class="picks">
@@ -452,10 +519,12 @@ footer a{color:var(--mustard);}
   <div class="sh"><h2><small>Section D · The Record</small>Don't Take Our Word For It</h2></div>
   <div class="grid">
     <div class="rv">
-      <div class="kicker">Google Reviews · Winnipeg</div>
-      <div class="rating">4.8<small>/5</small></div>
+      <div class="kicker">Google Reviews</div>
+      <div class="rating">4.7<small>/5 Regina</small></div>
       <div class="stars">★★★★★</div>
-      <p class="byline">From our first Winnipeg reviews. Thank you, Winnipeg.</p>
+      <p class="byline">400+ Google reviews from Regina locals.</p>
+      <div class="rating" style="font-size:64px;margin-top:10px;">4.8<small>/5 Winnipeg</small></div>
+      <p class="byline">Our first Winnipeg reviews. Thank you, Winnipeg.</p>
       <a class="ghost" style="font-size:17px;margin-top:6px;" target="_blank" rel="noopener" href="https://www.google.com/search?q=Wing-O+1530+Dakota+St+Winnipeg+reviews">Read the reviews →</a>
     </div>
     <div class="rv">
@@ -477,6 +546,24 @@ footer a{color:var(--mustard);}
   <p class="byline" style="text-align:center;margin-top:16px;">Post your wings with <b>#BESAUCY</b> and tag <a href="https://instagram.com/wingorestaurants" target="_blank" rel="noopener">@wingorestaurants</a> to get in the paper.</p>
 </section>
 
+<!-- FRANCHISE -->
+<section id="franchise">
+  <div class="wrap fr rv">
+    <div class="frl">
+      <div class="kicker" style="color:var(--mustard);">Help wanted · Business opportunity</div>
+      <h2>Own A Wing-O.<br><span>Your City Is Next.</span></h2>
+      <p>From one Regina kitchen to two provinces. We're now accepting franchise applications. Bring the hustle, we'll bring 135+ flavours, the systems and the Sauce Boss.</p>
+      <a class="order" href="/#franchise" style="background:var(--mustard);color:var(--ink);">Claim your territory →</a>
+    </div>
+    <div class="frr">
+      <div><b>1M+</b><span>Wings sold</span></div>
+      <div><b>135+</b><span>Flavours</span></div>
+      <div><b>2</b><span>Provinces</span></div>
+      <div><b>YOU</b><span>Next owner</span></div>
+    </div>
+  </div>
+</section>
+
 <!-- LOCATIONS -->
 <section class="sec wrap" id="locs">
   <div class="sh"><h2><small>Section E · Directory</small>Where To Find Us</h2></div>
@@ -487,7 +574,7 @@ footer a{color:var(--mustard);}
   <div class="wrap">
     <div class="mh">The Sauce Boss Times</div>
     <p>Printed fresh daily by Wing-O Restaurants · Regina · Regina Beach · Winnipeg<br>
-    <a href="/">Order online</a> · <a href="https://instagram.com/wingorestaurants" target="_blank" rel="noopener">Instagram</a> · <a href="/#franchise">Own a Wing-O</a></p>
+    <a href="/">Order online</a> · <a href="https://instagram.com/wingorestaurants" target="_blank" rel="noopener">Instagram</a> · <a href="/catering.html">Catering</a> · <a href="/#franchise">Own a Wing-O</a></p>
   </div>
 </footer>
 
@@ -539,7 +626,7 @@ function closesAt(s){var n=localNow(s.tz),d=n.getDay(),h=n.getHours(),y=(d+6)%7;
 /* ticker */
 (function(){
   var reg=localNow('America/Regina'),dl=DEALS[reg.getDay()];
-  var items=['<b>TODAY:</b> '+dl.h.toUpperCase(),'135+ FLAVOURS ON THE WALL','NOW OPEN IN <b>WINNIPEG</b> · 1530 DAKOTA ST','OPEN TILL 3 AM THU–SUN','<b>#BESAUCY</b>','PICKUP · DINE-IN · ORDER AHEAD'];
+  var items=['<b>TODAY:</b> '+dl.h.toUpperCase(),'135+ FLAVOURS ON THE WALL','NOW OPEN IN <b>WINNIPEG</b> · 1530 DAKOTA ST','OPEN TILL 3 AM THU–SUN','<b>#BESAUCY</b>','<b>$10 LUNCH DEAL</b> · 11–3:30 DAILY','NOW ACCEPTING <b>FRANCHISE</b> APPLICATIONS','PICKUP · DINE-IN · ORDER AHEAD'];
   var h=items.map(function(x){return '<span>'+x+'</span><span>✦</span>';}).join('');
   $('tr').innerHTML=h+h;
   $('today').textContent=reg.toLocaleDateString('en-CA',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
@@ -586,13 +673,14 @@ function showDeal(i,manual){
 $('ads').innerHTML=ADS.map(function(a){return '<a class="ad rv" href="/#cat-'+a.cat+'"><div class="im"><img loading="lazy" src="/images/'+a.img+'" alt="'+a.t+'"></div><span class="tag">from '+a.price+'</span><h4>'+a.t+'</h4><p>'+a.p+'</p><div class="go">SEE ALL →</div></a>';}).join('');
 
 /* sauce wall */
-var heatOn=-1,ALL=[];
+var heatOn=-1,ALL=[];function isRub(g){return g==='Rub It';}
 $('heat').innerHTML='<button class="chip on" data-h="-1">All</button>'+HEAT.map(function(h,i){return '<button class="chip" data-h="'+i+'"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:'+h.c+';margin-right:6px;"></span>'+h.k+'</button>';}).join('');
 $('heat').onclick=function(e){var b=e.target.closest('.chip');if(!b)return;heatOn=+b.dataset.h;[].forEach.call(this.children,function(x){x.classList.toggle('on',x===b);});filterWall();};
 function short(n){return n.replace(/\s*\(.*\)/,'');}
 $('shelves').innerHTML=SAUCES.map(function(g,gi){
-  return '<div class="shelf rv"><h5>'+g[0]+'</h5><div class="row">'+g[1].map(function(s,si){
+  return '<div class="shelf rv"><h5>'+g[0]+(isRub(g[0])?' <small>· dry seasonings, no sauce</small>':'')+'</h5><div class="row">'+g[1].map(function(s,si){
     ALL.push({n:s[0],h:s[1],g:g[0]});
+    if(isRub(g[0]))return '<button class="btl shk" data-n="'+s[0].replace(/"/g,'&quot;')+'" data-h="'+s[1]+'" style="--c:'+HEAT[s[1]].c+'"><span class="lid"></span><span class="jar"><span class="lab">'+short(s[0])+'</span></span></button>';
     return '<button class="btl" data-n="'+s[0].replace(/"/g,'&quot;')+'" data-h="'+s[1]+'" style="--c:'+HEAT[s[1]].c+'"><span class="cap"></span><span class="neck"></span><span class="body"><span class="lab">'+short(s[0])+'</span></span></button>';
   }).join('')+'</div><div class="plank"></div></div>';
 }).join('');
@@ -604,14 +692,14 @@ function filterWall(){
     b.classList.toggle('dim',!ok);if(ok)n++;
   });
   [].forEach.call(document.querySelectorAll('.shelf'),function(s){s.style.display=s.querySelector('.btl:not(.dim)')?'':'none';});
-  $('cnt').textContent=n+' of '+ALL.length+' sauces'+(heatOn>=0?' · '+HEAT[heatOn].k:'')+(q?' matching “'+q+'”':'');
+  $('cnt').textContent=n+' of '+ALL.length+' sauces & rubs'+(heatOn>=0?' · '+HEAT[heatOn].k:'')+(q?' matching “'+q+'”':'');
 }
 $('q').oninput=filterWall;filterWall();
 function openSauce(name){
   var s=ALL.filter(function(x){return x.n===name;})[0];if(!s)return;
   var m=name.match(/\((.*)\)/);
   $('sp-g').textContent=s.g;$('sp-n').textContent=short(name);
-  $('sp-m').textContent=m?'House mix: '+m[1]:(s.g==='Rub It'?'Dry rub · shaken, not tossed':'Signature sauce');
+  $('sp-m').textContent=isRub(s.g)?'Dry seasoning · shaken on, no sauce':(m?'House mix: '+m[1]:'Signature sauce');$('sp-g').textContent=isRub(s.g)?'Dry rub':s.g;
   $('sp-meter').innerHTML=HEAT.map(function(h,i){return '<i class="'+(i<=s.h?'f':'')+'"></i>';}).join('');
   $('sp-go').href='/#cat-wings';
   $('sp').classList.add('show');
