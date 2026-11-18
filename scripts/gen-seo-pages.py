@@ -227,6 +227,8 @@ def restaurant_ld(L):
         "@context": "https://schema.org", "@type": "Restaurant",
         "@id": f"{SITE}/{L['slug']}#restaurant",
         "name": L['name'], "url": f"{SITE}/{L['slug']}",
+        # How people actually search for us (Search Console): Wingo, Wingos, Wing O, Wing Os
+        "alternateName": [f"Wingo {L['short']}", f"Wingos {L['short']}", f"Wing O {L['short']}"],
         "image": f"{SITE}/images/logo.jpg", "logo": f"{SITE}/images/logo.jpg",
         "telephone": '+1-' + L['phone'],
         "priceRange": "$$",
@@ -268,6 +270,7 @@ def location_page(L):
     ] + ([("When is Wing-O Winnipeg open?", L['notice'])] if L.get('notice') else []) + [
         (f"What are Wing-O {L['short']}'s hours?", ' · '.join(f"{lbl}: {txt}" for _, _, _, lbl, txt in L['hours']) + '.' + (' ' + L['season'] if L.get('season') else '')),
         (f"What is the phone number for Wing-O {L['short']}?", f"Call {L['phone']}."),
+        (f"Is this Wingo / Wingos {L['short']}?", f"Yes. Wing-O, Wingo, Wingos or Wing O: however you spell it, it's us. Same 135+ flavours at {full_addr(L)}."),
         ("Does Wing-O sell fried chicken?", "Yes. Along with bone-in and boneless wings, we serve crispy chicken fingers and hand-breaded fried chicken burgers like the Korean Fried Chicken and The Tough Guy."),
         (f"Can I order online from Wing-O {L['short']}?", "Yes — order online at wingorestaurants.com. " + order_line),
     ]
