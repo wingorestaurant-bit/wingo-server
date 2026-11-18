@@ -163,7 +163,7 @@ def e(s):
 
 # "Order…" links go straight to the ordering app (/order), not the home page. Store pages pre-pick
 # their store (the app reads ?store= and remembers it). Regina Beach is seasonal, so it just opens /order.
-ORDER_STORE = {'regina-albert-st': 'albert-st', 'regina-rochdale': 'albert-st', 'regina-east': 'east-regina', 'winnipeg': 'winnipeg'}
+ORDER_STORE = {'regina-albert-st': 'albert-st', 'regina-rochdale': 'albert-st', 'moose-jaw': 'albert-st', 'regina-east': 'east-regina', 'winnipeg': 'winnipeg'}
 
 
 def order_links(slug, html_out):
@@ -403,27 +403,25 @@ def deals_post():
                       [('Home', '/'), ('Blog', '/blog.html'), ('Wing Night Deals', None)], og_type='article')
 
 
-def rochdale_page():
-    """The Rochdale store closed, but people still search 'wingo rochdale' (Search Console).
+def closed_page(slug, name, area, near_line, extra_faq, crumb, btn_label):
+    """A store that has closed, but people still search for it (Search Console).
     Send them to the closest open store (Albert Street) instead of a dead end."""
-    slug = 'regina-rochdale'
     A = next(L for L in LOCS if L['key'] == 'albert-st')
-    title = 'Wing-O Rochdale, Regina: Closed — Visit Albert Street | Wing-O'
-    desc = (f"Wing-O's Rochdale location in Regina has closed. The closest Wing-O is Albert Street at {full_addr(A)}: "
+    title = f'Wing-O {name}: Closed — Visit Albert Street, Regina | Wing-O'
+    desc = (f"Wing-O {name} has closed. The closest Wing-O is Albert Street at {full_addr(A)}: "
             "same 135+ flavours, open till 3am Thu–Sun.")
     hours = ' · '.join(f"{lbl}: {txt}" for _, _, _, lbl, txt in A['hours'])
     faqs = [
-        ("Is Wing-O Rochdale still open?", f"No. Wing-O's Rochdale location in Regina has closed. The closest Wing-O is Albert Street at {full_addr(A)}."),
-        ("Where is the closest Wing-O to Rochdale?", f"Wing-O Albert Street, {full_addr(A)}. Call {A['phone']}. {hours}."),
-        ("Can I still order Wing-O in north-west Regina?", "Yes. Order online at wingorestaurants.com for pickup at Albert Street, or delivery anywhere in Regina for a flat $5.50."),
+        (f"Is Wing-O {name} still open?", f"No. Wing-O {name} has closed. The closest Wing-O is Albert Street at {full_addr(A)}."),
+        (f"Where is the closest Wing-O to {area}?", f"Wing-O Albert Street, {full_addr(A)}. Call {A['phone']}. {hours}."),
+        extra_faq,
     ]
     faq_html = ''.join(f'<div class="faq-item"><div class="q">{e(q)}</div><div class="a">{e(a)}</div></div>' for q, a in faqs)
     body = f"""<article class="post">
-<span class="post-tag">📍 Rochdale · Regina</span>
-<h2>Our Rochdale store has closed</h2>
-<p>Thanks to everyone who came out to <strong>Wing-O Rochdale</strong> over the years. That location is now closed,
-but the wings aren't going anywhere. Your closest Wing-O is <strong>Albert Street</strong>, with the same 135+ flavours,
-the same daily deals and the same late hours.</p>
+<span class="post-tag">📍 {e(name)}</span>
+<h2>Our {e(area)} store has closed</h2>
+<p>Thanks to everyone who came out to <strong>Wing-O {e(name)}</strong> over the months we were open. That location is now closed,
+but the wings aren't going anywhere. {near_line}</p>
 <div class="info">
  <div class="box"><div class="label">Closest Wing-O</div><div class="val"><a href="/regina-albert-st">Albert Street</a><br>{e(A['street'])}<br>{e(A['city'])}, {A['region']}</div></div>
  <div class="box"><div class="label">Phone</div><div class="val"><a href="tel:+1{A['phone'].replace('-', '')}">{A['phone']}</a></div></div>
@@ -438,12 +436,26 @@ the same daily deals and the same late hours.</p>
 </article>"""
     ld = [{"@context": "https://schema.org", "@type": "FAQPage",
            "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faqs]},
-          breadcrumb_ld([('Home', '/'), ('Locations', '/#locs'), ('Rochdale (closed)', '/' + slug)])]
-    return slug, page(slug, title, desc, 'Wing-O <span>Rochdale</span> Has Moved On',
-                      f"The Rochdale store is closed. Your closest Wing-O is Albert Street, {e(full_addr(A))}.", body, ld,
-                      [('Home', '/'), ('Locations', '/#locs'), ('Rochdale (closed)', None)],
-                      btns=[('Order from Albert St 🍗', '/', ''), (f"Call {A['phone']}", 'tel:+1' + A['phone'].replace('-', ''), 'ghost')])
+          breadcrumb_ld([('Home', '/'), ('Locations', '/#locs'), (crumb, '/' + slug)])]
+    return slug, page(slug, title, desc, f'Wing-O <span>{e(area)}</span> Has Moved On',
+                      f"The {e(area)} store is closed. Your closest Wing-O is Albert Street, {e(full_addr(A))}.", body, ld,
+                      [('Home', '/'), ('Locations', '/#locs'), (crumb, None)],
+                      btns=[(btn_label, '/', ''), (f"Call {A['phone']}", 'tel:+1' + A['phone'].replace('-', ''), 'ghost')])
 
+
+def rochdale_page():
+    return closed_page('regina-rochdale', 'Rochdale', 'Rochdale',
+        "Your closest Wing-O is <strong>Albert Street</strong>, with the same 135+ flavours, the same daily deals and the same late hours.",
+        ("Can I still order Wing-O in north-west Regina?", "Yes. Order online at wingorestaurants.com for pickup at Albert Street, or delivery anywhere in Regina for a flat $5.50."),
+        'Rochdale (closed)', 'Order from Albert St 🍗')
+
+
+def moose_jaw_page():
+    return closed_page('moose-jaw', 'Moose Jaw', 'Moose Jaw',
+        "The closest Wing-O is <strong>Albert Street in Regina</strong>, about 45 minutes east on Highway 1, with the same 135+ flavours and daily deals. "
+        "Order ahead online and it'll be hot when you pull in.",
+        ("Does Wing-O deliver to Moose Jaw?", "Not right now. Delivery covers Regina only. Order online at wingorestaurants.com for pickup at Albert Street in Regina."),
+        'Moose Jaw (closed)', 'Order for pickup in Regina 🍗')
 
 def fried_chicken_post():
     slug = 'fried-chicken-regina'
@@ -803,7 +815,7 @@ def llms_txt():
 
 
 SITEMAP_PAGES = [('/', 'daily', '1.0'), ('/order', 'daily', '0.9'), ('/menu', 'weekly', '0.9'), ('/flavours', 'weekly', '0.9'),
-                 ('/regina-albert-st', 'monthly', '0.8'), ('/regina-east', 'monthly', '0.8'), ('/regina-beach', 'monthly', '0.7'), ('/regina-rochdale', 'monthly', '0.5'),
+                 ('/regina-albert-st', 'monthly', '0.8'), ('/regina-east', 'monthly', '0.8'), ('/regina-beach', 'monthly', '0.7'), ('/regina-rochdale', 'monthly', '0.5'), ('/moose-jaw', 'monthly', '0.5'),
                  ('/winnipeg', 'weekly', '0.8'), ('/best-wings-regina', 'monthly', '0.7'), ('/best-wing-night-deals-regina', 'weekly', '0.7'),
                  ('/late-night-food-regina', 'monthly', '0.7'), ('/fried-chicken-regina', 'monthly', '0.6'),
                  ('/best-wings-winnipeg', 'monthly', '0.7'), ('/best-wing-night-deals-winnipeg', 'weekly', '0.7'),
@@ -822,7 +834,7 @@ if __name__ == '__main__':
         open(os.path.join(OUT, L['slug'] + '.html'), 'w').write(location_page(L))
         print('wrote', L['slug'])
     for fn in (deals_post, fried_chicken_post, menu_page, flavours_page, best_wings_post, late_night_post,
-               wpg_best_wings, wpg_deals, wpg_late_night, wpg_fried_chicken, rochdale_page):
+               wpg_best_wings, wpg_deals, wpg_late_night, wpg_fried_chicken, rochdale_page, moose_jaw_page):
         slug, h = fn()
         open(os.path.join(OUT, slug + '.html'), 'w').write(h)
         print('wrote', slug)
