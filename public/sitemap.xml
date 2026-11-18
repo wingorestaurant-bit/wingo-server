@@ -43,6 +43,18 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://wingorestaurants.com/regina-rochdale</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://wingorestaurants.com/moose-jaw</loc>
+    <lastmod>2026-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://wingorestaurants.com/winnipeg</loc>
     <lastmod>2026-11-03</lastmod>
     <changefreq>weekly</changefreq>
