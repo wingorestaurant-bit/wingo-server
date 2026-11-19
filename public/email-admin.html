@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>Customer Emails — Wing-O Admin</title>
+<link rel="icon" type="image/jpeg" href="/images/logo.jpg">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:Inter,Arial,sans-serif;background:#0D0D0D;color:#eee;min-height:100vh;padding:1.5rem;}
+.wrap{max-width:980px;margin:0 auto;}
+header{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;}
+header img{height:40px;width:auto;}
+h1{font-family:Oswald,Arial,sans-serif;font-size:1.3rem;letter-spacing:2px;text-transform:uppercase;color:#F5A800;}
+.card{background:#1A1208;border:1px solid #3a2e1c;border-radius:8px;padding:1.25rem;margin-bottom:1rem;}
+input{width:100%;max-width:320px;padding:.75rem;border-radius:6px;border:1.5px solid #444;background:#111;color:#fff;font-size:1rem;}
+button{background:#E8190A;color:#fff;border:0;border-radius:6px;padding:.75rem 1.2rem;font-weight:700;letter-spacing:1px;cursor:pointer;margin-top:.6rem;}
+button.alt{background:#F5A800;color:#0D0D0D;}
+button:disabled{opacity:.45;cursor:not-allowed;}
+.stats{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;}
+.stat{background:#1A1208;border:1px solid #3a2e1c;border-radius:8px;padding:1rem 1.25rem;min-width:150px;}
+.stat b{display:block;font-size:2rem;color:#F5A800;}
+.stat span{font-size:.8rem;color:#999;text-transform:uppercase;letter-spacing:1px;}
+.note{color:#999;font-size:.85rem;line-height:1.5;margin-top:.4rem;}
+.err{color:#FEB2B2;margin-top:.6rem;}
+.ok{color:#9AE6B4;margin-top:.6rem;}
+h2{font-family:Oswald,Arial,sans-serif;font-size:1.1rem;letter-spacing:1px;color:#F5A800;margin-bottom:.4rem;}
+.subj{color:#bbb;margin-bottom:.8rem;font-size:.95rem;}
+.row{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;}
+.row input{max-width:280px;}
+.big{font-size:1.05rem;padding:.9rem 1.4rem;}
+#c-prog{margin-top:.8rem;color:#ddd;line-height:1.6;}
+#c-frame{width:100%;max-width:640px;height:700px;border:0;border-radius:8px;background:#fff;margin-top:.8rem;display:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><img src="/images/wingo-logo-wide.png" alt="Wing-O"><h1>Email all customers</h1></header>
+
+<div class="card" id="login">
+  <p style="margin-bottom:.6rem;color:#bbb;">Enter the admin password (the <code>ADMIN_PASSWORD</code> set on Railway).</p>
+  <input type="password" id="pw" placeholder="Admin password" autocomplete="current-password">
+  <br><button id="go">Open</button>
+  <div class="err" id="err"></div>
+</div>
+
+<div id="out" style="display:none;">
+  <div class="stats">
+    <div class="stat"><b id="n-sub">0</b><span>Can be emailed</span></div>
+    <div class="stat"><b id="n-ord">0</b><span>From online orders</span></div>
+    <div class="stat"><b id="n-rew">0</b><span>Rewards members</span></div>
+    <div class="stat"><b id="n-wpg">0</b><span>Winnipeg sign-ups</span></div>
+    <div class="stat"><b id="n-uns">0</b><span>Unsubscribed</span></div>
+  </div>
+  <p class="note" style="margin:-.4rem 0 1rem;">Each email address counts once, even if it's in more than one list. Online orders and Rewards members from the last 2 years only (Canada's anti-spam law). Anyone who unsubscribed from any Wing-O email is left out.</p>
+  <div class="card">
+    <h2>📣 Send an email</h2>
+    <p class="subj">Email: <select id="c-pick" style="max-width:340px;padding:.4rem;border-radius:6px;"></select></p>
+    <p class="subj">Subject: <b id="c-subj">…</b></p>
+    <div class="row">
+      <button class="alt" id="c-prev" style="margin-top:0;">👀 Preview</button>
+      <input type="email" id="c-test-to" placeholder="Your email for a test">
+      <button class="alt" id="c-test" style="margin-top:0;">✉️ Send me a test</button>
+    </div>
+    <iframe id="c-frame" title="Email preview"></iframe>
+    <div style="margin-top:1rem;"><button class="big" id="c-send" disabled>Send to all</button></div>
+    <div id="c-prog"></div>
+    <div class="err" id="c-err"></div>
+  </div>
+</div>
+</div>
+<script>
+(function(){
+  var pwUsed = '', poll = null, camp = '';
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function api(path, body){
+    body = body || {}; body.password = pwUsed; if (camp) body.campaign = camp;
+    return fetch('/api/customers/campaign/' + path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      .then(function(r){ return r.json().then(function(d){ if (!r.ok) throw new Error(d.error || 'Something went wrong.'); return d; }); });
+  }
+  function cErr(m){ document.getElementById('c-err').textContent = m || ''; }
+  function set(id, v){ document.getElementById(id).textContent = v; }
+  function status(){
+    return api('status').then(function(d){
+      document.getElementById('login').style.display = 'none';
+      document.getElementById('out').style.display = 'block';
+      set('n-sub', d.subscribed); set('n-ord', d.fromOrders); set('n-rew', d.fromRewards); set('n-wpg', d.fromWinnipeg); set('n-uns', d.unsubscribed);
+      set('c-subj', d.subject);
+      camp = d.campaign;
+      var pick = document.getElementById('c-pick');
+      if (!pick.options.length) d.campaigns.forEach(function(c){ var o = document.createElement('option'); o.value = c.id; o.textContent = c.label; pick.appendChild(o); });
+      pick.value = d.campaign;
+      var btn = document.getElementById('c-send'), prog = document.getElementById('c-prog');
+      var lines = ['✅ Sent: <b>' + d.sent + '</b> &nbsp; ⏳ Not sent yet: <b>' + d.pending + '</b>' + (d.failed ? ' &nbsp; ⚠️ Failed: <b>' + d.failed + '</b> (press Send again to retry them)' : '')];
+      if (d.running) lines.push('Sending now… you can close this page, it keeps going.');
+      else if (d.last && d.last.finished && d.last.error) lines.push('Last send stopped: ' + esc(d.last.error) + '<br>If it says a daily or monthly limit, your email plan ran out. Press Send again tomorrow and it continues where it stopped.');
+      if (!d.emailReady) lines.push('⚠️ Email is not set up: add RESEND_API_KEY on Railway.');
+      prog.innerHTML = lines.join('<br>');
+      btn.disabled = d.running || !d.pending || !d.emailReady;
+      btn.textContent = d.running ? 'Sending…' : d.pending ? '🚀 Send to all ' + d.pending + ' customers' : (d.sent ? '✅ Everyone has it' : 'No one to send to');
+      if (d.running && !poll) poll = setInterval(status, 3000);
+      if (!d.running && poll) { clearInterval(poll); poll = null; }
+    });
+  }
+  function login(){
+    pwUsed = document.getElementById('pw').value;
+    set('err', 'Loading your customer list…');
+    status().catch(function(e){ set('err', e.message); });
+  }
+  document.getElementById('go').addEventListener('click', login);
+  document.getElementById('pw').addEventListener('keydown', function(e){ if (e.key === 'Enter') login(); });
+  document.getElementById('c-pick').addEventListener('change', function(){
+    camp = this.value; cErr(''); document.getElementById('c-frame').style.display = 'none';
+    status().catch(function(e){ cErr(e.message); });
+  });
+  document.getElementById('c-prev').addEventListener('click', function(){
+    cErr('');
+    api('preview').then(function(d){ var f = document.getElementById('c-frame'); f.srcdoc = d.html; f.style.display = 'block'; }).catch(function(e){ cErr(e.message); });
+  });
+  document.getElementById('c-test').addEventListener('click', function(){
+    var to = document.getElementById('c-test-to').value.trim(), b = this;
+    cErr(''); b.disabled = true;
+    api('test', { email: to }).then(function(){ document.getElementById('c-prog').insertAdjacentHTML('afterbegin', '<div class="ok">Test sent to ' + esc(to) + '. Check your inbox (and spam).</div>'); })
+      .catch(function(e){ cErr(e.message); }).then(function(){ b.disabled = false; });
+  });
+  document.getElementById('c-send').addEventListener('click', function(){
+    var n = (this.textContent.match(/\d+/) || ['0'])[0];
+    var pk = document.getElementById('c-pick');
+    if (!confirm('Send "' + pk.options[pk.selectedIndex].text + '" to ' + n + ' customers now?\n\nThis cannot be undone. Each person only gets it once.')) return;
+    cErr(''); this.disabled = true;
+    api('send', { confirm: 'SEND' }).then(function(){ return status(); }).then(function(){ if (!poll) poll = setInterval(status, 3000); })
+      .catch(function(e){ cErr(e.message); status(); });
+  });
+})();
+</script>
+</body>
+</html>

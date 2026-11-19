@@ -2456,29 +2456,29 @@ async function wpgCampaignCounts(col, c) {
   ]);
   return { subscribed, sent, failed, pending };
 }
-async function runWpgCampaign(col, c) {
-  const run = { campaign: c.ID, started: new Date(), sent: 0, failed: 0, error: null, finished: null };
-  wpgCampaignLast = run;
-  const KEY = wpgKey(c);
+// Sends campaign c to every pending row of col (Winnipeg sign-ups or the customer list).
+// pendingQuery(c) selects who still needs it; emailFor(c, row) builds each email. Progress goes into run.
+async function runListCampaign(col, c, pendingQuery, emailFor, run, label) {
+  const KEY = `campaigns.${c.ID}`;
   const sleep = ms => new Promise(r => setTimeout(r, ms));
   try {
     for (let round = 0; round < 400; round++) {
-      const rows = await col.find(wpgPendingQuery(c), { projection: { _id: 1, email: 1, name: 1, unsubscribe_token: 1 } }).limit(100).toArray();
+      const rows = await col.find(pendingQuery(c), { projection: { _id: 1, email: 1, name: 1, unsubscribe_token: 1 } }).limit(100).toArray();
       if (!rows.length) break;
       const claimed = [];
       for (const row of rows) {
-        const u = await col.updateOne({ _id: row._id, ...wpgPendingQuery(c) }, { $set: { [KEY]: { status: 'claimed', at: new Date() } } });
+        const u = await col.updateOne({ _id: row._id, ...pendingQuery(c) }, { $set: { [KEY]: { status: 'claimed', at: new Date() } } });
         if (u.modifiedCount) claimed.push(row);
       }
       if (!claimed.length) continue;
       const ids = claimed.map(r => r._id);
       try {
-        await wpgSendBatch(claimed.map(r => wpgEmailFor(c, r)));
+        await wpgSendBatch(claimed.map(r => emailFor(c, r)));
         await col.updateMany({ _id: { $in: ids } }, { $set: { [KEY]: { status: 'sent', at: new Date() } } });
         run.sent += claimed.length;
       } catch (e) {
         const msg = String(e.message).slice(0, 200);
-        console.warn('Winnipeg email batch failed:', msg);
+        console.warn(`${label} email batch failed:`, msg);
         if (/rate|too many/i.test(msg)) {   // too fast: put them back and slow down
           await col.updateMany({ _id: { $in: ids } }, { $unset: { [KEY]: '' } });
           await sleep(3000); continue;
@@ -2487,7 +2487,7 @@ async function runWpgCampaign(col, c) {
         let ok = 0;
         for (const r of claimed) {
           try {
-            await wpgSendBatch([wpgEmailFor(c, r)]);
+            await wpgSendBatch([emailFor(c, r)]);
             await col.updateOne({ _id: r._id }, { $set: { [KEY]: { status: 'sent', at: new Date() } } }); ok++;
           } catch (e1) {
             const m1 = String(e1.message).slice(0, 200);
@@ -2503,7 +2503,14 @@ async function runWpgCampaign(col, c) {
     }
   } catch (e) {
     run.error = String(e.message).slice(0, 200);
-    console.warn('Winnipeg email job error:', run.error);
+    console.warn(`${label} email job error:`, run.error);
+  }
+}
+async function runWpgCampaign(col, c) {
+  const run = { campaign: c.ID, started: new Date(), sent: 0, failed: 0, error: null, finished: null };
+  wpgCampaignLast = run;
+  try {
+    await runListCampaign(col, c, wpgPendingQuery, wpgEmailFor, run, 'Winnipeg');
   } finally {
     run.finished = new Date();
     wpgCampaignRunning = false;
@@ -2561,6 +2568,172 @@ app.post('/api/winnipeg/campaign/send', async (req, res) => {
     runWpgCampaign(col, c);   // runs in the background; the page polls /status
     res.json({ success: true, started: true, pending });
   } catch (e) { wpgCampaignRunning = false; res.status(500).json({ error: 'server error' }); }
+});
+
+// ── EMAILS TO ALL CUSTOMERS ───────────────────────────────────
+// The owner sends deal emails to everyone who gave us an email, from /email-admin.
+// The list (customer_list, one row per email address) is rebuilt from:
+//  • website orders from the last 2 years (CASL implied consent: a purchase in the past 2 years)
+//  • Rewards (loyalty) members active in the last 2 years
+//  • Winnipeg sign-ups who ticked the consent box and haven't unsubscribed
+// Anyone in email_optouts (any Wing-O unsubscribe) or unsubscribed from the Winnipeg list is left out.
+// Sending reuses the Winnipeg rules: each person once per email, own unsubscribe link, batches of 100.
+const CUSTOMER_CAMPAIGNS = [require('./customer-thursday-email')];   // newest first
+const custCampaign = id => CUSTOMER_CAMPAIGNS.find(c => c.ID === id) || CUSTOMER_CAMPAIGNS[0];
+const custPendingQuery = c => ({ unsubscribed: { $ne: true }, unsubscribe_token: { $exists: true }, [`campaigns.${c.ID}.status`]: { $nin: ['sent', 'claimed'] } });
+const CUST_CONSENT_DAYS = 730;
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+let custCampaignRunning = false, custCampaignLast = null, custIndexed = false, custSync = null;
+
+async function syncCustomerList(database) {
+  const col = database.collection('customer_list');
+  if (!custIndexed) { await col.createIndex({ email_normalized: 1 }, { unique: true }); await col.createIndex({ unsubscribe_token: 1 }); custIndexed = true; }
+  const since = new Date(Date.now() - CUST_CONSENT_DAYS * 86400000);
+  const found = new Map();
+  const add = (email, name, at, source) => {
+    email = String(email || '').trim();
+    const norm = email.toLowerCase();
+    if (!EMAIL_RE.test(norm) || norm.length > 254) return;
+    const f = found.get(norm) || { email, name: '', last: new Date(0), sources: new Set() };
+    const when = at ? new Date(at) : new Date(0);
+    if (name && (!f.name || when >= f.last)) f.name = String(name).trim().slice(0, 80);
+    if (when > f.last) f.last = when;
+    f.sources.add(source);
+    found.set(norm, f);
+  };
+  const orders = await database.collection('orders').find(
+    { 'customer.email': { $regex: '@' }, createdAt: { $gte: since } },
+    { projection: { 'customer.email': 1, 'customer.firstName': 1, createdAt: 1 } }).toArray();
+  orders.forEach(o => add(o.customer.email, o.customer.firstName, o.createdAt, 'order'));
+  const members = await database.collection('loyalty').find(
+    { email: { $regex: '@' }, $or: [{ updatedAt: { $gte: since } }, { createdAt: { $gte: since } }] },
+    { projection: { email: 1, name: 1, createdAt: 1, updatedAt: 1 } }).toArray();
+  members.forEach(m => add(m.email, m.name, m.updatedAt || m.createdAt, 'rewards'));
+  const wpgCol = database.collection('winnipeg_signups');
+  const signups = await wpgCol.find({ unsubscribed: { $ne: true } }, { projection: { email: 1, name: 1, created_at: 1 } }).toArray();
+  signups.forEach(s => add(s.email, s.name, s.created_at, 'winnipeg'));
+
+  // Everyone who unsubscribed from anything Wing-O sends
+  const out = new Set((await database.collection('email_optouts').find({}, { projection: { email_normalized: 1 } }).toArray()).map(x => x.email_normalized));
+  (await wpgCol.find({ unsubscribed: true }, { projection: { email_normalized: 1, email: 1 } }).toArray())
+    .forEach(x => out.add(x.email_normalized || String(x.email || '').trim().toLowerCase()));
+
+  const ops = [];
+  for (const [norm, f] of found) {
+    if (out.has(norm)) continue;
+    ops.push({ updateOne: {
+      filter: { email_normalized: norm },
+      update: {
+        $set: { email: f.email, name: f.name, last_seen_at: f.last, sources: [...f.sources] },
+        $setOnInsert: { email_normalized: norm, unsubscribe_token: require('crypto').randomBytes(16).toString('hex'), unsubscribed: false, created_at: new Date() },
+      },
+      upsert: true,
+    } });
+  }
+  for (let i = 0; i < ops.length; i += 500) await col.bulkWrite(ops.slice(i, i + 500), { ordered: false });
+  if (out.size) await col.updateMany({ email_normalized: { $in: [...out] }, unsubscribed: { $ne: true } }, { $set: { unsubscribed: true, unsubscribed_at: new Date() } });
+  return col;
+}
+// Rebuild at most once a minute (the admin page polls status while sending)
+async function customerListCol(database, force) {
+  if (force || !custSync || Date.now() - custSync.at > 60000) {
+    const p = syncCustomerList(database);
+    custSync = { at: Date.now(), p };
+    p.catch(() => { custSync = null; });
+  }
+  return custSync.p;
+}
+function custEmailFor(c, row, test) {
+  const unsubUrl = test ? 'https://wingorestaurants.com/' : `https://wingorestaurants.com/api/customers/unsubscribe?t=${row.unsubscribe_token}`;
+  return {
+    from: WPG_FROM, to: [row.email], reply_to: 'besaucy@wingorestaurants.com',
+    subject: (test ? '[TEST] ' : '') + c.SUBJECT,
+    html: c.render({ name: row.name, unsubUrl }),
+    headers: { 'List-Unsubscribe': `<${unsubUrl}>` },
+  };
+}
+async function custAdminCol(req, res, force) {
+  if (!isAdmin((req.body || {}).password)) { res.status(401).json({ error: 'Wrong password' }); return null; }
+  const database = await connectDB();
+  if (!database) { res.status(500).json({ error: 'Database unavailable' }); return null; }
+  return customerListCol(database, force);
+}
+
+app.post('/api/customers/campaign/status', async (req, res) => {
+  try {
+    const col = await custAdminCol(req, res); if (!col) return;
+    const c = custCampaign((req.body || {}).campaign);
+    const f = `campaigns.${c.ID}.status`;
+    const live = { unsubscribed: { $ne: true } };
+    const [subscribed, unsubscribed, sent, failed, pending, fromOrders, fromRewards, fromWinnipeg] = await Promise.all([
+      col.countDocuments(live), col.countDocuments({ unsubscribed: true }),
+      col.countDocuments({ [f]: 'sent' }), col.countDocuments({ ...live, [f]: 'error' }), col.countDocuments(custPendingQuery(c)),
+      col.countDocuments({ ...live, sources: 'order' }), col.countDocuments({ ...live, sources: 'rewards' }), col.countDocuments({ ...live, sources: 'winnipeg' }),
+    ]);
+    const last = custCampaignLast && custCampaignLast.campaign === c.ID ? custCampaignLast : null;
+    res.json({
+      campaign: c.ID, subject: c.SUBJECT,
+      campaigns: CUSTOMER_CAMPAIGNS.map(x => ({ id: x.ID, label: x.LABEL || x.SUBJECT })),
+      subscribed, unsubscribed, sent, failed, pending, fromOrders, fromRewards, fromWinnipeg,
+      running: custCampaignRunning, last, emailReady: !!process.env.RESEND_API_KEY,
+    });
+  } catch (e) { console.warn('Customer list error:', e.message); res.status(500).json({ error: 'server error' }); }
+});
+
+app.post('/api/customers/campaign/preview', (req, res) => {
+  if (!isAdmin((req.body || {}).password)) return res.status(401).json({ error: 'Wrong password' });
+  const c = custCampaign((req.body || {}).campaign);
+  res.json({ subject: c.SUBJECT, html: c.render({ name: '', unsubUrl: '#' }) });
+});
+
+app.post('/api/customers/campaign/test', async (req, res) => {
+  try {
+    if (!isAdmin((req.body || {}).password)) return res.status(401).json({ error: 'Wrong password' });
+    if (!process.env.RESEND_API_KEY) return res.status(503).json({ error: 'Set RESEND_API_KEY on Railway first.' });
+    const email = String((req.body || {}).email || '').trim();
+    if (!EMAIL_RE.test(email)) return res.status(400).json({ error: 'Enter a valid email address.' });
+    await wpgSendBatch([custEmailFor(custCampaign(req.body.campaign), { email, name: '' }, true)]);
+    res.json({ success: true });
+  } catch (e) { res.status(500).json({ error: String(e.message || 'Send failed').slice(0, 200) }); }
+});
+
+app.post('/api/customers/campaign/send', async (req, res) => {
+  try {
+    if (!isAdmin((req.body || {}).password)) return res.status(401).json({ error: 'Wrong password' });
+    if ((req.body || {}).confirm !== 'SEND') return res.status(400).json({ error: 'Not confirmed.' });
+    if (!process.env.RESEND_API_KEY) return res.status(503).json({ error: 'Set RESEND_API_KEY on Railway first.' });
+    if (custCampaignRunning) return res.status(409).json({ error: 'Already sending. Watch the progress below.' });
+    const col = await custAdminCol(req, res, true); if (!col) return;   // fresh list, so new unsubscribes are honoured
+    const c = custCampaign(req.body.campaign);
+    const pending = await col.countDocuments(custPendingQuery(c));
+    if (!pending) return res.json({ success: true, started: false, pending: 0 });
+    custCampaignRunning = true;
+    const run = { campaign: c.ID, started: new Date(), sent: 0, failed: 0, error: null, finished: null };
+    custCampaignLast = run;
+    runListCampaign(col, c, custPendingQuery, custEmailFor, run, 'Customer')   // background; the page polls /status
+      .finally(() => { run.finished = new Date(); custCampaignRunning = false; console.log(`📣 Customer email ${c.ID}: ${run.sent} sent, ${run.failed} failed`); });
+    res.json({ success: true, started: true, pending });
+  } catch (e) { custCampaignRunning = false; res.status(500).json({ error: 'server error' }); }
+});
+
+app.get('/api/customers/unsubscribe', async (req, res) => {
+  const t = String(req.query.t || '');
+  const page = msg => `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Wing-O</title></head><body style="font-family:Arial,sans-serif;background:#F4EBD7;text-align:center;padding:60px 20px;"><h1 style="color:#E8190A;">WING-O</h1><p style="font-size:17px;">${msg}</p><p><a href="/" style="color:#E8190A;">Back to Wing-O</a></p></body></html>`;
+  if (!/^[a-f0-9]{32}$/.test(t)) return res.status(400).send(page('That unsubscribe link is not valid.'));
+  try {
+    const database = await connectDB();
+    if (!database) return res.status(500).send(page('Please try again in a few minutes.'));
+    const row = await database.collection('customer_list').findOne({ unsubscribe_token: t });
+    if (!row) return res.status(404).send(page('We couldn\'t find that link. You may already be unsubscribed.'));
+    await database.collection('customer_list').updateOne({ _id: row._id }, { $set: { unsubscribed: true, unsubscribed_at: new Date() } });
+    await database.collection('email_optouts').updateOne(
+      { email_normalized: row.email_normalized },
+      { $set: { email_normalized: row.email_normalized, source: 'customer-email', at: new Date() } },
+      { upsert: true });
+    res.send(page('You\'re unsubscribed from Wing-O emails. Sorry to see you go! 🍗'));
+  } catch (e) {
+    res.status(500).send(page('Please try again in a few minutes.'));
+  }
 });
 
 
