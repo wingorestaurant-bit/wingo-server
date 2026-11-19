@@ -31,7 +31,7 @@
 
   <!-- logo -->
   <tr><td align="center" style="padding:22px 20px 6px;">
-    <a href="https://wingorestaurants.com/?utm_source=onesignal&amp;utm_medium=email&amp;utm_campaign=thursday_wings" target="_blank"><img src="https://wingorestaurants.com/images/wingo-logo-new.png" width="110" alt="Wing-O" style="display:block;width:110px;height:auto;border:0;"></a>
+    <a href="https://wingorestaurants.com/?utm_source=email&amp;utm_medium=email&amp;utm_campaign=thursday_wings" target="_blank"><img src="https://wingorestaurants.com/images/wingo-logo-new.png" width="110" alt="Wing-O" style="display:block;width:110px;height:auto;border:0;"></a>
   </td></tr>
 
   <!-- edition line -->
@@ -60,13 +60,13 @@
 
   <!-- greeting -->
   <tr><td class="px" style="padding:12px 40px 4px;font-family:Georgia,'Times New Roman',serif;font-size:17px;line-height:1.55;color:#2c1f0f;" align="center">
-    Hey {{ first_name | default: "wing fan" }}, Thursday is the best night of the week to bring a friend.
+    Hey {{FIRST_NAME}}, Thursday is the best night of the week to bring a friend.
     Or not. We don't judge. <b>Your second order of wings is half price.</b>
   </td></tr>
 
   <!-- photo -->
   <tr><td align="center" class="px" style="padding:22px 30px 6px;">
-    <a href="https://wingorestaurants.com/order?utm_source=onesignal&amp;utm_medium=email&amp;utm_campaign=thursday_wings#deal" target="_blank"><img src="https://wingorestaurants.com/images/email-wings-wide.jpg" width="540" alt="Wing-O wings tossed in sauce" style="display:block;width:100%;max-width:540px;height:auto;border:3px solid #1A1208;"></a>
+    <a href="https://wingorestaurants.com/order?utm_source=email&amp;utm_medium=email&amp;utm_campaign=thursday_wings#deal" target="_blank"><img src="https://wingorestaurants.com/images/email-wings-wide.jpg" width="540" alt="Wing-O wings tossed in sauce" style="display:block;width:100%;max-width:540px;height:auto;border:3px solid #1A1208;"></a>
     <div style="font:12px 'Special Elite','Courier New',monospace;color:#4a3f36;text-align:left;padding-top:6px;">PICTURED: wings mid-toss. Order #2 is half price.</div>
   </td></tr>
 
@@ -80,7 +80,7 @@
         <!-- button -->
         <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:20px auto 0;">
           <tr><td align="center" bgcolor="#e3170a" style="background:#e3170a;border:2px solid #1A1208;box-shadow:4px 4px 0 #1A1208;">
-            <a href="https://wingorestaurants.com/order?utm_source=onesignal&amp;utm_medium=email&amp;utm_campaign=thursday_wings#deal" target="_blank" style="display:inline-block;padding:14px 34px;font-family:'Bebas Neue',Impact,Arial,sans-serif;font-size:24px;letter-spacing:3px;color:#ffffff;text-decoration:none;">ORDER TONIGHT &rarr;</a>
+            <a href="https://wingorestaurants.com/order?utm_source=email&amp;utm_medium=email&amp;utm_campaign=thursday_wings#deal" target="_blank" style="display:inline-block;padding:14px 34px;font-family:'Bebas Neue',Impact,Arial,sans-serif;font-size:24px;letter-spacing:3px;color:#ffffff;text-decoration:none;">ORDER TONIGHT &rarr;</a>
           </td></tr>
         </table>
       </td></tr>
@@ -120,12 +120,13 @@
 
   <!-- footer -->
   <tr><td align="center" style="background:#1A1208;padding:22px 24px;border-top:4px double #ffc23c;font-family:Georgia,serif;font-size:12px;line-height:1.7;color:#d9ccb2;">
-    <a href="https://wingorestaurants.com/order?utm_source=onesignal&amp;utm_medium=email&amp;utm_campaign=thursday_wings" style="color:#ffc23c;">Order online</a> &middot;
+    <a href="https://wingorestaurants.com/order?utm_source=email&amp;utm_medium=email&amp;utm_campaign=thursday_wings" style="color:#ffc23c;">Order online</a> &middot;
     <a href="https://www.instagram.com/wingorestaurants" style="color:#ffc23c;">Instagram</a> &middot;
-    <a href="https://wingorestaurants.com/?utm_source=onesignal&amp;utm_medium=email&amp;utm_campaign=thursday_wings" style="color:#ffc23c;">wingorestaurants.com</a><br>
+    <a href="https://wingorestaurants.com/?utm_source=email&amp;utm_medium=email&amp;utm_campaign=thursday_wings" style="color:#ffc23c;">wingorestaurants.com</a><br>
     Deal valid Thursdays at Wing-O Regina and Winnipeg locations.<br>
-    You're getting this because you signed up for Wing-O deals.
-    <a href="[unsubscribe_url]" style="color:#d9ccb2;text-decoration:underline;">Unsubscribe</a>
+    Wing-O Restaurants &middot; #3 155 Albert St N, Regina, SK &middot; wingorestaurants.com<br>
+    You're getting this because you ordered from Wing-O or signed up for Wing-O emails.
+    <a href="{{UNSUBSCRIBE_URL}}" style="color:#d9ccb2;text-decoration:underline;">Unsubscribe</a>
   </td></tr>
 
 </table>
