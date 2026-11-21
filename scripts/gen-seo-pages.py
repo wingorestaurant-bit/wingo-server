@@ -662,20 +662,109 @@ def guide(slug, title, desc, headline, h1, hero, tag, sections, faqs, crumb, loc
 
 
 def best_wings_post():
+    """The 'best wings in Regina' guide: long-form, real photos, every flavour by heat, deals, how to order, FAQ."""
+    slug = 'best-wings-regina'
     n = flavour_count()
-    return guide('best-wings-regina', 'Best Chicken Wings in Regina: Flavours, Prices & Late Hours | Wing-O',
-        f'Looking for the best wings in Regina? Wing-O has 135+ flavours, crispy bone-in and boneless wings from $7.99, daily deals and hours until 3 AM Thu–Sun.',
-        'Where to Get the Best Chicken Wings in Regina', 'Best <span>Wings</span> in Regina', 'Crispy, sauced to order, and open late.', '🏆 Regina Food Guide',
-        [('Why Wing-O', f'Wing-O started on Albert Street in Regina and is known for one of the <strong>biggest wing flavour lists in the city</strong>: 135+ flavours, with {n} sauces and dry rubs on the current menu. Every order is fried to order and tossed in sauce made from scratch.'),
-         ('The wings', 'Crispy <strong>bone-in wings</strong> and <strong>boneless wings</strong>, half order $7.99, full order $13.99. Two to five orders let you pick a different flavour for each. Ribs, chicken fingers and cauliflower wings take every flavour too.'),
-         ('The flavours', 'Start with the classics (Honey Garlic, Honey Dill, Buffalo, Salt &amp; Pepper), try a house combo from the <strong>Illegal Sauces</strong>, or go all the way to <strong>Dead Angel</strong>, made with Carolina Reaper. <a href="/flavours">See every flavour →</a>'),
-         ('The deals', '89¢ wings on Sunday, all-you-can-eat wings on Tuesday ($28.99, dine-in), and buy-one-get-one-50%-off wings on Thursday. <a href="/best-wing-night-deals-regina">All daily deals →</a>'),
-         ('Open late', 'Our Regina locations are open until <strong>1 AM Monday to Wednesday</strong> and <strong>3 AM Thursday to Sunday</strong>, with pickup and delivery across Regina.')],
-        [('What are the best wings in Regina?', 'Wing-O is a Regina favourite for wings: 135+ flavours, crispy bone-in and boneless wings from $7.99, and two Regina locations open until 3 AM Thursday to Sunday.'),
-         ('Where are Wing-O locations in Regina?', 'Wing-O is at #3 – 155 Albert St N and 534 University Park Drive in Regina, plus a summer location at 110 Centre St in Regina Beach.'),
-         ('How much are wings at Wing-O?', 'A half order is $7.99 and a full order is $13.99, for bone-in or boneless. Sunday wings are 89¢ each (minimum 10).'),
-         ('Does Wing-O deliver in Regina?', 'Yes. Order at wingorestaurants.com for delivery anywhere in Regina for a flat $5.50, or pickup in about 20 minutes.')],
-        'Best Wings in Regina')
+    title = 'Best Wings in Regina: 135+ Flavours & Daily Deals | Wing-O'
+    desc = ('The best wings in Regina? Wing-O: 135+ flavours by heat level, bone-in and boneless from $7.99, '
+            'a different deal every day and open until 3 AM Thu–Sun.')
+    headline = 'Where to Get the Best Chicken Wings in Regina (2026 Guide)'
+    wings = [m for m in DATA['MENU'].get('wings', []) if m.get('price')]
+    size_rows = ''.join(f'<div><span>{e(m["name"].replace(" — Wings", ""))}</span><b>{money(m["price"])}</b></div>' for m in wings)
+    # every flavour, grouped by heat (same source as the ordering page)
+    order = ['Sweet', 'Mild', 'Savoury', 'Medium', 'Hot']
+    blurb = {'Sweet': 'Sticky, glazed and kid-friendly.', 'Mild': 'Flavour first, barely any burn.',
+             'Savoury': 'Tangy, cheesy and pickle-y. No heat.', 'Medium': 'A warm kick that builds.',
+             'Hot': 'For the brave. Bring milk.'}
+    by_heat = {h: [] for h in order}
+    for group, fl in DATA['FLAVORS'].items():
+        for f in fl:
+            h = HEAT_WORD.get(DATA['HEAT'].get(f, ''), 'Savoury')
+            by_heat.setdefault(h, []).append((f, group))
+    heat_html = ''
+    for h in order:
+        items = sorted(by_heat[h], key=lambda x: x[0].lower())
+        sub = lambda f, g: split_flavour(f)[1] or ('Dry rub' if g == 'Rub It' else '')
+        chips = ''.join(f'<div><b>{e(split_flavour(f)[0])}</b>' + (f'<small>{e(sub(f, g))}</small>' if sub(f, g) else '') + '</div>' for f, g in items)
+        heat_html += f'<h3>{h} <i class="h-{h}" style="font-style:normal;font-size:.75rem;color:#fff;padding:.05rem .45rem;border-radius:3px;vertical-align:middle;">{len(items)} flavours</i></h3><p>{blurb[h]}</p><div class="fl">{chips}</div>'
+    deals = [('Sunday', '89¢ wings', 'Minimum 10. The cheapest way to feed the game crowd.'),
+             ('Monday', 'Boneless: 2nd order 50% off', 'Two orders of boneless, half price on the second.'),
+             ('Tuesday', 'All-you-can-eat wings, $28.99', '5 PM to 10 PM, dine-in. The house record is 96 wings.'),
+             ('Wednesday', 'Ribs: 2nd order 50% off', 'Tossed in any flavour.'),
+             ('Thursday', 'Wing night: 2nd order 50% off', "Buy an order of wings, get the second half price."),
+             ('Friday', '3 orders for $30', '27 wings, 3 flavours. Pickup and dine-in.'),
+             ('Saturday', '2 burgers for $20', 'Including the fried chicken burgers.'),
+             ('Every day', '$10 lunch', 'Wings and small fries, 11 AM to 3:30 PM, pickup.')]
+    deal_rows = ''.join(f'<div><span><b>{d}</b> · {e(t)}<small style="display:block;color:#666;">{e(x)}</small></span></div>' for d, t, x in deals)
+    picks = [('First time?', 'Honey Garlic', 'The crowd-pleaser. Sweet, sticky, no heat.'),
+             ('Prairie classic', 'Honey Dill', 'Sweet, creamy and dill-forward. If you grew up on the prairies, you know.'),
+             ('Pickle people', 'Creamy Dill Pickle', 'Tangy and creamy. Weirdly addictive.'),
+             ('Classic heat', 'Buffalo', 'Vinegar-bright, medium kick.'),
+             ('Something different', 'Honeyaki Harmony', 'House mix of Teriyaki and Honey Garlic. Sticky in the best way.'),
+             ('Dare', 'Dead Angel', 'Made with Carolina Reaper. Sign the waiver in your head first.')]
+    pick_html = ''.join(f'<div><b>{e(w)}: {e(f)}</b><small>{e(x)}</small></div>' for w, f, x in picks)
+    faqs = [
+        ('What are the best wings in Regina?', 'Wing-O is a Regina favourite for wings: 135+ flavours, crispy bone-in and boneless wings from $7.99, a deal every day of the week and two Regina locations open until 3 AM Thursday to Sunday.'),
+        ('How many wings are in an order at Wing-O?', 'A full order is 9 wings and a half order is smaller. You can choose a different flavour for each order when you get two or more.'),
+        ('How much are wings at Wing-O Regina?', 'A half order is $7.99 and a full order is $13.99, for bone-in or boneless. Sunday wings are 89¢ each (minimum 10), and Friday is 3 orders for $30.'),
+        ('What is the hottest wing at Wing-O?', 'Dead Angel, made with Carolina Reaper. Spicy Mammilla (Caesar, Dead Angel and Ranch) and Devil\'s Kiss are close behind.'),
+        ('Does Wing-O have dry rubs?', f'Yes. The Rub It list has dry seasonings like Salt & Pepper, Lemon Pepper, Dill Pickle and Cajun, shaken on with no sauce. All {n} sauces and rubs are on the flavours page.'),
+        ('Does Wing-O have Honey Dill wings?', 'Yes. Honey Dill is on the menu, along with Creamy Dill Pickle and the Dill Pickle dry rub.'),
+        ('Where are Wing-O locations in Regina?', 'Wing-O is at #3 – 155 Albert St N and 534 University Park Drive in Regina, plus a summer location at 110 Centre St in Regina Beach.'),
+        ('Is Wing-O open late?', 'Yes. Regina locations are open until 1 AM Monday to Wednesday and 3 AM Thursday to Sunday. Online orders after 11 PM get 10% off.'),
+        ('Does Wing-O deliver in Regina?', 'Yes. Order at wingorestaurants.com for delivery anywhere in Regina for a flat $5.50, or pickup in about 20 minutes.'),
+        ('Is there a wing night in Regina?', 'Thursday is wing night at Wing-O: buy an order of wings and get the second 50% off. Tuesday is all-you-can-eat wings for $28.99 (dine-in, 5–10 PM).'),
+    ]
+    faq_html = ''.join(f'<div class="faq-item"><div class="q">{e(q)}</div><div class="a">{e(a)}</div></div>' for q, a in faqs)
+    img = lambda src, alt, cap: (f'<figure style="margin:1.25rem 0;"><img src="/images/{src}" alt="{e(alt)}" loading="lazy" '
+                                 f'style="width:100%;height:auto;display:block;border:2px solid #1A1208;"><figcaption style="font-size:.85rem;color:#555;margin-top:.35rem;">{e(cap)}</figcaption></figure>')
+    body = f"""<article class="post">
+<span class="post-tag">🏆 Regina Food Guide</span>
+<h2>{e(headline)}</h2>
+<div class="meta">📅 Updated November 2026 · ⏱️ 6 min read</div>
+<p>Regina takes wings seriously. Honey Dill is a prairie institution, and everyone has an opinion on crispy versus saucy.
+This guide covers what makes a great wing, how to order at Wing-O, every one of our {n} flavours sorted by heat, and the best deal for every day of the week.</p>
+{img('email-wings-wide.jpg', 'Crispy Wing-O chicken wings tossed in sauce in Regina', 'Wings fried to order and tossed fresh. Wing-O, Regina.')}
+<h3>What makes a great wing</h3>
+<p><strong>Crisp first.</strong> Every wing at Wing-O is fried to order, so the skin crackles before it ever meets sauce.
+<strong>Sauce second.</strong> Wings are tossed in the bowl right before they go out, so the sauce coats instead of soaking.
+<strong>Choice third.</strong> With 135+ flavours, from sweet glazes to dry rubs to Carolina Reaper, there's no such thing as "the usual" unless you want one.</p>
+<h3>How to order: sizes and prices</h3>
+<p>Bone-in and boneless are the same price. Order two or more and pick a different flavour for each.</p>
+<div class="menu-list">{size_rows}<div><span>Boneless (half / full)</span><b>$7.99 / $13.99</b></div></div>
+<p>Also tossed in any flavour: ribs, chicken fingers and cauliflower wings. <a href="/menu">Full menu and prices →</a></p>
+{img('wings-half.jpg', 'Ranch-dusted Wing-O wings', 'Dry rubs and creamy sauces: two of the 8 flavour families.')}
+<h3>Not sure what to get? Start here</h3>
+<div class="fl">{pick_html}</div>
+<a class="btn" href="/">Order Wings Online</a>
+</article>
+<article class="post">
+<h2>Every flavour, sorted by heat</h2>
+<p>All {n} sauces and dry rubs on today's menu, from no heat to "why did I do this". Combos in brackets are our house mixes.
+Want the families instead? <a href="/flavours">Browse by flavour family →</a></p>
+{heat_html}
+</article>
+<article class="post">
+<h2>The best wing deal for every day of the week</h2>
+<div class="menu-list" style="grid-template-columns:1fr;">{deal_rows}</div>
+<p><a href="/best-wing-night-deals-regina">More on Regina's wing night deals →</a></p>
+{img('wings-flying.jpg', 'Wing-O wings mid-toss above a checkered basket', 'Thursday is wing night: second order 50% off.')}
+<h3>Late-night wings in Regina</h3>
+<p>Both Regina stores are open until <strong>1 AM Monday to Wednesday</strong> and <strong>3 AM Thursday to Sunday</strong>.
+Online orders after 11 PM get <strong>10% off</strong> automatically. <a href="/late-night-food-regina">Late-night guide →</a></p>
+<h3>Pickup, delivery or dine-in</h3>
+<p>Order at <a href="/order">wingorestaurants.com</a> for pickup in about 20 minutes, or delivery anywhere in Regina for a flat $5.50.
+Feeding a crowd? <a href="/catering.html">Catering trays</a> mix wings, apps and salads.</p>
+<a class="btn" href="/">Order Online</a>
+</article>
+<article class="post"><h2>Where to find us</h2>{LOC_BLOCK}</article>
+<article class="post"><h2>FAQ</h2>{faq_html}</article>"""
+    faq_ld = {"@context": "https://schema.org", "@type": "FAQPage",
+              "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faqs]}
+    ld = [article_ld(slug, headline, desc), faq_ld,
+          breadcrumb_ld([('Home', '/'), ('Blog', '/blog.html'), (headline, '/' + slug)])]
+    return slug, page_x(slug, title, desc, 'Best <span>Wings</span> in Regina', 'Crispy, sauced to order, 135+ flavours, open late.',
+                        body, ld, [('Home', '/'), ('Blog', '/blog.html'), ('Best Wings in Regina', None)], og_type='article')
 
 
 def late_night_post():

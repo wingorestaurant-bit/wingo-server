@@ -2680,6 +2680,16 @@ app.post('/api/customers/campaign/status', async (req, res) => {
   } catch (e) { console.warn('Customer list error:', e.message); res.status(500).json({ error: 'server error' }); }
 });
 
+// The subscribed list as rows, for the Download CSV button (to move the list to another email tool)
+app.post('/api/customers/campaign/list', async (req, res) => {
+  try {
+    const col = await custAdminCol(req, res, true); if (!col) return;
+    const rows = await col.find({ unsubscribed: { $ne: true } }, { projection: { _id: 0, email: 1, name: 1, sources: 1, last_seen_at: 1 } })
+      .sort({ last_seen_at: -1 }).limit(50000).toArray();
+    res.json({ rows: rows.map(r => ({ email: r.email, name: r.name || '', sources: (r.sources || []).join(' '), last_seen_at: r.last_seen_at ? new Date(r.last_seen_at).toISOString() : '' })) });
+  } catch (e) { res.status(500).json({ error: 'server error' }); }
+});
+
 app.post('/api/customers/campaign/preview', (req, res) => {
   if (!isAdmin((req.body || {}).password)) return res.status(401).json({ error: 'Wrong password' });
   const c = custCampaign((req.body || {}).campaign);
