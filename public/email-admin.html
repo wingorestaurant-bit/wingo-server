@@ -53,6 +53,7 @@ h2{font-family:Oswald,Arial,sans-serif;font-size:1.1rem;letter-spacing:1px;color
     <div class="stat"><b id="n-wpg">0</b><span>Winnipeg sign-ups</span></div>
     <div class="stat"><b id="n-uns">0</b><span>Unsubscribed</span></div>
   </div>
+  <button class="alt" id="csv" style="margin:0 0 1rem;">⬇ Download CSV (everyone who can be emailed)</button>
   <p class="note" style="margin:-.4rem 0 1rem;">Each email address counts once, even if it's in more than one list. Online orders and Rewards members from the last 2 years only (Canada's anti-spam law). Anyone who unsubscribed from any Wing-O email is left out.</p>
   <div class="card">
     <h2>📣 Send an email</h2>
@@ -122,6 +123,24 @@ h2{font-family:Oswald,Arial,sans-serif;font-size:1.1rem;letter-spacing:1px;color
     var to = document.getElementById('c-test-to').value.trim(), b = this;
     cErr(''); b.disabled = true;
     api('test', { email: to }).then(function(){ document.getElementById('c-prog').insertAdjacentHTML('afterbegin', '<div class="ok">Test sent to ' + esc(to) + '. Check your inbox (and spam).</div>'); })
+      .catch(function(e){ cErr(e.message); }).then(function(){ b.disabled = false; });
+  });
+  document.getElementById('csv').addEventListener('click', function(){
+    var b = this; b.disabled = true; cErr('');
+    fetch('/api/customers/campaign/list', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: pwUsed }) })
+      .then(function(r){ return r.json().then(function(d){ if (!r.ok) throw new Error(d.error || 'Could not download.'); return d; }); })
+      .then(function(d){
+        // Spreadsheet-safe: a value starting with = + - @ is prefixed so Excel/Sheets never runs it as a formula
+        var q = function(v){ v = String(v == null ? '' : v); if (/^[=+\-@]/.test(v)) v = "'" + v; return '"' + v.replace(/"/g, '""') + '"'; };
+        var first = function(n){ return String(n || '').trim().split(/\s+/)[0] || ''; };
+        var lines = [['email', 'first_name', 'name', 'source', 'last_order_or_signup'].join(',')].concat(d.rows.map(function(r){
+          return [r.email, first(r.name), r.name, r.sources, r.last_seen_at ? String(r.last_seen_at).slice(0, 10) : ''].map(q).join(',');
+        }));
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([lines.join('\n')], { type: 'text/csv' }));
+        a.download = 'wingo-customers-' + new Date().toISOString().slice(0, 10) + '.csv';
+        a.click();
+      })
       .catch(function(e){ cErr(e.message); }).then(function(){ b.disabled = false; });
   });
   document.getElementById('c-send').addEventListener('click', function(){
