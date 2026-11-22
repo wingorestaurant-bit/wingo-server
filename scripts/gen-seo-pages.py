@@ -711,7 +711,6 @@ def best_wings_post():
         ('Does Wing-O have dry rubs?', f'Yes. The Rub It list has dry seasonings like Salt & Pepper, Lemon Pepper, Dill Pickle and Cajun, shaken on with no sauce. All {n} sauces and rubs are on the flavours page.'),
         ('Does Wing-O have Honey Dill wings?', 'Yes. Honey Dill is on the menu, along with Creamy Dill Pickle and the Dill Pickle dry rub.'),
         ('Where are Wing-O locations in Regina?', 'Wing-O is at #3 – 155 Albert St N and 534 University Park Drive in Regina, plus a summer location at 110 Centre St in Regina Beach.'),
-        ('What are Wing-O wings fried in?', 'Wings, boneless wings, ribs, chicken fingers and chicken burgers are fried in halal-certified beef tallow. Fries, cauliflower wings and other sides use a separate canola-oil fryer.'),
         ('Is Wing-O open late?', 'Yes. Regina locations are open until 1 AM Monday to Wednesday and 3 AM Thursday to Sunday. Online orders after 11 PM get 10% off.'),
         ('Does Wing-O deliver in Regina?', 'Yes. Order at wingorestaurants.com for delivery anywhere in Regina for a flat $5.50, or pickup in about 20 minutes.'),
         ('Is there a wing night in Regina?', 'Thursday is wing night at Wing-O: buy an order of wings and get the second 50% off. Tuesday is all-you-can-eat wings for $28.99 (dine-in, 5–10 PM).'),
@@ -727,7 +726,7 @@ def best_wings_post():
 This guide covers what makes a great wing, how to order at Wing-O, every one of our {n} flavours sorted by heat, and the best deal for every day of the week.</p>
 {img('email-wings-wide.jpg', 'Crispy Wing-O chicken wings tossed in sauce in Regina', 'Wings fried to order and tossed fresh. Wing-O, Regina.')}
 <h3>What makes a great wing</h3>
-<p><strong>Crisp first.</strong> Every wing at Wing-O is fried to order in <strong>halal-certified beef tallow</strong>, so the skin crackles before it ever meets sauce.
+<p><strong>Crisp first.</strong> Every wing at Wing-O is fried to order, so the skin crackles before it ever meets sauce.
 <strong>Sauce second.</strong> Wings are tossed in the bowl right before they go out, so the sauce coats instead of soaking.
 <strong>Choice third.</strong> With 135+ flavours, from sweet glazes to dry rubs to Carolina Reaper, there's no such thing as "the usual" unless you want one.</p>
 <h3>How to order: sizes and prices</h3>

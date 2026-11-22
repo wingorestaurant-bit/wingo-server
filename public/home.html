@@ -699,7 +699,7 @@ footer a{color:var(--mustard);}
     </svg>
   </div>
   <h1 class="tagline">Chicken Wings &amp; Fried Chicken in Regina &amp; Winnipeg<span class="tq"> · “All the wings that's fit to sauce.”</span></h1>
-  <div class="edline2"><span>135+ FLAVOURS</span><span>·</span><span>FRIED IN BEEF TALLOW</span><span>·</span><span>2 PROVINCES</span><span>·</span><span>OPEN LATE</span></div>
+  <div class="edline2"><span>135+ FLAVOURS</span><span>·</span><span>4 STORES</span><span>·</span><span>2 PROVINCES</span><span>·</span><span>OPEN LATE</span></div>
 </header>
 
 <section class="wrap">
@@ -710,7 +710,6 @@ footer a{color:var(--mustard);}
       <div class="byline">By the Sauce Boss · Owner, Wing-O</div>
       <p class="drop">People ask why we carry over 135 flavours. Simple: the day we stop finding new ones is the day we hang up the apron.</p>
       <p>Every sauce on our wall was tasted, argued about and re-tasted in our kitchen before it ever touched your wings. Some of them are mixes. A few are illegal. Try one you can't pronounce.</p>
-      <p>And now every wing, rib, finger and chicken burger is fried in halal-certified <b>beef tallow</b>. Old-school fat, crunchier crunch.</p>
       <p>And whether you call us Wing-O, Wingo or Wingos, it's the same sauce in Regina and Winnipeg.</p>
       <a href="#boss" class="type" style="font-size:13px;">Continued on page 3 →</a>
     </div>
@@ -740,7 +739,6 @@ footer a{color:var(--mustard);}
         <tr><td>Flavours on the wall</td><td>135+</td></tr>
         <tr><td>Wings sold</td><td>1M+</td></tr>
         <tr><td>AYCE wing record</td><td>96</td></tr>
-        <tr><td>Fryer</td><td>Beef tallow</td></tr>
         <tr><td>Stores</td><td>4</td></tr>
         <tr><td>Provinces</td><td>2</td></tr>
         <tr><td>Open until</td><td>3 AM*</td></tr>
@@ -961,7 +959,7 @@ function closesAt(s){var n=localNow(s.tz),d=n.getDay(),h=n.getHours(),y=(d+6)%7;
 /* ticker */
 (function(){
   var reg=localNow('America/Regina'),dl=DEALS[reg.getDay()];
-  var items=['<b>TODAY:</b> '+dl.h.toUpperCase(),'135+ FLAVOURS ON THE WALL','NOW OPEN IN <b>WINNIPEG</b> · 1530 DAKOTA ST','OPEN TILL 3 AM THU–SUN','NOW FRIED IN <b>HALAL BEEF TALLOW</b>','<b>#BESAUCY</b>','<b>$10 LUNCH DEAL</b> · 11–3:30 DAILY','NOW ACCEPTING <b>FRANCHISE</b> APPLICATIONS','PICKUP · DINE-IN · ORDER AHEAD'];
+  var items=['<b>TODAY:</b> '+dl.h.toUpperCase(),'135+ FLAVOURS ON THE WALL','NOW OPEN IN <b>WINNIPEG</b> · 1530 DAKOTA ST','OPEN TILL 3 AM THU–SUN','<b>#BESAUCY</b>','<b>$10 LUNCH DEAL</b> · 11–3:30 DAILY','NOW ACCEPTING <b>FRANCHISE</b> APPLICATIONS','PICKUP · DINE-IN · ORDER AHEAD'];
   var h=items.map(function(x){return '<span>'+x+'</span><span>✦</span>';}).join('');
   $('tr').innerHTML=h+h;
   $('today').textContent=reg.toLocaleDateString('en-CA',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
