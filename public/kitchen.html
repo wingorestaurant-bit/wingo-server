@@ -404,6 +404,7 @@ function renderOrder(o, lane){
   var typeBadge = o.orderType === 'delivery'
     ? '<span class="o-type delivery">🛵 Delivery</span>'
     : '<span class="o-type">🏃 Pickup</span>';
+  if(o.paidOnline) typeBadge += ' <span class="o-type" style="background:#2D8A3E;color:#fff;border-color:#2D8A3E;">✅ PAID</span>';
   var itemsHtml = (o.items || []).map(function(it){
     var flv = it.flavor ? '<span class="o-item-flv">' + escapeHtml(it.flavor) + '</span>' : '';
     return '<div class="o-item">'+

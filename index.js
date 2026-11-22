@@ -84,8 +84,10 @@ const LOCATIONS = {
     address: "#3 - 155 Albert St N, Regina, SK",
     phone: "639-997-0553", // TEMP: Albert St line having technical issues. Revert to 306-522-2111.
     hours: "Mon-Wed 11am-1am · Thu-Sun 11am-3am",
-    onlinePayments: false,
-    cloverPrivateKey: process.env.CLOVER_PRIVATE_KEY_ALBERT
+    // Card payments at checkout (Clover Ecommerce). On only once both Ecommerce keys are set on Railway.
+    onlinePayments: true,
+    cloverPublicKey: envTrim('CLOVER_PUBLIC_KEY_ALBERT'),
+    cloverPrivateKey: envTrim('CLOVER_PRIVATE_KEY_ALBERT')
   },
   "east-regina": {
     name: "East Regina (Wing-O East)",
@@ -342,18 +344,19 @@ async function cloverTaxRateIds(loc) {
   return ids;
 }
 
-async function createCloverOrder(loc, orderNum, orderType, customer, items, subtotal, notes, timestamp, discounts = []) {
-  if (!loc.merchantId || !loc.apiToken) return createCloverOrderItems(loc, orderNum, orderType, customer, items, subtotal, notes, timestamp, discounts);
+// opts.print = false leaves the ticket unprinted (a card payment is taken first, then it prints).
+async function createCloverOrder(loc, orderNum, orderType, customer, items, subtotal, notes, timestamp, discounts = [], opts = {}) {
+  if (!loc.merchantId || !loc.apiToken) return createCloverOrderItems(loc, orderNum, orderType, customer, items, subtotal, notes, timestamp, discounts, opts);
   if (String(process.env.CLOVER_TAX_MODE || '').toLowerCase() !== 'items') {
     try {
       const taxIds = await cloverTaxRateIds(loc);
       if (taxIds) {
         const id = await createCloverAtomicOrder(loc, orderNum, orderType, customer, items, subtotal, notes, discounts, taxIds);
-        if (id) { await printCloverOrder(loc, id, orderNum); return id; }
+        if (id) { if (opts.print !== false) await printCloverOrder(loc, id, orderNum); return id; }
       }
     } catch (e) { console.warn('Clover tax-rate order failed, using tax items:', e.message); }
   }
-  return createCloverOrderItems(loc, orderNum, orderType, customer, items, subtotal, notes, timestamp, discounts);
+  return createCloverOrderItems(loc, orderNum, orderType, customer, items, subtotal, notes, timestamp, discounts, opts);
 }
 
 async function createCloverAtomicOrder(loc, orderNum, orderType, customer, items, subtotal, notes, discounts, taxIds) {
@@ -406,7 +409,7 @@ async function createCloverAtomicOrder(loc, orderNum, orderType, customer, items
 }
 
 // The old way: items, discounts, then GST/PST as items. Used when Clover's tax rates can't be.
-async function createCloverOrderItems(loc, orderNum, orderType, customer, items, subtotal, notes, timestamp, discounts = []) {
+async function createCloverOrderItems(loc, orderNum, orderType, customer, items, subtotal, notes, timestamp, discounts = [], opts = {}) {
   if (!loc.merchantId || !loc.apiToken) {
     console.error(`Clover not set up for ${loc.name}: add its merchant ID and API token on Railway`);
     return null;
@@ -536,9 +539,75 @@ async function createCloverOrderItems(loc, orderNum, orderType, customer, items,
   }
 
   console.log(`✓ Line items + extras added to ${cloverId}`);
-  await printCloverOrder(loc, cloverId, orderNum);
+  if (opts.print !== false) await printCloverOrder(loc, cloverId, orderNum);
   return cloverId;
 }
+
+// ── ONLINE CARD PAYMENTS (Clover Ecommerce) ───────────────────
+// The card form is Clover's own hosted iframe: card numbers never touch this server, only a one-time
+// clv_ token does. The order goes into Clover unprinted, the token pays that Clover order, and only then
+// does the ticket print. A declined card removes the order, so nothing reaches the kitchen unpaid.
+// Needs CLOVER_PUBLIC_KEY_<STORE> and CLOVER_PRIVATE_KEY_<STORE> on Railway; ONLINE_PAY=off turns it all off.
+const payReady = loc => !!(loc && loc.onlinePayments && loc.cloverPublicKey && loc.cloverPrivateKey && loc.merchantId && loc.apiToken)
+  && String(process.env.ONLINE_PAY || '').toLowerCase() !== 'off';
+const CLOVER_ECOMM = process.env.CLOVER_ECOMM_SANDBOX === 'on'
+  ? { api: 'https://scl-sandbox.dev.clover.com', sdk: 'https://checkout.sandbox.dev.clover.com/sdk.js' }
+  : { api: 'https://scl.clover.com', sdk: 'https://checkout.clover.com/sdk.js' };
+const clientIp = req => String(req.headers['cf-connecting-ip'] || String(req.headers['x-forwarded-for'] || '').split(',')[0] || req.ip || '').trim();
+
+// The total Clover has on the order, in cents (so we never charge something other than what the customer saw)
+async function cloverOrderTotal(loc, cloverId) {
+  try {
+    const r = await fetch(`https://api.clover.com/v3/merchants/${loc.merchantId}/orders/${cloverId}`, { headers: { 'Authorization': `Bearer ${loc.apiToken}` } });
+    const d = await r.json().catch(() => ({}));
+    return r.ok && Number.isFinite(Number(d.total)) ? Number(d.total) : null;
+  } catch (e) { return null; }
+}
+async function deleteCloverOrder(loc, cloverId) {
+  try {
+    await fetch(`https://api.clover.com/v3/merchants/${loc.merchantId}/orders/${cloverId}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${loc.apiToken}` } });
+    console.log(`🗑️  Removed unpaid Clover order ${cloverId} (${loc.name})`);
+  } catch (e) { console.warn('Could not remove unpaid Clover order:', e.message); }
+}
+// { ok, amount, charge, brand, last4 } | { ok:false, message, unknown } (unknown = we can't tell if the card was charged)
+async function payCloverOrder(loc, cloverId, token, email, ip) {
+  let r, d;
+  try {
+    r = await fetch(`${CLOVER_ECOMM.api}/v1/orders/${cloverId}/pay`, {
+      method: 'POST',
+      headers: {
+        'accept': 'application/json', 'content-type': 'application/json',
+        'authorization': `Bearer ${loc.cloverPrivateKey}`,
+        'idempotency-key': require('crypto').randomUUID(),
+        ...(ip ? { 'x-forwarded-for': ip } : {}),
+      },
+      body: JSON.stringify({ source: token, ecomind: 'ecom', ...(email && String(email).includes('@') ? { email: String(email).trim() } : {}) }),
+    });
+    d = await r.json().catch(() => ({}));
+  } catch (e) {
+    console.error(`💳 Payment request for ${cloverId} failed with no answer:`, e.message);
+    return { ok: false, unknown: true, message: e.message };
+  }
+  if (r.ok && d.status === 'paid') {
+    const src = d.source || {};
+    console.log(`💳 Paid ${cloverId} — $${(Number(d.amount_paid || d.amount) / 100).toFixed(2)} ${src.brand || ''} ••${src.last4 || ''}`);
+    return { ok: true, amount: Number(d.amount_paid || d.amount), charge: d.charge || null, brand: src.brand || '', last4: src.last4 || '' };
+  }
+  const err = d.error || {};
+  const message = err.message || d.message || `Clover answered ${r.status}`;
+  console.warn(`💳 Payment for ${cloverId} not taken (${r.status}): ${JSON.stringify(d).slice(0, 300)}`);
+  // A 5xx means Clover may or may not have charged the card: a person has to check
+  return { ok: false, unknown: r.status >= 500, message, declined: r.status === 402 || err.type === 'card_error' || /declin/i.test(message) };
+}
+
+// The browser asks which stores take cards online, and gets the PUBLIC key for Clover's card form.
+app.get('/api/payments/config', (req, res) => {
+  const out = {};
+  Object.entries(LOCATIONS).forEach(([id, loc]) => {
+    if (payReady(loc)) out[id] = { enabled: true, publicKey: loc.cloverPublicKey, merchantId: loc.merchantId, sdk: CLOVER_ECOMM.sdk };
+  });
+  res.set('Cache-Control', 'no-store').json(out);
+});
 
 // ── FIRST-ORDER DISCOUNT CHECK ────────────────────────────────
 const FIRST_ORDER_DISCOUNT_PCT = 0.15;
@@ -731,11 +800,52 @@ app.post('/api/orders', async (req, res) => {
   const finalTotal = round2(taxable + finalTax + delFeeAmt);
   const discountRowsHtml = (style) => discounts.map(d => `<div style="${style}"><span>${d.name}</span><span>−$${d.amount.toFixed(2)}</span></div>`).join('');
 
+  // ── PAY ONLINE (stores with card payments on) ──
+  const payToken = req.body.payment && typeof req.body.payment.token === 'string' ? req.body.payment.token.trim() : '';
+  const payOnline = !!payToken;
+  if (payOnline) {
+    if (!payReady(loc)) return res.status(400).json({ paymentFailed: true, error: `Paying online isn't available at ${loc.name} right now, and nothing was charged. Please choose Pay at ${orderType === 'delivery' ? 'delivery' : 'pickup'}.` });
+    // Never charge more than the total the customer was shown
+    const shown = Number(req.body.payTotal);
+    if (!(shown >= finalTotal - 0.01)) return res.status(409).json({ paymentFailed: true, priceChanged: true, total: finalTotal.toFixed(2),
+      error: `Your total is $${finalTotal.toFixed(2)}${discountApplied > 0 || !req.body.discountRequested ? '' : ' (the first-order discount didn\'t apply)'}. Nothing was charged. Tap the button again to pay $${finalTotal.toFixed(2)}.` });
+  }
+  const payFail = (status, error, extra = {}) => res.status(status).json({ paymentFailed: true, error, ...extra });
+
   let cloverId = null, cloverSuccess = false;
   try {
-    cloverId = await createCloverOrder(loc, orderNum, orderType, customer, items, subtotal, notes, timestamp, discounts);
+    cloverId = await createCloverOrder(loc, orderNum, orderType, customer, items, subtotal, notes, timestamp, discounts, { print: !payOnline });
     cloverSuccess = !!cloverId;
   } catch (e) { console.error('Clover error:', e.message); }
+
+  let payment = null;
+  if (payOnline) {
+    const storeLine = `call the store at ${loc.phone}`;
+    if (!cloverId) return payFail(502, `We couldn't reach the store's card system, so nothing was charged. Try again in a minute, or choose Pay at ${orderType === 'delivery' ? 'delivery' : 'pickup'}.`);
+    const wantCents = Math.round(finalTotal * 100);
+    const haveCents = await cloverOrderTotal(loc, cloverId);
+    if (haveCents === null || Math.abs(haveCents - wantCents) > 5) {
+      console.warn(`💳 Not charging ${orderNum}: Clover total ${haveCents} vs ours ${wantCents} cents`);
+      await deleteCloverOrder(loc, cloverId);
+      return payFail(502, `We couldn't set up the card payment, so nothing was charged. Please choose Pay at ${orderType === 'delivery' ? 'delivery' : 'pickup'}.`);
+    }
+    const pay = await payCloverOrder(loc, cloverId, payToken, customer.email, clientIp(req));
+    if (!pay.ok && pay.unknown) {
+      alertOwner(`💳 Card payment for ${orderNum} at ${loc.name} needs checking`,
+        `<p>${escHtml(customer.firstName)} (<a href="tel:${escHtml(customer.phone)}">${escHtml(customer.phone)}</a>) tried to pay <b>$${finalTotal.toFixed(2)}</b> online for order <b>${escHtml(orderNum)}</b>, but Clover didn't give a clear answer (${escHtml(pay.message)}).</p>
+         <p><b>What to do:</b> in Clover, look at the order and the Transactions list. If it was paid, print the order and start cooking. If not, call the customer. The customer was told to call the store.</p>`);
+      return payFail(502, `We couldn't confirm your payment. Please don't order again yet: ${storeLine} and we'll sort it out.`, { orderNum });
+    }
+    if (!pay.ok) {
+      await deleteCloverOrder(loc, cloverId);
+      return payFail(402, `${pay.declined ? 'Your card was declined' : 'The payment didn\'t go through'}: ${pay.message}. Nothing was charged. Try another card, or choose Pay at ${orderType === 'delivery' ? 'delivery' : 'pickup'}.`);
+    }
+    payment = { status: 'paid', method: 'card-online', amount: Math.round(pay.amount) / 100, chargeId: pay.charge, brand: pay.brand, last4: pay.last4, paidAt: new Date() };
+    if (Math.abs(pay.amount - wantCents) > 5) alertOwner(`💳 Order ${orderNum} was charged $${(pay.amount / 100).toFixed(2)}, not $${finalTotal.toFixed(2)}`,
+      `<p>Check order <b>${escHtml(orderNum)}</b> in Clover at ${escHtml(loc.name)}: the card was charged a different amount than the website total.</p>`);
+    await printCloverOrder(loc, cloverId, orderNum);
+  }
+  const paidLabel = payment ? `✅ PAID ONLINE${payment.last4 ? ` — ${escHtml(payment.brand || 'card')} ••${escHtml(payment.last4)}` : ''}` : '';
 
   let savedForKitchen = false;
   try {
@@ -753,6 +863,7 @@ app.post('/api/orders', async (req, res) => {
           : (notes || '')),
         subtotal: Number(subtotal), tax: finalTax, total: finalTotal, discounts,
         preOrder: !!preOrder, openTime: openTime || null, cloverId, cloverSuccess,
+        paidOnline: !!payment, payment,
         firstOrderDiscount: discountApplied, discountValidated,
         contestRedemption: contestRedemption || null,
         ghostHuntPhone: ghostHuntFries ? ghostPhone : null,
@@ -778,7 +889,7 @@ app.post('/api/orders', async (req, res) => {
       or call the customer at <a href="tel:${escHtml(customer.phone)}" style="color:#fff;">${escHtml(customer.phone)}</a>.</div>`;
   sendEmail({
     to: 'besaucy@wingorestaurants.com',
-    subject: `${cloverSuccess ? '' : '🚨 NOT IN CLOVER: '}${preOrder ? '⏰ PRE-ORDER' : '🍗 New Order'} ${orderNum} — ${loc.name} — $${finalTotal.toFixed(2)}`,
+    subject: `${cloverSuccess ? '' : '🚨 NOT IN CLOVER: '}${preOrder ? '⏰ PRE-ORDER' : '🍗 New Order'} ${orderNum} — ${loc.name} — $${finalTotal.toFixed(2)}${payment ? ' — PAID' : ''}`,
     html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">${cloverFailBanner}
       <div style="background:#0D0D0D;padding:20px;text-align:center;"><h1 style="color:#E8190A;font-size:28px;margin:0;">WING-O</h1><p style="color:#888;margin:4px 0 0;font-size:12px;letter-spacing:2px;">${preOrder ? '⏰ PRE-ORDER' : 'New Online Order'}</p></div>
       <div style="background:#F5F0E8;padding:24px;">
@@ -791,7 +902,7 @@ app.post('/api/orders', async (req, res) => {
           <tr><td style="padding:6px 0;color:#888;font-size:13px;">Phone</td><td style="padding:6px 0;"><a href="tel:${customer.phone}" style="color:#E8190A;">${customer.phone}</a></td></tr>
           ${customer.email ? `<tr><td style="padding:6px 0;color:#888;font-size:13px;">Email</td><td>${customer.email}</td></tr>` : ''}
           ${orderType === 'delivery' ? `<tr><td style="padding:6px 0;color:#888;font-size:13px;">Address</td><td style="padding:6px 0;">${customer.address}</td></tr>` : ''}
-          <tr><td style="padding:6px 0;color:#888;font-size:13px;">Payment</td><td style="padding:6px 0;color:#F5A800;font-weight:bold;">💰 PAY AT ${orderType === 'delivery' ? 'DELIVERY' : 'PICKUP'}</td></tr>
+          <tr><td style="padding:6px 0;color:#888;font-size:13px;">Payment</td><td style="padding:6px 0;color:${payment ? '#2D8A3E' : '#F5A800'};font-weight:bold;">${payment ? paidLabel : `💰 PAY AT ${orderType === 'delivery' ? 'DELIVERY' : 'PICKUP'}`}</td></tr>
           ${stampResult ? `<tr><td style="padding:6px 0;color:#888;font-size:13px;">Loyalty</td><td style="padding:6px 0;color:#F5A800;">🍗 Stamp #${stampResult.totalOrders} added${stampResult.gotFree ? ' — 🎉 FREE WINGS EARNED!' : ''}</td></tr>` : ''}
         </table>
         <hr style="border:1px solid #E8E0D0;margin:16px 0;">
@@ -802,7 +913,7 @@ app.post('/api/orders', async (req, res) => {
           <div style="display:flex;justify-content:space-between;padding:4px 0;color:#888;font-size:13px;"><span>GST (5%)</span><span>$${gstAmt.toFixed(2)}</span></div>
           <div style="display:flex;justify-content:space-between;padding:4px 0;color:#888;font-size:13px;"><span>${pstLabel(loc)}</span><span>$${pstAmt.toFixed(2)}</span></div>
           ${delFeeAmt > 0 ? `<div style="display:flex;justify-content:space-between;padding:4px 0;color:#888;font-size:13px;"><span>Delivery</span><span>$${delFeeAmt.toFixed(2)}</span></div>` : ''}
-          <div style="display:flex;justify-content:space-between;padding:8px 0;font-weight:bold;font-size:18px;border-top:2px solid #0D0D0D;margin-top:8px;"><span>TOTAL DUE AT ${orderType === 'delivery' ? 'DELIVERY' : 'PICKUP'}</span><span style="color:#E8190A;">$${finalTotal.toFixed(2)}</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;font-weight:bold;font-size:18px;border-top:2px solid #0D0D0D;margin-top:8px;"><span>${payment ? 'TOTAL PAID ONLINE' : `TOTAL DUE AT ${orderType === 'delivery' ? 'DELIVERY' : 'PICKUP'}`}</span><span style="color:#E8190A;">$${finalTotal.toFixed(2)}</span></div>
         </div>
         ${notes ? `<div style="background:#FFF8EE;border:1px solid #F5D98A;border-radius:6px;padding:10px;margin-top:12px;"><strong>Notes:</strong> ${notes}</div>` : ''}
       </div>
@@ -820,7 +931,7 @@ app.post('/api/orders', async (req, res) => {
           ? `Should be at your door in about <strong>${waitMins + 15}–${waitMins + 30} minutes</strong>.`
           : `Should be ready in about <strong>${waitMins} minutes</strong>.`);
     const whatsNext = orderType === 'delivery'
-      ? `Sit tight — your food is being prepared. Have cash or card ready for the driver.`
+      ? `Sit tight — your food is being prepared.${payment ? ' It\'s already paid.' : ' Have cash or card ready for the driver.'}`
       : `Come pick up at <strong style="color:#F5A800;">${loc.address}</strong>. Look for the Wing-O logo.`;
     const tipAmt = Number(req.body.tip || 0);
     const delFee = orderType === 'delivery' ? 5.50 : 0;
@@ -857,7 +968,7 @@ app.post('/api/orders', async (req, res) => {
               ${delFee > 0 ? `<div style="display:flex;justify-content:space-between;padding:3px 0;color:#666;font-size:13px;"><span>Delivery</span><span>$${delFee.toFixed(2)}</span></div>` : ''}
               ${tipAmt > 0 ? `<div style="display:flex;justify-content:space-between;padding:3px 0;color:#2D8A3E;font-size:13px;font-weight:bold;"><span>💸 Tip</span><span>$${tipAmt.toFixed(2)}</span></div>` : ''}
               <div style="display:flex;justify-content:space-between;padding:10px 0 4px;font-weight:bold;font-size:18px;border-top:2px solid #1A1208;margin-top:8px;"><span>TOTAL</span><span style="color:#E8190A;">$${finalTotal.toFixed(2)}</span></div>
-              <div style="text-align:center;font-size:11px;color:#F5A800;letter-spacing:2px;margin-top:8px;font-weight:bold;">💰 PAY AT ${orderType === 'delivery' ? 'DELIVERY' : 'PICKUP'}</div>
+              <div style="text-align:center;font-size:11px;color:#F5A800;letter-spacing:2px;margin-top:8px;font-weight:bold;">${payment ? paidLabel : `💰 PAY AT ${orderType === 'delivery' ? 'DELIVERY' : 'PICKUP'}`}</div>
             </div>
           </div>
 
@@ -892,7 +1003,8 @@ app.post('/api/orders', async (req, res) => {
     phone: customer.phone, orderType, location: loc.name,
     stampAdded: !!stampResult, gotFreeWings: stampResult?.gotFree || false, loyaltyStamps: stampResult?.stamps,
     discountApplied, discountValidated,
-    ghostHuntFries, ghostHuntDenied
+    ghostHuntFries, ghostHuntDenied,
+    paid: !!payment, paidAmount: payment ? payment.amount.toFixed(2) : null, cardLast4: payment ? payment.last4 : null
   });
 });
 
@@ -921,6 +1033,7 @@ app.get('/api/kitchen/orders', async (req, res) => {
       customer: [o.customer?.firstName, o.customer?.lastName].filter(Boolean).join(' ') || 'Customer',
       phone: o.customer?.phone || '', address: o.customer?.address || '',
       orderType: o.orderType || 'pickup', items: o.items || [], notes: o.notes || '',
+      paidOnline: !!o.paidOnline, total: o.total,
       kitchenStatus: o.kitchenStatus || 'pending',
       readyNotifiedAt: o.readyNotifiedAt ? o.readyNotifiedAt.toISOString() : null,
       timeAgo: formatTimeAgo(now - new Date(o.createdAt).getTime())
