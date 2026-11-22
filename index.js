@@ -278,8 +278,9 @@ const printable = t => String(t || '').replace(noEmoji, '').replace(/\s+/g, ' ')
 
 // Ask Clover to print the order on the store's order printer as soon as it's complete,
 // so staff don't have to open it and press print. Turn off with CLOVER_AUTO_PRINT=off on Railway.
-async function printCloverOrder(loc, cloverId) {
+async function printCloverOrder(loc, cloverId, orderNum) {
   if (String(process.env.CLOVER_AUTO_PRINT || '').toLowerCase() === 'off') return;
+  let problem = null;
   try {
     const r = await fetch(`https://api.clover.com/v3/merchants/${loc.merchantId}/print_event`, {
       method: 'POST',
@@ -288,8 +289,27 @@ async function printCloverOrder(loc, cloverId) {
     });
     const d = await r.json().catch(() => ({}));
     if (r.ok) console.log(`🖨️  Print sent for ${cloverId} (${loc.name}) — ${d.state || 'queued'}`);
-    else console.warn(`Auto-print failed for ${cloverId} (${loc.name}): ${r.status} ${JSON.stringify(d).slice(0, 200)}`);
-  } catch (e) { console.warn('Auto-print error:', e.message); }
+    else { problem = `Clover answered ${r.status}`; console.warn(`Auto-print failed for ${cloverId} (${loc.name}): ${r.status} ${JSON.stringify(d).slice(0, 200)}`); }
+  } catch (e) { problem = e.message; console.warn('Auto-print error:', e.message); }
+  if (problem) alertOwner(`🖨️ Order ${orderNum || ''} did NOT auto-print at ${loc.name}`,
+    `<p>Order <b>${escHtml(orderNum || cloverId)}</b> is in Clover at <b>${escHtml(loc.name)}</b>, but the automatic print did not go through (${escHtml(problem)}).</p>
+     <p><b>What to do:</b> open the order in Clover on the POS and press Print, so the kitchen gets the ticket.</p>`);
+}
+
+// ── ALERTS TO THE OWNER ───────────────────────────────────────
+// Emails the owner straight away when an online order needs a person: it didn't reach Clover,
+// didn't print, or wasn't saved for the kitchen screen. ALERT_EMAIL on Railway sends them elsewhere.
+const ALERT_TO = process.env.ALERT_EMAIL || 'besaucy@wingorestaurants.com';
+function alertOwner(subject, body) {
+  console.warn('🚨 ALERT:', subject);
+  return sendEmail({
+    to: ALERT_TO,
+    subject: `🚨 ${subject}`,
+    html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;border:3px solid #E8190A;">
+      <div style="background:#E8190A;color:#fff;padding:14px 18px;font-weight:bold;font-size:18px;">⚠️ Wing-O website alert</div>
+      <div style="padding:18px;font-size:15px;line-height:1.5;color:#1A1208;">${body}
+      <p style="color:#888;font-size:12px;margin-top:18px;">Sent automatically by wingorestaurants.com at ${new Date().toLocaleString('en-CA', { timeZone: 'America/Regina' })} (Regina time).</p></div></div>`,
+  });
 }
 
 // discounts: [{ name, amount }] in dollars (first-order 15%, late night 10%). They go on the Clover
@@ -329,7 +349,7 @@ async function createCloverOrder(loc, orderNum, orderType, customer, items, subt
       const taxIds = await cloverTaxRateIds(loc);
       if (taxIds) {
         const id = await createCloverAtomicOrder(loc, orderNum, orderType, customer, items, subtotal, notes, discounts, taxIds);
-        if (id) { await printCloverOrder(loc, id); return id; }
+        if (id) { await printCloverOrder(loc, id, orderNum); return id; }
       }
     } catch (e) { console.warn('Clover tax-rate order failed, using tax items:', e.message); }
   }
@@ -516,7 +536,7 @@ async function createCloverOrderItems(loc, orderNum, orderType, customer, items,
   }
 
   console.log(`✓ Line items + extras added to ${cloverId}`);
-  await printCloverOrder(loc, cloverId);
+  await printCloverOrder(loc, cloverId, orderNum);
   return cloverId;
 }
 
@@ -717,6 +737,7 @@ app.post('/api/orders', async (req, res) => {
     cloverSuccess = !!cloverId;
   } catch (e) { console.error('Clover error:', e.message); }
 
+  let savedForKitchen = false;
   try {
     const database = await connectDB();
     if (database) {
@@ -741,15 +762,24 @@ app.post('/api/orders', async (req, res) => {
         reviewDueAt: (customer.email && String(customer.email).includes('@')) ? reviewDueTime(new Date(), !!preOrder) : null
       });
       console.log(`✓ Order ${orderNum} saved to Mongo`);
+      savedForKitchen = true;
     }
   } catch (e) { console.warn('Order save to Mongo failed:', e.message); }
+  if (!savedForKitchen) alertOwner(`Order ${orderNum} at ${loc.name} was not saved for the kitchen screen`,
+    `<p>Order <b>${escHtml(orderNum)}</b> (${escHtml(customer.firstName)}, <a href="tel:${escHtml(customer.phone)}">${escHtml(customer.phone)}</a>) could not be saved to the database, so it won't show on the kitchen screen, in Customers or on the loyalty card.</p>
+     <p>${cloverSuccess ? 'It <b>did</b> reach Clover, so the store has it.' : 'It also did <b>not</b> reach Clover. See the other alert.'}</p>`);
 
   const stampResult = await autoAddStamp(customer.phone, orderNum, customer.firstName);
 
+  // If Clover didn't get the order, this email IS the alert: urgent subject + red banner, so nobody misses it.
+  const cloverFailBanner = cloverSuccess ? '' : `<div style="background:#E8190A;color:#fff;padding:16px 18px;font-size:16px;line-height:1.5;">
+      <b>⚠️ THIS ORDER DID NOT REACH CLOVER at ${loc.name}.</b><br>
+      The customer has been told it's confirmed. Call the store (${escHtml(loc.phone)}) now so they ring it into the POS and start cooking,
+      or call the customer at <a href="tel:${escHtml(customer.phone)}" style="color:#fff;">${escHtml(customer.phone)}</a>.</div>`;
   sendEmail({
     to: 'besaucy@wingorestaurants.com',
-    subject: `${preOrder ? '⏰ PRE-ORDER' : '🍗 New Order'} ${orderNum} — ${loc.name} — $${finalTotal.toFixed(2)}`,
-    html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">
+    subject: `${cloverSuccess ? '' : '🚨 NOT IN CLOVER: '}${preOrder ? '⏰ PRE-ORDER' : '🍗 New Order'} ${orderNum} — ${loc.name} — $${finalTotal.toFixed(2)}`,
+    html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">${cloverFailBanner}
       <div style="background:#0D0D0D;padding:20px;text-align:center;"><h1 style="color:#E8190A;font-size:28px;margin:0;">WING-O</h1><p style="color:#888;margin:4px 0 0;font-size:12px;letter-spacing:2px;">${preOrder ? '⏰ PRE-ORDER' : 'New Online Order'}</p></div>
       <div style="background:#F5F0E8;padding:24px;">
         <table style="width:100%;border-collapse:collapse;">
