@@ -543,6 +543,9 @@ async function createCloverOrderItems(loc, orderNum, orderType, customer, items,
   return cloverId;
 }
 
+// Changes on every deploy; the kitchen screen offers a reload when it sees a new one
+const BUILD_ID = process.env.RAILWAY_DEPLOYMENT_ID || process.env.RAILWAY_GIT_COMMIT_SHA || String(Date.now());
+
 // ── ONLINE CARD PAYMENTS (Clover Ecommerce) ───────────────────
 // The card form is Clover's own hosted iframe: card numbers never touch this server, only a one-time
 // clv_ token does. The order goes into Clover unprinted, the token pays that Clover order, and only then
@@ -562,6 +565,18 @@ async function cloverOrderTotal(loc, cloverId) {
     const d = await r.json().catch(() => ({}));
     return r.ok && Number.isFinite(Number(d.total)) ? Number(d.total) : null;
   } catch (e) { return null; }
+}
+// Puts "PAID ONLINE" on the Clover order's title and note, so the printed kitchen ticket shows it
+async function markCloverOrderPaid(loc, cloverId, label) {
+  try {
+    const H = { 'Authorization': `Bearer ${loc.apiToken}` };
+    const d = await (await fetch(`https://api.clover.com/v3/merchants/${loc.merchantId}/orders/${cloverId}`, { headers: H })).json().catch(() => ({}));
+    const title = `PAID ONLINE - ${String(d.title || 'Online order').replace(/^PAID ONLINE - /, '')}`.slice(0, 127);
+    const note = `*** PAID ONLINE ***\n${label}\n${d.note || ''}`.trim().slice(0, 2000);
+    const r = await fetch(`https://api.clover.com/v3/merchants/${loc.merchantId}/orders/${cloverId}`, {
+      method: 'POST', headers: { ...H, 'Content-Type': 'application/json' }, body: JSON.stringify({ title, note }) });
+    if (!r.ok) console.warn(`Could not mark ${cloverId} as paid on the ticket: ${r.status}`);
+  } catch (e) { console.warn('Could not mark order paid on the ticket:', e.message); }
 }
 async function deleteCloverOrder(loc, cloverId) {
   try {
@@ -843,6 +858,8 @@ app.post('/api/orders', async (req, res) => {
     payment = { status: 'paid', method: 'card-online', amount: Math.round(pay.amount) / 100, chargeId: pay.charge, brand: pay.brand, last4: pay.last4, paidAt: new Date() };
     if (Math.abs(pay.amount - wantCents) > 5) alertOwner(`💳 Order ${orderNum} was charged $${(pay.amount / 100).toFixed(2)}, not $${finalTotal.toFixed(2)}`,
       `<p>Check order <b>${escHtml(orderNum)}</b> in Clover at ${escHtml(loc.name)}: the card was charged a different amount than the website total.</p>`);
+    // Receipt printers can't print emoji, so plain text only
+    await markCloverOrderPaid(loc, cloverId, `$${payment.amount.toFixed(2)}${payment.last4 ? ` ${payment.brand || 'card'} ${payment.last4}` : ''} - do not charge again`);
     await printCloverOrder(loc, cloverId, orderNum);
   }
   const paidLabel = payment ? `✅ PAID ONLINE${payment.last4 ? ` — ${escHtml(payment.brand || 'card')} ••${escHtml(payment.last4)}` : ''}` : '';
@@ -1039,6 +1056,7 @@ app.get('/api/kitchen/orders', async (req, res) => {
       timeAgo: formatTimeAgo(now - new Date(o.createdAt).getTime())
     }));
     res.json({
+      build: BUILD_ID,
       pending:  formatted.filter(o => o.kitchenStatus === 'pending'),
       progress: formatted.filter(o => o.kitchenStatus === 'progress')
     });
