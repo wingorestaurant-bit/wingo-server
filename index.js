@@ -818,7 +818,7 @@ app.get('/api/signage/playlist', async (req, res) => {
       .map(it => {
         const o = signageItemOut(it);
         if (o.kind === 'menu') o.menu = signageMenuData(o.sections, soldOut);
-        if (o.kind === 'qr') { o.qr = `/tv/qr-${LOCATIONS[loc] ? loc : 'albert-st'}.svg`; o.store = LOCATIONS[loc] ? LOCATIONS[loc].name : ''; }
+        if (o.kind === 'qr') { o.qr = `/images/tv-qr-${LOCATIONS[loc] ? loc : 'albert-st'}.svg`; o.store = LOCATIONS[loc] ? LOCATIONS[loc].name : ''; }
         return o;
       })
       .filter(o => o.kind !== 'file' || o.url);
