@@ -726,7 +726,7 @@ function signageMenuData(sections, soldOutIds) {
   return (sections || []).filter(k => Array.isArray(M[k])).map(k => ({
     id: k, name: SIGNAGE_SECTION_NAMES[k] || k,
     items: M[k].filter(x => x && x.name && Number(x.price) > 0).map(x => ({
-      name: String(x.name).split(' — ')[0], desc: ['combos', 'platters', 'burgers'].includes(k) ? String(x.desc || '') : '',
+      name: String(x.name).split(' — ')[0], full: String(x.name), img: x.img ? '/' + String(x.img).replace(/^\/+/, '') : null, pop: !!x.pop, pick: !!x.sbpick, desc: ['combos', 'platters', 'burgers'].includes(k) ? String(x.desc || '') : '',
       prices: [x.price, x.price2, x.price3].filter(p => Number(p) > 0).map(Number),
       // Same size names as the ordering page
       labels: x.price3 ? (x.sizeLabels3 || x.sizeLabels || ['Sm', 'Med', 'Lg']) : x.price2 ? (x.sizeLabels || ['Small', 'Large']) : null, soldOut: gone.has(String(x.id)) }))
