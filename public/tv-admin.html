@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>TV Screens | Wing-O</title>
+<style>
+  :root{--paper:#F4EBD7;--card:#FFFDF7;--ink:#1A1208;--muted:#7B6A55;--line:#C8B89A;--red:#E8190A;--red-deep:#A8120A;--green:#2D8A3E;--gold:#F5A800;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--paper);color:var(--ink);font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.4;padding:16px;padding-bottom:60px;}
+  .wrap{max-width:860px;margin:0 auto;}
+  h1{font-family:Georgia,serif;font-size:30px;font-weight:900;letter-spacing:-.5px;border-bottom:4px double var(--ink);padding-bottom:8px;margin-bottom:6px;}
+  h1 span{color:var(--red);}
+  .sub{color:var(--muted);margin-bottom:18px;}
+  h2{font-size:13px;letter-spacing:2px;text-transform:uppercase;margin:26px 0 10px;border-bottom:2px solid var(--ink);padding-bottom:4px;}
+  .box{background:var(--card);border:1.5px solid var(--line);border-radius:8px;padding:14px;}
+  input[type=text],input[type=password],input[type=number],textarea{width:100%;font:inherit;padding:10px;border:1.5px solid var(--line);border-radius:6px;background:#fff;color:var(--ink);}
+  textarea{min-height:64px;resize:vertical;}
+  button,.btn{font:inherit;font-weight:700;border:0;border-radius:6px;padding:10px 14px;cursor:pointer;background:var(--ink);color:#fff;text-decoration:none;display:inline-block;}
+  .btn-red{background:var(--red);box-shadow:0 3px 0 var(--red-deep);}
+  .btn-ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line);}
+  .btn-sm{padding:6px 10px;font-size:13px;}
+  .warn{background:#FFF3D6;border:2px solid var(--gold);border-radius:8px;padding:12px 14px;margin-bottom:14px;}
+  .err{color:#C41408;font-weight:700;margin-top:8px;}
+  #drop{display:block;border:2.5px dashed var(--line);border-radius:10px;padding:22px;text-align:center;background:#fff;cursor:pointer;}
+  #drop.over{border-color:var(--red);background:#FFF1EF;}
+  #drop b{color:var(--red);}
+  .up{display:flex;align-items:center;gap:10px;margin-top:8px;font-size:13px;}
+  .bar{flex:1;height:8px;background:#eee;border-radius:4px;overflow:hidden;}
+  .bar i{display:block;height:100%;width:0;background:var(--red);}
+  .item{display:grid;grid-template-columns:160px 1fr;gap:14px;background:var(--card);border:1.5px solid var(--line);border-radius:8px;padding:12px;margin-bottom:12px;}
+  .item.off{opacity:.55;}
+  .thumb{width:160px;aspect-ratio:16/9;background:#000;border-radius:4px;overflow:hidden;position:relative;}
+  .thumb img,.thumb video{width:100%;height:100%;object-fit:contain;}
+  .thumb em{position:absolute;left:4px;top:4px;background:rgba(0,0,0,.7);color:#fff;font-style:normal;font-size:11px;padding:1px 6px;border-radius:3px;}
+  .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px;}
+  .lbl{font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-right:4px;}
+  .chip{border:1.5px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:5px 10px;font-size:13px;font-weight:700;cursor:pointer;}
+  .chip.on{background:var(--ink);border-color:var(--ink);color:#fff;}
+  .chip.day.on{background:var(--red);border-color:var(--red);}
+  .secs{width:74px !important;padding:6px !important;}
+  .tools{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+  .saved{font-size:12px;color:var(--green);font-weight:700;margin-left:auto;align-self:center;opacity:0;transition:opacity .3s;}
+  .saved.show{opacity:1;}
+  .links a{color:var(--red);font-weight:700;}
+  .links div{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 0;border-bottom:1px dotted var(--line);flex-wrap:wrap;}
+  .links code{font-size:13px;background:#fff;border:1px solid var(--line);padding:3px 6px;border-radius:4px;word-break:break-all;}
+  .tick-row{margin-bottom:10px;}
+  .tick-row label{display:block;font-size:12px;font-weight:700;margin-bottom:4px;}
+  .empty{color:var(--muted);text-align:center;padding:20px;}
+  @media (max-width:560px){ .item{grid-template-columns:1fr;} .thumb{width:100%;} }
+  #login{max-width:360px;margin:40px auto;}
+  .hidden{display:none !important;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>📺 TV <span>Screens</span></h1>
+  <p class="sub">Upload menus, deals and videos. Choose which stores show each one. TVs update within a minute.</p>
+
+  <div id="login" class="box">
+    <p style="margin-bottom:10px;font-weight:700;">Admin password</p>
+    <input type="password" id="pw" autocomplete="current-password" placeholder="Same as /admin">
+    <button class="btn-red" style="margin-top:10px;width:100%;" onclick="login()">Open</button>
+    <div class="err" id="login-err"></div>
+  </div>
+
+  <div id="app" class="hidden">
+    <div id="no-storage" class="warn hidden"><b>One-time setup needed before uploading.</b> In Railway, open the wingo-server service → <b>Settings → Volumes → Add Volume</b>, mount path <code>/data</code>, then redeploy. Without it, uploaded files would be wiped on every update.</div>
+
+    <h2>Add pictures or videos</h2>
+    <label id="drop">
+      <input type="file" id="file" accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime" multiple hidden>
+      <div style="font-size:30px;">⬆️</div>
+      <div><b>Tap to choose files</b> or drop them here</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:6px;">Best size: 1920 × 1080 (landscape). Pictures: JPG/PNG. Videos: MP4, under 95 MB.</div>
+    </label>
+    <div id="uploads"></div>
+
+    <h2>Playing now</h2>
+    <p class="sub" style="margin-bottom:10px;">Plays top to bottom, then repeats. Videos play to the end; pictures stay up for the seconds you set. Days: none picked = every day.</p>
+    <div id="items"></div>
+
+    <h2>Scrolling text (bottom of the screen)</h2>
+    <div class="box">
+      <p class="sub" style="margin-bottom:10px;">Separate messages with <b>•</b> or <b>|</b>. Leave a store blank to use the "All stores" text. Clear everything to hide the bar.</p>
+      <div id="tickers"></div>
+      <button class="btn-red" onclick="saveTicker()">Save text</button> <span class="saved" id="tick-saved">Saved ✓</span>
+    </div>
+
+    <h2>TV links</h2>
+    <div class="box links" id="links"></div>
+    <p class="sub" style="margin-top:8px;">On each TV's streaming stick, open its link in the browser and tap the screen once to go full screen.</p>
+  </div>
+</div>
+<script>
+var PW = '', LOCS = [], ITEMS = [];
+var DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+function $(id){ return document.getElementById(id); }
+function esc(s){ var d=document.createElement('div'); d.textContent=s==null?'':String(s); return d.innerHTML; }
+function api(path, opts){
+  opts = opts || {}; opts.headers = Object.assign({ 'x-admin-password': PW }, opts.headers || {});
+  if(opts.json){ opts.method = opts.method || 'POST'; opts.headers['Content-Type']='application/json'; opts.body = JSON.stringify(opts.json); }
+  return fetch(path, opts).then(function(r){ return r.json().catch(function(){ return {}; }).then(function(d){ if(!r.ok) throw new Error(d.error || ('Error '+r.status)); return d; }); });
+}
+function remember(v){ try{ if(v===undefined) return sessionStorage.getItem('wingo_tv_pw'); sessionStorage.setItem('wingo_tv_pw', v); }catch(e){ return null; } }
+
+function login(){
+  PW = $('pw').value.trim(); $('login-err').textContent='';
+  api('/api/signage/login', { json:{} }).then(function(d){
+    remember(PW); LOCS = d.locations || [];
+    $('login').classList.add('hidden'); $('app').classList.remove('hidden');
+    $('no-storage').classList.toggle('hidden', !!d.storage);
+    renderLinks(); load();
+  }).catch(function(e){ $('login-err').textContent = e.message; });
+}
+$('pw').addEventListener('keydown', function(e){ if(e.key==='Enter') login(); });
+(function(){ var s = remember(); if(s){ $('pw').value = s; login(); } })();
+
+function load(){
+  api('/api/signage/items').then(function(d){
+    ITEMS = d.items || []; renderItems(); renderTickers(d.ticker || {});
+    $('no-storage').classList.toggle('hidden', !!d.storage);
+  }).catch(function(e){ $('items').innerHTML = '<p class="err">'+esc(e.message)+'</p>'; });
+}
+
+function locName(id){ if(id==='all') return 'All stores'; var l = LOCS.find(function(x){return x.id===id;}); return l ? l.name.replace(/\s*\(.*\)/,'') : id; }
+
+function renderItems(){
+  var el = $('items');
+  if(!ITEMS.length){ el.innerHTML = '<div class="box empty">Nothing yet. Upload a picture or video above.</div>'; return; }
+  el.innerHTML = ITEMS.map(function(it, i){
+    var all = !it.locations.length || it.locations.indexOf('all') >= 0;
+    var media = it.type==='video' ? '<video src="'+it.url+'#t=0.5" muted preload="metadata" playsinline></video><em>VIDEO</em>' : '<img src="'+it.url+'" loading="lazy" alt="">';
+    return '<div class="item'+(it.active?'':' off')+'" data-id="'+it.id+'">'+
+      '<div class="thumb">'+media+'</div>'+
+      '<div>'+
+        '<input type="text" value="'+esc(it.title)+'" placeholder="Name (for you, not shown on TV)" onchange="upd(\''+it.id+'\',{title:this.value})">'+
+        '<div class="row"><span class="lbl">Show at</span>'+
+          '<button class="chip'+(all?' on':'')+'" onclick="setLoc(\''+it.id+'\',\'all\')">All stores</button>'+
+          LOCS.map(function(l){ return '<button class="chip'+(!all && it.locations.indexOf(l.id)>=0?' on':'')+'" onclick="setLoc(\''+it.id+'\',\''+l.id+'\')">'+esc(locName(l.id))+'</button>'; }).join('')+
+        '</div>'+
+        '<div class="row"><span class="lbl">Days</span>'+
+          DAYS.map(function(d, n){ return '<button class="chip day'+(it.days.indexOf(n)>=0?' on':'')+'" onclick="setDay(\''+it.id+'\','+n+')">'+d+'</button>'; }).join('')+
+        '</div>'+
+        (it.type==='image' ? '<div class="row"><span class="lbl">Seconds on screen</span><input class="secs" type="number" min="3" max="600" value="'+it.seconds+'" onchange="upd(\''+it.id+'\',{seconds:Number(this.value)})"></div>' : '<div class="row"><span class="lbl">Video</span><span style="font-size:13px;">plays once to the end ('+(it.bytes/1048576).toFixed(1)+' MB)</span></div>')+
+        '<div class="tools">'+
+          '<button class="btn-ghost btn-sm" '+(i===0?'disabled':'')+' onclick="move('+i+',-1)">▲ Up</button>'+
+          '<button class="btn-ghost btn-sm" '+(i===ITEMS.length-1?'disabled':'')+' onclick="move('+i+',1)">▼ Down</button>'+
+          '<button class="btn-sm '+(it.active?'btn-ghost':'btn-red')+'" onclick="upd(\''+it.id+'\',{active:'+(!it.active)+'},true)">'+(it.active?'⏸ Turn off':'▶ Turn on')+'</button>'+
+          '<button class="btn-ghost btn-sm" style="color:#C41408;" onclick="del(\''+it.id+'\')">🗑 Delete</button>'+
+          '<span class="saved" id="s-'+it.id+'">Saved ✓</span>'+
+        '</div>'+
+      '</div></div>';
+  }).join('');
+}
+function find(id){ return ITEMS.find(function(x){ return x.id===id; }); }
+function flash(id){ var s=$('s-'+id); if(!s) return; s.classList.add('show'); setTimeout(function(){ s.classList.remove('show'); }, 1500); }
+function upd(id, patch, rerender){
+  return api('/api/signage/items/'+id, { json:patch }).then(function(d){
+    var i = ITEMS.findIndex(function(x){ return x.id===id; }); if(i>=0) ITEMS[i] = d.item;
+    if(rerender) renderItems(); flash(id);
+  }).catch(function(e){ alert('Not saved: '+e.message); load(); });
+}
+function setLoc(id, loc){
+  var it = find(id); var cur = (it.locations.indexOf('all')>=0 || !it.locations.length) ? [] : it.locations.slice();
+  var nextL;
+  if(loc==='all') nextL = ['all'];
+  else { var k = cur.indexOf(loc); if(k>=0) cur.splice(k,1); else cur.push(loc); nextL = cur.length ? cur : ['all']; }
+  upd(id, { locations:nextL }, true);
+}
+function setDay(id, n){
+  var it = find(id); var d = it.days.slice(); var k = d.indexOf(n); if(k>=0) d.splice(k,1); else d.push(n);
+  upd(id, { days:d }, true);
+}
+function move(i, dir){
+  var j = i + dir; if(j<0 || j>=ITEMS.length) return;
+  var a = ITEMS[i]; ITEMS[i] = ITEMS[j]; ITEMS[j] = a;
+  renderItems();
+  Promise.all(ITEMS.map(function(it, n){ return it.order === n+1 ? null : api('/api/signage/items/'+it.id, { json:{ order:n+1 } }).then(function(d){ it.order = d.item.order; }); }))
+    .catch(function(e){ alert('Order not saved: '+e.message); load(); });
+}
+function del(id){
+  var it = find(id);
+  if(!confirm('Delete "'+(it.title || (it.type==='video'?'this video':'this picture'))+'" from every TV?')) return;
+  api('/api/signage/items/'+id+'/delete', { json:{} }).then(function(){ ITEMS = ITEMS.filter(function(x){ return x.id!==id; }); renderItems(); })
+    .catch(function(e){ alert(e.message); });
+}
+
+// Uploads: one at a time, with a progress bar each
+var drop = $('drop');
+$('file').addEventListener('change', function(){ queue(this.files); this.value=''; });
+['dragenter','dragover'].forEach(function(ev){ drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.add('over'); }); });
+['dragleave','drop'].forEach(function(ev){ drop.addEventListener(ev, function(e){ e.preventDefault(); drop.classList.remove('over'); }); });
+drop.addEventListener('drop', function(e){ queue(e.dataTransfer.files); });
+var Q = [], busy = false;
+function queue(files){ Array.prototype.forEach.call(files || [], function(f){ Q.push(f); }); pump(); }
+function pump(){
+  if(busy || !Q.length) return; busy = true;
+  var f = Q.shift();
+  var row = document.createElement('div'); row.className='up';
+  row.innerHTML = '<span style="max-width:45%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+esc(f.name)+'</span><div class="bar"><i></i></div><span class="pct">0%</span>';
+  $('uploads').appendChild(row);
+  var done = function(msg, ok){ row.querySelector('.pct').innerHTML = ok ? '✅' : '<span class="err" style="margin:0">'+esc(msg)+'</span>'; busy = false; pump(); };
+  if(f.size > 95*1024*1024){ done('Over 95 MB. Compress it first.'); return; }
+  var type = f.type || (/\.mov$/i.test(f.name) ? 'video/quicktime' : /\.mp4$/i.test(f.name) ? 'video/mp4' : '');
+  var x = new XMLHttpRequest();
+  x.open('POST', '/api/signage/upload?title=' + encodeURIComponent(f.name.replace(/\.[^.]+$/, '')));
+  x.setRequestHeader('x-admin-password', PW);
+  x.setRequestHeader('Content-Type', type);
+  x.upload.onprogress = function(e){ if(e.lengthComputable){ var p = Math.round(e.loaded/e.total*100); row.querySelector('i').style.width = p+'%'; row.querySelector('.pct').textContent = p+'%'; } };
+  x.onload = function(){ var d = {}; try{ d = JSON.parse(x.responseText); }catch(e){}
+    if(x.status >= 200 && x.status < 300 && d.item){ ITEMS.push(d.item); renderItems(); done('', true);
+      if(type === 'video/quicktime') row.insertAdjacentHTML('beforeend', '<span style="color:var(--muted);font-size:12px;">iPhone video: if it doesn\'t play on the TV, export it as MP4</span>'); }
+    else done(d.error || ('Upload failed ('+x.status+')')); };
+  x.onerror = function(){ done('Connection lost. Try again.'); };
+  x.send(f);
+}
+
+function renderTickers(t){
+  var rows = [['all','All stores']].concat(LOCS.map(function(l){ return [l.id, l.name]; }));
+  $('tickers').innerHTML = rows.map(function(r){
+    return '<div class="tick-row"><label>'+esc(r[1])+(r[0]==='all'?'':' <span style="font-weight:400;color:var(--muted)">(blank = same as All stores)</span>')+'</label><textarea data-k="'+r[0]+'">'+esc(t[r[0]] || '')+'</textarea></div>';
+  }).join('');
+}
+function saveTicker(){
+  var t = {}; document.querySelectorAll('#tickers textarea').forEach(function(a){ t[a.getAttribute('data-k')] = a.value.trim(); });
+  api('/api/signage/ticker', { json:{ ticker:t } }).then(function(){ var s=$('tick-saved'); s.classList.add('show'); setTimeout(function(){ s.classList.remove('show'); }, 1500); })
+    .catch(function(e){ alert('Not saved: '+e.message); });
+}
+
+function renderLinks(){
+  $('links').innerHTML = LOCS.map(function(l){
+    var u = location.origin + '/tv?loc=' + l.id;
+    return '<div><span><b>'+esc(l.name)+'</b><br><code>'+esc(u)+'</code></span><span><a href="'+u+'" target="_blank">Preview</a> &nbsp; <button class="btn-ghost btn-sm" onclick="copy(\''+u+'\', this)">Copy</button></span></div>';
+  }).join('');
+}
+function copy(t, b){ (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function(){ b.textContent='Copied ✓'; }).catch(function(){ prompt('Copy this link:', t); }); }
+</script>
+</body>
+</html>

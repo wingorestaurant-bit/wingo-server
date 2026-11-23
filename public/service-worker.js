@@ -117,6 +117,11 @@ self.addEventListener('fetch', event => {
     return;
   }
 
+  // 2b. TV screen pictures/videos — the browser caches them itself, and videos need range requests
+  if (url.pathname.startsWith('/media/')) {
+    return;
+  }
+
   // 3. POST/PUT/DELETE — never cache
   if (event.request.method !== 'GET') {
     return;

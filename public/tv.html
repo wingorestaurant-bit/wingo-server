@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Wing-O TV</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{width:100%;height:100%;background:#000;overflow:hidden;cursor:none;font-family:"Arial Black",Arial,sans-serif;}
+  #stage{position:absolute;left:0;right:0;top:0;bottom:0;}
+  body.has-ticker #stage{bottom:7vh;}
+  .layer{position:absolute;inset:0;opacity:0;transition:opacity .8s ease;display:flex;align-items:center;justify-content:center;background:#000;}
+  .layer.on{opacity:1;}
+  .layer img,.layer video{width:100%;height:100%;object-fit:contain;display:block;}
+  #ticker{display:none;position:absolute;left:0;right:0;bottom:0;height:7vh;background:#0D0D0D;border-top:.4vh solid #E8190A;overflow:hidden;align-items:center;}
+  body.has-ticker #ticker{display:flex;}
+  #ticker-in{white-space:nowrap;color:#fff;font-size:3.4vh;letter-spacing:.35vh;text-transform:uppercase;will-change:transform;padding-left:100%;}
+  #ticker-in b{color:#E8190A;margin:0 2.2vh;}
+  #empty,#pick{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;color:#F4EBD7;text-align:center;gap:2vh;cursor:default;background:#0D0D0D;}
+  #empty h1,#pick h1{font-size:7vh;color:#E8190A;letter-spacing:.4vh;}
+  #empty p,#pick p{font-family:Arial,sans-serif;font-size:2.6vh;color:#bbb;}
+  #pick a{display:block;min-width:46vh;padding:2vh 3vh;margin:.6vh;background:#E8190A;color:#fff;text-decoration:none;font-size:3vh;border-radius:1vh;}
+  #pick a:focus{outline:.6vh solid #F5A800;}
+  #offline{position:absolute;top:1.2vh;right:1.2vh;width:1.4vh;height:1.4vh;border-radius:50%;background:#F5A800;display:none;}
+</style>
+</head>
+<body>
+<div id="stage"><div class="layer" id="la"></div><div class="layer" id="lb"></div></div>
+<div id="ticker"><div id="ticker-in"></div></div>
+<div id="empty"><h1>WING-O</h1><p>No slides for this screen yet. Add some at wingorestaurants.com/tv-admin</p></div>
+<div id="pick"><h1>WING-O TV</h1><p>Which store is this screen in?</p><div id="pick-list"></div></div>
+<div id="offline" title="Can't reach the website; still playing what it has"></div>
+<script>
+(function(){
+  var STORES = [['albert-st','Albert Street (Regina)'],['east-regina','East Regina'],['winnipeg','Winnipeg (Dakota St)'],['regina-beach','Regina Beach']];
+  var qs = new URLSearchParams(location.search);
+  var loc = qs.get('loc');
+  function store(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v); }catch(e){ return null; } }
+  if(!loc) loc = store('wingo_tv_loc');
+  if(!loc){
+    var pl = document.getElementById('pick-list');
+    STORES.forEach(function(s){ var a=document.createElement('a'); a.href='/tv?loc='+s[0]; a.textContent=s[1]; pl.appendChild(a); });
+    document.getElementById('pick').style.display='flex'; document.body.style.cursor='default';
+    var first = pl.querySelector('a'); if(first) first.focus();
+    return;
+  }
+  store('wingo_tv_loc', loc);
+
+  var list = [], next = null, idx = -1, build = null, timer = null, front = 'la', started = false;
+  var stage = document.getElementById('stage');
+
+  function layer(id){ return document.getElementById(id); }
+  function setTicker(t){
+    var parts = String(t||'').split(/\s*[•|]\s*/).map(function(x){return x.trim();}).filter(Boolean);
+    var el = document.getElementById('ticker-in');
+    var key = parts.join('|');
+    if(el.getAttribute('data-k') === key) return;
+    el.setAttribute('data-k', key);
+    document.body.classList.toggle('has-ticker', parts.length > 0);
+    if(!parts.length){ el.innerHTML=''; return; }
+    var esc = function(s){ var d=document.createElement('div'); d.textContent=s; return d.innerHTML; };
+    var one = parts.map(esc).join('<b>●</b>') + '<b>●</b>';
+    el.innerHTML = one + one + one;
+    // Scroll speed stays the same however long the text is
+    el.getAnimations && el.getAnimations().forEach(function(a){ a.cancel(); });
+    requestAnimationFrame(function(){
+      var w = el.scrollWidth / 3;
+      if(el.animate) el.animate([{transform:'translateX(0)'},{transform:'translateX(-'+(w + window.innerWidth)+'px)'}], { duration: Math.max(8000, (w + window.innerWidth) / 120 * 1000), iterations: Infinity });
+    });
+  }
+
+  function show(){
+    clearTimeout(timer);
+    if(next){ list = next; next = null; idx = -1; }
+    var empty = !list.length;
+    document.getElementById('empty').style.display = empty ? 'flex' : 'none';
+    if(empty){ layer('la').innerHTML=''; layer('lb').innerHTML=''; timer = setTimeout(show, 15000); return; }
+    idx = (idx + 1) % list.length;
+    var it = list[idx];
+    var back = front === 'la' ? 'lb' : 'la';
+    var L = layer(back);
+    L.innerHTML = '';
+    var advanced = false;
+    function go(){ if(advanced) return; advanced = true; show(); }
+    function reveal(){
+      L.classList.add('on'); layer(front).classList.remove('on');
+      var old = layer(front); setTimeout(function(){ if(!old.classList.contains('on')) old.innerHTML=''; }, 900);
+      front = back;
+    }
+    if(it.type === 'video'){
+      var v = document.createElement('video');
+      v.muted = true; v.setAttribute('muted',''); v.playsInline = true; v.setAttribute('playsinline',''); v.preload = 'auto';
+      v.src = it.url;
+      v.onended = go;
+      v.onerror = function(){ setTimeout(go, 500); };
+      v.onloadedmetadata = function(){ clearTimeout(timer); timer = setTimeout(go, ((isFinite(v.duration) ? v.duration : 60) + 5) * 1000); };
+      L.appendChild(v);
+      var p = v.play(); if(p && p.catch) p.catch(function(){ setTimeout(go, 3000); });
+      v.addEventListener('playing', reveal, { once:true });
+      if(list.length === 1){ v.loop = true; v.onended = null; v.onloadedmetadata = null; }
+      else timer = setTimeout(go, 120000); // replaced once the length is known
+    } else {
+      var img = new Image();
+      img.onload = function(){ reveal(); timer = setTimeout(go, Math.max(3, it.seconds || 10) * 1000); preloadNext(); };
+      img.onerror = function(){ setTimeout(go, 500); };
+      img.src = it.url;
+      L.appendChild(img);
+    }
+  }
+  function preloadNext(){
+    var n = list[(idx + 1) % list.length];
+    if(n && n.type === 'image'){ var i = new Image(); i.src = n.url; }
+  }
+
+  function refresh(){
+    fetch('/api/signage/playlist?loc=' + encodeURIComponent(loc), { cache:'no-store' })
+      .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function(d){
+        document.getElementById('offline').style.display='none';
+        if(build && d.build && d.build !== build){ location.reload(); return; }
+        build = d.build || build;
+        setTicker(d.ticker);
+        var sig = function(a){ return JSON.stringify(a.map(function(x){ return [x.id, x.seconds, x.url]; })); };
+        var firstLoad = !started; started = true;
+        if(firstLoad || sig(d.items) !== sig(list)){
+          // Changes start at the next slide, except when nothing is playing or one video is looping
+          var restartNow = firstLoad || !list.length || !d.items.length || (list.length === 1 && list[0].type === 'video');
+          next = d.items;
+          if(restartNow) show();
+        }
+      })
+      .catch(function(){ document.getElementById('offline').style.display='block'; });
+  }
+
+  // Keep the screen awake and go full screen on the first tap/key (browsers need a gesture)
+  function wake(){ try{ navigator.wakeLock && navigator.wakeLock.request('screen').catch(function(){}); }catch(e){} }
+  function fs(){ var e=document.documentElement; try{ if(!document.fullscreenElement && e.requestFullscreen) e.requestFullscreen().catch(function(){}); }catch(x){} wake(); }
+  document.addEventListener('click', fs); document.addEventListener('keydown', fs);
+  document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='visible') wake(); });
+  wake();
+
+  refresh();
+  setInterval(refresh, 60000);
+  // A full reload about once a day keeps long-running TV browsers healthy
+  setTimeout(function(){ location.reload(); }, (24 + Math.random() * 4) * 3600e3);
+})();
+</script>
+</body>
+</html>

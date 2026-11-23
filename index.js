@@ -675,6 +675,131 @@ async function ghostHuntRedeemed(phoneNorm, year) {
   return !!(await database.collection('orders').findOne({ ghostHuntPhone: phoneNorm, ghostHuntYear: year }));
 }
 
+// ── TV SCREENS (digital menu boards) ──────────────────────────
+// /tv-admin: upload pictures and videos, pick which stores show them, order, how long, which days,
+// and the scrolling text. Each TV opens /tv?loc=<store> full screen and picks up changes within a minute.
+// Files live on a Railway volume (RAILWAY_VOLUME_MOUNT_PATH, or SIGNAGE_DIR), so deploys don't wipe them.
+const fs = require('fs');
+const SIGNAGE_DIR = process.env.SIGNAGE_DIR || (process.env.RAILWAY_VOLUME_MOUNT_PATH ? path.join(process.env.RAILWAY_VOLUME_MOUNT_PATH, 'signage') : null);
+if (SIGNAGE_DIR) { try { fs.mkdirSync(SIGNAGE_DIR, { recursive: true }); } catch (e) { console.warn('TV screens: cannot create', SIGNAGE_DIR, e.message); } }
+const SIGNAGE_MAX_BYTES = 95 * 1024 * 1024; // Cloudflare refuses uploads over 100 MB
+const SIGNAGE_TYPES = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif', 'video/mp4': 'mp4', 'video/webm': 'webm', 'video/quicktime': 'mov' };
+const SIGNAGE_DEFAULT_TICKER = '10% OFF LATE NIGHTS AFTER 11 PM  •  ORDER AT WINGORESTAURANTS.COM  •  15% OFF YOUR FIRST ONLINE ORDER';
+const signageAuth = req => isAdmin(req.get('x-admin-password') || (req.body && req.body.password) || '');
+const signageItemOut = it => ({ id: String(it._id), title: it.title || '', type: it.type, url: `/media/signage/${it.file}`, locations: it.locations || ['all'],
+  seconds: it.seconds || 10, days: it.days || [], active: it.active !== false, order: it.order || 0, bytes: it.bytes || 0, createdAt: it.createdAt });
+async function signageSettings(database) {
+  const d = await database.collection('settings').findOne({ key: 'signage' });
+  return { ticker: (d && d.ticker) || { all: SIGNAGE_DEFAULT_TICKER } };
+}
+
+// What one TV should play right now (only items for its store, switched on, and for today's weekday)
+app.get('/api/signage/playlist', async (req, res) => {
+  const loc = String(req.query.loc || '');
+  res.set('Cache-Control', 'no-store');
+  try {
+    const database = await connectDB();
+    if (!database) return res.status(503).json({ error: 'database unavailable' });
+    const tz = locTz(LOCATIONS[loc]);
+    const dow = new Date(new Date().toLocaleString('en-US', { timeZone: tz })).getDay();
+    const items = (await database.collection('signage_items').find({}).sort({ order: 1, createdAt: 1 }).toArray())
+      .filter(it => it.active !== false)
+      .filter(it => !(it.locations && it.locations.length) || it.locations.includes('all') || it.locations.includes(loc))
+      .filter(it => !(it.days && it.days.length) || it.days.includes(dow))
+      .map(signageItemOut);
+    const s = await signageSettings(database);
+    const ticker = s.ticker[loc] !== undefined && s.ticker[loc] !== '' ? s.ticker[loc] : (s.ticker.all || '');
+    res.json({ build: BUILD_ID, items, ticker, location: LOCATIONS[loc] ? LOCATIONS[loc].name : null });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.get('/media/signage/:file', (req, res) => {
+  const f = String(req.params.file);
+  if (!SIGNAGE_DIR || !/^[a-f0-9]{24}\.(jpg|png|webp|gif|mp4|webm|mov)$/.test(f)) return res.status(404).end();
+  res.sendFile(path.join(SIGNAGE_DIR, f), { maxAge: '365d', immutable: true }, err => { if (err && !res.headersSent) res.status(404).end(); });
+});
+
+app.post('/api/signage/login', (req, res) => {
+  if (!signageAuth(req)) return res.status(401).json({ error: 'Wrong password' });
+  res.json({ ok: true, storage: !!SIGNAGE_DIR, locations: Object.entries(LOCATIONS).map(([id, l]) => ({ id, name: l.name })) });
+});
+
+app.get('/api/signage/items', async (req, res) => {
+  if (!signageAuth(req)) return res.status(401).json({ error: 'Wrong password' });
+  const database = await connectDB();
+  if (!database) return res.status(503).json({ error: 'database unavailable' });
+  const items = await database.collection('signage_items').find({}).sort({ order: 1, createdAt: 1 }).toArray();
+  res.json({ items: items.map(signageItemOut), ...(await signageSettings(database)), storage: !!SIGNAGE_DIR });
+});
+
+// Upload: the raw file is the request body (streamed to disk, so big videos don't fill memory)
+app.post('/api/signage/upload', async (req, res) => {
+  if (!signageAuth(req)) return res.status(401).json({ error: 'Wrong password' });
+  if (!SIGNAGE_DIR) return res.status(503).json({ error: 'No storage yet: add a Volume to the server on Railway first (see the note on this page).' });
+  const type = String(req.get('content-type') || '').split(';')[0].trim().toLowerCase();
+  const ext = SIGNAGE_TYPES[type];
+  if (!ext) return res.status(415).json({ error: 'Use a JPG, PNG, WEBP or GIF picture, or an MP4, WEBM or MOV video.' });
+  const len = Number(req.get('content-length') || 0);
+  if (len > SIGNAGE_MAX_BYTES) return res.status(413).json({ error: 'That file is over 95 MB. Shorten or compress the video and try again.' });
+  const id = new ObjectId(); const file = `${id.toHexString()}.${ext}`; const dest = path.join(SIGNAGE_DIR, file);
+  let bytes = 0, tooBig = false;
+  const out = fs.createWriteStream(dest);
+  req.on('data', c => { bytes += c.length; if (bytes > SIGNAGE_MAX_BYTES && !tooBig) { tooBig = true; req.unpipe(out); out.destroy(); req.resume(); } });
+  req.pipe(out);
+  const done = await new Promise(r => { out.on('finish', () => r(true)); out.on('close', () => r(!tooBig)); out.on('error', () => r(false)); req.on('aborted', () => r(false)); });
+  if (!done || tooBig || bytes === 0) { fs.unlink(dest, () => {}); return res.status(tooBig ? 413 : 400).json({ error: tooBig ? 'That file is over 95 MB.' : 'The upload did not finish. Try again.' }); }
+  try {
+    const database = await connectDB();
+    const last = await database.collection('signage_items').find({}).sort({ order: -1 }).limit(1).toArray();
+    const doc = { _id: id, file, type: type.startsWith('video') ? 'video' : 'image', bytes,
+      title: String(req.query.title || '').slice(0, 120), locations: ['all'], seconds: 10, days: [], active: true,
+      order: (last[0] ? last[0].order || 0 : 0) + 1, createdAt: new Date() };
+    await database.collection('signage_items').insertOne(doc);
+    console.log(`📺 TV upload: ${doc.type} ${file} (${(bytes / 1048576).toFixed(1)} MB)`);
+    res.json({ item: signageItemOut(doc) });
+  } catch (e) { fs.unlink(dest, () => {}); res.status(500).json({ error: e.message }); }
+});
+
+app.post('/api/signage/items/:id', async (req, res) => {
+  if (!signageAuth(req)) return res.status(401).json({ error: 'Wrong password' });
+  let _id; try { _id = new ObjectId(String(req.params.id)); } catch (e) { return res.status(400).json({ error: 'Bad id' }); }
+  const b = req.body || {}; const set = {};
+  if (typeof b.title === 'string') set.title = b.title.slice(0, 120);
+  if (Array.isArray(b.locations)) set.locations = b.locations.map(String).filter(l => l === 'all' || LOCATIONS[l]);
+  if (b.seconds !== undefined) set.seconds = Math.min(600, Math.max(3, Math.round(Number(b.seconds) || 10)));
+  if (Array.isArray(b.days)) set.days = [...new Set(b.days.map(Number).filter(d => d >= 0 && d <= 6))];
+  if (typeof b.active === 'boolean') set.active = b.active;
+  if (b.order !== undefined && Number.isFinite(Number(b.order))) set.order = Number(b.order);
+  const database = await connectDB();
+  const r = await database.collection('signage_items').findOneAndUpdate({ _id }, { $set: set }, { returnDocument: 'after' });
+  const doc = r && (r.value !== undefined ? r.value : r);
+  if (!doc) return res.status(404).json({ error: 'Not found' });
+  res.json({ item: signageItemOut(doc) });
+});
+
+app.post('/api/signage/items/:id/delete', async (req, res) => {
+  if (!signageAuth(req)) return res.status(401).json({ error: 'Wrong password' });
+  let _id; try { _id = new ObjectId(String(req.params.id)); } catch (e) { return res.status(400).json({ error: 'Bad id' }); }
+  const database = await connectDB();
+  const doc = await database.collection('signage_items').findOne({ _id });
+  if (!doc) return res.status(404).json({ error: 'Not found' });
+  await database.collection('signage_items').deleteOne({ _id });
+  if (SIGNAGE_DIR && doc.file) fs.unlink(path.join(SIGNAGE_DIR, doc.file), () => {});
+  res.json({ ok: true });
+});
+
+app.post('/api/signage/ticker', async (req, res) => {
+  if (!signageAuth(req)) return res.status(401).json({ error: 'Wrong password' });
+  const t = (req.body && req.body.ticker) || {}; const ticker = {};
+  ['all', ...Object.keys(LOCATIONS)].forEach(k => { if (typeof t[k] === 'string') ticker[k] = t[k].slice(0, 400); });
+  const database = await connectDB();
+  await database.collection('settings').updateOne({ key: 'signage' }, { $set: { key: 'signage', ticker } }, { upsert: true });
+  res.json({ ticker });
+});
+
+app.get('/tv', (req, res) => res.sendFile(path.join(__dirname, 'public', 'tv.html')));
+app.get('/tv-admin', (req, res) => res.sendFile(path.join(__dirname, 'public', 'tv-admin.html')));
+
 // ── HEALTH CHECK ───────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', locations: Object.keys(LOCATIONS), time: new Date().toISOString() });
