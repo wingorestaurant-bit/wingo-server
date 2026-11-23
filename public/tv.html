@@ -5,28 +5,105 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>Wing-O TV</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@500;700&family=Playfair+Display:ital,wght@0,900;1,700&family=Special+Elite&family=UnifrakturCook:wght@700&family=Source+Serif+4:ital@1&display=swap" rel="stylesheet">
 <style>
   *{margin:0;padding:0;box-sizing:border-box;}
-  html,body{width:100%;height:100%;background:#000;overflow:hidden;cursor:none;font-family:"Arial Black",Arial,sans-serif;}
+  html,body{width:100%;height:100%;background:#000;overflow:hidden;cursor:none;font-family:Oswald,"Arial Narrow",Arial,sans-serif;}
   #stage{position:absolute;left:0;right:0;top:0;bottom:0;}
   body.has-ticker #stage{bottom:7vh;}
-  .layer{position:absolute;inset:0;opacity:0;transition:opacity .8s ease;display:flex;align-items:center;justify-content:center;background:#000;}
+  body.has-ready #stage{bottom:9vh;}
+  body.has-ticker.has-ready #stage{bottom:16vh;}
+  .layer{position:absolute;inset:0;opacity:0;transition:opacity .8s ease;display:flex;align-items:center;justify-content:center;background:#000;overflow:hidden;}
   .layer.on{opacity:1;}
   .layer img,.layer video{width:100%;height:100%;object-fit:contain;display:block;}
+
+  /* Live menu board: a front page of The Sauce Boss Times */
+  .mb{width:100%;height:100%;color:#1A1208;padding:2.2vh 2.6vw 2vh;display:flex;flex-direction:column;position:relative;
+    background:#F4EBD7 radial-gradient(ellipse at 50% 40%, rgba(255,250,235,.55), rgba(0,0,0,0) 70%);}
+  .mb::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.35;mix-blend-mode:multiply;
+    background-image:radial-gradient(rgba(26,18,8,.10) .5px, transparent .6px),radial-gradient(rgba(26,18,8,.06) .5px, transparent .7px);background-size:3px 3px,5px 5px;background-position:0 0,1px 2px;}
+  .mb-ed{display:flex;justify-content:space-between;border-top:.55vh double #1A1208;border-bottom:.15vh solid #1A1208;padding:.6vh .2vw .5vh;font:1.75vh/1.2 "Special Elite",monospace;text-transform:uppercase;letter-spacing:.06em;position:relative;}
+  .mb-mast{display:grid;grid-template-columns:20vw 1fr 20vw;align-items:center;position:relative;margin:.8vh 0 0;height:12.5vh;}
+  .mb-mast > :nth-child(2){justify-self:center;}
+  .mb-mast > :nth-child(3){justify-self:end;}
+  .layer .mb img.mb-logo{height:10.5vh;width:auto;max-width:18vw;object-fit:contain;object-position:left center;}
+  .mb-title{font-family:"UnifrakturCook",serif;font-weight:700;font-size:9vh;line-height:1;position:relative;display:inline-block;white-space:nowrap;}
+  .mb-title .drip{position:absolute;left:3%;width:94%;top:79%;height:auto;overflow:visible;pointer-events:none;}
+  .mb-title .drip .st,.mb-title .drip .bl,.mb-title .drip .fd{transform-box:fill-box;}
+  .mb-title .drip .st{transform-origin:50% 0;animation:dst var(--t) cubic-bezier(.45,0,.2,1) var(--d) infinite;}
+  .mb-title .drip .bl{animation:dbl var(--t) cubic-bezier(.45,0,.2,1) var(--d) infinite;}
+  .mb-title .drip .fd{opacity:0;animation:dfd var(--t) cubic-bezier(.5,0,.9,.6) var(--d) infinite;}
+  @keyframes dst{0%{transform:scaleY(.25);}70%{transform:scaleY(1);}74%{transform:scaleY(.82);}100%{transform:scaleY(.25);}}
+  @keyframes dbl{0%{transform:translateY(calc(var(--L) * -.75)) scale(.9);}70%{transform:translateY(0) scale(1.05,1.12);}74%{transform:translateY(calc(var(--L) * -.18)) scale(.9);}100%{transform:translateY(calc(var(--L) * -.75)) scale(.9);}}
+  @keyframes dfd{0%,69%{opacity:0;transform:translateY(0) scale(1);}70%{opacity:1;transform:translateY(0) scale(1);}86%{opacity:1;transform:translateY(95px) scale(.8,1.15);}88%,100%{opacity:0;transform:translateY(110px) scale(.6);}}
+  .mb-edition{border:.35vh solid #1A1208;outline:.15vh solid #1A1208;outline-offset:-.9vh;padding:1.2vh 1.4vw;text-align:center;font-family:Oswald;font-weight:700;letter-spacing:.25em;font-size:1.45vh;line-height:1.3;max-width:19vw;background:#FBF5E6;}
+  .mb-edition b{display:block;font-family:"Bebas Neue";font-weight:400;font-size:3.3vh;letter-spacing:.04em;color:#E8190A;line-height:1;margin-top:.3vh;}
+  .mb.nofeat .mb-feat{display:none;}
+  .mb.nofeat .mb-cols{padding-left:0;}
+  .mb-ed2{display:flex;justify-content:center;gap:2.2vw;border-top:.15vh solid #1A1208;border-bottom:.55vh double #1A1208;padding:.6vh 0 .5vh;margin-top:2.6vh;font:1.75vh "Special Elite",monospace;text-transform:uppercase;position:relative;}
+  .mb-body{flex:1;display:flex;min-height:0;margin-top:1.6vh;position:relative;}
+  .mb-feat{width:27%;padding-right:1.6vw;border-right:.15vh solid #1A1208;display:flex;flex-direction:column;min-height:0;}
+  .mb-kick{font-family:Oswald;font-weight:700;font-size:1.7vh;letter-spacing:.35em;color:#E8190A;text-transform:uppercase;}
+  .mb-hed{font-family:"Playfair Display",Georgia,serif;font-weight:900;font-size:5.4vh;line-height:.98;letter-spacing:-.02em;margin:.5vh 0 1.4vh;}
+  .mb-photo{position:relative;flex:1;min-height:0;margin:0 1vh 1.6vh 0;}
+  .mb-photo img{width:100%;height:100%;object-fit:cover;display:block;border:.35vh solid #1A1208;box-shadow:1.2vh 1.2vh 0 #E8190A;filter:saturate(1.15) contrast(1.05);}
+  .mb-cap{font:1.55vh/1.35 "Special Elite",monospace;color:#4A3B28;margin-top:.2vh;}
+  .mb-picks{margin-top:1vh;border-top:.15vh solid #1A1208;padding-top:.8vh;}
+  .mb-pick{display:flex;justify-content:space-between;align-items:baseline;gap:.8vw;font-family:Oswald;font-weight:500;font-size:2.2vh;line-height:1.5;}
+  .mb-pick b{font-family:"Bebas Neue";font-weight:400;font-size:2.8vh;color:#fff;background:#E8190A;padding:0 .6vw;transform:rotate(-2deg);box-shadow:.4vh .4vh 0 #1A1208;}
+  .mb-cols{flex:1;padding-left:1.8vw;column-gap:3vw;column-rule:.15vh solid rgba(26,18,8,.55);column-fill:auto;overflow:hidden;font-size:var(--fs,3.1vh);}
+  .mb-sec{break-inside:avoid;margin-bottom:1.1em;}
+  .mb-sec h2{font-family:"Bebas Neue";font-weight:400;color:#E8190A;font-size:1.75em;letter-spacing:.04em;line-height:1;border-bottom:.45vh double #1A1208;margin-bottom:.3em;padding-bottom:.08em;}
+  .mb-row{display:flex;align-items:baseline;gap:.45em;line-height:1.32;break-inside:avoid;position:relative;}
+  .mb-row .n{font-family:Oswald;font-weight:500;}
+  .mb-row .hot{font-family:Oswald;font-weight:700;font-size:.5em;letter-spacing:.12em;color:#fff;background:#1A1208;padding:.15em .5em;white-space:nowrap;transform:translateY(-.25em);}
+  .mb-row .dots{flex:1;border-bottom:.3vh dotted #A8957A;transform:translateY(-.3em);min-width:1em;}
+  .mb-row .p{font-family:"Bebas Neue";font-size:1.25em;letter-spacing:.02em;white-space:nowrap;}
+  .mb-row .p small{font-family:"Special Elite",monospace;font-size:.5em;color:#7B6A55;margin:0 .2em 0 .55em;}
+  .mb-desc{font-family:"Source Serif 4",Georgia,serif;font-style:italic;font-size:.58em;color:#5A4A35;margin:-.15em 0 .45em;line-height:1.3;}
+  .mb-row.out .n,.mb-row.out .p{opacity:.38;text-decoration:line-through;text-decoration-thickness:.12em;}
+  .mb-row.out .stamp{position:absolute;left:30%;top:50%;transform:translateY(-50%) rotate(-7deg);font-family:"Bebas Neue";font-size:.95em;letter-spacing:.12em;color:#E8190A;border:.25vh solid #E8190A;padding:0 .4em;background:rgba(244,235,215,.85);white-space:nowrap;}
+
+  /* Order-online QR slide */
+  .qr{width:100%;height:100%;color:#1A1208;display:flex;align-items:center;justify-content:center;gap:5vw;padding:5vh 5vw;position:relative;
+    background:#F4EBD7 radial-gradient(ellipse at 50% 40%, rgba(255,250,235,.55), rgba(0,0,0,0) 70%);}
+  .qr::after{content:"";position:absolute;inset:2.6vh;border:.6vh double #1A1208;pointer-events:none;}
+  .qr-box{background:#fff;padding:2.4vh;border:.5vh solid #1A1208;box-shadow:1.8vh 1.8vh 0 #E8190A;flex:none;}
+  .layer .qr-box img{width:58vh;height:58vh;display:block;object-fit:contain;}
+  .qr-txt{max-width:52vw;}
+  .qr-txt .k{font-family:Oswald;font-size:3vh;letter-spacing:.9vh;font-weight:700;color:#E8190A;}
+  .qr-txt h1{font-family:"Playfair Display",Georgia,serif;font-weight:900;font-size:12vh;line-height:.92;letter-spacing:-.02em;margin:1.2vh 0 2.6vh;}
+  .qr-txt h1 span{color:#E8190A;}
+  .qr-txt p{font:2.9vh/1.45 "Special Elite",monospace;color:#3A2C1A;}
+  .qr-txt .u{margin-top:3.2vh;font-family:"Bebas Neue";font-size:4.2vh;letter-spacing:.35vh;color:#fff;background:#E8190A;display:inline-block;padding:.6vh 2vh;transform:rotate(-1.5deg);box-shadow:.6vh .6vh 0 #1A1208;}
+
+  /* Order-ready strip */
+  #ready{display:none;position:absolute;left:0;right:0;height:9vh;bottom:0;background:#2D8A3E;color:#fff;align-items:center;gap:2.5vw;padding:0 2.5vw;overflow:hidden;}
+  body.has-ticker #ready{bottom:7vh;}
+  body.has-ready #ready{display:flex;}
+  #ready .lbl{font-size:3.4vh;font-weight:700;letter-spacing:.3vh;white-space:nowrap;background:#1A1208;padding:.8vh 1.6vh;border-radius:.8vh;}
+  #ready .list{display:flex;gap:2.2vw;font-size:4.4vh;font-weight:700;white-space:nowrap;overflow:hidden;}
+  #ready .list span small{font-weight:500;opacity:.85;margin-left:.6vw;}
+  #ready .list span.new{animation:pop 1s ease 3;}
+  @keyframes pop{50%{color:#FFE3A0;}}
+
   #ticker{display:none;position:absolute;left:0;right:0;bottom:0;height:7vh;background:#0D0D0D;border-top:.4vh solid #E8190A;overflow:hidden;align-items:center;}
   body.has-ticker #ticker{display:flex;}
-  #ticker-in{white-space:nowrap;color:#fff;font-size:3.4vh;letter-spacing:.35vh;text-transform:uppercase;will-change:transform;padding-left:100%;}
+  #ticker-in{white-space:nowrap;color:#fff;font-size:3.6vh;font-weight:500;letter-spacing:.35vh;text-transform:uppercase;will-change:transform;}
   #ticker-in b{color:#E8190A;margin:0 2.2vh;}
   #empty,#pick{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;color:#F4EBD7;text-align:center;gap:2vh;cursor:default;background:#0D0D0D;}
   #empty h1,#pick h1{font-size:7vh;color:#E8190A;letter-spacing:.4vh;}
   #empty p,#pick p{font-family:Arial,sans-serif;font-size:2.6vh;color:#bbb;}
   #pick a{display:block;min-width:46vh;padding:2vh 3vh;margin:.6vh;background:#E8190A;color:#fff;text-decoration:none;font-size:3vh;border-radius:1vh;}
   #pick a:focus{outline:.6vh solid #F5A800;}
-  #offline{position:absolute;top:1.2vh;right:1.2vh;width:1.4vh;height:1.4vh;border-radius:50%;background:#F5A800;display:none;}
+  #offline{position:absolute;top:1.2vh;right:1.2vh;width:1.4vh;height:1.4vh;border-radius:50%;background:#F5A800;display:none;z-index:5;}
 </style>
 </head>
 <body>
 <div id="stage"><div class="layer" id="la"></div><div class="layer" id="lb"></div></div>
+<div id="ready"><div class="lbl">✅ READY FOR PICKUP</div><div class="list"></div></div>
 <div id="ticker"><div id="ticker-in"></div></div>
 <div id="empty"><h1>WING-O</h1><p>No slides for this screen yet. Add some at wingorestaurants.com/tv-admin</p></div>
 <div id="pick"><h1>WING-O TV</h1><p>Which store is this screen in?</p><div id="pick-list"></div></div>
@@ -35,9 +112,9 @@
 (function(){
   var STORES = [['albert-st','Albert Street (Regina)'],['east-regina','East Regina'],['winnipeg','Winnipeg (Dakota St)'],['regina-beach','Regina Beach']];
   var qs = new URLSearchParams(location.search);
-  var loc = qs.get('loc');
   function store(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v); }catch(e){ return null; } }
-  if(!loc) loc = store('wingo_tv_loc');
+  function esc(s){ var d=document.createElement('div'); d.textContent = s==null ? '' : String(s); return d.innerHTML; }
+  var loc = qs.get('loc') || store('wingo_tv_loc');
   if(!loc){
     var pl = document.getElementById('pick-list');
     STORES.forEach(function(s){ var a=document.createElement('a'); a.href='/tv?loc='+s[0]; a.textContent=s[1]; pl.appendChild(a); });
@@ -46,28 +123,133 @@
     return;
   }
   store('wingo_tv_loc', loc);
+  // Each TV gets its own id, so the admin page can show "last seen" per screen
+  var screen = store('wingo_tv_screen');
+  if(!screen){ screen = 'tv-' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36); store('wingo_tv_screen', screen); }
 
   var list = [], next = null, idx = -1, build = null, timer = null, front = 'la', started = false;
-  var stage = document.getElementById('stage');
-
   function layer(id){ return document.getElementById(id); }
+
   function setTicker(t){
     var parts = String(t||'').split(/\s*[•|]\s*/).map(function(x){return x.trim();}).filter(Boolean);
-    var el = document.getElementById('ticker-in');
-    var key = parts.join('|');
+    var el = document.getElementById('ticker-in'); var key = parts.join('|');
     if(el.getAttribute('data-k') === key) return;
     el.setAttribute('data-k', key);
     document.body.classList.toggle('has-ticker', parts.length > 0);
+    if(el.getAnimations) el.getAnimations().forEach(function(a){ a.cancel(); });
     if(!parts.length){ el.innerHTML=''; return; }
-    var esc = function(s){ var d=document.createElement('div'); d.textContent=s; return d.innerHTML; };
     var one = parts.map(esc).join('<b>●</b>') + '<b>●</b>';
-    el.innerHTML = one + one + one;
-    // Scroll speed stays the same however long the text is
-    el.getAnimations && el.getAnimations().forEach(function(a){ a.cancel(); });
-    requestAnimationFrame(function(){
-      var w = el.scrollWidth / 3;
-      if(el.animate) el.animate([{transform:'translateX(0)'},{transform:'translateX(-'+(w + window.innerWidth)+'px)'}], { duration: Math.max(8000, (w + window.innerWidth) / 120 * 1000), iterations: Infinity });
-    });
+    el.innerHTML = one;
+    // Repeat the text until it's wider than two screens, then scroll exactly one copy's width: seamless
+    var unit = el.scrollWidth || 1, n = Math.max(2, Math.ceil(window.innerWidth * 2 / unit) + 1), h = '';
+    for(var i=0;i<n;i++) h += one;
+    el.innerHTML = h;
+    if(el.animate) el.animate([{transform:'translateX(0)'},{transform:'translateX(-'+unit+'px)'}], { duration: unit / 110 * 1000, iterations: Infinity });
+  }
+
+  var shownReady = {};
+  function setReady(r){
+    r = r || [];
+    document.body.classList.toggle('has-ready', r.length > 0);
+    var el = document.querySelector('#ready .list');
+    el.innerHTML = r.map(function(o){
+      var isNew = !shownReady[o.num]; shownReady[o.num] = 1;
+      return '<span'+(isNew?' class="new"':'')+'>'+esc(o.num)+(o.name?'<small>'+esc(o.name)+'</small>':'')+'</span>';
+    }).join('');
+  }
+
+  // A menu board drawn from the website's own menu; shrinks the text until everything fits
+  function money(n){ return Number(n).toFixed(2); }
+  // The dripping-sauce masthead from the homepage
+  var DRIPS = [[63,14,38,8.7,0,7.0,-0.0],[165,20,70,12.4,9,8.7,-6.4],[257,10,24,6.2,0,10.4,-5.8],[352,16,52,9.9,7.2,7.1,-0.2],[459,22,86,13.6,9.9,8.8,-8.4],
+    [554,12,30,7.4,0,10.5,-9.5],[646,18,60,11.2,8.1,7.2,-0.6],[755,10,26,6.2,0,8.9,-1.7],[830,20,74,12.4,9,10.6,-2.8],[923,14,40,8.7,0,7.3,-1.2]];
+  var dripN = 0;
+  function dripSvg(){
+    var id = 'sx' + (++dripN);
+    return '<svg class="drip" viewBox="0 0 1000 200" aria-hidden="true"><defs>'+
+      '<linearGradient id="g'+id+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7a1404"/><stop offset=".35" stop-color="#b8270a"/><stop offset="1" stop-color="#d9450f"/></linearGradient>'+
+      '<filter id="f'+id+'" x="-5%" y="-20%" width="110%" height="160%" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b"/>'+
+      '<feColorMatrix in="b" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 26 -11" result="goo"/><feGaussianBlur in="goo" stdDeviation="2.6" result="gb"/>'+
+      '<feSpecularLighting in="gb" surfaceScale="5" specularConstant="1.05" specularExponent="26" lighting-color="#fff4e0" result="spec"><fePointLight x="380" y="-160" z="260"/></feSpecularLighting>'+
+      '<feComposite in="spec" in2="goo" operator="in" result="si"/><feComposite in="goo" in2="si" operator="arithmetic" k2="1" k3=".85" result="lit"/>'+
+      '<feDropShadow in="lit" dx="0" dy="3" stdDeviation="2.2" flood-color="#2b0700" flood-opacity=".38"/></filter></defs>'+
+      '<g filter="url(#f'+id+')" fill="url(#g'+id+')"><path d="M8 6C40 1 90 9 140 5S240 2 300 8 400 3 460 7 560 12 620 6 720 2 790 8 900 4 992 7c6 2 6 9 0 11-50 4-100-2-160 3S700 15 640 19 520 13 460 18 340 12 280 17 160 11 100 16 20 13 8 17c-8-3-8-9 0-11Z"/>'+
+      DRIPS.map(function(p){ var x=p[0], w=p[1], L=p[2], cx = x + w/2;
+        return '<g style="--t:'+p[5]+'s;--d:'+p[6]+'s;--L:'+L+'px"><rect class="st" x="'+x+'" y="2" width="'+w+'" height="'+L+'" rx="'+(w/2)+'"/><circle class="bl" cx="'+cx+'" cy="'+(L-3)+'" r="'+p[3]+'"/>'+
+          (p[4] ? '<circle class="fd" cx="'+cx+'" cy="'+(L+7)+'" r="'+p[4]+'"/>' : '')+'</g>'; }).join('')+'</g></svg>';
+  }
+  var FALLBACK_PHOTO = { wings:'/images/wings-hero.jpg', ribs:'/images/ribs.jpg', boneless:'/images/boneless-wings.jpg', chickenfingers:'/images/boneless-sauce.jpg',
+    burgers:'/images/burger.jpg', combos:'/images/combo1.jpg', sides:'/images/curly-fries.jpg', loaded:'/images/poutine.jpg', salads:'/images/salad.jpg',
+    platters:'/images/platter.jpg', midnight:'/images/oreo.jpg', drinks:'/images/refreshers.jpg' };
+  var storeName = '';
+  function priceHtml(i){ return i.prices.map(function(p, k){ return (i.prices.length > 1 && i.labels && i.labels[k] ? '<small>'+esc(i.labels[k])+'</small>' : '') + money(p); }).join(''); }
+  function menuSlide(it){
+    var d = document.createElement('div'); d.className = 'mb';
+    var secs = it.menu || [];
+    var all = []; secs.forEach(function(s){ s.items.forEach(function(i){ all.push(i); }); });
+    // Feature: a Sauce Boss pick with a photo (or the first photo), and up to 3 picks with prices
+    var star = all.filter(function(i){ return i.pick && i.img && !i.soldOut; })[0] || all.filter(function(i){ return i.img && !i.soldOut; })[0];
+    var photo = star ? star.img : (secs[0] && FALLBACK_PHOTO[secs[0].id]) || '/images/wings-hero.jpg';
+    var picks = all.filter(function(i){ return (i.pick || i.pop) && !i.soldOut && i !== star; }).slice(0, 3);
+    var starName = star ? String(star.full || star.name).replace(' — ', ' of ') : '';
+    var title = (it.title || 'Menu').replace(/^Menu:\s*/, '');
+    var date = new Date().toLocaleDateString('en-CA', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+    var rows = secs.reduce(function(s, x){ return s + x.items.length + 2 + x.items.filter(function(i){return i.desc;}).length * 0.6; }, 0);
+    var cols = rows > 30 ? 3 : rows > 12 ? 2 : 1;
+    d.innerHTML =
+      '<div class="mb-ed"><span>Vol. IV · '+esc(storeName ? storeName.replace(/\s*\(.*\)/, '') + ' Edition' : 'Menu Edition')+'</span><span>'+esc(date)+'</span><span>Price: one napkin (or 12)</span></div>'+
+      '<div class="mb-mast"><img class="mb-logo" src="/images/wingo-logo-wide.png" alt=""><div class="mb-title">The Sauce Boss Times'+dripSvg()+'</div>'+
+        '<div class="mb-edition">TODAY\'S MENU<b>'+esc(title)+'</b></div></div>'+
+      '<div class="mb-ed2"><span>135+ flavours</span><span>·</span><span>Real wings, real sauce</span><span>·</span><span>Open late</span><span>·</span><span>Order at wingorestaurants.com</span></div>'+
+      '<div class="mb-body">'+
+        '<div class="mb-feat"><div class="mb-kick">'+(star ? 'Extra! Sauce Boss Pick' : 'Extra! Extra!')+'</div><div class="mb-hed">'+esc(star ? starName : title)+'</div>'+
+          '<div class="mb-photo"><img src="'+esc(photo)+'" alt=""></div>'+
+          (star ? '<div class="mb-cap">'+esc(starName)+' · $'+money(star.prices[0])+'</div>' : '')+
+          (picks.length ? '<div class="mb-picks"><div class="mb-kick" style="margin-bottom:.4vh;">Also popular</div>'+picks.map(function(i){ return '<div class="mb-pick"><span>'+esc(String(i.full || i.name).replace(' — ', ' of '))+'</span><b>$'+money(i.prices[0])+'</b></div>'; }).join('')+'</div>' : '')+
+        '</div>'+
+        '<div class="mb-cols" data-cols="'+cols+'" style="column-count:'+cols+'">'+secs.map(function(s){
+          return '<div class="mb-sec"><h2>'+esc(s.name)+'</h2>'+s.items.map(function(i){
+            return '<div class="mb-row'+(i.soldOut?' out':'')+'"><span class="n">'+esc(i.name)+'</span>'+(i.pop && !i.soldOut ? '<span class="hot">🔥 POPULAR</span>' : '')+
+              '<span class="dots"></span><span class="p">'+priceHtml(i)+'</span>'+(i.soldOut ? '<span class="stamp">SOLD OUT TODAY</span>' : '')+'</div>'+
+              (i.desc ? '<div class="mb-desc">'+esc(i.desc.length > 100 ? i.desc.slice(0, 97) + '…' : i.desc)+'</div>' : '');
+          }).join('')+'</div>';
+        }).join('')+'</div>'+
+      '</div>';
+    return d;
+  }
+  // Biggest text that fits: try the suggested number of columns, then more, shrinking the text each time
+  // Biggest text that fits: try the suggested columns (max 3) shrinking the text; on a very full board
+  // let the photo column step aside. Every line must fit too, so prices never spill into the next column.
+  function fitMenu(d){
+    var colsEl = d.querySelector('.mb-cols'); if(!colsEl) return;
+    var start = Math.min(3, Number(colsEl.getAttribute('data-cols')) || 1);
+    function fits(){
+      if(colsEl.scrollWidth > colsEl.clientWidth + 2 || colsEl.scrollHeight > colsEl.clientHeight + 2) return false;
+      var rows = colsEl.querySelectorAll('.mb-row');
+      for(var r = 0; r < rows.length; r++){
+        if(rows[r].scrollWidth > rows[r].clientWidth + 1) return false;
+        var n = rows[r].firstChild; // a name squeezed onto 3+ lines doesn't count as fitting
+        if(n && n.offsetHeight > 2.9 * parseFloat(getComputedStyle(n).fontSize)) return false;
+      }
+      return true;
+    }
+    function attempt(minFs){
+      for(var cols = start; cols <= 3; cols++){
+        colsEl.style.columnCount = cols;
+        for(var fs = 3.1; fs >= minFs; fs -= 0.1){ d.style.setProperty('--fs', fs.toFixed(2) + 'vh'); if(fits()) return true; }
+      }
+      return false;
+    }
+    d.classList.remove('nofeat');
+    if(attempt(2.1)) return;
+    d.classList.add('nofeat');
+    if(attempt(1.5)) return;
+  }
+  function qrSlide(it){
+    var d = document.createElement('div'); d.className = 'qr';
+    d.innerHTML = '<div class="qr-box"><img src="'+esc(it.qr)+'" alt=""></div><div class="qr-txt"><div class="k">EXTRA! EXTRA!</div><h1>Skip the line.<br><span>Scan</span> to order.</h1>'+
+      '<p>Point your phone camera at the code. Order from your table or for next time'+(it.store ? ' at '+esc(it.store.replace(/\s*\(.*\)/, '')) : '')+'.</p><div class="u">WINGORESTAURANTS.COM</div></div>';
+    return d;
   }
 
   function show(){
@@ -88,7 +270,13 @@
       var old = layer(front); setTimeout(function(){ if(!old.classList.contains('on')) old.innerHTML=''; }, 900);
       front = back;
     }
-    if(it.type === 'video'){
+    var hold = Math.max(3, it.seconds || 10) * 1000;
+    if(it.kind === 'menu' || it.kind === 'qr'){
+      var el = it.kind === 'menu' ? menuSlide(it) : qrSlide(it);
+      L.appendChild(el);
+      if(it.kind === 'menu'){ fitMenu(el); if(document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ fitMenu(el); }); }
+      reveal(); timer = setTimeout(go, list.length === 1 ? 60000 : hold); preloadNext();
+    } else if(it.type === 'video'){
       var v = document.createElement('video');
       v.muted = true; v.setAttribute('muted',''); v.playsInline = true; v.setAttribute('playsinline',''); v.preload = 'auto';
       v.src = it.url;
@@ -102,7 +290,7 @@
       else timer = setTimeout(go, 120000); // replaced once the length is known
     } else {
       var img = new Image();
-      img.onload = function(){ reveal(); timer = setTimeout(go, Math.max(3, it.seconds || 10) * 1000); preloadNext(); };
+      img.onload = function(){ reveal(); timer = setTimeout(go, hold); preloadNext(); };
       img.onerror = function(){ setTimeout(go, 500); };
       img.src = it.url;
       L.appendChild(img);
@@ -110,23 +298,31 @@
   }
   function preloadNext(){
     var n = list[(idx + 1) % list.length];
-    if(n && n.type === 'image'){ var i = new Image(); i.src = n.url; }
+    if(n && n.kind !== 'menu' && n.type === 'image' && n.url){ var i = new Image(); i.src = n.url; }
   }
 
   function refresh(){
-    fetch('/api/signage/playlist?loc=' + encodeURIComponent(loc), { cache:'no-store' })
+    fetch('/api/signage/playlist?loc=' + encodeURIComponent(loc) + '&screen=' + encodeURIComponent(screen), { cache:'no-store' })
       .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
       .then(function(d){
         document.getElementById('offline').style.display='none';
         if(build && d.build && d.build !== build){ location.reload(); return; }
         build = d.build || build;
+        storeName = d.location || storeName;
         setTicker(d.ticker);
-        var sig = function(a){ return JSON.stringify(a.map(function(x){ return [x.id, x.seconds, x.url]; })); };
+        setReady(d.ready);
+        var sig = function(a){ return JSON.stringify(a.map(function(x){ return [x.id, x.seconds, x.url, x.title, x.menu || null, x.qr || null]; })); };
         var firstLoad = !started; started = true;
         if(firstLoad || sig(d.items) !== sig(list)){
-          // Changes start at the next slide, except when nothing is playing or one video is looping
+          var cur = list[idx];
+          // Changes start at the next slide, except when nothing is playing, one video is looping,
+          // or a menu board on screen changed (e.g. something just sold out)
           var restartNow = firstLoad || !list.length || !d.items.length || (list.length === 1 && list[0].type === 'video');
           next = d.items;
+          if(!restartNow && cur && cur.kind === 'menu'){
+            var now = d.items.filter(function(x){ return x.id === cur.id; })[0];
+            if(now && JSON.stringify(now.menu) !== JSON.stringify(cur.menu)){ idx = -1; list = next; next = null; var pos = list.indexOf(now); idx = pos - 1; show(); }
+          }
           if(restartNow) show();
         }
       })
@@ -135,13 +331,13 @@
 
   // Keep the screen awake and go full screen on the first tap/key (browsers need a gesture)
   function wake(){ try{ navigator.wakeLock && navigator.wakeLock.request('screen').catch(function(){}); }catch(e){} }
-  function fs(){ var e=document.documentElement; try{ if(!document.fullscreenElement && e.requestFullscreen) e.requestFullscreen().catch(function(){}); }catch(x){} wake(); }
-  document.addEventListener('click', fs); document.addEventListener('keydown', fs);
+  function full(){ var e=document.documentElement; try{ if(!document.fullscreenElement && e.requestFullscreen) e.requestFullscreen().catch(function(){}); }catch(x){} wake(); }
+  document.addEventListener('click', full); document.addEventListener('keydown', full);
   document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='visible') wake(); });
   wake();
 
   refresh();
-  setInterval(refresh, 60000);
+  setInterval(refresh, 30000);
   // A full reload about once a day keeps long-running TV browsers healthy
   setTimeout(function(){ location.reload(); }, (24 + Math.random() * 4) * 3600e3);
 })();
