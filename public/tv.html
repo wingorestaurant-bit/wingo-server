@@ -150,7 +150,13 @@
   var shownReady = {};
   function setReady(r){
     r = r || [];
+    var had = document.body.classList.contains('has-ready');
     document.body.classList.toggle('has-ready', r.length > 0);
+    // The strip takes space from the slide area: resize the board on screen right away
+    if(had !== r.length > 0){
+      var on = document.querySelector('.layer.on .mb');
+      if(on) setTimeout(function(){ fitMenu(on); }, 50);
+    }
     var el = document.querySelector('#ready .list');
     el.innerHTML = r.map(function(o){
       var isNew = !shownReady[o.num]; shownReady[o.num] = 1;
@@ -257,7 +263,8 @@
   var pageCache = {};
   function splitMenu(it){
     var secs = it.menu || [];
-    var key = JSON.stringify([it.title, secs, window.innerWidth, window.innerHeight, storeName]);
+    var st = document.getElementById('stage');
+    var key = JSON.stringify([it.title, secs, st.clientWidth, st.clientHeight, storeName]);
     if(pageCache[key]) return pageCache[key];
     var probe = document.createElement('div');
     probe.className = 'layer'; probe.style.cssText = 'visibility:hidden;opacity:0;pointer-events:none;';
@@ -381,7 +388,7 @@
   wake();
 
   refresh();
-  setInterval(refresh, 30000);
+  setInterval(refresh, 15000);
   // A full reload about once a day keeps long-running TV browsers healthy
   setTimeout(function(){ location.reload(); }, (24 + Math.random() * 4) * 3600e3);
 })();
