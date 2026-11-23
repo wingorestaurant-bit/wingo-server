@@ -686,30 +686,146 @@ const SIGNAGE_MAX_BYTES = 95 * 1024 * 1024; // Cloudflare refuses uploads over 1
 const SIGNAGE_TYPES = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif', 'video/mp4': 'mp4', 'video/webm': 'webm', 'video/quicktime': 'mov' };
 const SIGNAGE_DEFAULT_TICKER = '10% OFF LATE NIGHTS AFTER 11 PM  •  ORDER AT WINGORESTAURANTS.COM  •  15% OFF YOUR FIRST ONLINE ORDER';
 const signageAuth = req => isAdmin(req.get('x-admin-password') || (req.body && req.body.password) || '');
-const signageItemOut = it => ({ id: String(it._id), title: it.title || '', type: it.type, url: `/media/signage/${it.file}`, locations: it.locations || ['all'],
-  seconds: it.seconds || 10, days: it.days || [], active: it.active !== false, order: it.order || 0, bytes: it.bytes || 0, createdAt: it.createdAt });
+// Slides are uploaded files (kind 'file'), a live menu board built from the website menu ('menu'),
+// or the store's order-online QR code ('qr').
+const signageItemOut = it => ({ id: String(it._id), kind: it.kind || 'file', title: it.title || '', type: it.type || (it.kind === 'file' || !it.kind ? 'image' : it.kind),
+  url: it.file ? `/media/signage/${it.file}` : null, locations: it.locations || ['all'], seconds: it.seconds || 10, days: it.days || [],
+  startTime: it.startTime || '', endTime: it.endTime || '', startDate: it.startDate || '', endDate: it.endDate || '',
+  sections: it.sections || [], active: it.active !== false, order: it.order || 0, bytes: it.bytes || 0, createdAt: it.createdAt });
 async function signageSettings(database) {
   const d = await database.collection('settings').findOne({ key: 'signage' });
-  return { ticker: (d && d.ticker) || { all: SIGNAGE_DEFAULT_TICKER } };
+  return { ticker: (d && d.ticker) || { all: SIGNAGE_DEFAULT_TICKER }, ready: (d && d.ready) || {} };
 }
 
-// What one TV should play right now (only items for its store, switched on, and for today's weekday)
+// The menu, read from the ordering page itself (public/index.html, `var MENU = {...}`), so a price is only ever
+// changed in one place and the TVs, the website and online ordering always agree.
+const SIGNAGE_SECTION_NAMES = { wings: 'Wings', ribs: 'Ribs', boneless: 'Boneless Wings', chickenfingers: 'Chicken Fingers', burgers: 'Burgers',
+  combos: 'Combos', sides: 'Sides', loaded: 'Poutine & Loaded Fries', salads: 'Salads', platters: 'Platters', midnight: 'Desserts', drinks: 'Drinks' };
+let siteMenuCache = null;
+function siteMenu() {
+  if (siteMenuCache) return siteMenuCache;
+  try {
+    const src = fs.readFileSync(path.join(__dirname, 'public', 'index.html'), 'utf8');
+    const start = src.indexOf('var MENU = {');
+    if (start < 0) throw new Error('MENU not found');
+    let i = src.indexOf('{', start), depth = 0, quote = null, end = -1;
+    for (; i < src.length; i++) {
+      const c = src[i];
+      if (quote) { if (c === '\\') i++; else if (c === quote) quote = null; continue; }
+      if (c === '"' || c === "'" || c === '`') quote = c;
+      else if (c === '{') depth++;
+      else if (c === '}' && --depth === 0) { end = i; break; }
+    }
+    siteMenuCache = require('vm').runInNewContext('(' + src.slice(src.indexOf('{', start), end + 1) + ')', {}, { timeout: 1000 });
+  } catch (e) { console.warn('TV screens: could not read the menu:', e.message); siteMenuCache = {}; }
+  return siteMenuCache;
+}
+const signageSections = () => Object.keys(siteMenu()).filter(k => Array.isArray(siteMenu()[k])).map(k => ({ id: k, name: SIGNAGE_SECTION_NAMES[k] || k.replace(/^\w/, c => c.toUpperCase()) }));
+function signageMenuData(sections, soldOutIds) {
+  const M = siteMenu(); const gone = new Set((soldOutIds || []).map(String));
+  return (sections || []).filter(k => Array.isArray(M[k])).map(k => ({
+    id: k, name: SIGNAGE_SECTION_NAMES[k] || k,
+    items: M[k].filter(x => x && x.name && Number(x.price) > 0).map(x => ({
+      name: String(x.name).split(' — ')[0], desc: ['combos', 'platters', 'burgers'].includes(k) ? String(x.desc || '') : '',
+      prices: [x.price, x.price2, x.price3].filter(p => Number(p) > 0).map(Number),
+      // Same size names as the ordering page
+      labels: x.price3 ? (x.sizeLabels3 || x.sizeLabels || ['Sm', 'Med', 'Lg']) : x.price2 ? (x.sizeLabels || ['Small', 'Large']) : null, soldOut: gone.has(String(x.id)) }))
+  }));
+}
+
+// Store hours (same as the ordering page): [open, close] in hours, close past 24 = after midnight
+const STORE_HOURS = { default: { 0: [11, 27], 1: [11, 25], 2: [11, 25], 3: [11, 25], 4: [11, 27], 5: [11, 27], 6: [11, 27] },
+  'regina-beach': { 0: [11, 22], 1: [11, 22], 2: [11, 22], 3: [11, 22], 4: [11, 22], 5: [11, 22], 6: [11, 22] } };
+function storeLocalNow(loc) {
+  const parts = new Intl.DateTimeFormat('en-CA', { timeZone: locTz(LOCATIONS[loc]), year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23', weekday: 'short' })
+    .formatToParts(new Date()).reduce((o, p) => (o[p.type] = p.value, o), {});
+  return { dow: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(parts.weekday), mins: Number(parts.hour) * 60 + Number(parts.minute), date: `${parts.year}-${parts.month}-${parts.day}` };
+}
+function storeOpenNow(loc) {
+  if (SEASON_CLOSED.includes(loc) || !LOCATIONS[loc]) return false;
+  const H = STORE_HOURS[loc] || STORE_HOURS.default, n = storeLocalNow(loc), h = n.mins / 60;
+  const today = H[n.dow], yesterday = H[(n.dow + 6) % 7];
+  return (h >= today[0] && h < today[1]) || (yesterday[1] > 24 && h < yesterday[1] - 24);
+}
+// Is a slide on right now? Dates, then times (a window like 23:00–03:00 runs past midnight and
+// belongs to the day it started), then weekdays.
+const hhmm = s => { const m = /^(\d{1,2}):(\d{2})$/.exec(String(s || '')); return m && Number(m[1]) < 24 && Number(m[2]) < 60 ? Number(m[1]) * 60 + Number(m[2]) : null; };
+function signageScheduledNow(it, n) {
+  if (it.startDate && n.date < it.startDate) return false;
+  if (it.endDate && n.date > it.endDate) return false;
+  let day = n.dow;
+  const s = hhmm(it.startTime), e = hhmm(it.endTime);
+  if (s !== null || e !== null) {
+    const from = s === null ? 0 : s, to = e === null ? 1440 : e;
+    if (from < to) { if (!(n.mins >= from && n.mins < to)) return false; }
+    else if (n.mins >= from) { /* evening part, today */ }
+    else if (n.mins < to) day = (n.dow + 6) % 7;
+    else return false;
+  }
+  return !(it.days && it.days.length) || it.days.includes(day);
+}
+
+// Each TV says hello on every refresh; the owner gets an email if one goes quiet while the store is open
+async function signageHeartbeat(database, req, loc) {
+  const sid = String(req.query.screen || '').slice(0, 40);
+  if (!/^[a-z0-9-]{8,40}$/i.test(sid) || !LOCATIONS[loc]) return;
+  const before = await database.collection('signage_screens').findOne({ screenId: sid });
+  await database.collection('signage_screens').updateOne({ screenId: sid },
+    { $set: { screenId: sid, loc, lastSeen: new Date(), agent: String(req.get('user-agent') || '').slice(0, 160), alerted: false },
+      $setOnInsert: { name: '', firstSeen: new Date() } }, { upsert: true });
+  if (before && before.alerted) alertOwner(`📺 ${before.name || 'A TV'} at ${LOCATIONS[loc].name} is back on`,
+    `<p>The TV screen <b>${escHtml(before.name || sid)}</b> at <b>${escHtml(LOCATIONS[loc].name)}</b> is playing again.</p>`);
+}
+const SCREEN_QUIET_MIN = Number(process.env.TV_ALERT_MINUTES || 20);
+async function checkSignageScreens() {
+  try {
+    const database = await connectDB(); if (!database) return;
+    const quiet = await database.collection('signage_screens').find({ lastSeen: { $lt: new Date(Date.now() - SCREEN_QUIET_MIN * 60e3) }, alerted: { $ne: true }, muted: { $ne: true } }).toArray();
+    for (const s of quiet) {
+      if (!storeOpenNow(s.loc)) continue;
+      await database.collection('signage_screens').updateOne({ screenId: s.screenId }, { $set: { alerted: true } });
+      const mins = Math.round((Date.now() - new Date(s.lastSeen).getTime()) / 60000);
+      alertOwner(`📺 ${s.name || 'A TV'} at ${(LOCATIONS[s.loc] || {}).name || s.loc} stopped playing`,
+        `<p>The TV screen <b>${escHtml(s.name || s.screenId)}</b> at <b>${escHtml((LOCATIONS[s.loc] || {}).name || s.loc)}</b> hasn't checked in for <b>${mins} minutes</b>, during open hours.</p>
+         <p><b>What to check:</b> is the TV on and on the right input, is the streaming stick powered, and is the store Wi‑Fi working? Unplugging the stick for 10 seconds usually fixes it.</p>
+         <p>You'll get another email when it's back. To stop alerts for a screen you removed, use “Forget” on wingorestaurants.com/tv-admin.</p>`);
+    }
+  } catch (e) { console.warn('TV screen check failed:', e.message); }
+}
+setInterval(checkSignageScreens, Number(process.env.TV_CHECK_SECONDS || 300) * 1000);
+
+// Orders the kitchen marked ready in the last 20 minutes (and not handed off yet), for the dining-room TV
+async function signageReadyOrders(database, loc) {
+  const rows = await database.collection('orders').find({ locationId: loc, readyAt: { $gte: new Date(Date.now() - 20 * 60e3) }, kitchenStatus: { $ne: 'complete' } })
+    .sort({ readyAt: 1 }).limit(10).toArray();
+  return rows.filter(o => o.orderType !== 'delivery').map(o => ({ num: o.orderNum, name: String((o.customer && o.customer.firstName) || '').trim().split(/\s+/)[0].slice(0, 14) }));
+}
+
+// What one TV should play right now: its store's slides that are switched on and scheduled for now
 app.get('/api/signage/playlist', async (req, res) => {
   const loc = String(req.query.loc || '');
   res.set('Cache-Control', 'no-store');
   try {
     const database = await connectDB();
     if (!database) return res.status(503).json({ error: 'database unavailable' });
-    const tz = locTz(LOCATIONS[loc]);
-    const dow = new Date(new Date().toLocaleString('en-US', { timeZone: tz })).getDay();
+    signageHeartbeat(database, req, loc).catch(e => console.warn('TV heartbeat failed:', e.message));
+    const now = storeLocalNow(loc);
+    const soldOut = (await getLiveSettings()).soldOut[loc] || [];
     const items = (await database.collection('signage_items').find({}).sort({ order: 1, createdAt: 1 }).toArray())
       .filter(it => it.active !== false)
       .filter(it => !(it.locations && it.locations.length) || it.locations.includes('all') || it.locations.includes(loc))
-      .filter(it => !(it.days && it.days.length) || it.days.includes(dow))
-      .map(signageItemOut);
+      .filter(it => signageScheduledNow(it, now))
+      .map(it => {
+        const o = signageItemOut(it);
+        if (o.kind === 'menu') o.menu = signageMenuData(o.sections, soldOut);
+        if (o.kind === 'qr') { o.qr = `/tv/qr-${LOCATIONS[loc] ? loc : 'albert-st'}.svg`; o.store = LOCATIONS[loc] ? LOCATIONS[loc].name : ''; }
+        return o;
+      })
+      .filter(o => o.kind !== 'file' || o.url);
     const s = await signageSettings(database);
     const ticker = s.ticker[loc] !== undefined && s.ticker[loc] !== '' ? s.ticker[loc] : (s.ticker.all || '');
-    res.json({ build: BUILD_ID, items, ticker, location: LOCATIONS[loc] ? LOCATIONS[loc].name : null });
+    const ready = s.ready[loc] === false ? [] : await signageReadyOrders(database, loc);
+    res.json({ build: BUILD_ID, items, ticker, ready, location: LOCATIONS[loc] ? LOCATIONS[loc].name : null });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
@@ -721,7 +837,7 @@ app.get('/media/signage/:file', (req, res) => {
 
 app.post('/api/signage/login', (req, res) => {
   if (!signageAuth(req)) return res.status(401).json({ error: 'Wrong password' });
-  res.json({ ok: true, storage: !!SIGNAGE_DIR, locations: Object.entries(LOCATIONS).map(([id, l]) => ({ id, name: l.name })) });
+  res.json({ ok: true, storage: !!SIGNAGE_DIR, locations: Object.entries(LOCATIONS).map(([id, l]) => ({ id, name: l.name })), sections: signageSections() });
 });
 
 app.get('/api/signage/items', async (req, res) => {
@@ -729,7 +845,10 @@ app.get('/api/signage/items', async (req, res) => {
   const database = await connectDB();
   if (!database) return res.status(503).json({ error: 'database unavailable' });
   const items = await database.collection('signage_items').find({}).sort({ order: 1, createdAt: 1 }).toArray();
-  res.json({ items: items.map(signageItemOut), ...(await signageSettings(database)), storage: !!SIGNAGE_DIR });
+  const screens = (await database.collection('signage_screens').find({}).sort({ loc: 1, firstSeen: 1 }).toArray()).map(s => ({
+    id: s.screenId, loc: s.loc, name: s.name || '', lastSeen: s.lastSeen, agent: s.agent || '', muted: !!s.muted,
+    online: s.lastSeen && Date.now() - new Date(s.lastSeen).getTime() < 3 * 60e3 }));
+  res.json({ items: items.map(signageItemOut), ...(await signageSettings(database)), screens, storage: !!SIGNAGE_DIR, sections: signageSections() });
 });
 
 // Upload: the raw file is the request body (streamed to disk, so big videos don't fill memory)
@@ -751,7 +870,7 @@ app.post('/api/signage/upload', async (req, res) => {
   try {
     const database = await connectDB();
     const last = await database.collection('signage_items').find({}).sort({ order: -1 }).limit(1).toArray();
-    const doc = { _id: id, file, type: type.startsWith('video') ? 'video' : 'image', bytes,
+    const doc = { _id: id, kind: 'file', file, type: type.startsWith('video') ? 'video' : 'image', bytes,
       title: String(req.query.title || '').slice(0, 120), locations: ['all'], seconds: 10, days: [], active: true,
       order: (last[0] ? last[0].order || 0 : 0) + 1, createdAt: new Date() };
     await database.collection('signage_items').insertOne(doc);
@@ -770,6 +889,9 @@ app.post('/api/signage/items/:id', async (req, res) => {
   if (Array.isArray(b.days)) set.days = [...new Set(b.days.map(Number).filter(d => d >= 0 && d <= 6))];
   if (typeof b.active === 'boolean') set.active = b.active;
   if (b.order !== undefined && Number.isFinite(Number(b.order))) set.order = Number(b.order);
+  ['startTime', 'endTime'].forEach(k => { if (typeof b[k] === 'string') set[k] = hhmm(b[k]) !== null ? b[k] : ''; });
+  ['startDate', 'endDate'].forEach(k => { if (typeof b[k] === 'string') set[k] = /^\d{4}-\d{2}-\d{2}$/.test(b[k]) ? b[k] : ''; });
+  if (Array.isArray(b.sections)) set.sections = b.sections.map(String).filter(k => Array.isArray(siteMenu()[k]));
   const database = await connectDB();
   const r = await database.collection('signage_items').findOneAndUpdate({ _id }, { $set: set }, { returnDocument: 'after' });
   const doc = r && (r.value !== undefined ? r.value : r);
@@ -786,6 +908,50 @@ app.post('/api/signage/items/:id/delete', async (req, res) => {
   await database.collection('signage_items').deleteOne({ _id });
   if (SIGNAGE_DIR && doc.file) fs.unlink(path.join(SIGNAGE_DIR, doc.file), () => {});
   res.json({ ok: true });
+});
+
+// Built-in slides: a live menu board (pick which menu sections) or the order-online QR code
+app.post('/api/signage/create', async (req, res) => {
+  if (!signageAuth(req)) return res.status(401).json({ error: 'Wrong password' });
+  const b = req.body || {};
+  if (!['menu', 'qr'].includes(b.kind)) return res.status(400).json({ error: 'Unknown slide type' });
+  const sections = b.kind === 'menu' ? (Array.isArray(b.sections) ? b.sections : []).map(String).filter(k => Array.isArray(siteMenu()[k])) : [];
+  if (b.kind === 'menu' && !sections.length) return res.status(400).json({ error: 'Pick at least one menu section' });
+  const database = await connectDB();
+  if (!database) return res.status(503).json({ error: 'database unavailable' });
+  const last = await database.collection('signage_items').find({}).sort({ order: -1 }).limit(1).toArray();
+  const doc = { _id: new ObjectId(), kind: b.kind, type: b.kind, sections,
+    title: String(b.title || (b.kind === 'qr' ? 'Order online QR code' : 'Menu: ' + sections.map(k => SIGNAGE_SECTION_NAMES[k] || k).join(', '))).slice(0, 120),
+    locations: ['all'], seconds: b.kind === 'qr' ? 12 : 20, days: [], active: true, order: (last[0] ? last[0].order || 0 : 0) + 1, createdAt: new Date() };
+  await database.collection('signage_items').insertOne(doc);
+  res.json({ item: signageItemOut(doc) });
+});
+
+// Screens: name them ("Albert front TV"), or forget one that was removed so it stops alerting
+app.post('/api/signage/screens/:id', async (req, res) => {
+  if (!signageAuth(req)) return res.status(401).json({ error: 'Wrong password' });
+  const b = req.body || {}; const set = {};
+  if (typeof b.name === 'string') set.name = b.name.slice(0, 40);
+  if (typeof b.muted === 'boolean') set.muted = b.muted;
+  const database = await connectDB();
+  await database.collection('signage_screens').updateOne({ screenId: String(req.params.id) }, { $set: set });
+  res.json({ ok: true });
+});
+app.post('/api/signage/screens/:id/forget', async (req, res) => {
+  if (!signageAuth(req)) return res.status(401).json({ error: 'Wrong password' });
+  const database = await connectDB();
+  await database.collection('signage_screens').deleteOne({ screenId: String(req.params.id) });
+  res.json({ ok: true });
+});
+
+// "Order ready" strip on/off per store
+app.post('/api/signage/ready', async (req, res) => {
+  if (!signageAuth(req)) return res.status(401).json({ error: 'Wrong password' });
+  const r = (req.body && req.body.ready) || {}; const ready = {};
+  Object.keys(LOCATIONS).forEach(k => { if (typeof r[k] === 'boolean') ready[k] = r[k]; });
+  const database = await connectDB();
+  await database.collection('settings').updateOne({ key: 'signage' }, { $set: { key: 'signage', ready } }, { upsert: true });
+  res.json({ ready });
 });
 
 app.post('/api/signage/ticker', async (req, res) => {
@@ -1389,6 +1555,8 @@ app.post('/api/kitchen/order/:id/notify-ready', async (req, res) => {
       { _id: new ObjectId(req.params.id), locationId: loc }
     );
     if (!order) return res.status(404).json({ error: 'order not found' });
+    // The dining-room TV shows ready orders, whether or not the customer gave an email
+    await database.collection('orders').updateOne({ _id: order._id }, { $set: { readyAt: new Date() } });
 
     // No email on file — nothing to send, but return success so button feels responsive
     if (!order.customer?.email || !order.customer.email.includes('@')) {

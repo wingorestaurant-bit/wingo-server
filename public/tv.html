@@ -5,28 +5,73 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>Wing-O TV</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Playfair+Display:wght@900&display=swap" rel="stylesheet">
 <style>
   *{margin:0;padding:0;box-sizing:border-box;}
-  html,body{width:100%;height:100%;background:#000;overflow:hidden;cursor:none;font-family:"Arial Black",Arial,sans-serif;}
+  html,body{width:100%;height:100%;background:#000;overflow:hidden;cursor:none;font-family:Oswald,"Arial Narrow",Arial,sans-serif;}
   #stage{position:absolute;left:0;right:0;top:0;bottom:0;}
   body.has-ticker #stage{bottom:7vh;}
-  .layer{position:absolute;inset:0;opacity:0;transition:opacity .8s ease;display:flex;align-items:center;justify-content:center;background:#000;}
+  body.has-ready #stage{bottom:9vh;}
+  body.has-ticker.has-ready #stage{bottom:16vh;}
+  .layer{position:absolute;inset:0;opacity:0;transition:opacity .8s ease;display:flex;align-items:center;justify-content:center;background:#000;overflow:hidden;}
   .layer.on{opacity:1;}
   .layer img,.layer video{width:100%;height:100%;object-fit:contain;display:block;}
+
+  /* Live menu board */
+  .mb{width:100%;height:100%;background:#FFFDF7;color:#1A1208;padding:3.2vh 3.6vw 2.6vh;display:flex;flex-direction:column;font-size:var(--fs,3.1vh);}
+  .mb-head{display:flex;align-items:baseline;justify-content:space-between;border-bottom:.5vh double #1A1208;padding-bottom:1.2vh;margin-bottom:1.6vh;}
+  .mb-head h1{font-family:"Playfair Display",Georgia,serif;font-size:2.3em;line-height:1;letter-spacing:-.03em;}
+  .mb-head h1 b{color:#E8190A;}
+  .mb-head span{font-size:.8em;letter-spacing:.25em;text-transform:uppercase;color:#7B6A55;}
+  .mb-cols{flex:1;column-gap:4vw;column-fill:auto;overflow:hidden;}
+  .mb-sec{break-inside:avoid;margin-bottom:1.4em;}
+  .mb-sec h2{color:#E8190A;font-weight:700;font-size:1.35em;letter-spacing:.06em;text-transform:uppercase;border-bottom:.25vh solid #1A1208;margin-bottom:.35em;padding-bottom:.1em;}
+  .mb-row{display:flex;align-items:baseline;gap:.5em;line-height:1.35;break-inside:avoid;}
+  .mb-row .n{font-weight:500;}
+  .mb-row .dots{flex:1;border-bottom:.3vh dotted #C8B89A;transform:translateY(-.3em);min-width:1em;}
+  .mb-row .p{font-weight:700;white-space:nowrap;}
+  .mb-row .p small{font-size:.62em;color:#7B6A55;font-weight:500;margin:0 .15em 0 .5em;letter-spacing:.05em;}
+  .mb-desc{font-family:Arial,sans-serif;font-size:.6em;color:#6B5A45;margin:-.1em 0 .45em;line-height:1.3;}
+  .mb-row.out .n{text-decoration:line-through;opacity:.45;} .mb-row.out .p{opacity:.45;}
+  .mb-row.out .tag{background:#E8190A;color:#fff;font-size:.55em;padding:.1em .5em;border-radius:.3em;letter-spacing:.1em;white-space:nowrap;}
+
+  /* Order-online QR slide */
+  .qr{width:100%;height:100%;background:#E8190A;color:#fff;display:flex;align-items:center;justify-content:center;gap:6vw;padding:5vh 6vw;}
+  .qr-box{background:#fff;padding:2.4vh;border-radius:2vh;box-shadow:1.6vh 1.6vh 0 #1A1208;}
+  .qr-box img{width:58vh;height:58vh;display:block;}
+  .qr-txt{max-width:50vw;}
+  .qr-txt .k{font-size:3.4vh;letter-spacing:.6vh;font-weight:700;color:#FFE3A0;}
+  .qr-txt h1{font-family:"Playfair Display",Georgia,serif;font-size:11vh;line-height:.95;margin:1.2vh 0 2.4vh;}
+  .qr-txt p{font-size:4vh;font-weight:500;line-height:1.3;}
+  .qr-txt .u{margin-top:3vh;font-size:3.6vh;letter-spacing:.3vh;font-weight:700;background:#1A1208;display:inline-block;padding:1vh 2vh;border-radius:1vh;}
+
+  /* Order-ready strip */
+  #ready{display:none;position:absolute;left:0;right:0;height:9vh;bottom:0;background:#2D8A3E;color:#fff;align-items:center;gap:2.5vw;padding:0 2.5vw;overflow:hidden;}
+  body.has-ticker #ready{bottom:7vh;}
+  body.has-ready #ready{display:flex;}
+  #ready .lbl{font-size:3.4vh;font-weight:700;letter-spacing:.3vh;white-space:nowrap;background:#1A1208;padding:.8vh 1.6vh;border-radius:.8vh;}
+  #ready .list{display:flex;gap:2.2vw;font-size:4.4vh;font-weight:700;white-space:nowrap;overflow:hidden;}
+  #ready .list span small{font-weight:500;opacity:.85;margin-left:.6vw;}
+  #ready .list span.new{animation:pop 1s ease 3;}
+  @keyframes pop{50%{color:#FFE3A0;}}
+
   #ticker{display:none;position:absolute;left:0;right:0;bottom:0;height:7vh;background:#0D0D0D;border-top:.4vh solid #E8190A;overflow:hidden;align-items:center;}
   body.has-ticker #ticker{display:flex;}
-  #ticker-in{white-space:nowrap;color:#fff;font-size:3.4vh;letter-spacing:.35vh;text-transform:uppercase;will-change:transform;padding-left:100%;}
+  #ticker-in{white-space:nowrap;color:#fff;font-size:3.6vh;font-weight:500;letter-spacing:.35vh;text-transform:uppercase;will-change:transform;}
   #ticker-in b{color:#E8190A;margin:0 2.2vh;}
   #empty,#pick{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;color:#F4EBD7;text-align:center;gap:2vh;cursor:default;background:#0D0D0D;}
   #empty h1,#pick h1{font-size:7vh;color:#E8190A;letter-spacing:.4vh;}
   #empty p,#pick p{font-family:Arial,sans-serif;font-size:2.6vh;color:#bbb;}
   #pick a{display:block;min-width:46vh;padding:2vh 3vh;margin:.6vh;background:#E8190A;color:#fff;text-decoration:none;font-size:3vh;border-radius:1vh;}
   #pick a:focus{outline:.6vh solid #F5A800;}
-  #offline{position:absolute;top:1.2vh;right:1.2vh;width:1.4vh;height:1.4vh;border-radius:50%;background:#F5A800;display:none;}
+  #offline{position:absolute;top:1.2vh;right:1.2vh;width:1.4vh;height:1.4vh;border-radius:50%;background:#F5A800;display:none;z-index:5;}
 </style>
 </head>
 <body>
 <div id="stage"><div class="layer" id="la"></div><div class="layer" id="lb"></div></div>
+<div id="ready"><div class="lbl">✅ READY FOR PICKUP</div><div class="list"></div></div>
 <div id="ticker"><div id="ticker-in"></div></div>
 <div id="empty"><h1>WING-O</h1><p>No slides for this screen yet. Add some at wingorestaurants.com/tv-admin</p></div>
 <div id="pick"><h1>WING-O TV</h1><p>Which store is this screen in?</p><div id="pick-list"></div></div>
@@ -35,9 +80,9 @@
 (function(){
   var STORES = [['albert-st','Albert Street (Regina)'],['east-regina','East Regina'],['winnipeg','Winnipeg (Dakota St)'],['regina-beach','Regina Beach']];
   var qs = new URLSearchParams(location.search);
-  var loc = qs.get('loc');
   function store(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v); }catch(e){ return null; } }
-  if(!loc) loc = store('wingo_tv_loc');
+  function esc(s){ var d=document.createElement('div'); d.textContent = s==null ? '' : String(s); return d.innerHTML; }
+  var loc = qs.get('loc') || store('wingo_tv_loc');
   if(!loc){
     var pl = document.getElementById('pick-list');
     STORES.forEach(function(s){ var a=document.createElement('a'); a.href='/tv?loc='+s[0]; a.textContent=s[1]; pl.appendChild(a); });
@@ -46,28 +91,76 @@
     return;
   }
   store('wingo_tv_loc', loc);
+  // Each TV gets its own id, so the admin page can show "last seen" per screen
+  var screen = store('wingo_tv_screen');
+  if(!screen){ screen = 'tv-' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36); store('wingo_tv_screen', screen); }
 
   var list = [], next = null, idx = -1, build = null, timer = null, front = 'la', started = false;
-  var stage = document.getElementById('stage');
-
   function layer(id){ return document.getElementById(id); }
+
   function setTicker(t){
     var parts = String(t||'').split(/\s*[•|]\s*/).map(function(x){return x.trim();}).filter(Boolean);
-    var el = document.getElementById('ticker-in');
-    var key = parts.join('|');
+    var el = document.getElementById('ticker-in'); var key = parts.join('|');
     if(el.getAttribute('data-k') === key) return;
     el.setAttribute('data-k', key);
     document.body.classList.toggle('has-ticker', parts.length > 0);
+    if(el.getAnimations) el.getAnimations().forEach(function(a){ a.cancel(); });
     if(!parts.length){ el.innerHTML=''; return; }
-    var esc = function(s){ var d=document.createElement('div'); d.textContent=s; return d.innerHTML; };
     var one = parts.map(esc).join('<b>●</b>') + '<b>●</b>';
-    el.innerHTML = one + one + one;
-    // Scroll speed stays the same however long the text is
-    el.getAnimations && el.getAnimations().forEach(function(a){ a.cancel(); });
-    requestAnimationFrame(function(){
-      var w = el.scrollWidth / 3;
-      if(el.animate) el.animate([{transform:'translateX(0)'},{transform:'translateX(-'+(w + window.innerWidth)+'px)'}], { duration: Math.max(8000, (w + window.innerWidth) / 120 * 1000), iterations: Infinity });
-    });
+    el.innerHTML = one;
+    // Repeat the text until it's wider than two screens, then scroll exactly one copy's width: seamless
+    var unit = el.scrollWidth || 1, n = Math.max(2, Math.ceil(window.innerWidth * 2 / unit) + 1), h = '';
+    for(var i=0;i<n;i++) h += one;
+    el.innerHTML = h;
+    if(el.animate) el.animate([{transform:'translateX(0)'},{transform:'translateX(-'+unit+'px)'}], { duration: unit / 110 * 1000, iterations: Infinity });
+  }
+
+  var shownReady = {};
+  function setReady(r){
+    r = r || [];
+    document.body.classList.toggle('has-ready', r.length > 0);
+    var el = document.querySelector('#ready .list');
+    el.innerHTML = r.map(function(o){
+      var isNew = !shownReady[o.num]; shownReady[o.num] = 1;
+      return '<span'+(isNew?' class="new"':'')+'>'+esc(o.num)+(o.name?'<small>'+esc(o.name)+'</small>':'')+'</span>';
+    }).join('');
+  }
+
+  // A menu board drawn from the website's own menu; shrinks the text until everything fits
+  function money(n){ return Number(n).toFixed(2); }
+  function menuSlide(it){
+    var d = document.createElement('div'); d.className = 'mb';
+    var secs = it.menu || [];
+    var rows = secs.reduce(function(s, x){ return s + x.items.length + 2 + x.items.filter(function(i){return i.desc;}).length * 0.6; }, 0);
+    var cols = rows > 34 ? 3 : rows > 14 ? 2 : 1;
+    d.innerHTML = '<div class="mb-head"><h1>WING<b>-O</b> &nbsp;'+esc((it.title||'Menu').replace(/^Menu:\s*/,''))+'</h1><span>Order at wingorestaurants.com</span></div>'+
+      '<div class="mb-cols" style="column-count:'+cols+'">'+secs.map(function(s){
+        return '<div class="mb-sec"><h2>'+esc(s.name)+'</h2>'+s.items.map(function(i){
+          var pr = i.prices.map(function(p, k){ return (i.prices.length > 1 && i.labels && i.labels[k] ? '<small>'+esc(i.labels[k])+'</small>' : '') + money(p); }).join('');
+          return '<div class="mb-row'+(i.soldOut?' out':'')+'"><span class="n">'+esc(i.name)+'</span>'+(i.soldOut?'<span class="tag">SOLD OUT</span>':'')+'<span class="dots"></span><span class="p">'+pr+'</span></div>'+
+            (i.desc ? '<div class="mb-desc">'+esc(i.desc.length > 110 ? i.desc.slice(0, 107) + '…' : i.desc)+'</div>' : '');
+        }).join('')+'</div>';
+      }).join('')+'</div>';
+    return d;
+  }
+  // Biggest text that fits: try the suggested number of columns, then more, shrinking the text each time
+  function fitMenu(d){
+    var colsEl = d.querySelector('.mb-cols'); if(!colsEl) return;
+    var start = Number(colsEl.style.columnCount) || 1;
+    function fits(){ return colsEl.scrollWidth <= colsEl.clientWidth + 2 && colsEl.scrollHeight <= colsEl.clientHeight + 2; }
+    for(var cols = start; cols <= 4; cols++){
+      colsEl.style.columnCount = cols;
+      for(var fs = 3.1; fs >= (cols < 4 ? 2.3 : 1.4); fs -= 0.1){
+        d.style.setProperty('--fs', fs.toFixed(2) + 'vh');
+        if(fits()) return;
+      }
+    }
+  }
+  function qrSlide(it){
+    var d = document.createElement('div'); d.className = 'qr';
+    d.innerHTML = '<div class="qr-box"><img src="'+esc(it.qr)+'" alt=""></div><div class="qr-txt"><div class="k">SKIP THE LINE</div><h1>Scan to order online</h1>'+
+      '<p>Point your phone camera at the code. Order from your table or for next time'+(it.store ? ' at '+esc(it.store) : '')+'.</p><div class="u">WINGORESTAURANTS.COM</div></div>';
+    return d;
   }
 
   function show(){
@@ -88,7 +181,13 @@
       var old = layer(front); setTimeout(function(){ if(!old.classList.contains('on')) old.innerHTML=''; }, 900);
       front = back;
     }
-    if(it.type === 'video'){
+    var hold = Math.max(3, it.seconds || 10) * 1000;
+    if(it.kind === 'menu' || it.kind === 'qr'){
+      var el = it.kind === 'menu' ? menuSlide(it) : qrSlide(it);
+      L.appendChild(el);
+      if(it.kind === 'menu'){ fitMenu(el); if(document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ fitMenu(el); }); }
+      reveal(); timer = setTimeout(go, list.length === 1 ? 60000 : hold); preloadNext();
+    } else if(it.type === 'video'){
       var v = document.createElement('video');
       v.muted = true; v.setAttribute('muted',''); v.playsInline = true; v.setAttribute('playsinline',''); v.preload = 'auto';
       v.src = it.url;
@@ -102,7 +201,7 @@
       else timer = setTimeout(go, 120000); // replaced once the length is known
     } else {
       var img = new Image();
-      img.onload = function(){ reveal(); timer = setTimeout(go, Math.max(3, it.seconds || 10) * 1000); preloadNext(); };
+      img.onload = function(){ reveal(); timer = setTimeout(go, hold); preloadNext(); };
       img.onerror = function(){ setTimeout(go, 500); };
       img.src = it.url;
       L.appendChild(img);
@@ -110,23 +209,30 @@
   }
   function preloadNext(){
     var n = list[(idx + 1) % list.length];
-    if(n && n.type === 'image'){ var i = new Image(); i.src = n.url; }
+    if(n && n.kind !== 'menu' && n.type === 'image' && n.url){ var i = new Image(); i.src = n.url; }
   }
 
   function refresh(){
-    fetch('/api/signage/playlist?loc=' + encodeURIComponent(loc), { cache:'no-store' })
+    fetch('/api/signage/playlist?loc=' + encodeURIComponent(loc) + '&screen=' + encodeURIComponent(screen), { cache:'no-store' })
       .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
       .then(function(d){
         document.getElementById('offline').style.display='none';
         if(build && d.build && d.build !== build){ location.reload(); return; }
         build = d.build || build;
         setTicker(d.ticker);
-        var sig = function(a){ return JSON.stringify(a.map(function(x){ return [x.id, x.seconds, x.url]; })); };
+        setReady(d.ready);
+        var sig = function(a){ return JSON.stringify(a.map(function(x){ return [x.id, x.seconds, x.url, x.title, x.menu || null, x.qr || null]; })); };
         var firstLoad = !started; started = true;
         if(firstLoad || sig(d.items) !== sig(list)){
-          // Changes start at the next slide, except when nothing is playing or one video is looping
+          var cur = list[idx];
+          // Changes start at the next slide, except when nothing is playing, one video is looping,
+          // or a menu board on screen changed (e.g. something just sold out)
           var restartNow = firstLoad || !list.length || !d.items.length || (list.length === 1 && list[0].type === 'video');
           next = d.items;
+          if(!restartNow && cur && cur.kind === 'menu'){
+            var now = d.items.filter(function(x){ return x.id === cur.id; })[0];
+            if(now && JSON.stringify(now.menu) !== JSON.stringify(cur.menu)){ idx = -1; list = next; next = null; var pos = list.indexOf(now); idx = pos - 1; show(); }
+          }
           if(restartNow) show();
         }
       })
@@ -135,13 +241,13 @@
 
   // Keep the screen awake and go full screen on the first tap/key (browsers need a gesture)
   function wake(){ try{ navigator.wakeLock && navigator.wakeLock.request('screen').catch(function(){}); }catch(e){} }
-  function fs(){ var e=document.documentElement; try{ if(!document.fullscreenElement && e.requestFullscreen) e.requestFullscreen().catch(function(){}); }catch(x){} wake(); }
-  document.addEventListener('click', fs); document.addEventListener('keydown', fs);
+  function full(){ var e=document.documentElement; try{ if(!document.fullscreenElement && e.requestFullscreen) e.requestFullscreen().catch(function(){}); }catch(x){} wake(); }
+  document.addEventListener('click', full); document.addEventListener('keydown', full);
   document.addEventListener('visibilitychange', function(){ if(document.visibilityState==='visible') wake(); });
   wake();
 
   refresh();
-  setInterval(refresh, 60000);
+  setInterval(refresh, 30000);
   // A full reload about once a day keeps long-running TV browsers healthy
   setTimeout(function(){ location.reload(); }, (24 + Math.random() * 4) * 3600e3);
 })();
