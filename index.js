@@ -3242,7 +3242,7 @@ AUTO = require('./automations')({
 
 // ── GIFT CARDS (buy online, use online or in any store) ──
 GIFT = require('./giftcards')({
-  app, connectDB, LOCATIONS, isAdmin, checkKitchenAuth, sendEmail, alertOwner, escHtml, payReady, CLOVER_ECOMM, clientIp, fetch, ownerEmail: ALERT_TO,
+  app, connectDB, LOCATIONS, isAdmin, checkKitchenAuth, sendEmail, alertOwner, escHtml, payReady, CLOVER_ECOMM, clientIp, fetch, ownerEmail: ALERT_TO, SEASON_CLOSED,
 });
 
 // ── SPA FALLBACK ───────────────────────────────────────────────

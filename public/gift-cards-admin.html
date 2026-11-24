@@ -108,12 +108,13 @@ function load(){
     var s = d.stats, by = Object.keys(s.redeemedByStore).map(function(k){ return esc(STORES[k] || k) + ' ' + money(s.redeemedByStore[k]); }).join(' · ');
     $('stats').innerHTML = '<div class="stat"><b>' + money(s.sold) + '</b><span>sold (' + s.soldCount + ' cards)</span></div><div class="stat"><b>' + money(s.redeemed) + '</b><span>spent so far</span></div>' +
       '<div class="stat hl"><b>' + money(s.outstandingPurchased) + '</b><span>owed on bought cards</span></div><div class="stat"><b>' + money(s.outstandingBonus) + '</b><span>left on bonus/free cards</span></div>' +
-      '<div class="stat"><b>' + money(s.bonusIssued) + '</b><span>bonus given</span></div>' + (by ? '<p class="note" style="width:100%;">Spent at: ' + by + '</p>' : '');
+      '<div class="stat"><b>' + money(s.bonusIssued) + '</b><span>bonus given</span></div>' +
+      '<p class="note" style="width:100%;">' + (Object.keys(s.soldByStore||{}).length ? '<b>Sold at</b> (paid into that store\'s Clover): ' + Object.keys(s.soldByStore).map(function(k){ return esc(STORES[k] || k) + ' ' + money(s.soldByStore[k]); }).join(' · ') + '<br>' : '') + (by ? '<b>Spent at:</b> ' + by : '') + '</p>';
     var p = d.settings.promo;
-    $('sales').checked = d.settings.sales; $('ready').textContent = d.salesReady ? '' : '⚠️ Online card payments aren\'t set up, so the website can\'t sell cards.';
+    $('sales').checked = d.settings.sales; $('ready').textContent = d.salesReady ? 'Selling at: ' + d.sellStores.join(', ') + ' (stores with online payments set up).' : '⚠️ No store has online card payments set up, so the website can\'t sell cards.';
     $('p-on').checked = p.enabled; $('p-every').value = p.every/100; $('p-bonus').value = p.bonus/100; $('p-ends').value = p.endsAt; $('p-from').value = p.validFrom; $('p-to').value = p.validTo;
-    $('recent').innerHTML = '<tr><th>Code</th><th>Type</th><th>Value</th><th>Left</th><th>For</th><th>From</th><th>Created</th><th>Email</th></tr>' + d.recent.map(function(c){
-      return '<tr><td class="mono"><a href="#" onclick="$(\'q\').value=\'' + c.code + '\';search();return false;">' + esc(c.code) + '</a></td><td><span class="tag ' + c.kind + ' ' + (c.status==='void'?'void':'') + '">' + esc(c.status==='void' ? 'cancelled' : c.kind) + '</span></td><td>' + money(c.initial) + '</td><td>' + money(c.balance) + '</td>' +
+    $('recent').innerHTML = '<tr><th>Code</th><th>Type</th><th>Value</th><th>Left</th><th>Sold at</th><th>For</th><th>From</th><th>Created</th><th>Email</th></tr>' + d.recent.map(function(c){
+      return '<tr><td class="mono"><a href="#" onclick="$(\'q\').value=\'' + c.code + '\';search();return false;">' + esc(c.code) + '</a></td><td><span class="tag ' + c.kind + ' ' + (c.status==='void'?'void':'') + '">' + esc(c.status==='void' ? 'cancelled' : c.kind) + '</span></td><td>' + money(c.initial) + '</td><td>' + money(c.balance) + '</td><td>' + esc(c.soldAt ? (STORES[c.soldAt] || c.soldAt) : '') + '</td>' +
         '<td>' + esc((c.recipient||{}).name || (c.recipient||{}).email || '') + '</td><td>' + esc((c.buyer||{}).name || '') + '</td><td>' + dt(c.createdAt) + '</td><td>' + (c.sentAt ? '✓ sent' : c.deliverAt ? 'scheduled ' + dt(c.deliverAt) : '—') + '</td></tr>'; }).join('');
   });
 }
