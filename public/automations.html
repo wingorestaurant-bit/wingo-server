@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Automations | Wing-O</title>
+<style>
+  :root{--paper:#F4EBD7;--card:#FFFDF7;--ink:#1A1208;--muted:#7B6A55;--line:#C8B89A;--red:#E8190A;--red-deep:#A8120A;--green:#2D8A3E;--gold:#F5A800;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--paper);color:var(--ink);font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.4;padding:16px;padding-bottom:60px;}
+  .wrap{max-width:980px;margin:0 auto;}
+  h1{font-family:Georgia,serif;font-size:30px;font-weight:900;letter-spacing:-.5px;border-bottom:4px double var(--ink);padding-bottom:8px;margin-bottom:6px;}
+  h1 span{color:var(--red);}
+  .sub{color:var(--muted);margin-bottom:14px;}
+  h2{font-size:13px;letter-spacing:2px;text-transform:uppercase;margin:28px 0 10px;border-bottom:2px solid var(--ink);padding-bottom:4px;display:flex;justify-content:space-between;align-items:center;gap:8px;}
+  .box{background:var(--card);border:1.5px solid var(--line);border-radius:8px;padding:14px;margin-bottom:12px;}
+  input[type=text],input[type=password],input[type=number],input[type=email],select{font:inherit;padding:8px 10px;border:1.5px solid var(--line);border-radius:6px;background:#fff;color:var(--ink);}
+  input[type=number]{width:80px;}
+  button{font:inherit;font-weight:700;border:0;border-radius:6px;padding:9px 14px;cursor:pointer;background:var(--ink);color:#fff;}
+  button:disabled{opacity:.5;cursor:default;}
+  .btn-red{background:var(--red);box-shadow:0 3px 0 var(--red-deep);}
+  .btn-ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line);}
+  .btn-sm{padding:6px 10px;font-size:13px;}
+  .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:8px 0;}
+  .lbl{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-weight:700;}
+  .chip{border:1.5px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:700;cursor:pointer;}
+  .chip.on{background:var(--ink);border-color:var(--ink);color:#fff;}
+  .toggle{display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-weight:700;}
+  .toggle input{width:20px;height:20px;accent-color:var(--red);}
+  .err{color:#C41408;font-weight:700;margin-top:6px;}
+  .ok{color:var(--green);font-weight:700;}
+  .note{font-size:13px;color:var(--muted);}
+  .stats{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0;}
+  .stat{background:#fff;border:1.5px solid var(--line);border-radius:6px;padding:8px 12px;min-width:110px;}
+  .stat b{display:block;font-size:22px;font-family:Georgia,serif;}
+  .stat span{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);}
+  .grid-wrap{overflow-x:auto;margin-top:10px;}
+  table.grid{border-collapse:collapse;font-size:12px;min-width:640px;width:100%;}
+  table.grid th{background:var(--ink);color:#fff;padding:6px 4px;font-size:12px;}
+  table.grid td{border:1px solid #E5DAC4;padding:4px;text-align:center;vertical-align:middle;min-width:72px;}
+  table.grid td.h{font-weight:700;background:#fff;white-space:nowrap;}
+  table.grid td.closed{background:#EEE6D5;color:#B7A88F;}
+  .c-o{font-size:15px;font-weight:700;}
+  .c-n{font-size:11px;color:var(--muted);}
+  .c-s{font-size:11px;font-weight:700;}
+  .over{background:#FFE1DC !important;} .under{background:#FFF1C7 !important;}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:8px;}
+  .legend i{display:inline-block;width:12px;height:12px;border:1px solid var(--line);vertical-align:-2px;margin-right:4px;}
+  table.map{border-collapse:collapse;width:100%;font-size:14px;}
+  table.map td{padding:6px 4px;border-bottom:1px dotted var(--line);}
+  table.map select{width:100%;max-width:340px;}
+  table.map td.sec{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--red);font-weight:700;padding-top:14px;}
+  iframe{width:100%;height:520px;border:1.5px solid var(--line);border-radius:6px;background:#fff;}
+  #login{max-width:360px;margin:40px auto;}
+  .hidden{display:none !important;}
+  .pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;background:#E8F4EA;color:var(--green);}
+  .pill.off{background:#EEE6D5;color:var(--muted);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>⚙️ <span>Automations</span></h1>
+  <p class="sub">Staffing guide from Clover sales, win-back emails, automatic wait times and Clover sold-out sync.</p>
+
+  <div id="login" class="box">
+    <p style="margin-bottom:10px;font-weight:700;">Admin password</p>
+    <input type="password" id="pw" autocomplete="current-password" placeholder="Same as /admin" style="width:100%;">
+    <button class="btn-red" style="margin-top:10px;width:100%;" onclick="login()">Open</button>
+    <div class="err" id="login-err"></div>
+  </div>
+
+  <div id="app" class="hidden">
+
+    <!-- 1. STAFFING -->
+    <h2><span>📊 Staffing guide</span></h2>
+    <div class="box">
+      <p class="note" style="margin-bottom:8px;">Average orders per hour from Clover (in-store, online and every other channel) over recent weeks, how many people that needs, and, if Clover has your staff clock-ins, how many were actually on. Updates every night; a summary email comes every Monday at 9 AM.</p>
+      <div class="row" id="st-stores"></div>
+      <div class="row">
+        <span class="lbl">Rules</span>
+        <label>At least <input type="number" id="st-min" min="1" max="10"> people while open</label>
+        <label>1 person per <input type="number" id="st-per" min="2" max="40"> orders an hour</label>
+        <label>Look back <input type="number" id="st-weeks" min="2" max="16"> weeks</label>
+      </div>
+      <div class="row">
+        <label>Average pay for this store $<input type="number" id="st-wage" min="0" max="100" step="0.5">/hr <span class="note">(optional, shows what extra hours cost)</span></label>
+        <label class="toggle"><input type="checkbox" id="st-email"> Monday email</label>
+        <button class="btn-ghost btn-sm" onclick="saveStaffing()">Save rules</button>
+        <button class="btn-red btn-sm" id="st-refresh" onclick="refreshStaffing()">Update from Clover now</button>
+        <span class="ok hidden" id="st-saved">Saved ✓</span>
+      </div>
+      <div class="err" id="st-err"></div>
+      <div id="st-summary"></div>
+      <div class="grid-wrap" id="st-grid"></div>
+    </div>
+
+    <!-- 2. WIN-BACK -->
+    <h2><span>💌 Win-back emails</span><span id="wb-pill"></span></h2>
+    <div class="box">
+      <p class="note" style="margin-bottom:8px;">Once a day at 11 AM, customers whose last online order was a while ago get one email with a discount. It comes off by itself when they order online with that email or phone number. Nobody gets it more than once in the repeat period, and everyone who unsubscribed from any Wing-O email is left out.</p>
+      <div class="row"><label class="toggle"><input type="checkbox" id="wb-on" onchange="saveWinback()"> Send win-back emails every day</label></div>
+      <div class="row">
+        <label><input type="number" id="wb-pct" min="5" max="50">% off</label>
+        <label>min order $<input type="number" id="wb-min" min="0" max="200"></label>
+        <label>good for <input type="number" id="wb-valid" min="3" max="60"> days</label>
+      </div>
+      <div class="row">
+        <label>Last order between <input type="number" id="wb-inact" min="14" max="180"> and <input type="number" id="wb-max" min="30" max="720"> days ago</label>
+        <label>repeat after <input type="number" id="wb-rep" min="30" max="365"> days</label>
+        <label>at most <input type="number" id="wb-limit" min="1" max="1000"> a day</label>
+        <button class="btn-ghost btn-sm" onclick="saveWinback()">Save</button>
+        <span class="ok hidden" id="wb-saved">Saved ✓</span>
+      </div>
+      <div class="stats" id="wb-stats"></div>
+      <div class="row">
+        <button class="btn-ghost btn-sm" onclick="wbCount()">How many would get it today?</button><span id="wb-count" class="note"></span>
+      </div>
+      <div class="row">
+        <input type="email" id="wb-test" placeholder="your email" style="flex:1;min-width:200px;">
+        <button class="btn-ghost btn-sm" onclick="wbTest()">Send me a test</button>
+        <button class="btn-red btn-sm" onclick="wbRun()">Send to everyone eligible now</button>
+      </div>
+      <div class="err" id="wb-err"></div><div class="ok" id="wb-msg"></div>
+      <p class="lbl" style="margin:12px 0 6px;">Preview</p>
+      <iframe id="wb-preview" title="Email preview"></iframe>
+    </div>
+
+    <!-- 3. AUTO WAIT -->
+    <h2><span>⏱️ Automatic wait time</span></h2>
+    <div class="box">
+      <p class="note" style="margin-bottom:8px;">The “ready in” time customers see online follows how busy the kitchen is: Clover orders from the last 20 minutes, all channels. The wait picked in /admin becomes the minimum. Updates every 2 minutes.</p>
+      <div class="row">
+        <label>Add <input type="number" id="aw-per" min="1" max="10"> min per order in the last 20 min</label>
+        <label>never more than <input type="number" id="aw-max" min="20" max="120"> min</label>
+        <button class="btn-ghost btn-sm" onclick="saveWait()">Save</button><span class="ok hidden" id="aw-saved">Saved ✓</span>
+      </div>
+      <div id="aw-stores"></div>
+    </div>
+
+    <!-- 4. CLOVER SOLD-OUT SYNC -->
+    <h2><span>🔄 Clover sold-out sync</span></h2>
+    <div class="box">
+      <p class="note" style="margin-bottom:8px;">When staff mark an item “not available” in Clover, the matching website items are sold out online and crossed out on the TVs. When it's available again in Clover they come back. Checks every 2 minutes. First match each website item to its Clover item (suggestions are filled in for you).</p>
+      <div id="so-stores"></div>
+      <div id="so-map"></div>
+    </div>
+  </div>
+</div>
+<script>
+var PW = '', S = null, ST = {}, SITE = [], STORE = null;
+var DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+var ORDER = [1,2,3,4,5,6,0];   // Monday first
+function $(id){ return document.getElementById(id); }
+function esc(s){ var d=document.createElement('div'); d.textContent = s==null ? '' : String(s); return d.innerHTML; }
+function api(path, body){
+  return fetch(path, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(Object.assign({ password: PW }, body || {})) })
+    .then(function(r){ return r.json().catch(function(){ return {}; }).then(function(d){ if(!r.ok) throw new Error(d.error || ('Error '+r.status)); return d; }); });
+}
+function flash(id){ var e=$(id); e.classList.remove('hidden'); setTimeout(function(){ e.classList.add('hidden'); }, 1500); }
+function remember(v){ try{ if(v===undefined) return sessionStorage.getItem('wingo_auto_pw'); sessionStorage.setItem('wingo_auto_pw', v); }catch(e){ return null; } }
+function login(){
+  PW = $('pw').value.trim(); $('login-err').textContent='';
+  load().then(function(){ remember(PW); $('login').classList.add('hidden'); $('app').classList.remove('hidden'); preview(); })
+    .catch(function(e){ $('login-err').textContent = e.message; });
+}
+$('pw').addEventListener('keydown', function(e){ if(e.key==='Enter') login(); });
+(function(){ var s = remember(); if(s){ $('pw').value = s; login(); } })();
+
+function load(){
+  return api('/api/auto/state').then(function(d){
+    S = d.settings; ST = d.staffing || {}; SITE = d.siteItems || []; window.STORES = d.stores; window.WB = d.winback;
+    if(!STORE || !d.stores.some(function(s){ return s.id===STORE; })) STORE = (d.stores.filter(function(s){ return s.clover; })[0] || d.stores[0] || {}).id;
+    renderStaffing(); renderWinback(); renderWait(); renderSync();
+  });
+}
+setInterval(function(){ if(PW && !document.hidden && !document.activeElement.matches('input,select')) load().catch(function(){}); }, 60000);
+function storeName(id){ var s = (window.STORES||[]).filter(function(x){ return x.id===id; })[0]; return s ? s.name : id; }
+function hourLabel(h){ var x = h % 24; return (x % 12 || 12) + (x < 12 ? ' am' : ' pm'); }
+
+// ── Staffing ──
+function renderStaffing(){
+  $('st-stores').innerHTML = '<span class="lbl">Store</span>' + STORES.map(function(s){
+    return '<button class="chip'+(s.id===STORE?' on':'')+'" onclick="STORE=\''+s.id+'\';renderStaffing();renderSync();">'+esc(s.name.replace(/\s*\(.*\)/,''))+(s.clover?'':' (no Clover)')+'</button>'; }).join('');
+  var P = S.staffing;
+  $('st-min').value = P.minStaff; $('st-per').value = P.ordersPerStaff; $('st-weeks').value = P.weeks; $('st-wage').value = (P.wage||{})[STORE] || ''; $('st-email').checked = !!P.weeklyEmail;
+  var r = ST[STORE];
+  if(!r){ $('st-summary').innerHTML = '<p class="note" style="margin-top:8px;">No guide yet for this store. Tap <b>Update from Clover now</b> (takes up to a minute).</p>'; $('st-grid').innerHTML=''; return; }
+  var t = r.totals || {};
+  $('st-summary').innerHTML = '<div class="stats">'+
+    '<div class="stat"><b>'+r.orders+'</b><span>Clover orders read</span></div>'+
+    '<div class="stat"><b>'+t.needHours+'</b><span>staff-hours needed / week</span></div>'+
+    (r.shiftsOk ? '<div class="stat"><b>'+t.actualHours+'</b><span>staff-hours clocked / week</span></div><div class="stat"><b>'+t.overHours+'</b><span>hours over</span></div><div class="stat"><b>'+t.underHours+'</b><span>hours short</span></div>'+(t.overCost?'<div class="stat"><b>$'+t.overCost+'</b><span>extra cost / week</span></div>':'') : '')+
+    '</div>'+(r.shiftNote ? '<p class="note">'+esc(r.shiftNote)+'</p>' : '')+
+    '<p class="note">Last updated '+new Date(r.at).toLocaleString('en-CA',{dateStyle:'medium',timeStyle:'short'})+' · '+r.weeks+' weeks of sales.</p>';
+  var head = '<tr><th>Hour</th>'+ORDER.map(function(d){ return '<th>'+DAYS[d]+'</th>'; }).join('')+'</tr>';
+  var body = r.rows.map(function(row){
+    return '<tr><td class="h">'+hourLabel(row.hour)+'</td>'+ORDER.map(function(d){
+      var c = row.days[d];
+      if(!c.open && !c.orders) return '<td class="closed">closed</td>';
+      var cls = c.staff === null ? '' : (c.staff - c.need >= 1 ? 'over' : c.need - c.staff >= 1 ? 'under' : '');
+      return '<td class="'+cls+'"><div class="c-o">'+c.orders.toFixed(1)+'</div><div class="c-n">orders</div><div class="c-s">need '+c.need+(c.staff!==null?' · had '+c.staff:'')+'</div></td>';
+    }).join('')+'</tr>';
+  }).join('');
+  $('st-grid').innerHTML = '<table class="grid">'+head+body+'</table><div class="legend"><span><i style="background:#FFE1DC"></i>more people than the sales needed</span><span><i style="background:#FFF1C7"></i>fewer people than needed</span><span>Hours after midnight count with the day the shift started.</span></div>';
+}
+function saveStaffing(){
+  var wage = {}; wage[STORE] = Number($('st-wage').value) || 0;
+  api('/api/auto/settings', { patch:{ staffing:{ minStaff:Number($('st-min').value), ordersPerStaff:Number($('st-per').value), weeks:Number($('st-weeks').value), wage:wage, weeklyEmail:$('st-email').checked } } })
+    .then(function(d){ S = d.settings; flash('st-saved'); }).catch(function(e){ $('st-err').textContent = e.message; });
+}
+function refreshStaffing(){
+  var b = $('st-refresh'); b.disabled = true; b.textContent = 'Reading Clover…'; $('st-err').textContent = '';
+  var wage = {}; wage[STORE] = Number($('st-wage').value) || 0;
+  api('/api/auto/settings', { patch:{ staffing:{ minStaff:Number($('st-min').value), ordersPerStaff:Number($('st-per').value), weeks:Number($('st-weeks').value), wage:wage, weeklyEmail:$('st-email').checked } } })
+    .then(function(){ return api('/api/auto/staffing/refresh', { loc:STORE }); })
+    .then(function(d){ ST[STORE] = d.result; renderStaffing(); })
+    .catch(function(e){ $('st-err').textContent = e.message; })
+    .then(function(){ b.disabled = false; b.textContent = 'Update from Clover now'; });
+}
+
+// ── Win-back ──
+function renderWinback(){
+  var W = S.winback;
+  $('wb-on').checked = !!W.enabled; $('wb-pct').value = W.pct; $('wb-min').value = W.minSubtotal; $('wb-valid').value = W.validDays;
+  $('wb-inact').value = W.inactiveDays; $('wb-max').value = W.maxInactiveDays; $('wb-rep').value = W.repeatDays; $('wb-limit').value = W.dailyLimit;
+  $('wb-pill').innerHTML = W.enabled ? '<span class="pill">ON · daily 11 AM</span>' : '<span class="pill off">OFF</span>';
+  var w = WB || {};
+  $('wb-stats').innerHTML = '<div class="stat"><b>'+(w.sent30||0)+'</b><span>sent, 30 days</span></div><div class="stat"><b>'+(w.redeemed30||0)+'</b><span>came back & ordered</span></div><div class="stat"><b>$'+(w.revenue30||0).toFixed(2)+'</b><span>from those orders</span></div>'+
+    (w.last ? '<div class="stat"><b>'+w.last.sent+'</b><span>last run '+new Date(w.last.started).toLocaleDateString('en-CA')+'</span></div>' : '')+
+    (!w.emailReady ? '<p class="err">Email sending isn\'t set up (RESEND_API_KEY).</p>' : '');
+}
+function wbPatch(){ return { enabled:$('wb-on').checked, pct:Number($('wb-pct').value), minSubtotal:Number($('wb-min').value), validDays:Number($('wb-valid').value),
+  inactiveDays:Number($('wb-inact').value), maxInactiveDays:Number($('wb-max').value), repeatDays:Number($('wb-rep').value), dailyLimit:Number($('wb-limit').value) }; }
+function saveWinback(){
+  $('wb-err').textContent='';
+  api('/api/auto/settings', { patch:{ winback: wbPatch() } }).then(function(d){ S = d.settings; renderWinback(); flash('wb-saved'); preview(); }).catch(function(e){ $('wb-err').textContent = e.message; });
+}
+function preview(){ api('/api/auto/winback/preview').then(function(d){ $('wb-preview').srcdoc = d.html; }).catch(function(){}); }
+function wbCount(){ $('wb-count').textContent = 'Counting…'; api('/api/auto/winback/count').then(function(d){ $('wb-count').textContent = d.eligible + ' customer'+(d.eligible===1?'':'s')+' would get it today.'; }).catch(function(e){ $('wb-count').textContent = e.message; }); }
+function wbTest(){ $('wb-err').textContent=''; $('wb-msg').textContent='';
+  api('/api/auto/winback/test', { email:$('wb-test').value }).then(function(){ $('wb-msg').textContent = 'Test sent ✓ (marked [TEST]; the discount isn\'t live for test emails).'; }).catch(function(e){ $('wb-err').textContent = e.message; }); }
+function wbRun(){
+  if(!confirm('Send the win-back email now to everyone eligible? Each person only ever gets it once per repeat period.')) return;
+  $('wb-err').textContent=''; $('wb-msg').textContent='Sending…';
+  api('/api/auto/settings', { patch:{ winback: wbPatch() } }).then(function(){ return api('/api/auto/winback/run', { confirm:'SEND' }); })
+    .then(function(d){ if(d.error && !d.sent) throw new Error(d.error); $('wb-msg').textContent = d.sent+' sent'+(d.failed?', '+d.failed+' failed':'')+'.'; load(); })
+    .catch(function(e){ $('wb-msg').textContent=''; $('wb-err').textContent = e.message; });
+}
+
+// ── Auto wait ──
+function renderWait(){
+  $('aw-per').value = S.wait.perOrder; $('aw-max').value = S.wait.max;
+  $('aw-stores').innerHTML = STORES.map(function(s){
+    var on = !!S.wait.auto[s.id], a = s.autoWait;
+    return '<div class="row" style="border-top:1px dotted var(--line);padding-top:8px;"><label class="toggle" style="min-width:230px;"><input type="checkbox" '+(on?'checked':'')+' onchange="toggleWait(\''+s.id+'\',this.checked)"> '+esc(s.name)+'</label>'+
+      '<span class="note">'+(on ? (a ? 'Now <b>'+a.mins+' min</b> ('+a.recent+' orders in the last 20 min, minimum '+a.base+')' : 'Working it out…') : 'Manual: '+s.manualWait+' min')+(s.clover?'':' · no Clover, uses website orders')+'</span></div>';
+  }).join('');
+}
+function toggleWait(id, on){ var a = {}; a[id] = on; api('/api/auto/settings', { patch:{ wait:{ auto:a } } }).then(function(d){ S = d.settings; renderWait(); setTimeout(load, 4000); }).catch(function(e){ alert(e.message); }); }
+function saveWait(){ api('/api/auto/settings', { patch:{ wait:{ perOrder:Number($('aw-per').value), max:Number($('aw-max').value) } } }).then(function(d){ S = d.settings; flash('aw-saved'); }).catch(function(e){ alert(e.message); }); }
+
+// ── Clover sold-out sync ──
+var CLOVER = {};
+function renderSync(){
+  $('so-stores').innerHTML = STORES.map(function(s){
+    var on = !!S.soldOutSync[s.id], n = Object.keys(S.cloverMap[s.id] || {}).length, st = s.sync;
+    return '<div class="row" style="border-top:1px dotted var(--line);padding-top:8px;"><label class="toggle" style="min-width:230px;"><input type="checkbox" '+(on?'checked':'')+(s.clover?'':' disabled')+' onchange="toggleSync(\''+s.id+'\',this.checked)"> '+esc(s.name)+'</label>'+
+      '<span class="note">'+(!s.clover ? 'Clover not connected' : n+' items matched'+(st ? (st.error ? ' · <span class="err">'+esc(st.error)+'</span>' : ' · '+st.out.length+' sold out in Clover now') : ''))+'</span>'+
+      (s.clover ? ' <button class="btn-ghost btn-sm" onclick="openMap(\''+s.id+'\')">Match items</button>' : '')+'</div>';
+  }).join('');
+}
+function toggleSync(id, on){ var a = {}; a[id] = on; api('/api/auto/settings', { patch:{ soldOutSync:a } }).then(function(d){ S = d.settings; renderSync(); }).catch(function(e){ alert(e.message); }); }
+function openMap(loc){
+  $('so-map').innerHTML = '<p class="note" style="margin-top:10px;">Loading Clover items for '+esc(storeName(loc))+'…</p>';
+  api('/api/auto/clover-items', { loc:loc }).then(function(d){
+    CLOVER[loc] = d; var cur = S.cloverMap[loc] || {};
+    var opts = function(sel){ return '<option value="">— not in Clover / don\'t sync —</option>'+d.items.map(function(c){ return '<option value="'+c.id+'"'+(c.id===sel?' selected':'')+'>'+esc(c.name)+(c.available?'':' (not available now)')+'</option>'; }).join(''); };
+    var sec = '', rows = SITE.map(function(i){
+      var sel = cur[i.id] || (Object.keys(cur).length ? '' : (d.suggest[i.id] || ''));
+      var head = i.section !== sec ? '<tr><td colspan="2" class="sec">'+esc(i.section)+'</td></tr>' : ''; sec = i.section;
+      return head+'<tr><td>'+esc(i.name)+'</td><td><select data-site="'+i.id+'">'+opts(sel)+'</select></td></tr>';
+    }).join('');
+    $('so-map').innerHTML = '<div class="box" style="margin-top:12px;background:#fff;"><p style="font-weight:700;margin-bottom:4px;">Match website items to Clover items · '+esc(storeName(loc))+'</p>'+
+      '<p class="note" style="margin-bottom:8px;">'+(Object.keys(cur).length ? 'Your saved matches are shown.' : 'Suggested matches are filled in by name. Check them, change any that are wrong, then save.')+' Several website items can share one Clover item (e.g. all wing sizes → “Wings”).</p>'+
+      '<table class="map">'+rows+'</table><div class="row"><button class="btn-red" onclick="saveMap(\''+loc+'\')">Save matches</button><span class="ok hidden" id="so-saved">Saved ✓</span></div></div>';
+  }).catch(function(e){ $('so-map').innerHTML = '<p class="err">'+esc(e.message)+'</p>'; });
+}
+function saveMap(loc){
+  var map = {}; document.querySelectorAll('#so-map select').forEach(function(s){ if(s.value) map[s.getAttribute('data-site')] = s.value; });
+  api('/api/auto/settings', { patch:{ cloverMap:{ loc:loc, map:map } } }).then(function(d){ S = d.settings; flash('so-saved'); renderSync(); }).catch(function(e){ alert(e.message); });
+}
+</script>
+</body>
+</html>
