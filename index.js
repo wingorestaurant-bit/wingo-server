@@ -1124,9 +1124,25 @@ app.post('/api/orders', async (req, res) => {
   }
   const payFail = (status, error, extra = {}) => res.status(status).json({ paymentFailed: true, error, ...extra });
 
+  // ── GIFT CARD (giftcards.js): takes up to the order total off the card; the rest is paid at pickup ──
+  let gift = null;
+  const giftCode = typeof req.body.giftCard === 'string' ? req.body.giftCard.trim() : '';
+  if (giftCode && GIFT) {
+    if (payOnline) return res.status(400).json({ paymentFailed: true, giftCardError: true, error: 'Use your gift card with Pay at pickup: anything left over is paid at the store.' });
+    const g = await GIFT.check(giftCode);
+    if (g.error) return res.status(400).json({ giftCardError: true, error: g.error });
+    const r = await GIFT.redeemOnline(g.code, Math.round(finalTotal * 100), orderNum, locationId);
+    if (r.error) return res.status(400).json({ giftCardError: true, error: r.error });
+    gift = { code: g.code, amount: r.taken / 100, balance: r.balance / 100, due: round2(finalTotal - r.taken / 100) };
+    console.log(`🎁 Gift card ending ${g.code.slice(-4)} paid $${gift.amount.toFixed(2)} of ${orderNum}`);
+  }
+  // On the printed ticket and in Clover: how much the card covered and what's left to collect
+  const giftNote = gift ? `[GIFT CARD ending ${gift.code.slice(-4)}: $${gift.amount.toFixed(2)} PAID - ring as Gift Card${gift.due > 0 ? ` - COLLECT $${gift.due.toFixed(2)}` : ' - NOTHING TO COLLECT'}] ` : '';
+  const giftLabel = gift ? `🎁 GIFT CARD $${gift.amount.toFixed(2)}${gift.due > 0 ? ` · PAY $${gift.due.toFixed(2)} AT ${orderType === 'delivery' ? 'DELIVERY' : 'PICKUP'}` : ' · NOTHING TO PAY'}` : '';
+
   let cloverId = null, cloverSuccess = false;
   try {
-    cloverId = await createCloverOrder(loc, orderNum, orderType, customer, items, subtotal, notes, timestamp, discounts, { print: !payOnline });
+    cloverId = await createCloverOrder(loc, orderNum, orderType, customer, items, subtotal, giftNote + (notes || ''), timestamp, discounts, { print: !payOnline });
     cloverSuccess = !!cloverId;
   } catch (e) { console.error('Clover error:', e.message); }
 
@@ -1178,6 +1194,7 @@ app.post('/api/orders', async (req, res) => {
         subtotal: Number(subtotal), tax: finalTax, total: finalTotal, discounts,
         preOrder: !!preOrder, openTime: openTime || null, cloverId, cloverSuccess,
         paidOnline: !!payment, payment,
+        giftCard: gift ? { code: gift.code, amount: gift.amount, due: gift.due } : null,
         firstOrderDiscount: discountApplied, discountValidated,
         contestRedemption: contestRedemption || null,
         ghostHuntPhone: ghostHuntFries ? ghostPhone : null,
@@ -1217,7 +1234,7 @@ app.post('/api/orders', async (req, res) => {
           <tr><td style="padding:6px 0;color:#888;font-size:13px;">Phone</td><td style="padding:6px 0;"><a href="tel:${customer.phone}" style="color:#E8190A;">${customer.phone}</a></td></tr>
           ${customer.email ? `<tr><td style="padding:6px 0;color:#888;font-size:13px;">Email</td><td>${customer.email}</td></tr>` : ''}
           ${orderType === 'delivery' ? `<tr><td style="padding:6px 0;color:#888;font-size:13px;">Address</td><td style="padding:6px 0;">${customer.address}</td></tr>` : ''}
-          <tr><td style="padding:6px 0;color:#888;font-size:13px;">Payment</td><td style="padding:6px 0;color:${payment ? '#2D8A3E' : '#F5A800'};font-weight:bold;">${payment ? paidLabel : `💰 PAY AT ${orderType === 'delivery' ? 'DELIVERY' : 'PICKUP'}`}</td></tr>
+          <tr><td style="padding:6px 0;color:#888;font-size:13px;">Payment</td><td style="padding:6px 0;color:${payment || gift ? '#2D8A3E' : '#F5A800'};font-weight:bold;">${payment ? paidLabel : gift ? giftLabel + ' (ring the card part as Gift Card in Clover)' : `💰 PAY AT ${orderType === 'delivery' ? 'DELIVERY' : 'PICKUP'}`}</td></tr>
           ${stampResult ? `<tr><td style="padding:6px 0;color:#888;font-size:13px;">Loyalty</td><td style="padding:6px 0;color:#F5A800;">🍗 Stamp #${stampResult.totalOrders} added${stampResult.gotFree ? ' — 🎉 FREE WINGS EARNED!' : ''}</td></tr>` : ''}
         </table>
         <hr style="border:1px solid #E8E0D0;margin:16px 0;">
@@ -1228,7 +1245,8 @@ app.post('/api/orders', async (req, res) => {
           <div style="display:flex;justify-content:space-between;padding:4px 0;color:#888;font-size:13px;"><span>GST (5%)</span><span>$${gstAmt.toFixed(2)}</span></div>
           <div style="display:flex;justify-content:space-between;padding:4px 0;color:#888;font-size:13px;"><span>${pstLabel(loc)}</span><span>$${pstAmt.toFixed(2)}</span></div>
           ${delFeeAmt > 0 ? `<div style="display:flex;justify-content:space-between;padding:4px 0;color:#888;font-size:13px;"><span>Delivery</span><span>$${delFeeAmt.toFixed(2)}</span></div>` : ''}
-          <div style="display:flex;justify-content:space-between;padding:8px 0;font-weight:bold;font-size:18px;border-top:2px solid #0D0D0D;margin-top:8px;"><span>${payment ? 'TOTAL PAID ONLINE' : `TOTAL DUE AT ${orderType === 'delivery' ? 'DELIVERY' : 'PICKUP'}`}</span><span style="color:#E8190A;">$${finalTotal.toFixed(2)}</span></div>
+          <div style="display:flex;justify-content:space-between;padding:8px 0;font-weight:bold;font-size:18px;border-top:2px solid #0D0D0D;margin-top:8px;"><span>${payment ? 'TOTAL PAID ONLINE' : gift ? 'TOTAL' : `TOTAL DUE AT ${orderType === 'delivery' ? 'DELIVERY' : 'PICKUP'}`}</span><span style="color:#E8190A;">$${finalTotal.toFixed(2)}</span></div>
+          ${gift ? `<div style="display:flex;justify-content:space-between;padding:4px 0;color:#2D8A3E;font-weight:bold;"><span>🎁 Gift card ending ${gift.code.slice(-4)}</span><span>−$${gift.amount.toFixed(2)}</span></div><div style="display:flex;justify-content:space-between;padding:4px 0;font-weight:bold;font-size:16px;"><span>COLLECT AT ${orderType === 'delivery' ? 'DELIVERY' : 'PICKUP'}</span><span>$${gift.due.toFixed(2)}</span></div>` : ''}
         </div>
         ${notes ? `<div style="background:#FFF8EE;border:1px solid #F5D98A;border-radius:6px;padding:10px;margin-top:12px;"><strong>Notes:</strong> ${notes}</div>` : ''}
       </div>
@@ -1283,7 +1301,8 @@ app.post('/api/orders', async (req, res) => {
               ${delFee > 0 ? `<div style="display:flex;justify-content:space-between;padding:3px 0;color:#666;font-size:13px;"><span>Delivery</span><span>$${delFee.toFixed(2)}</span></div>` : ''}
               ${tipAmt > 0 ? `<div style="display:flex;justify-content:space-between;padding:3px 0;color:#2D8A3E;font-size:13px;font-weight:bold;"><span>💸 Tip</span><span>$${tipAmt.toFixed(2)}</span></div>` : ''}
               <div style="display:flex;justify-content:space-between;padding:10px 0 4px;font-weight:bold;font-size:18px;border-top:2px solid #1A1208;margin-top:8px;"><span>TOTAL</span><span style="color:#E8190A;">$${finalTotal.toFixed(2)}</span></div>
-              <div style="text-align:center;font-size:11px;color:#F5A800;letter-spacing:2px;margin-top:8px;font-weight:bold;">${payment ? paidLabel : `💰 PAY AT ${orderType === 'delivery' ? 'DELIVERY' : 'PICKUP'}`}</div>
+              <div style="text-align:center;font-size:11px;color:#F5A800;letter-spacing:2px;margin-top:8px;font-weight:bold;">${payment ? paidLabel : gift ? giftLabel : `💰 PAY AT ${orderType === 'delivery' ? 'DELIVERY' : 'PICKUP'}`}</div>
+              ${gift ? `<div style="text-align:center;font-size:12px;color:#666;margin-top:6px;">Gift card balance left: <b>$${gift.balance.toFixed(2)}</b></div>` : ''}
             </div>
           </div>
 
@@ -1319,7 +1338,8 @@ app.post('/api/orders', async (req, res) => {
     stampAdded: !!stampResult, gotFreeWings: stampResult?.gotFree || false, loyaltyStamps: stampResult?.stamps,
     discountApplied, discountValidated,
     ghostHuntFries, ghostHuntDenied,
-    paid: !!payment, paidAmount: payment ? payment.amount.toFixed(2) : null, cardLast4: payment ? payment.last4 : null
+    paid: !!payment, paidAmount: payment ? payment.amount.toFixed(2) : null, cardLast4: payment ? payment.last4 : null,
+    giftApplied: gift ? gift.amount.toFixed(2) : null, giftBalance: gift ? gift.balance.toFixed(2) : null, amountDue: gift ? gift.due.toFixed(2) : null
   });
 });
 
@@ -1800,6 +1820,7 @@ async function getLiveSettings(fresh) {
   return { wait: { ...liveCache.wait, ...(AUTO ? AUTO.waits() : {}) }, soldOut: activeSoldOut(liveCache.soldOutRaw) };
 }
 let AUTO = null;   // set up near the end of this file (require('./automations'))
+let GIFT = null;   // set up near the end of this file (require('./giftcards'))
 async function waitMinsFor(locId) {
   const { wait } = await getLiveSettings();
   return Number(wait[locId]) || DEFAULT_WAIT_MINS;
@@ -3214,6 +3235,11 @@ app.get('/api/customers/unsubscribe', async (req, res) => {
 AUTO = require('./automations')({
   app, connectDB, LOCATIONS, isAdmin, alertOwner, escHtml, locTz, SEASON_CLOSED, siteMenu, getLiveSettings,
   customerListCol, wpgSendBatch, WPG_FROM, fetch, STORE_HOURS, sendEmail, ownerEmail: ALERT_TO,
+});
+
+// ── GIFT CARDS (buy online, use online or in any store) ──
+GIFT = require('./giftcards')({
+  app, connectDB, LOCATIONS, isAdmin, checkKitchenAuth, sendEmail, alertOwner, escHtml, payReady, CLOVER_ECOMM, clientIp, fetch, ownerEmail: ALERT_TO,
 });
 
 // ── SPA FALLBACK ───────────────────────────────────────────────

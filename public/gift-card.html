@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>My Wing-O Gift Card</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@700&family=Playfair+Display:wght@900&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#F4EBD7;color:#1A1208;font-family:Arial,sans-serif;padding:20px 16px 40px;}
+  .wrap{max-width:440px;margin:0 auto;text-align:center;}
+  .logo{height:46px;margin:6px 0 14px;}
+  .gc{background:#fff;border:3px solid #1A1208;box-shadow:10px 10px 0 #E8190A;padding:20px;margin:10px 0 26px;}
+  .amt{font-family:"Bebas Neue";font-size:64px;color:#E8190A;line-height:1;}
+  .lbl{font:700 12px Oswald;letter-spacing:3px;}
+  .code{font:700 20px "Courier New",monospace;letter-spacing:2px;margin:12px 0;}
+  #qr{display:inline-block;padding:10px;background:#fff;margin-top:6px;}
+  #qr img,#qr canvas{display:block;width:220px;height:220px;}
+  .bal{font-size:18px;margin:6px 0;}
+  .bal b{font-size:26px;font-family:"Playfair Display";}
+  .note{font-size:14px;line-height:1.55;color:#4A3B28;margin-top:10px;}
+  .err{color:#C41408;font-weight:700;}
+  a.btn{display:inline-block;margin-top:16px;background:#E8190A;color:#fff;text-decoration:none;font:700 16px Oswald;letter-spacing:2px;padding:12px 24px;box-shadow:0 4px 0 #A8120A;}
+  .from{font-family:"Special Elite",monospace;margin-bottom:6px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <img class="logo" src="/images/wingo-logo-wide.png" alt="Wing-O">
+  <div id="out"><p>Loading your card…</p></div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+function esc(s){ var d=document.createElement('div'); d.textContent = s==null ? '' : String(s); return d.innerHTML; }
+function money(c){ return '$' + (c/100).toFixed(2); }
+var code = new URLSearchParams(location.search).get('c') || '';
+fetch('/api/giftcards/balance', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ code: code }) })
+  .then(function(r){ return r.json().then(function(d){ if(!r.ok) throw new Error(d.error); return d; }); })
+  .then(function(d){
+    var c = d.card;
+    document.getElementById('out').innerHTML =
+      (c.from && c.kind === 'purchased' ? '<div class="from">From ' + esc(c.from) + '</div>' : '') +
+      '<div class="gc"><div class="amt">' + money(c.initial) + '</div><div class="lbl">WING-O ' + (c.kind === 'bonus' ? 'BONUS ' : '') + 'GIFT CARD</div>' +
+      '<div class="code">' + esc(c.code) + '</div><div id="qr"></div>' +
+      '<div class="bal">Balance: <b>' + money(c.balance) + '</b></div>' + (c.why ? '<div class="err">' + esc(c.why) + '</div>' : '') + '</div>' +
+      '<p class="note"><b>In the store:</b> show this screen at the counter.<br><b>Online:</b> enter the code at checkout.<br>Good at every Wing-O in Regina and Winnipeg. ' +
+      (c.kind === 'bonus' && c.expiresAt ? 'Bonus card: use by ' + new Date(c.expiresAt).toLocaleDateString('en-CA', { month:'long', day:'numeric', year:'numeric', timeZone:'America/Regina' }) + '.' : 'No expiry, no fees.') + '</p>' +
+      '<a class="btn" href="/order?utm_source=giftcard&utm_medium=card">ORDER ONLINE</a>';
+    try { new QRCode(document.getElementById('qr'), { text: c.code, width: 440, height: 440, colorDark: '#1A1208', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M }); }
+    catch(e) { document.getElementById('qr').remove(); }
+  })
+  .catch(function(e){ document.getElementById('out').innerHTML = '<p class="err">' + esc(e.message || 'Card not found.') + '</p><a class="btn" href="/gift-cards">Wing-O gift cards</a>'; });
+</script>
+</body>
+</html>

@@ -3492,5 +3492,74 @@ footer{background:#1A1208 !important;}
 #modal-ov .pay-note,#modal-ov .del-note,#modal-ov #when-note{font-family:'Special Elite',monospace;color:#2c1f0f;}
 
 </style>
+<script>
+// ═══════ GIFT CARD AT CHECKOUT ═══════
+// A "Have a gift card?" box above the order button. The server checks the code again and takes
+// min(balance, total) off when the order is placed; the rest is paid at pickup (not online).
+(function(){
+  var G = null;   // { code, balance (cents) }
+  function $(id){ return document.getElementById(id); }
+  function esc(s){ var d=document.createElement('div'); d.textContent = s==null ? '' : String(s); return d.innerHTML; }
+  function shownTotal(){ var t = document.querySelector('#mbd .os-total span:last-child'); return t ? Math.round((parseFloat(t.textContent.replace(/[^0-9.]/g,'')) || 0) * 100) : 0; }
+  function render(){
+    var b = $('gc-box'); if(!b) return;
+    if(G){
+      var tot = shownTotal(), use = Math.min(G.balance, tot), due = Math.max(0, tot - use);
+      b.innerHTML = '<div class="gc-on">🎁 Gift card ending <b>' + esc(G.code.slice(-4)) + '</b> · balance $' + (G.balance/100).toFixed(2) +
+        '<br><b>$' + (use/100).toFixed(2) + '</b> comes off this order' + (due > 0 ? ', and you pay <b>$' + (due/100).toFixed(2) + '</b> at pickup.' : '. Nothing left to pay!') +
+        ' <a href="#" id="gc-remove">Remove</a></div>';
+      $('gc-remove').onclick = function(e){ e.preventDefault(); G = null; render(); };
+    } else {
+      b.innerHTML = '<details' + (b.getAttribute('data-open') ? ' open' : '') + '><summary>🎁 Have a Wing-O gift card?</summary><div class="gc-row"><input id="gc-code" placeholder="WGO-XXXX-XXXX-XXXX" autocomplete="off" autocapitalize="characters"><button type="button" id="gc-apply">Apply</button></div><div id="gc-err"></div></details>';
+      b.querySelector('details').addEventListener('toggle', function(){ b.setAttribute('data-open', this.open ? '1' : ''); });
+      $('gc-apply').onclick = apply;
+      $('gc-code').onkeydown = function(e){ if(e.key === 'Enter'){ e.preventDefault(); apply(); } };
+    }
+  }
+  function apply(){
+    var e = $('gc-err'); e.textContent = 'Checking…';
+    fetch('/api/giftcards/balance', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ code: $('gc-code').value }) })
+      .then(function(r){ return r.json().then(function(d){ if(!r.ok) throw new Error(d.error || 'Couldn\'t check that card.'); return d; }); })
+      .then(function(d){
+        var c = d.card;
+        if(!c.usable) throw new Error(c.why || 'This card can\'t be used right now.');
+        if(c.balance <= 0) throw new Error('This gift card has no balance left.');
+        G = { code: c.code, balance: c.balance };
+        // A gift card order pays any rest at pickup, so switch off "Pay online now"
+        if(window._payMode === 'online' && typeof setPayMode === 'function') setPayMode('store'); else render();
+      })
+      .catch(function(err){ e.textContent = err.message; });
+  }
+  function place(){
+    var sec = $('payment-section'), btn = $('pbtn'); if(!sec || !btn) return;
+    var b = $('gc-box');
+    if(!b){ b = document.createElement('div'); b.id = 'gc-box'; }
+    if(b.parentNode !== btn.parentNode || b.nextSibling !== btn) btn.parentNode.insertBefore(b, btn);
+    var on = document.getElementById('pm-online');
+    if(on){ on.disabled = !!G; on.title = G ? 'Remove the gift card to pay online' : ''; }
+    render();
+  }
+  var orig = window.renderPaymentSection;
+  if(typeof orig === 'function') window.renderPaymentSection = function(){ var r = orig.apply(this, arguments); try{ place(); }catch(e){} return r; };
+  var origFetch = window.fetch;
+  window.fetch = function(url, options){
+    var isOrder = typeof url === 'string' && url.indexOf('/api/orders') !== -1 && options && options.method === 'POST';
+    if(isOrder && G){ try{ var body = JSON.parse(options.body); body.giftCard = G.code; options.body = JSON.stringify(body); }catch(e){} }
+    var p = origFetch.apply(this, arguments);
+    if(isOrder && G) p.then(function(r){ return r.clone().json(); }).then(function(d){ if(d && d.success) G = null; if(d && d.giftCardError){ G = null; place(); } }).catch(function(){});
+    return p;
+  };
+})();
+</script>
+<style>
+#gc-box{margin:0 0 .8rem;font-family:var(--font-head),Arial,sans-serif;}
+#gc-box summary{cursor:pointer;font-weight:700;letter-spacing:.5px;color:#7B3F00;padding:.4rem 0;}
+#gc-box .gc-row{display:flex;gap:.5rem;margin-top:.4rem;}
+#gc-box input{flex:1;padding:.6rem;border:1.5px solid #C8B89A;border-radius:5px;font-family:"Courier New",monospace;font-size:15px;text-transform:uppercase;background:#fff;}
+#gc-box button{background:var(--ink,#1A1208);color:#fff;border:0;border-radius:5px;padding:0 1rem;font-weight:700;cursor:pointer;}
+#gc-err{color:#C41408;font-size:.85rem;font-weight:600;margin-top:.35rem;min-height:1em;}
+#gc-box .gc-on{background:#E8F4EA;border:1.5px solid #2D8A3E;border-radius:6px;padding:.7rem .8rem;color:#1A1208;font-size:.9rem;line-height:1.5;}
+#gc-box .gc-on a{color:#C41408;font-weight:700;}
+</style>
 </body>
 </html>
