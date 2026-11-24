@@ -1097,6 +1097,12 @@ app.post('/api/orders', async (req, res) => {
   const discounts = [];
   if (lateNightOff > 0) discounts.push({ name: 'Late Night 10% Off', amount: lateNightOff });
   if (discountApplied > 0) discounts.push({ name: 'First Order 15% Off', amount: discountApplied });
+  // Win-back offer (automations.js): comes off by itself for an emailed customer, when no other discount applies
+  let winback = null;
+  if (AUTO && !discounts.length && !contestRedemption) {
+    try { winback = await AUTO.winbackDiscount(customer, subNum); } catch (e) { console.warn('Win-back check failed:', e.message); }
+    if (winback) { discounts.push({ name: winback.name, amount: winback.amount }); console.log(`💌 ${winback.name} for ${customer.phone}: $${winback.amount.toFixed(2)}`); }
+  }
   const discountSum = round2(discounts.reduce((s, d) => s + d.amount, 0));
   const taxable = Math.max(0, round2(subNum - discountSum));
   const gstAmt = round2(taxable * 0.05);
@@ -1182,6 +1188,7 @@ app.post('/api/orders', async (req, res) => {
       });
       console.log(`✓ Order ${orderNum} saved to Mongo`);
       savedForKitchen = true;
+      if (winback) AUTO.winbackRedeemed(winback.id, orderNum, finalTotal).catch(e => console.warn('Win-back redeem failed:', e.message));
     }
   } catch (e) { console.warn('Order save to Mongo failed:', e.message); }
   if (!savedForKitchen) alertOwner(`Order ${orderNum} at ${loc.name} was not saved for the kitchen screen`,
@@ -1789,8 +1796,10 @@ async function getLiveSettings(fresh) {
       }
     } catch (e) { console.warn('Live settings load failed:', e.message); }
   }
-  return { wait: liveCache.wait, soldOut: activeSoldOut(liveCache.soldOutRaw) };
+  // Stores on "auto wait" (see automations.js) use the time worked out from how busy the kitchen is
+  return { wait: { ...liveCache.wait, ...(AUTO ? AUTO.waits() : {}) }, soldOut: activeSoldOut(liveCache.soldOutRaw) };
 }
+let AUTO = null;   // set up near the end of this file (require('./automations'))
 async function waitMinsFor(locId) {
   const { wait } = await getLiveSettings();
   return Number(wait[locId]) || DEFAULT_WAIT_MINS;
@@ -3200,6 +3209,12 @@ app.get('/api/customers/unsubscribe', async (req, res) => {
   }
 });
 
+
+// ── AUTOMATIONS (staffing guide, win-back emails, auto wait, Clover sold-out sync) ──
+AUTO = require('./automations')({
+  app, connectDB, LOCATIONS, isAdmin, alertOwner, escHtml, locTz, SEASON_CLOSED, siteMenu, getLiveSettings,
+  customerListCol, wpgSendBatch, WPG_FROM, fetch, STORE_HOURS, sendEmail, ownerEmail: ALERT_TO,
+});
 
 // ── SPA FALLBACK ───────────────────────────────────────────────
 app.get('*', (req, res, next) => {
