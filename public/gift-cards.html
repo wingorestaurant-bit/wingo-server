@@ -15,6 +15,7 @@
 <style>
   :root{--paper:#F4EBD7;--card:#FFFDF7;--ink:#1A1208;--muted:#6B5A45;--line:#C8B89A;--red:#E8190A;--red-deep:#A8120A;--green:#2D8A3E;--gold:#F5A800;}
   *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{overflow-x:hidden;}
   body{background:var(--paper);color:var(--ink);font-family:Georgia,serif;line-height:1.5;}
   a{color:var(--red);}
   .wrap{max-width:1040px;margin:0 auto;padding:0 16px;}
@@ -30,11 +31,29 @@
   .kick{font-family:Oswald;font-weight:700;font-size:13px;letter-spacing:4px;color:var(--red);text-transform:uppercase;}
   h1{font-family:"Playfair Display";font-weight:900;font-size:clamp(34px,5vw,54px);line-height:1;letter-spacing:-1px;margin:6px 0 12px;}
   .lead{font-size:18px;}
-  .gc{margin:22px 0 10px;background:#fff;border:3px solid var(--ink);box-shadow:10px 10px 0 var(--red);padding:22px;position:relative;max-width:440px;aspect-ratio:1.6;display:flex;flex-direction:column;justify-content:space-between;}
-  .gc img{height:44px;width:auto;align-self:flex-start;}
-  .gc .amt{font-family:"Bebas Neue";font-size:72px;line-height:.9;color:var(--red);}
-  .gc .lbl{font-family:Oswald;font-weight:700;letter-spacing:3px;font-size:13px;}
-  .gc .ribbon{position:absolute;top:14px;right:-10px;background:var(--green);color:#fff;font:700 12px Oswald;letter-spacing:2px;padding:5px 12px;}
+  /* The gift card: a real wings photo, ribbon and bow, gold stamp, snow */
+  .gc-wrap{margin:26px 0 18px;max-width:470px;perspective:900px;}
+  .gc{position:relative;aspect-ratio:1.6;border-radius:18px;overflow:hidden;border:3px solid #1A1208;transform:rotate(-2.5deg);transition:transform .4s ease;
+    background:#120a05 url(/images/email-wings-wide.jpg) 78% 45%/cover no-repeat;box-shadow:0 22px 40px rgba(26,18,8,.35),12px 12px 0 var(--red);}
+  .gc:hover{transform:rotate(0deg) scale(1.02);}
+  .gc::before{content:"";position:absolute;inset:0;background:linear-gradient(95deg,rgba(14,7,3,.97) 0%,rgba(14,7,3,.86) 38%,rgba(14,7,3,.25) 66%,rgba(14,7,3,0) 80%);}
+  .gc::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.55;
+    background-image:radial-gradient(circle,#fff 0 1.4px,transparent 1.6px),radial-gradient(circle,#fff 0 1px,transparent 1.2px);background-size:46px 46px,29px 29px;background-position:7px 11px,19px 3px;
+    -webkit-mask-image:linear-gradient(180deg,#000 0%,transparent 70%);mask-image:linear-gradient(180deg,#000 0%,transparent 70%);}
+  .gc .rib-v{position:absolute;top:0;bottom:0;right:24%;width:9%;background:linear-gradient(90deg,#A8120A,#E8190A 30%,#FF4A2E 50%,#E8190A 70%,#A8120A);box-shadow:0 0 10px rgba(0,0,0,.35);z-index:1;}
+  .gc .rib-h{position:absolute;left:0;right:0;top:20%;height:11%;background:linear-gradient(180deg,#A8120A,#E8190A 30%,#FF4A2E 50%,#E8190A 70%,#A8120A);box-shadow:0 0 10px rgba(0,0,0,.35);z-index:1;}
+  .gc .bow{position:absolute;right:calc(24% + 4.5% - 58px);top:calc(25.5% - 44px);width:116px;z-index:3;filter:drop-shadow(0 4px 5px rgba(0,0,0,.45));}
+  .gc .badge{position:absolute;left:5%;top:7%;z-index:2;background:#F4EBD7;border-radius:10px;padding:7px 12px;box-shadow:0 3px 0 #1A1208;}
+  .gc .badge img{height:30px;display:block;}
+  .gc .stamp{position:absolute;left:46%;top:41%;z-index:2;width:76px;height:76px;border-radius:50%;border:2px dashed #F5C044;color:#F5C044;
+    display:flex;align-items:center;justify-content:center;text-align:center;font:700 10px/1.15 Oswald;letter-spacing:1.5px;transform:rotate(-14deg);background:rgba(14,7,3,.55);}
+  .gc .face{position:absolute;left:5%;bottom:8%;z-index:2;color:#F4EBD7;}
+  .gc .amt{font-family:"Bebas Neue";font-size:86px;line-height:.82;color:#FFF6E2;text-shadow:4px 4px 0 var(--red);}
+  .gc .lbl{font:700 13px Oswald;letter-spacing:4px;color:#F5C044;margin-top:8px;}
+  .gc .sub{font:13px "Special Elite",monospace;color:#E9DCC1;margin-top:4px;}
+  .gc .ribbon{display:inline-block;margin-bottom:10px;background:#F5C044;color:#1A1208;font:700 12px Oswald;letter-spacing:2px;padding:4px 10px;border-radius:4px;box-shadow:0 3px 0 #1A1208;transform:rotate(-2deg);}
+  .gc .ribbon:empty{display:none;}
+  @media (max-width:520px){ .gc .amt{font-size:60px;} .gc .lbl{font-size:11px;letter-spacing:3px;} .gc .sub{font-size:11px;} .gc .ribbon{font-size:10px;margin-bottom:6px;} .gc .bow{width:90px;right:calc(24% + 4.5% - 45px);top:calc(25.5% - 34px);} .gc .stamp{width:60px;height:60px;font-size:8px;} .gc .badge img{height:24px;} }
   .perks{list-style:none;margin:18px 0;font-family:Arial,sans-serif;font-size:15px;}
   .perks li{padding:5px 0 5px 28px;position:relative;}
   .perks li:before{content:"✓";position:absolute;left:4px;color:var(--green);font-weight:900;}
@@ -84,7 +103,7 @@
       <div class="kick">Extra! Extra!</div>
       <h1>Wing-O Gift Cards</h1>
       <p class="lead">The easiest gift on the list. Pick an amount, write a note, and we'll email it, right now or on <b>Christmas morning</b>.</p>
-      <div class="gc"><span class="ribbon" id="ribbon">GIFT CARD</span><img src="/images/wingo-logo-wide.png" alt=""><div><div class="amt" id="preview-amt">$50</div><div class="lbl">WING-O GIFT CARD</div></div></div>
+      <div class="gc-wrap"><div class="gc"><div class="rib-v"></div><div class="rib-h"></div><svg class="bow" viewBox="0 0 120 90" aria-hidden="true"><defs><linearGradient id="bw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF4A2E"/><stop offset=".55" stop-color="#E8190A"/><stop offset="1" stop-color="#9E1008"/></linearGradient></defs><path d="M60 46 C40 8 6 6 8 30 C10 52 42 52 60 46Z" fill="url(#bw)" stroke="#7A0C06" stroke-width="2"/><path d="M60 46 C80 8 114 6 112 30 C110 52 78 52 60 46Z" fill="url(#bw)" stroke="#7A0C06" stroke-width="2"/><path d="M56 48 L40 88 L50 84 L58 90 Z" fill="#C8150A" stroke="#7A0C06" stroke-width="1.5"/><path d="M64 48 L80 88 L70 84 L62 90 Z" fill="#C8150A" stroke="#7A0C06" stroke-width="1.5"/><ellipse cx="60" cy="46" rx="11" ry="10" fill="#E8190A" stroke="#7A0C06" stroke-width="2"/><path d="M22 24 C30 18 42 22 50 34" stroke="#FFB4A0" stroke-width="3" fill="none" opacity=".6" stroke-linecap="round"/><path d="M98 24 C90 18 78 22 70 34" stroke="#FFB4A0" stroke-width="3" fill="none" opacity=".45" stroke-linecap="round"/></svg><div class="badge"><img src="/images/wingo-logo-wide.png" alt="Wing-O"></div><div class="stamp">HOLIDAY<br>EDITION<br>★</div><div class="face"><span class="ribbon" id="ribbon"></span><div class="amt" id="preview-amt">$50</div><div class="lbl">WING-O GIFT CARD</div><div class="sub">Good at every Wing-O · No expiry</div></div></div></div>
       <div class="promo hidden" id="promo"></div>
       <ul class="perks">
         <li>Use it online at checkout, or show it at the counter</li>
@@ -155,7 +174,7 @@ function renderAmts(){
   $('pay').innerHTML = 'PAY $' + AMT + ' &amp; SEND 🎁';
   var p = CFG && CFG.promo;
   if(p){ var bonus = Math.floor(AMT * 100 / p.every) * p.bonus;
-    $('ribbon').textContent = bonus ? '+ ' + money(bonus) + ' BONUS' : 'GIFT CARD';
+    $('ribbon').textContent = bonus ? '+ ' + money(bonus) + ' BONUS FOR YOU' : '';
   }
 }
 function pick(a){ AMT = a; $('custom').value = ''; renderAmts(); }

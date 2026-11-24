@@ -107,10 +107,15 @@ module.exports = function setupGiftCards(ctx) {
       <h1 style="font-size:38px;line-height:1.05;margin:10px 0 10px;">${card.kind === 'bonus' ? 'Your bonus card is here' : `You've got wings${to.name ? ', ' + escHtml(to.name.split(' ')[0]) : ''}!`}</h1>
       ${card.kind !== 'bonus' && from.name ? `<p style="font-size:17px;margin:0 0 12px;">A Wing-O gift card from <b>${escHtml(from.name)}</b></p>` : ''}
       ${card.message ? `<p style="font-size:17px;font-style:italic;line-height:1.5;margin:0 0 18px;">“${escHtml(card.message)}”</p>` : ''}
-      <div style="display:inline-block;border:3px solid #1A1208;background:#fff;padding:18px 28px;box-shadow:8px 8px 0 #E8190A;margin:6px 0 8px;">
-        <div style="font:bold 52px Arial,sans-serif;color:#E8190A;line-height:1;">${money(card.initial)}</div>
-        <div style="font:bold 13px Arial,sans-serif;letter-spacing:3px;margin-top:6px;">WING-O ${card.kind === 'bonus' ? 'BONUS ' : ''}GIFT CARD</div>
-        <div style="font:bold 22px 'Courier New',monospace;letter-spacing:2px;margin-top:12px;">${card.code}</div></div>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;margin:8px auto 10px;border:3px solid #1A1208;border-radius:14px;border-collapse:separate;overflow:hidden;background:#140A05;">
+        <tr><td style="padding:0;line-height:0;"><img src="${SITE}/images/email-wings-wide.jpg" width="474" alt="Wing-O wings" style="display:block;width:100%;height:auto;border:0;"></td></tr>
+        <tr><td style="background:#E8190A;height:12px;line-height:12px;font-size:0;border-top:2px solid #A8120A;border-bottom:2px solid #A8120A;">&nbsp;</td></tr>
+        <tr><td style="padding:18px 22px 20px;text-align:left;background:#140A05;">
+          <div style="font:bold 12px Arial,sans-serif;letter-spacing:3px;color:#F5C044;">${card.kind === 'bonus' ? '★ BONUS CARD' : '🎄 HOLIDAY EDITION'}</div>
+          <div style="font:bold 60px Arial,sans-serif;color:#FFF6E2;line-height:1.05;margin-top:4px;text-shadow:3px 3px 0 #E8190A;">${money(card.initial).replace('.00', '')}</div>
+          <div style="font:bold 13px Arial,sans-serif;letter-spacing:4px;color:#F5C044;margin-top:4px;">WING-O ${card.kind === 'bonus' ? 'BONUS ' : ''}GIFT CARD</div>
+          <div style="margin-top:16px;background:#F4EBD7;color:#1A1208;font:bold 21px 'Courier New',monospace;letter-spacing:2px;padding:11px 8px;text-align:center;border-radius:6px;">${card.code}</div>
+        </td></tr></table>
       <p style="margin:22px 0 4px;"><a href="${view}" style="background:#E8190A;color:#fff;text-decoration:none;font:bold 16px Arial,sans-serif;letter-spacing:1px;padding:13px 26px;display:inline-block;">SHOW MY CARD &amp; QR CODE</a></p>
       <p style="margin:12px 0 0;"><a href="${SITE}/order?utm_source=giftcard&utm_medium=email" style="color:#E8190A;font:bold 14px Arial,sans-serif;">Order online now →</a></p>
       ${howTo(card)}</div>`);
