@@ -96,8 +96,9 @@ const LOCATIONS = {
     address: "534 University Park Drive, Regina, SK",
     phone: "306-522-2114",
     hours: "Mon-Wed 11am-1am · Thu-Sun 11am-3am",
-    onlinePayments: false,
-    cloverPrivateKey: process.env.CLOVER_PRIVATE_KEY_EAST
+    onlinePayments: true,   // on once its Clover Ecommerce keys are set on Railway
+    cloverPublicKey: envTrim('CLOVER_PUBLIC_KEY_EAST'),
+    cloverPrivateKey: envTrim('CLOVER_PRIVATE_KEY_EAST')
   },
   "regina-beach": {
     name: "Regina Beach",
@@ -106,8 +107,9 @@ const LOCATIONS = {
     address: "110 Centre St, Regina Beach, SK",
     phone: "639-997-0553",
     hours: "Every Day 11am-10pm",
-    onlinePayments: false,
-    cloverPrivateKey: process.env.CLOVER_PRIVATE_KEY_BEACH
+    onlinePayments: true,   // on once its Clover Ecommerce keys are set on Railway
+    cloverPublicKey: envTrim('CLOVER_PUBLIC_KEY_BEACH'),
+    cloverPrivateKey: envTrim('CLOVER_PRIVATE_KEY_BEACH')
   },
   // Manitoba: 7% PST (RST) and Central time with daylight saving.
   // Ordering and delivery start OFF until the store opens: turn them on in /admin.
@@ -118,8 +120,9 @@ const LOCATIONS = {
     address: "1530 Dakota St, Unit 4001, Winnipeg, MB",
     phone: process.env.WINNIPEG_PHONE || "204-255-4055",
     hours: process.env.WINNIPEG_HOURS || "Mon-Wed 11am-1am · Thu-Sun 11am-3am",
-    onlinePayments: false,
-    cloverPrivateKey: process.env.CLOVER_PRIVATE_KEY_WINNIPEG,
+    onlinePayments: true,   // on once its Clover keys (merchant ID, API token, Ecommerce keys) are set on Railway
+    cloverPublicKey: envTrim('CLOVER_PUBLIC_KEY_WINNIPEG'),
+    cloverPrivateKey: envTrim('CLOVER_PRIVATE_KEY_WINNIPEG'),
     pst: 0.07,
     timeZone: "America/Winnipeg",
     startsOff: true
