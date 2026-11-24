@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Gift Card · Wing-O Staff</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#1A1208;color:#F4EBD7;font-family:Arial,sans-serif;padding:16px;}
+  .wrap{max-width:520px;margin:0 auto;}
+  h1{font-size:24px;color:#F5A800;margin-bottom:4px;}
+  .sub{color:#C8B89A;font-size:14px;margin-bottom:16px;}
+  .card{background:#F4EBD7;color:#1A1208;border-radius:10px;padding:16px;margin-bottom:14px;}
+  label{display:block;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#6B5A45;margin:10px 0 4px;}
+  input,select{width:100%;font-size:20px;padding:12px;border:2px solid #C8B89A;border-radius:8px;background:#fff;color:#1A1208;}
+  #code{font-family:"Courier New",monospace;text-transform:uppercase;letter-spacing:1px;}
+  button{font-size:18px;font-weight:700;border:0;border-radius:8px;padding:14px;cursor:pointer;width:100%;margin-top:10px;}
+  .red{background:#E8190A;color:#fff;} .dark{background:#1A1208;color:#fff;} .ghost{background:#fff;color:#1A1208;border:2px solid #C8B89A;}
+  .row{display:flex;gap:8px;} .row > *{flex:1;}
+  .big{font-size:40px;font-weight:900;color:#2D8A3E;font-family:Georgia,serif;}
+  .err{color:#C41408;font-weight:700;margin-top:10px;}
+  .ok{background:#2D8A3E;color:#fff;border-radius:10px;padding:16px;margin-bottom:14px;font-size:18px;line-height:1.5;}
+  .ok b{font-size:26px;}
+  video{width:100%;border-radius:8px;margin-top:10px;background:#000;}
+  .hist{font-size:13px;color:#6B5A45;margin-top:10px;line-height:1.6;}
+  .hidden{display:none !important;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🎁 Gift Card</h1>
+  <div class="sub">Look up a Wing-O gift card and take the amount off. Then ring that amount on Clover as <b>Gift Card</b>.</div>
+
+  <div class="card" id="login">
+    <label>Store</label><select id="loc"><option value="albert-st">Albert Street</option><option value="east-regina">East Regina</option><option value="winnipeg">Winnipeg</option><option value="regina-beach">Regina Beach</option></select>
+    <label>Store password (same as the kitchen screen)</label><input id="pw" type="password">
+    <button class="red" onclick="saveLogin()">Start</button>
+    <div class="err" id="login-err"></div>
+  </div>
+
+  <div id="app" class="hidden">
+    <div id="done"></div>
+    <div class="card">
+      <label>Gift card code</label>
+      <input id="code" placeholder="WGO-XXXX-XXXX-XXXX" autocomplete="off" autocapitalize="characters">
+      <div class="row"><button class="dark" onclick="lookup()">Look up</button><button class="ghost" id="scan-btn" onclick="scan()">📷 Scan QR</button></div>
+      <video id="video" class="hidden" playsinline muted></video>
+      <div class="err" id="err"></div>
+    </div>
+    <div class="card hidden" id="found">
+      <div id="info"></div>
+      <label>Amount to take off ($)</label>
+      <input id="amt" type="number" step="0.01" min="0.01" inputmode="decimal">
+      <button class="red" id="redeem-btn" onclick="redeem()">Take off card</button>
+      <div class="hist" id="hist"></div>
+    </div>
+    <p class="sub" style="text-align:center;"><span id="who"></span> · <a href="#" style="color:#F5A800;" onclick="logout();return false;">Switch store</a></p>
+  </div>
+</div>
+<script>
+var LOC = '', PW = '', CARD = null, stream = null;
+function $(id){ return document.getElementById(id); }
+function esc(s){ var d=document.createElement('div'); d.textContent = s==null ? '' : String(s); return d.innerHTML; }
+function money(c){ return '$' + (c/100).toFixed(2); }
+function store(k,v){ try{ if(v===undefined) return localStorage.getItem(k); if(v===null) localStorage.removeItem(k); else localStorage.setItem(k,v); }catch(e){ return null; } }
+function api(p, body){ return fetch(p, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(Object.assign({ loc:LOC, pw:PW }, body)) })
+  .then(function(r){ return r.json().then(function(d){ if(!r.ok) throw new Error(d.error || 'Error'); return d; }); }); }
+function saveLogin(){
+  LOC = $('loc').value; PW = $('pw').value.trim(); $('login-err').textContent = '';
+  api('/api/giftcards/pos/lookup', { code:'WGO-AAAA-AAAA-AAAA' }).catch(function(e){ if(/password/i.test(e.message)) throw e; })
+    .then(function(){ store('wingo_gc_loc', LOC); store('wingo_gc_pw', PW); start(); })
+    .catch(function(e){ $('login-err').textContent = e.message; });
+}
+function start(){ $('login').classList.add('hidden'); $('app').classList.remove('hidden'); $('who').textContent = $('loc').querySelector('option[value="'+LOC+'"]').textContent; $('code').focus(); }
+function logout(){ store('wingo_gc_pw', null); location.reload(); }
+(function(){ var l = store('wingo_gc_loc'), p = store('wingo_gc_pw'); if(l){ $('loc').value = l; } if(l && p){ LOC = l; PW = p; start(); } })();
+$('code').addEventListener('keydown', function(e){ if(e.key === 'Enter') lookup(); });
+
+function lookup(){
+  $('err').textContent = ''; $('found').classList.add('hidden');
+  api('/api/giftcards/pos/lookup', { code:$('code').value }).then(function(d){
+    CARD = d.card;
+    var c = d.card;
+    $('info').innerHTML = '<div style="font-family:Courier New,monospace;font-weight:700;">' + esc(c.code) + (c.kind === 'bonus' ? ' · BONUS' : '') + '</div><div class="big">' + money(c.balance) + '</div><div>balance' + (c.to ? ' · for ' + esc(c.to) : '') + '</div>' +
+      (c.why ? '<div class="err">' + esc(c.why) + '</div>' : '');
+    $('redeem-btn').disabled = !c.usable || c.balance <= 0;
+    $('amt').value = ''; $('amt').placeholder = 'up to ' + (c.balance/100).toFixed(2);
+    $('hist').innerHTML = d.history.length ? '<b>Recent:</b><br>' + d.history.map(function(h){ return new Date(h.at).toLocaleDateString('en-CA', { month:'short', day:'numeric' }) + ' · ' + h.type.replace('redeem-', 'used ').replace('-issue', ' issued') + ' · ' + (h.amount < 0 ? '−' : '+') + money(Math.abs(h.amount)) + (h.store ? ' · ' + esc(h.store) : '') + (h.orderNum ? ' · ' + esc(h.orderNum) : ''); }).join('<br>') : '';
+    $('found').classList.remove('hidden'); $('amt').focus();
+  }).catch(function(e){ $('err').textContent = e.message; });
+}
+function redeem(){
+  var a = Number($('amt').value); $('err').textContent = '';
+  if(!(a > 0)){ $('err').textContent = 'Enter the amount.'; return; }
+  var btn = $('redeem-btn'); btn.disabled = true;
+  api('/api/giftcards/pos/redeem', { code:CARD.code, amount:a }).then(function(d){
+    $('done').innerHTML = '<div class="ok">✅ Took <b>' + money(d.taken) + '</b> off the card.<br>Now ring <b>' + money(d.taken) + '</b> on Clover as <b>Gift Card</b>.' +
+      (d.short > 0 ? '<br>⚠️ The card only had ' + money(d.taken) + '. Collect the other <b>' + money(d.short) + '</b> another way.' : '') +
+      '<br>Balance left: ' + money(d.balance) + '<br><button class="ghost" style="margin-top:10px;" onclick="undo(\'' + d.txnId + '\')">Undo (mistake)</button></div>';
+    $('found').classList.add('hidden'); $('code').value = ''; window.scrollTo(0, 0);
+  }).catch(function(e){ $('err').textContent = e.message; }).then(function(){ btn.disabled = false; });
+}
+function undo(id){
+  if(!confirm('Put the money back on the card?')) return;
+  api('/api/giftcards/pos/undo', { txnId:id }).then(function(d){ $('done').innerHTML = '<div class="ok">↩️ Undone. Balance is ' + money(d.balance) + ' again. If you already rang it on Clover, void that payment too.</div>'; })
+    .catch(function(e){ alert(e.message); });
+}
+// QR scanning where the phone's browser supports it (Chrome on Android); otherwise type the code
+function scan(){
+  if(!('BarcodeDetector' in window) || !navigator.mediaDevices){ $('err').textContent = 'Scanning isn\'t supported on this device. Type the code instead.'; return; }
+  var det = new BarcodeDetector({ formats:['qr_code'] }), v = $('video');
+  navigator.mediaDevices.getUserMedia({ video:{ facingMode:'environment' } }).then(function(s){
+    stream = s; v.srcObject = s; v.classList.remove('hidden'); v.play();
+    var tick = function(){
+      if(!stream) return;
+      det.detect(v).then(function(r){
+        if(r && r.length){ $('code').value = r[0].rawValue; stopScan(); lookup(); } else requestAnimationFrame(tick);
+      }).catch(function(){ requestAnimationFrame(tick); });
+    };
+    tick();
+  }).catch(function(){ $('err').textContent = 'Camera not allowed. Type the code instead.'; });
+}
+function stopScan(){ if(stream){ stream.getTracks().forEach(function(t){ t.stop(); }); stream = null; } $('video').classList.add('hidden'); }
+</script>
+</body>
+</html>

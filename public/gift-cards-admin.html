@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Gift Cards Admin | Wing-O</title>
+<style>
+  :root{--paper:#F4EBD7;--card:#FFFDF7;--ink:#1A1208;--muted:#7B6A55;--line:#C8B89A;--red:#E8190A;--red-deep:#A8120A;--green:#2D8A3E;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--paper);color:var(--ink);font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.4;padding:16px;padding-bottom:60px;}
+  .wrap{max-width:900px;margin:0 auto;}
+  h1{font-family:Georgia,serif;font-size:30px;font-weight:900;border-bottom:4px double var(--ink);padding-bottom:8px;margin-bottom:6px;}
+  h1 span{color:var(--red);}
+  .sub{color:var(--muted);margin-bottom:14px;}
+  h2{font-size:13px;letter-spacing:2px;text-transform:uppercase;margin:26px 0 10px;border-bottom:2px solid var(--ink);padding-bottom:4px;}
+  .box{background:var(--card);border:1.5px solid var(--line);border-radius:8px;padding:14px;margin-bottom:12px;}
+  input,select,textarea{font:inherit;padding:8px 10px;border:1.5px solid var(--line);border-radius:6px;background:#fff;color:var(--ink);}
+  input[type=number]{width:90px;}
+  button{font:inherit;font-weight:700;border:0;border-radius:6px;padding:9px 14px;cursor:pointer;background:var(--ink);color:#fff;}
+  .btn-red{background:var(--red);box-shadow:0 3px 0 var(--red-deep);}
+  .btn-ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line);}
+  .btn-sm{padding:5px 10px;font-size:13px;}
+  .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:8px 0;}
+  .stats{display:flex;gap:10px;flex-wrap:wrap;}
+  .stat{background:#fff;border:1.5px solid var(--line);border-radius:6px;padding:8px 12px;min-width:130px;}
+  .stat b{display:block;font-size:22px;font-family:Georgia,serif;}
+  .stat span{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);}
+  .stat.hl{border-color:var(--red);}
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th{text-align:left;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);padding:6px 4px;border-bottom:2px solid var(--ink);}
+  td{padding:7px 4px;border-bottom:1px dotted var(--line);vertical-align:top;}
+  .mono{font-family:"Courier New",monospace;font-weight:700;}
+  .tag{display:inline-block;font-size:11px;font-weight:700;padding:1px 6px;border-radius:4px;background:#EEE6D5;}
+  .tag.bonus{background:#FFE1DC;color:var(--red);} .tag.void{background:#ccc;}
+  .err{color:#C41408;font-weight:700;} .ok{color:var(--green);font-weight:700;}
+  .note{font-size:13px;color:var(--muted);}
+  .toggle{display:inline-flex;align-items:center;gap:8px;font-weight:700;cursor:pointer;}
+  .toggle input{width:20px;height:20px;accent-color:var(--red);}
+  #login{max-width:360px;margin:40px auto;}
+  .hidden{display:none !important;}
+  .res{border:1.5px solid var(--line);border-radius:8px;padding:12px;margin-top:10px;background:#fff;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🎁 Gift Cards <span>Admin</span></h1>
+  <p class="sub">Sales, what's still owed on cards, the Christmas bonus, and help with a customer's card. Staff use <b>/gift-card-pos</b> at the counter.</p>
+
+  <div id="login" class="box">
+    <p style="margin-bottom:10px;font-weight:700;">Admin password</p>
+    <input type="password" id="pw" style="width:100%;" placeholder="Same as /admin">
+    <button class="btn-red" style="margin-top:10px;width:100%;" onclick="login()">Open</button>
+    <div class="err" id="login-err"></div>
+  </div>
+
+  <div id="app" class="hidden">
+    <div class="stats" id="stats"></div>
+    <p class="note" style="margin-top:8px;"><b>Owed on cards</b> is money customers have paid for but not spent yet. Your accountant will want it kept separate from food sales until it's used.</p>
+
+    <h2>Selling &amp; Christmas bonus</h2>
+    <div class="box">
+      <div class="row"><label class="toggle"><input type="checkbox" id="sales"> Sell gift cards on the website</label> <span id="ready" class="note"></span></div>
+      <div class="row"><label class="toggle"><input type="checkbox" id="p-on"> Bonus offer</label>
+        <label>Buy every $<input type="number" id="p-every" min="10"></label><label>get $<input type="number" id="p-bonus" min="1"> bonus card</label></div>
+      <div class="row"><label>Offer ends <input type="date" id="p-ends"></label><label>Bonus card usable <input type="date" id="p-from"> to <input type="date" id="p-to"></label>
+        <button class="btn-red" onclick="saveSettings()">Save</button><span class="ok hidden" id="saved">Saved ✓</span></div>
+      <p class="note">The bonus card goes to the buyer, separate from the gift. Bought cards never expire; only bonus cards have dates.</p>
+      <div class="err" id="set-err"></div>
+    </div>
+
+    <h2>Find a card</h2>
+    <div class="box">
+      <div class="row"><input id="q" style="flex:1;min-width:220px;" placeholder="Code, email, name or receipt ref (GC-…)"><button onclick="search()">Search</button></div>
+      <div id="results"></div>
+    </div>
+
+    <h2>Issue a card</h2>
+    <div class="box">
+      <p class="note" style="margin-bottom:8px;">For donations, making things right with a customer, or a payment you confirmed in Clover that didn't create a card.</p>
+      <div class="row"><label>$<input type="number" id="i-amt" min="1" max="1000"></label><input id="i-name" placeholder="Name"><input id="i-email" type="email" placeholder="Email (we'll send it)">
+        <select id="i-kind"><option value="comp">Free (donation, apology)</option><option value="purchased">Paid (checked in Clover)</option></select></div>
+      <div class="row"><input id="i-msg" style="flex:1;" placeholder="Message on the card (optional)"><input id="i-note" style="flex:1;" placeholder="Note for you (optional)"><button class="btn-red" onclick="issue()">Issue</button></div>
+      <div id="i-out"></div>
+    </div>
+
+    <h2>Latest cards</h2>
+    <div class="box" style="overflow-x:auto;"><table id="recent"></table></div>
+  </div>
+</div>
+<script>
+var PW = '', STORES = {};
+function $(id){ return document.getElementById(id); }
+function esc(s){ var d=document.createElement('div'); d.textContent = s==null ? '' : String(s); return d.innerHTML; }
+function money(c){ return '$' + ((c||0)/100).toFixed(2); }
+function dt(d){ return d ? new Date(d).toLocaleString('en-CA', { dateStyle:'medium', timeStyle:'short' }) : ''; }
+function api(p, body){ return fetch(p, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(Object.assign({ password:PW }, body||{})) })
+  .then(function(r){ return r.json().then(function(d){ if(!r.ok) throw new Error(d.error || 'Error'); return d; }); }); }
+function remember(v){ try{ if(v===undefined) return sessionStorage.getItem('wingo_gc_admin'); sessionStorage.setItem('wingo_gc_admin', v); }catch(e){ return null; } }
+function login(){ PW = $('pw').value.trim(); $('login-err').textContent=''; load().then(function(){ remember(PW); $('login').classList.add('hidden'); $('app').classList.remove('hidden'); }).catch(function(e){ $('login-err').textContent = e.message; }); }
+$('pw').addEventListener('keydown', function(e){ if(e.key==='Enter') login(); });
+$('q').addEventListener('keydown', function(e){ if(e.key==='Enter') search(); });
+(function(){ var s = remember(); if(s){ $('pw').value = s; login(); } })();
+
+function load(){
+  return api('/api/giftcards/admin/state').then(function(d){
+    d.stores.forEach(function(s){ STORES[s.id] = s.name.replace(/\s*\(.*\)/,''); });
+    var s = d.stats, by = Object.keys(s.redeemedByStore).map(function(k){ return esc(STORES[k] || k) + ' ' + money(s.redeemedByStore[k]); }).join(' · ');
+    $('stats').innerHTML = '<div class="stat"><b>' + money(s.sold) + '</b><span>sold (' + s.soldCount + ' cards)</span></div><div class="stat"><b>' + money(s.redeemed) + '</b><span>spent so far</span></div>' +
+      '<div class="stat hl"><b>' + money(s.outstandingPurchased) + '</b><span>owed on bought cards</span></div><div class="stat"><b>' + money(s.outstandingBonus) + '</b><span>left on bonus/free cards</span></div>' +
+      '<div class="stat"><b>' + money(s.bonusIssued) + '</b><span>bonus given</span></div>' + (by ? '<p class="note" style="width:100%;">Spent at: ' + by + '</p>' : '');
+    var p = d.settings.promo;
+    $('sales').checked = d.settings.sales; $('ready').textContent = d.salesReady ? '' : '⚠️ Online card payments aren\'t set up, so the website can\'t sell cards.';
+    $('p-on').checked = p.enabled; $('p-every').value = p.every/100; $('p-bonus').value = p.bonus/100; $('p-ends').value = p.endsAt; $('p-from').value = p.validFrom; $('p-to').value = p.validTo;
+    $('recent').innerHTML = '<tr><th>Code</th><th>Type</th><th>Value</th><th>Left</th><th>For</th><th>From</th><th>Created</th><th>Email</th></tr>' + d.recent.map(function(c){
+      return '<tr><td class="mono"><a href="#" onclick="$(\'q\').value=\'' + c.code + '\';search();return false;">' + esc(c.code) + '</a></td><td><span class="tag ' + c.kind + ' ' + (c.status==='void'?'void':'') + '">' + esc(c.status==='void' ? 'cancelled' : c.kind) + '</span></td><td>' + money(c.initial) + '</td><td>' + money(c.balance) + '</td>' +
+        '<td>' + esc((c.recipient||{}).name || (c.recipient||{}).email || '') + '</td><td>' + esc((c.buyer||{}).name || '') + '</td><td>' + dt(c.createdAt) + '</td><td>' + (c.sentAt ? '✓ sent' : c.deliverAt ? 'scheduled ' + dt(c.deliverAt) : '—') + '</td></tr>'; }).join('');
+  });
+}
+function saveSettings(){
+  $('set-err').textContent = '';
+  api('/api/giftcards/admin/settings', { sales:$('sales').checked, promo:{ enabled:$('p-on').checked, every:Number($('p-every').value), bonus:Number($('p-bonus').value), endsAt:$('p-ends').value, validFrom:$('p-from').value, validTo:$('p-to').value } })
+    .then(function(){ $('saved').classList.remove('hidden'); setTimeout(function(){ $('saved').classList.add('hidden'); }, 1500); }).catch(function(e){ $('set-err').textContent = e.message; });
+}
+function search(){
+  $('results').innerHTML = '<p class="note">Searching…</p>';
+  api('/api/giftcards/admin/search', { q:$('q').value }).then(function(d){
+    if(!d.results.length){ $('results').innerHTML = '<p class="note">No cards found.</p>'; return; }
+    $('results').innerHTML = d.results.map(function(c){
+      return '<div class="res"><div class="row" style="margin:0;justify-content:space-between;"><span class="mono" style="font-size:17px;">' + esc(c.code) + '</span><span><b style="font-size:20px;">' + money(c.balance) + '</b> of ' + money(c.initial) + ' left</span></div>' +
+        '<div class="note">' + esc(c.status === 'void' ? 'CANCELLED · ' : '') + esc(c.kind) + (c.ref ? ' · ref ' + esc(c.ref) : '') + ' · created ' + dt(c.createdAt) + (c.sentAt ? ' · emailed ' + dt(c.sentAt) : c.deliverAt ? ' · scheduled ' + dt(c.deliverAt) : '') +
+        (c.expiresAt ? ' · bonus valid ' + new Date(c.validFrom).toLocaleDateString('en-CA') + ' to ' + new Date(c.expiresAt).toLocaleDateString('en-CA') : '') + '</div>' +
+        '<div style="margin:6px 0;">For <b>' + esc((c.recipient||{}).name || '') + '</b> ' + esc((c.recipient||{}).email || '') + ' · from ' + esc((c.buyer||{}).name || '') + ' ' + esc((c.buyer||{}).email || '') + (c.message ? '<br><i>“' + esc(c.message) + '”</i>' : '') + '</div>' +
+        '<table><tr><th>When</th><th>What</th><th>Amount</th><th>Where</th></tr>' + c.history.map(function(h){ return '<tr' + (h.undone ? ' style="text-decoration:line-through;color:#999;"' : '') + '><td>' + dt(h.at) + '</td><td>' + esc(h.type) + '</td><td>' + (h.amount < 0 ? '−' : '+') + money(Math.abs(h.amount)) + '</td><td>' + esc(STORES[h.store] || h.store || '') + (h.orderNum ? ' · ' + esc(h.orderNum) : '') + '</td></tr>'; }).join('') + '</table>' +
+        '<div class="row"><input id="re-' + c.code + '" type="email" placeholder="Send to a different email (optional)" style="flex:1;"><button class="btn-ghost btn-sm" onclick="resend(\'' + c.code + '\')">Resend card email</button>' +
+        (c.status !== 'void' ? '<button class="btn-ghost btn-sm" style="color:#C41408;" onclick="voidCard(\'' + c.code + '\')">Cancel card</button>' : '') + '</div></div>';
+    }).join('');
+  }).catch(function(e){ $('results').innerHTML = '<p class="err">' + esc(e.message) + '</p>'; });
+}
+function resend(code){ api('/api/giftcards/admin/resend', { code:code, email:$('re-' + code).value }).then(function(d){ alert('Sent to ' + d.to); search(); }).catch(function(e){ alert(e.message); }); }
+function voidCard(code){ var why = prompt('Cancel this card? Its balance goes to $0. Why (for your records)?'); if(why === null) return;
+  api('/api/giftcards/admin/void', { code:code, note:why }).then(function(){ search(); load(); }).catch(function(e){ alert(e.message); }); }
+function issue(){
+  $('i-out').innerHTML = '';
+  api('/api/giftcards/admin/issue', { amount:Number($('i-amt').value), name:$('i-name').value, email:$('i-email').value, kind:$('i-kind').value, message:$('i-msg').value, note:$('i-note').value })
+    .then(function(d){ $('i-out').innerHTML = '<p class="ok">Card <span class="mono">' + esc(d.code) + '</span> created' + (d.sent ? ' and emailed.' : '. Give the customer this code.') + '</p>'; load(); })
+    .catch(function(e){ $('i-out').innerHTML = '<p class="err">' + esc(e.message) + '</p>'; });
+}
+</script>
+</body>
+</html>
