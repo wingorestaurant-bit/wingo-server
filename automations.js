@@ -1,14 +1,10 @@
 // ── AUTOMATIONS ────────────────────────────────────────────────
-// Three jobs that run by themselves, managed at /automations (admin password):
+// Jobs that run by themselves, managed at /automations (admin password):
 //
-// 1. Staffing guide: reads 8 weeks of Clover sales (every channel) and, if Clover has them, staff
-//    clock-ins, then shows orders per hour for each store and weekday, how many people that needs,
-//    and where the schedule has too many or too few. Recomputed nightly; a summary email goes out on
-//    Mondays.
-// 2. Win-back emails: customers whose last website order was 30–180 days ago get one email with a
+// 1. Win-back emails: customers whose last website order was 30–180 days ago get one email with a
 //    discount that comes off by itself on their next online order (matched by email or phone). Off
 //    until switched on. Honours every Wing-O unsubscribe; never the same person more than once in 90 days.
-// 3. Less manual updating:
+// 2. Less manual updating:
 //    • Auto wait time: the online "ready in" time follows how busy the kitchen is (Clover orders in
 //      the last 20 minutes, all channels). The wait picked in /admin is the minimum.
 //    • Clover sold-out sync: when staff mark an item "not available" in Clover, the matching website
@@ -19,7 +15,7 @@
 
 module.exports = function setupAutomations(ctx) {
   const { app, connectDB, LOCATIONS, isAdmin, alertOwner, escHtml, locTz, SEASON_CLOSED, siteMenu,
-    getLiveSettings, customerListCol, wpgSendBatch, WPG_FROM, fetch, STORE_HOURS, ownerEmail } = ctx;
+    getLiveSettings, customerListCol, wpgSendBatch, WPG_FROM, fetch, ownerEmail } = ctx;
   const sleep = ms => new Promise(r => setTimeout(r, ms));
   const round2 = n => Math.round(n * 100) / 100;
   const DAY = 86400000;
@@ -31,7 +27,6 @@ module.exports = function setupAutomations(ctx) {
   const DEFAULTS = {
     wait: { auto: {}, perOrder: 2, max: 60 },
     soldOutSync: {}, cloverMap: {},
-    staffing: { weeks: 8, minStaff: 2, ordersPerStaff: 10, wage: {}, weeklyEmail: true },
     winback: { enabled: false, pct: 10, minSubtotal: 20, inactiveDays: 30, maxInactiveDays: 180, validDays: 14, repeatDays: 90, dailyLimit: 200 },
   };
   let settingsCache = null;
@@ -84,121 +79,7 @@ module.exports = function setupAutomations(ctx) {
   }
   const filterParam = (field, op, val) => `filter=${encodeURIComponent(field + op + val)}`;
 
-  // Local time pieces in the store's time zone. Hours before 5 AM belong to the previous business day
-  // (a Thursday 1:30 AM order is part of Wednesday night), shown as hour 25.
-  const fmtCache = {};
-  function bizParts(ms, loc) {
-    const tz = locTz(LOCATIONS[loc]);
-    const f = fmtCache[tz] || (fmtCache[tz] = new Intl.DateTimeFormat('en-CA', { timeZone: tz, weekday: 'short', hour: '2-digit', hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit' }));
-    const p = f.formatToParts(new Date(ms)).reduce((o, x) => (o[x.type] = x.value, o), {});
-    let dow = DAYS.indexOf(p.weekday), hour = Number(p.hour);
-    if (hour < 5) { dow = (dow + 6) % 7; hour += 24; }
-    return { dow, hour, date: `${p.year}-${p.month}-${p.day}` };
-  }
-  const hoursOf = loc => (STORE_HOURS[loc] || STORE_HOURS.default);
-
-  // ══ 1. STAFFING GUIDE ══════════════════════════════════════════
-  async function computeStaffing(loc) {
-    const st = await settings();
-    const S = st.staffing, weeks = Math.min(16, Math.max(2, Number(S.weeks) || 8));
-    const now = Date.now(), since = now - weeks * 7 * DAY;
-    const orders = await cloverAll(loc, `/orders?${filterParam('createdTime', '>=', since)}`);
-    // How many of each business weekday the range covered (the averages divide by this)
-    const occ = [0, 0, 0, 0, 0, 0, 0];
-    for (let t = since + DAY / 2; t < now - DAY / 2; t += DAY) occ[bizParts(t, loc).dow]++;
-    const grid = {};   // grid[dow][hour] = { orders, sales, staffHours }
-    const cell = (d, h) => ((grid[d] = grid[d] || {})[h] = grid[d][h] || { orders: 0, sales: 0, staff: 0 });
-    let counted = 0;
-    for (const o of orders) {
-      const total = Number(o.total) || 0;
-      if (total <= 0 || !o.createdTime) continue;
-      const b = bizParts(o.createdTime, loc);
-      const c = cell(b.dow, b.hour); c.orders++; c.sales += total / 100; counted++;
-    }
-    // Staff on the clock, from Clover shifts (needs the Employees permission on the Clover token)
-    let shiftsOk = false, shiftNote = '';
-    try {
-      let shifts;
-      try { shifts = await cloverAll(loc, `/shifts?${filterParam('inTime', '>=', since)}`, 20); }
-      catch (e) { if (e.status === 400) shifts = (await cloverAll(loc, '/shifts', 20)).filter(s => Number(s.inTime) >= since); else throw e; }
-      for (const s of shifts) {
-        const a = Number(s.inTime), z = Number(s.outTime) || (now - a < 16 * 3600e3 ? now : a);
-        if (!a || z <= a) continue;
-        for (let t = Math.floor(a / 3600e3) * 3600e3; t < z; t += 3600e3) {
-          const part = (Math.min(z, t + 3600e3) - Math.max(a, t)) / 3600e3;
-          if (part <= 0) continue;
-          const b = bizParts(t + 60e3, loc); cell(b.dow, b.hour).staff += part;
-        }
-      }
-      shiftsOk = shifts.length > 0;
-      if (!shiftsOk) shiftNote = 'No clock-ins found in Clover for this period, so actual staffing is not shown.';
-    } catch (e) {
-      shiftNote = e.status === 401 || e.status === 403
-        ? 'Clover didn\'t allow reading staff clock-ins. To compare with your real schedule, give the Clover token the Employees "read" permission.'
-        : 'Couldn\'t read staff clock-ins from Clover (' + e.message + ').';
-    }
-    const H = hoursOf(loc);
-    const minStaff = Math.max(1, Number(S.minStaff) || 2), perStaff = Math.max(1, Number(S.ordersPerStaff) || 10);
-    const rows = [];
-    for (let h = 9; h <= 28; h++) {
-      const row = { hour: h, days: [] };
-      let any = false;
-      for (let d = 0; d < 7; d++) {
-        const open = h >= H[d][0] && h < H[d][1];
-        const c = (grid[d] || {})[h] || { orders: 0, sales: 0, staff: 0 };
-        const n = occ[d] || 1;
-        const avgOrders = c.orders / n, avgSales = c.sales / n, avgStaff = shiftsOk ? c.staff / n : null;
-        const need = open ? Math.max(minStaff, Math.ceil(avgOrders / perStaff)) : 0;
-        if (open || c.orders) any = true;
-        row.days.push({ open, orders: round2(avgOrders), sales: round2(avgSales), staff: avgStaff === null ? null : Math.round(avgStaff * 10) / 10, need });
-      }
-      if (any) rows.push(row);
-    }
-    // Weekly totals: staff-hours scheduled vs needed, and what the difference costs
-    let need = 0, actual = 0, over = 0, under = 0; const hot = [];
-    rows.forEach(r => r.days.forEach((c, d) => {
-      need += c.need;
-      if (c.staff !== null) {
-        actual += c.staff;
-        const diff = c.staff - c.need;
-        if (diff >= 1 && c.open) { over += diff; hot.push({ d, h: r.hour, kind: 'over', diff: Math.round(diff * 10) / 10, orders: c.orders }); }
-        if (diff <= -1 && c.open) { under -= diff; hot.push({ d, h: r.hour, kind: 'under', diff: Math.round(-diff * 10) / 10, orders: c.orders }); }
-      }
-    }));
-    const wage = Number((S.wage || {})[loc]) || 0;
-    const result = {
-      loc, at: new Date(), weeks, orders: counted, rows, shiftsOk, shiftNote,
-      totals: { needHours: Math.round(need), actualHours: shiftsOk ? Math.round(actual) : null, overHours: Math.round(over), underHours: Math.round(under),
-        overCost: wage && shiftsOk ? Math.round(over * wage) : null },
-      over: hot.filter(x => x.kind === 'over').sort((a, b) => b.diff - a.diff).slice(0, 5),
-      under: hot.filter(x => x.kind === 'under').sort((a, b) => b.diff - a.diff).slice(0, 5),
-      peak: rows.flatMap(r => r.days.map((c, d) => ({ d, h: r.hour, orders: c.orders }))).sort((a, b) => b.orders - a.orders).slice(0, 5),
-    };
-    const database = await connectDB();
-    await database.collection('staffing_cache').updateOne({ loc }, { $set: result }, { upsert: true });
-    console.log(`📊 Staffing guide ${loc}: ${counted} Clover orders over ${weeks} weeks, shifts ${shiftsOk ? 'yes' : 'no'}`);
-    return result;
-  }
-  const hourLabel = h => { const x = h % 24; return (x % 12 || 12) + (x < 12 ? ' am' : ' pm'); };
-  function staffingEmailHtml(results) {
-    const blocks = results.map(r => {
-      const name = escHtml((LOCATIONS[r.loc] || {}).name || r.loc);
-      if (r.error) return `<h3 style="margin:18px 0 6px;">${name}</h3><p style="color:#a00;">Couldn't read Clover: ${escHtml(r.error)}</p>`;
-      const li = (x, txt) => `<li>${DAYS[x.d]} ${hourLabel(x.h)}–${hourLabel(x.h + 1)}: ${txt}</li>`;
-      return `<h3 style="margin:18px 0 6px;">${name}</h3>
-        <p style="margin:0 0 6px;">Busiest hours (average orders): ${r.peak.map(p => `${DAYS[p.d]} ${hourLabel(p.h)} (${p.orders})`).join(', ') || 'not enough data yet'}.</p>
-        ${r.shiftsOk ? `<p style="margin:0 0 6px;">Staff-hours a week: <b>${r.totals.actualHours}</b> on the clock vs <b>${r.totals.needHours}</b> needed by sales.${r.totals.overCost ? ` Extra hours cost about <b>$${r.totals.overCost}</b> a week.` : ''}</p>
-          ${r.over.length ? `<p style="margin:6px 0 2px;"><b>Probably too many people:</b></p><ul style="margin:0 0 6px;">${r.over.map(x => li(x, `${x.diff} more than needed (${x.orders} orders)`)).join('')}</ul>` : ''}
-          ${r.under.length ? `<p style="margin:6px 0 2px;"><b>Probably short-handed:</b></p><ul style="margin:0;">${r.under.map(x => li(x, `${x.diff} fewer than needed (${x.orders} orders)`)).join('')}</ul>` : ''}`
-          : `<p style="margin:0;color:#7B6A55;">${escHtml(r.shiftNote)}</p>`}`;
-    }).join('');
-    return `<div style="font-family:Arial,sans-serif;max-width:640px;margin:0 auto;color:#1A1208;">
-      <div style="background:#1A1208;color:#fff;padding:16px 20px;"><b style="font-size:20px;">📊 Weekly staffing guide</b><br><span style="color:#F5A800;font-size:13px;">From the last weeks of Clover sales</span></div>
-      <div style="padding:6px 20px 20px;background:#F4EBD7;">${blocks}
-      <p style="margin-top:18px;font-size:13px;"><a href="https://wingorestaurants.com/automations" style="color:#E8190A;font-weight:bold;">See the full hour-by-hour guide →</a></p></div></div>`;
-  }
-
-  // ══ 3a. AUTO WAIT TIME ═════════════════════════════════════════
+  // ══ AUTO WAIT TIME ═════════════════════════════════════════
   const autoWaits = {};   // loc -> { mins, recent, at }
   async function refreshAutoWaits() {
     const st = await settings();
@@ -219,7 +100,7 @@ module.exports = function setupAutomations(ctx) {
   }
   const waits = () => { const o = {}; for (const [l, v] of Object.entries(autoWaits)) if (Date.now() - v.at < 10 * 60e3) o[l] = v.mins; return o; };
 
-  // ══ 3b. CLOVER SOLD-OUT SYNC ═══════════════════════════════════
+  // ══ CLOVER SOLD-OUT SYNC ═══════════════════════════════════
   const cloverItemsCache = {};
   async function cloverItems(loc, fresh) {
     const c = cloverItemsCache[loc];
@@ -275,7 +156,7 @@ module.exports = function setupAutomations(ctx) {
     return out;
   }
 
-  // ══ 2. WIN-BACK EMAILS ═════════════════════════════════════════
+  // ══ WIN-BACK EMAILS ═════════════════════════════════════════
   const emailNorm = e => String(e || '').trim().toLowerCase();
   const phoneNorm = p => String(p || '').replace(/\D/g, '').slice(-10);
   function winbackEmail(row, W, test) {
@@ -385,19 +266,6 @@ module.exports = function setupAutomations(ctx) {
   async function tick() {
     try {
       const n = reginaNow(), st = await settings();
-      // Nightly staffing refresh at 4:30 AM; Monday summary email at 9 AM
-      if (n.hour === 4 && n.min >= 30 && await onceEvery('staffing', n.date)) {
-        for (const loc of stores().filter(hasClover)) { try { await computeStaffing(loc); } catch (e) { console.warn('Staffing', loc, e.message); } }
-      }
-      if (st.staffing.weeklyEmail && n.dow === 1 && n.hour === 9 && await onceEvery('staffingEmail', n.date)) {
-        const database = await connectDB();
-        const results = [];
-        for (const loc of stores().filter(hasClover)) {
-          const r = await database.collection('staffing_cache').findOne({ loc });
-          results.push(r || { loc, error: 'no data yet' });
-        }
-        if (results.length) ctx.sendEmail({ to: ownerEmail, subject: '📊 Weekly staffing guide — Wing-O', html: staffingEmailHtml(results) });
-      }
       // Win-back emails once a day at 11 AM, if switched on
       if (st.winback.enabled && n.hour === 11 && await onceEvery('winback', n.date)) await runWinback('daily');
     } catch (e) { console.warn('Automation tick failed:', e.message); }
@@ -416,14 +284,12 @@ module.exports = function setupAutomations(ctx) {
     try {
       const database = await connectDB();
       const st = await settings(true);
-      const staffing = {};
-      (await database.collection('staffing_cache').find({}).toArray()).forEach(r => { staffing[r.loc] = r; });
       const w = await database.collection('settings').findOne({ key: 'wait_times' });
       res.json({
         settings: st,
         stores: stores().map(l => ({ id: l, name: LOCATIONS[l].name, clover: hasClover(l), manualWait: Number(((w && w.wait) || {})[l]) || 20,
           autoWait: autoWaits[l] || null, sync: syncStatus[l] || null })),
-        staffing, siteItems: siteItems(),
+        siteItems: siteItems(),
         winback: { ...(await winbackStats(database)), running: winbackRunning, last: winbackLast, emailReady: !!process.env.RESEND_API_KEY },
       });
     } catch (e) { res.status(500).json({ error: e.message }); }
@@ -441,12 +307,6 @@ module.exports = function setupAutomations(ctx) {
       Object.entries(b.cloverMap.map || {}).forEach(([k, v]) => { if (ids.has(k) && /^[A-Z0-9]{8,20}$/i.test(String(v))) m[k] = String(v); });
       patch.cloverMap = { ...cur.cloverMap, [b.cloverMap.loc]: m };
     }
-    if (b.staffing) {
-      const wage = { ...cur.staffing.wage }; Object.entries(b.staffing.wage || {}).forEach(([k, v]) => { if (LOCATIONS[k]) wage[k] = num(v, 0, 100, 0); });
-      patch.staffing = { weeks: num(b.staffing.weeks, 2, 16, cur.staffing.weeks), minStaff: num(b.staffing.minStaff, 1, 10, cur.staffing.minStaff),
-        ordersPerStaff: num(b.staffing.ordersPerStaff, 2, 40, cur.staffing.ordersPerStaff), wage,
-        weeklyEmail: typeof b.staffing.weeklyEmail === 'boolean' ? b.staffing.weeklyEmail : cur.staffing.weeklyEmail };
-    }
     if (b.winback) {
       const W = cur.winback;
       patch.winback = { enabled: typeof b.winback.enabled === 'boolean' ? b.winback.enabled : W.enabled, pct: num(b.winback.pct, 5, 50, W.pct),
@@ -459,14 +319,6 @@ module.exports = function setupAutomations(ctx) {
     if (patch.wait) refreshAutoWaits().catch(() => {});
     if (patch.soldOutSync || patch.cloverMap) syncSoldOut().catch(() => {});
     res.json({ settings: v });
-  });
-
-  app.post('/api/auto/staffing/refresh', async (req, res) => {
-    if (!guard(req, res)) return;
-    const loc = String((req.body || {}).loc || '');
-    if (!LOCATIONS[loc]) return res.status(400).json({ error: 'Unknown store' });
-    try { res.json({ result: await computeStaffing(loc) }); }
-    catch (e) { res.status(e.status === 401 || e.status === 403 ? 400 : 500).json({ error: e.status === 401 || e.status === 403 ? 'Clover didn\'t allow reading orders for this store. Check the Clover token has Orders "read" permission.' : e.message }); }
   });
 
   app.post('/api/auto/clover-items', async (req, res) => {
@@ -509,5 +361,5 @@ module.exports = function setupAutomations(ctx) {
     res.json(await runWinback('manual'));
   });
 
-  return { waits, winbackDiscount, winbackRedeemed, _test: { staffingEmailHtml, computeStaffing, refreshAutoWaits, syncSoldOut, runWinback, winbackCandidates, bizParts, similarity, tick } };
+  return { waits, winbackDiscount, winbackRedeemed, _test: { refreshAutoWaits, syncSoldOut, runWinback, winbackCandidates, similarity, tick } };
 };

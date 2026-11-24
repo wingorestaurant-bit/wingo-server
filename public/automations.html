@@ -35,18 +35,6 @@
   .stat{background:#fff;border:1.5px solid var(--line);border-radius:6px;padding:8px 12px;min-width:110px;}
   .stat b{display:block;font-size:22px;font-family:Georgia,serif;}
   .stat span{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);}
-  .grid-wrap{overflow-x:auto;margin-top:10px;}
-  table.grid{border-collapse:collapse;font-size:12px;min-width:640px;width:100%;}
-  table.grid th{background:var(--ink);color:#fff;padding:6px 4px;font-size:12px;}
-  table.grid td{border:1px solid #E5DAC4;padding:4px;text-align:center;vertical-align:middle;min-width:72px;}
-  table.grid td.h{font-weight:700;background:#fff;white-space:nowrap;}
-  table.grid td.closed{background:#EEE6D5;color:#B7A88F;}
-  .c-o{font-size:15px;font-weight:700;}
-  .c-n{font-size:11px;color:var(--muted);}
-  .c-s{font-size:11px;font-weight:700;}
-  .over{background:#FFE1DC !important;} .under{background:#FFF1C7 !important;}
-  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:8px;}
-  .legend i{display:inline-block;width:12px;height:12px;border:1px solid var(--line);vertical-align:-2px;margin-right:4px;}
   table.map{border-collapse:collapse;width:100%;font-size:14px;}
   table.map td{padding:6px 4px;border-bottom:1px dotted var(--line);}
   table.map select{width:100%;max-width:340px;}
@@ -61,7 +49,7 @@
 <body>
 <div class="wrap">
   <h1>⚙️ <span>Automations</span></h1>
-  <p class="sub">Staffing guide from Clover sales, win-back emails, automatic wait times and Clover sold-out sync.</p>
+  <p class="sub">Win-back emails, automatic wait times and Clover sold-out sync.</p>
 
   <div id="login" class="box">
     <p style="margin-bottom:10px;font-weight:700;">Admin password</p>
@@ -72,30 +60,7 @@
 
   <div id="app" class="hidden">
 
-    <!-- 1. STAFFING -->
-    <h2><span>📊 Staffing guide</span></h2>
-    <div class="box">
-      <p class="note" style="margin-bottom:8px;">Average orders per hour from Clover (in-store, online and every other channel) over recent weeks, how many people that needs, and, if Clover has your staff clock-ins, how many were actually on. Updates every night; a summary email comes every Monday at 9 AM.</p>
-      <div class="row" id="st-stores"></div>
-      <div class="row">
-        <span class="lbl">Rules</span>
-        <label>At least <input type="number" id="st-min" min="1" max="10"> people while open</label>
-        <label>1 person per <input type="number" id="st-per" min="2" max="40"> orders an hour</label>
-        <label>Look back <input type="number" id="st-weeks" min="2" max="16"> weeks</label>
-      </div>
-      <div class="row">
-        <label>Average pay for this store $<input type="number" id="st-wage" min="0" max="100" step="0.5">/hr <span class="note">(optional, shows what extra hours cost)</span></label>
-        <label class="toggle"><input type="checkbox" id="st-email"> Monday email</label>
-        <button class="btn-ghost btn-sm" onclick="saveStaffing()">Save rules</button>
-        <button class="btn-red btn-sm" id="st-refresh" onclick="refreshStaffing()">Update from Clover now</button>
-        <span class="ok hidden" id="st-saved">Saved ✓</span>
-      </div>
-      <div class="err" id="st-err"></div>
-      <div id="st-summary"></div>
-      <div class="grid-wrap" id="st-grid"></div>
-    </div>
-
-    <!-- 2. WIN-BACK -->
+    <!-- 1. WIN-BACK -->
     <h2><span>💌 Win-back emails</span><span id="wb-pill"></span></h2>
     <div class="box">
       <p class="note" style="margin-bottom:8px;">Once a day at 11 AM, customers whose last online order was a while ago get one email with a discount. It comes off by itself when they order online with that email or phone number. Nobody gets it more than once in the repeat period, and everyone who unsubscribed from any Wing-O email is left out.</p>
@@ -126,7 +91,7 @@
       <iframe id="wb-preview" title="Email preview"></iframe>
     </div>
 
-    <!-- 3. AUTO WAIT -->
+    <!-- 2. AUTO WAIT -->
     <h2><span>⏱️ Automatic wait time</span></h2>
     <div class="box">
       <p class="note" style="margin-bottom:8px;">The “ready in” time customers see online follows how busy the kitchen is: Clover orders from the last 20 minutes, all channels. The wait picked in /admin becomes the minimum. Updates every 2 minutes.</p>
@@ -138,7 +103,7 @@
       <div id="aw-stores"></div>
     </div>
 
-    <!-- 4. CLOVER SOLD-OUT SYNC -->
+    <!-- 3. CLOVER SOLD-OUT SYNC -->
     <h2><span>🔄 Clover sold-out sync</span></h2>
     <div class="box">
       <p class="note" style="margin-bottom:8px;">When staff mark an item “not available” in Clover, the matching website items are sold out online and crossed out on the TVs. When it's available again in Clover they come back. Checks every 2 minutes. First match each website item to its Clover item (suggestions are filled in for you).</p>
@@ -148,9 +113,7 @@
   </div>
 </div>
 <script>
-var PW = '', S = null, ST = {}, SITE = [], STORE = null;
-var DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-var ORDER = [1,2,3,4,5,6,0];   // Monday first
+var PW = '', S = null, SITE = [];
 function $(id){ return document.getElementById(id); }
 function esc(s){ var d=document.createElement('div'); d.textContent = s==null ? '' : String(s); return d.innerHTML; }
 function api(path, body){
@@ -169,55 +132,12 @@ $('pw').addEventListener('keydown', function(e){ if(e.key==='Enter') login(); })
 
 function load(){
   return api('/api/auto/state').then(function(d){
-    S = d.settings; ST = d.staffing || {}; SITE = d.siteItems || []; window.STORES = d.stores; window.WB = d.winback;
-    if(!STORE || !d.stores.some(function(s){ return s.id===STORE; })) STORE = (d.stores.filter(function(s){ return s.clover; })[0] || d.stores[0] || {}).id;
-    renderStaffing(); renderWinback(); renderWait(); renderSync();
+    S = d.settings; SITE = d.siteItems || []; window.STORES = d.stores; window.WB = d.winback;
+    renderWinback(); renderWait(); renderSync();
   });
 }
 setInterval(function(){ if(PW && !document.hidden && !document.activeElement.matches('input,select')) load().catch(function(){}); }, 60000);
 function storeName(id){ var s = (window.STORES||[]).filter(function(x){ return x.id===id; })[0]; return s ? s.name : id; }
-function hourLabel(h){ var x = h % 24; return (x % 12 || 12) + (x < 12 ? ' am' : ' pm'); }
-
-// ── Staffing ──
-function renderStaffing(){
-  $('st-stores').innerHTML = '<span class="lbl">Store</span>' + STORES.map(function(s){
-    return '<button class="chip'+(s.id===STORE?' on':'')+'" onclick="STORE=\''+s.id+'\';renderStaffing();renderSync();">'+esc(s.name.replace(/\s*\(.*\)/,''))+(s.clover?'':' (no Clover)')+'</button>'; }).join('');
-  var P = S.staffing;
-  $('st-min').value = P.minStaff; $('st-per').value = P.ordersPerStaff; $('st-weeks').value = P.weeks; $('st-wage').value = (P.wage||{})[STORE] || ''; $('st-email').checked = !!P.weeklyEmail;
-  var r = ST[STORE];
-  if(!r){ $('st-summary').innerHTML = '<p class="note" style="margin-top:8px;">No guide yet for this store. Tap <b>Update from Clover now</b> (takes up to a minute).</p>'; $('st-grid').innerHTML=''; return; }
-  var t = r.totals || {};
-  $('st-summary').innerHTML = '<div class="stats">'+
-    '<div class="stat"><b>'+r.orders+'</b><span>Clover orders read</span></div>'+
-    '<div class="stat"><b>'+t.needHours+'</b><span>staff-hours needed / week</span></div>'+
-    (r.shiftsOk ? '<div class="stat"><b>'+t.actualHours+'</b><span>staff-hours clocked / week</span></div><div class="stat"><b>'+t.overHours+'</b><span>hours over</span></div><div class="stat"><b>'+t.underHours+'</b><span>hours short</span></div>'+(t.overCost?'<div class="stat"><b>$'+t.overCost+'</b><span>extra cost / week</span></div>':'') : '')+
-    '</div>'+(r.shiftNote ? '<p class="note">'+esc(r.shiftNote)+'</p>' : '')+
-    '<p class="note">Last updated '+new Date(r.at).toLocaleString('en-CA',{dateStyle:'medium',timeStyle:'short'})+' · '+r.weeks+' weeks of sales.</p>';
-  var head = '<tr><th>Hour</th>'+ORDER.map(function(d){ return '<th>'+DAYS[d]+'</th>'; }).join('')+'</tr>';
-  var body = r.rows.map(function(row){
-    return '<tr><td class="h">'+hourLabel(row.hour)+'</td>'+ORDER.map(function(d){
-      var c = row.days[d];
-      if(!c.open && !c.orders) return '<td class="closed">closed</td>';
-      var cls = c.staff === null ? '' : (c.staff - c.need >= 1 ? 'over' : c.need - c.staff >= 1 ? 'under' : '');
-      return '<td class="'+cls+'"><div class="c-o">'+c.orders.toFixed(1)+'</div><div class="c-n">orders</div><div class="c-s">need '+c.need+(c.staff!==null?' · had '+c.staff:'')+'</div></td>';
-    }).join('')+'</tr>';
-  }).join('');
-  $('st-grid').innerHTML = '<table class="grid">'+head+body+'</table><div class="legend"><span><i style="background:#FFE1DC"></i>more people than the sales needed</span><span><i style="background:#FFF1C7"></i>fewer people than needed</span><span>Hours after midnight count with the day the shift started.</span></div>';
-}
-function saveStaffing(){
-  var wage = {}; wage[STORE] = Number($('st-wage').value) || 0;
-  api('/api/auto/settings', { patch:{ staffing:{ minStaff:Number($('st-min').value), ordersPerStaff:Number($('st-per').value), weeks:Number($('st-weeks').value), wage:wage, weeklyEmail:$('st-email').checked } } })
-    .then(function(d){ S = d.settings; flash('st-saved'); }).catch(function(e){ $('st-err').textContent = e.message; });
-}
-function refreshStaffing(){
-  var b = $('st-refresh'); b.disabled = true; b.textContent = 'Reading Clover…'; $('st-err').textContent = '';
-  var wage = {}; wage[STORE] = Number($('st-wage').value) || 0;
-  api('/api/auto/settings', { patch:{ staffing:{ minStaff:Number($('st-min').value), ordersPerStaff:Number($('st-per').value), weeks:Number($('st-weeks').value), wage:wage, weeklyEmail:$('st-email').checked } } })
-    .then(function(){ return api('/api/auto/staffing/refresh', { loc:STORE }); })
-    .then(function(d){ ST[STORE] = d.result; renderStaffing(); })
-    .catch(function(e){ $('st-err').textContent = e.message; })
-    .then(function(){ b.disabled = false; b.textContent = 'Update from Clover now'; });
-}
 
 // ── Win-back ──
 function renderWinback(){
