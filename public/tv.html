@@ -79,6 +79,78 @@
   .qr-txt p{font:2.9vh/1.45 "Special Elite",monospace;color:#3A2C1A;}
   .qr-txt .u{margin-top:3.2vh;font-family:"Bebas Neue";font-size:4.2vh;letter-spacing:.35vh;color:#fff;background:#E8190A;display:inline-block;padding:.6vh 2vh;transform:rotate(-1.5deg);box-shadow:.6vh .6vh 0 #1A1208;}
 
+  /* ── Automatic slides (tvlive.js) ── */
+  .auto{width:100%;height:100%;position:relative;color:#1A1208;display:flex;flex-direction:column;padding:4vh 4vw;
+    background:#F4EBD7 radial-gradient(ellipse at 50% 40%, rgba(255,250,235,.55), rgba(0,0,0,0) 70%);}
+  .auto::after{content:"";position:absolute;inset:2.4vh;border:.6vh double #1A1208;pointer-events:none;}
+  .auto .kick{font-family:Oswald;font-weight:700;font-size:3vh;letter-spacing:.9vh;color:#E8190A;text-transform:uppercase;}
+  .auto .ed{display:flex;justify-content:space-between;border-top:.5vh double currentColor;border-bottom:.15vh solid currentColor;padding:.7vh .2vw .6vh;font:2vh "Special Elite",monospace;text-transform:uppercase;letter-spacing:.08em;}
+  .auto .big{font-family:"Playfair Display",Georgia,serif;font-weight:900;line-height:.92;letter-spacing:-.02em;}
+  .auto .note{font:3vh/1.4 "Special Elite",monospace;color:#3A2C1A;}
+  .auto .stampbox{font-family:"Bebas Neue";font-size:4.4vh;letter-spacing:.35vh;color:#fff;background:#E8190A;display:inline-block;padding:.7vh 2.2vh .4vh;transform:rotate(-1.5deg);box-shadow:.6vh .6vh 0 #1A1208;}
+
+  /* Game day: team colours, a live countdown */
+  .gd{color:#fff;background:var(--tc,#1A1208);}
+  .gd::after{border-color:rgba(255,255,255,.85);}
+  .gd .kick{color:var(--ta,#F5C044);}
+  .gd .ed{color:rgba(255,255,255,.85);}
+  .gd-main{flex:1;display:grid;grid-template-columns:1.25fr 1fr;gap:4vw;align-items:center;min-height:0;margin-top:2vh;}
+  .gd-vs{font-family:"Bebas Neue";font-size:15vh;line-height:.86;letter-spacing:.02em;}
+  .gd-vs span{color:var(--ta,#F5C044);font-size:.55em;vertical-align:.35em;margin:0 .25em;}
+  .gd-when{font-family:Oswald;font-weight:700;font-size:3.4vh;letter-spacing:.5vh;text-transform:uppercase;margin-top:1.4vh;opacity:.9;}
+  .gd-count{display:flex;gap:1.6vw;margin-top:3vh;}
+  .gd-count div{background:rgba(255,255,255,.95);color:var(--tc,#1A1208);border-radius:1.2vh;min-width:13vw;padding:1.2vh 0 .6vh;text-align:center;box-shadow:.8vh .8vh 0 rgba(0,0,0,.35);}
+  .gd-count b{display:block;font-family:"Bebas Neue";font-weight:400;font-size:13vh;line-height:.9;}
+  .gd-count small{font-family:Oswald;font-weight:700;font-size:2vh;letter-spacing:.6vh;}
+  .gd-live{font-family:"Bebas Neue";font-size:14vh;line-height:.9;color:var(--ta,#F5C044);margin-top:3vh;animation:gdp 1.6s ease-in-out infinite;}
+  @keyframes gdp{50%{transform:scale(1.04);}}
+  .gd-deal{margin-top:3.4vh;font-family:"Playfair Display",Georgia,serif;font-style:italic;font-weight:700;font-size:4.2vh;line-height:1.2;max-width:52vw;}
+  .gd-photo{height:66vh;position:relative;}
+  .gd-photo img{width:100%;height:100%;object-fit:cover;border:.6vh solid #fff;box-shadow:1.6vh 1.6vh 0 var(--ta,#F5C044);transform:rotate(2deg);}
+  .gd-photo .stampbox{position:absolute;left:-2vw;bottom:4vh;transform:rotate(-6deg);background:var(--ta,#F5C044);color:var(--tc,#1A1208);}
+
+  /* Cold weather */
+  .wx{background:#EAF3FA radial-gradient(ellipse at 50% 30%, #fff, rgba(255,255,255,0) 70%);}
+  .wx::before{content:"";position:absolute;left:0;right:0;top:0;height:7vh;pointer-events:none;
+    background:radial-gradient(circle at 2vh 0,#fff 2.2vh,transparent 2.3vh) 0 0/5vh 5vh repeat-x;filter:drop-shadow(0 .4vh .3vh rgba(60,110,160,.25));}
+  .wx .kick{color:#1F6FB2;}
+  .wx-main{flex:1;display:grid;grid-template-columns:1.3fr 1fr;gap:4vw;align-items:center;min-height:0;}
+  .wx-temp{font-family:"Bebas Neue";font-size:34vh;line-height:.8;color:#1F6FB2;letter-spacing:-.02em;text-shadow:1.2vh 1.2vh 0 #fff,1.6vh 1.6vh 0 rgba(31,111,178,.25);}
+  .wx-temp small{font-size:.28em;letter-spacing:.1em;display:block;color:#1A1208;text-shadow:none;margin-bottom:1vh;}
+  .wx h1{font-size:10vh;margin:2.4vh 0 2vh;}
+  .wx h1 span{color:#E8190A;}
+  .wx-qr{background:#fff;padding:2.2vh;border:.5vh solid #1A1208;box-shadow:1.6vh 1.6vh 0 #1F6FB2;justify-self:center;text-align:center;}
+  .wx-qr img{width:42vh;height:42vh;display:block;}
+  .wx-qr p{font-family:Oswald;font-weight:700;font-size:2.6vh;letter-spacing:.4vh;margin-top:1.2vh;}
+
+  /* By the numbers */
+  .sx h1{font-size:11vh;text-align:center;margin:1.6vh 0 2.2vh;}
+  .sx .sub{text-align:center;font:3vh "Special Elite",monospace;color:#4A3B28;}
+  .sx-grid{flex:1;display:flex;gap:2.4vw;align-items:center;justify-content:center;margin:2vh 0 1vh;min-height:0;}
+  .sx-box{flex:1;max-width:30vw;min-height:44vh;border:.4vh solid #1A1208;background:#FBF5E6;padding:4vh 1.6vw;text-align:center;display:flex;flex-direction:column;justify-content:center;box-shadow:1.2vh 1.2vh 0 #E8190A;}
+  .sx-box .n{font-family:"Bebas Neue";font-size:17vh;line-height:.9;color:#E8190A;}
+  .sx-box .n.word{font-family:"Playfair Display",Georgia,serif;font-weight:900;font-size:8vh;line-height:1;color:#1A1208;}
+  .sx-box .l{font-family:Oswald;font-weight:700;font-size:2.6vh;letter-spacing:.5vh;text-transform:uppercase;margin-top:1.4vh;}
+  .sx-box .s{font:2.3vh "Special Elite",monospace;color:#5A4A35;margin-top:.8vh;}
+
+  /* Instagram */
+  .ig{background:#120B06;color:#F4EBD7;flex-direction:row;align-items:center;gap:4vw;}
+  .ig::after{border-color:rgba(244,235,215,.6);}
+  .ig-photo{height:78vh;aspect-ratio:1;flex:none;position:relative;}
+  .ig-photo img{width:100%;height:100%;object-fit:cover;border:.6vh solid #F4EBD7;box-shadow:1.6vh 1.6vh 0 #E8190A;}
+  .ig .kick{color:#F5C044;}
+  .ig h1{font-size:9vh;margin:1.6vh 0 2.4vh;}
+  .ig h1 span{color:#E8190A;}
+  .ig .cap{font:3.2vh/1.45 "Special Elite",monospace;color:#E9DCC1;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden;max-width:46vw;}
+  .ig .handle{margin-top:3vh;}
+
+  /* Pickup wait (when the scrolling bar is off) */
+  #wait{display:none;position:absolute;right:1.6vw;bottom:1.6vh;z-index:4;background:#1A1208;color:#fff;font-family:Oswald;font-weight:700;font-size:2.8vh;letter-spacing:.3vh;
+    padding:.9vh 1.8vh;border-radius:.8vh;border:.3vh solid #F5C044;box-shadow:.5vh .5vh 0 rgba(0,0,0,.35);}
+  body.has-wait:not(.has-ticker) #wait{display:block;}
+  body.has-ready #wait{bottom:10.6vh;}
+  #ticker-in .w{color:#F5C044;}
+
   /* Order-ready strip */
   #ready{display:none;position:absolute;left:0;right:0;height:9vh;bottom:0;background:#2D8A3E;color:#fff;align-items:center;gap:2.5vw;padding:0 2.5vw;overflow:hidden;}
   body.has-ticker #ready{bottom:7vh;}
@@ -105,6 +177,7 @@
 <div id="stage"><div class="layer" id="la"></div><div class="layer" id="lb"></div></div>
 <div id="ready"><div class="lbl">✅ READY FOR PICKUP</div><div class="list"></div></div>
 <div id="ticker"><div id="ticker-in"></div></div>
+<div id="wait"></div>
 <div id="empty"><h1>WING-O</h1><p>No slides for this screen yet. Add some at wingorestaurants.com/tv-admin</p></div>
 <div id="pick"><h1>WING-O TV</h1><p>Which store is this screen in?</p><div id="pick-list"></div></div>
 <div id="offline" title="Can't reach the website; still playing what it has"></div>
@@ -130,15 +203,19 @@
   var list = [], next = null, idx = -1, build = null, timer = null, front = 'la', started = false;
   function layer(id){ return document.getElementById(id); }
 
-  function setTicker(t){
+  // The pickup wait rides at the front of the scrolling bar; with the bar off it sits in the corner
+  function setTicker(t, wait){
     var parts = String(t||'').split(/\s*[•|]\s*/).map(function(x){return x.trim();}).filter(Boolean);
-    var el = document.getElementById('ticker-in'); var key = parts.join('|');
+    var waitTxt = wait ? '⏱ PICKUP WAIT NOW ~' + Math.round(wait) + ' MIN' : '';
+    document.body.classList.toggle('has-wait', !!waitTxt);
+    document.getElementById('wait').textContent = waitTxt;
+    var el = document.getElementById('ticker-in'); var key = parts.join('|') + '#' + waitTxt;
     if(el.getAttribute('data-k') === key) return;
     el.setAttribute('data-k', key);
     document.body.classList.toggle('has-ticker', parts.length > 0);
     if(el.getAnimations) el.getAnimations().forEach(function(a){ a.cancel(); });
     if(!parts.length){ el.innerHTML=''; return; }
-    var one = parts.map(esc).join('<b>●</b>') + '<b>●</b>';
+    var one = (waitTxt ? ['<span class="w">'+esc(waitTxt)+'</span>'] : []).concat(parts.map(esc)).join('<b>●</b>') + '<b>●</b>';
     el.innerHTML = one;
     // Repeat the text until it's wider than two screens, then scroll exactly one copy's width: seamless
     var unit = el.scrollWidth || 1, n = Math.max(2, Math.ceil(window.innerWidth * 2 / unit) + 1), h = '';
@@ -300,6 +377,86 @@
     return d;
   }
 
+  // ── Automatic slides ──
+  var TEAMS = { jets: ['#041E42', '#A2AAAD'], riders: ['#00573F', '#FFFFFF'], other: ['#1A1208', '#F5C044'] };
+  // Dates and times in the store's own time zone (a TV stick's clock zone is often wrong)
+  var storeTz = null;
+  function zone(o){ if(storeTz) o.timeZone = storeTz; return o; }
+  function fmt(d, o){ try { return d.toLocaleString('en-CA', zone(o)); } catch(e){ return d.toLocaleString('en-CA', o); } }
+  function when(iso){
+    var d = new Date(iso);
+    var t = fmt(d, { hour:'numeric', minute:'2-digit' }).replace(/\./g, '').toUpperCase();
+    var same = fmt(d, { year:'numeric', month:'2-digit', day:'2-digit' }) === fmt(new Date(), { year:'numeric', month:'2-digit', day:'2-digit' });
+    var evening = Number(fmt(d, { hour:'numeric', hourCycle:'h23' })) >= 17;
+    return (same ? (evening ? 'TONIGHT' : 'TODAY') : fmt(d, { weekday:'long' }).toUpperCase()) + ' · ' + t;
+  }
+  function edLine(left){ return '<div class="ed"><span>'+esc(left)+'</span><span>'+esc(fmt(new Date(), { weekday:'long', month:'long', day:'numeric' }))+'</span><span>'+esc((storeName || 'Wing-O').replace(/\s*\(.*\)/, ''))+'</span></div>'; }
+  function gamedaySlide(it){
+    var g = it.game || {}, c = TEAMS[g.team] || TEAMS.other;
+    var d = document.createElement('div'); d.className = 'auto gd';
+    d.style.setProperty('--tc', c[0]); d.style.setProperty('--ta', g.team === 'riders' ? '#FFFFFF' : g.team === 'jets' ? '#7BAFD4' : c[1]);
+    var vs = esc(g.teamName || 'Game') + (g.opponent ? '<span>VS</span>' + esc(g.opponent) : '');
+    d.innerHTML = edLine((g.playoff ? 'Playoff' : 'Game Night') + ' Edition') +
+      '<div class="gd-main"><div>'+
+        '<div class="kick">'+(g.playoff ? '🚨 Playoff ' : '')+(g.sport === 'hockey' ? '🏒 ' : g.sport === 'football' ? '🏈 ' : '')+'Game day</div>'+
+        '<div class="gd-vs">'+vs+'</div>'+
+        '<div class="gd-when">'+esc(when(g.start))+'</div>'+
+        '<div class="gd-cd" data-start="'+esc(g.start)+'" data-word="'+esc(g.startWord || 'game time')+'"></div>'+
+        (it.deal ? '<div class="gd-deal">'+esc(it.deal)+'</div>' : '')+
+      '</div><div class="gd-photo"><img src="/images/wings-hero.jpg" alt=""><span class="stampbox">WINGS ✓ GAME ✓</span></div></div>';
+    tickCountdowns(d);
+    return d;
+  }
+  // Every countdown on screen is redrawn each second
+  function tickCountdowns(root){
+    (root || document).querySelectorAll('.gd-cd').forEach(function(el){
+      var left = Math.round((new Date(el.getAttribute('data-start')).getTime() - Date.now()) / 1000);
+      var key = left > 0 ? 'cd' : 'live';
+      if(left <= 0){
+        if(el.getAttribute('data-k') !== key){ el.setAttribute('data-k', key); el.innerHTML = '<div class="gd-live">GAME ON. WINGS UP.</div>'; }
+        return;
+      }
+      var h = Math.floor(left / 3600), m = Math.floor(left % 3600 / 60), s = left % 60;
+      function two(n){ return (n < 10 ? '0' : '') + n; }
+      el.innerHTML = '<div class="gd-when" style="margin-top:3vh;opacity:1;">'+esc(el.getAttribute('data-word')).toUpperCase()+' IN</div><div class="gd-count">'+
+        (h > 0 ? '<div><b>'+two(h)+'</b><small>HRS</small></div>' : '')+'<div><b>'+two(m)+'</b><small>MIN</small></div><div><b>'+two(s)+'</b><small>SEC</small></div></div>';
+      el.setAttribute('data-k', key);
+    });
+  }
+  setInterval(function(){ tickCountdowns(); }, 1000);
+  function weatherSlide(it){
+    var d = document.createElement('div'); d.className = 'auto wx';
+    d.innerHTML = edLine('Weather Desk · Special Bulletin') +
+      '<div class="wx-main"><div>'+
+        '<div class="kick" style="margin-top:3vh;">❄ Extreme cold warning · '+esc(it.city || '')+'</div>'+
+        '<div class="wx-temp" style="margin-top:2vh;"><small>FEELS LIKE</small>'+esc(String(it.feels).replace('-', '−'))+'°</div>'+
+        '<h1 class="big">Too cold to cook.<br><span>We got you.</span></h1>'+
+        '<div class="note">Actual temperature '+esc(String(it.temp).replace('-', '−'))+'°'+(it.wind ? ' · wind '+esc(it.wind)+' km/h' : '')+'. Stay in the car, order ahead, run in.</div>'+
+      '</div><div class="wx-qr"><img src="'+esc(it.qr)+'" alt=""><p>SCAN · ORDER · STAY WARM</p></div></div>';
+    return d;
+  }
+  function statsSlide(it){
+    var d = document.createElement('div'); d.className = 'auto sx';
+    var boxes = [];
+    if(it.ordersToday) boxes.push('<div class="sx-box"><div class="n">'+Number(it.ordersToday).toLocaleString('en-CA')+'</div><div class="l">Orders today</div><div class="s">and the kitchen hasn\'t blinked</div></div>');
+    if(it.wingOrdersToday) boxes.push('<div class="sx-box"><div class="n">'+Number(it.wingOrdersToday).toLocaleString('en-CA')+'</div><div class="l">Wing orders today</div><div class="s">yours could be next</div></div>');
+    if(it.topFlavour) boxes.push('<div class="sx-box"><div class="n word">'+esc(it.topFlavour)+'</div><div class="l">#1 flavour this week</div><div class="s">ordered '+Number(it.topCount).toLocaleString('en-CA')+' times</div></div>');
+    if(it.tried) boxes.push('<div class="sx-box"><div class="n">'+esc(it.tried)+'</div><div class="l">Flavours tried this week</div><div class="s">be the reason it\'s '+(Number(it.tried) + 1)+'</div></div>');
+    d.innerHTML = edLine('By the Numbers') + '<div class="kick" style="text-align:center;margin-top:2.6vh;">Extra! Extra! Live from the kitchen</div>'+
+      '<h1 class="big">The Wing Report</h1><div class="sub">Numbers straight from today\'s tickets. No napkins were harmed.</div>'+
+      '<div class="sx-grid">'+boxes.slice(0, 3).join('')+'</div>';
+    return d;
+  }
+  function instaSlide(it){
+    var d = document.createElement('div'); d.className = 'auto ig';
+    d.innerHTML = '<div class="ig-photo"><img src="'+esc(it.img)+'" alt=""></div><div>'+
+      '<div class="kick">📸 Fresh on Instagram</div><h1 class="big">Hot off the <span>'+(/sauce/i.test(it.handle || '') ? 'Boss' : 'fryer')+'</span>.</h1>'+
+      (it.caption ? '<div class="cap">'+esc(it.caption)+'</div>' : '')+
+      '<div class="handle"><span class="stampbox">@'+esc(it.handle || 'wingorestaurants')+'</span></div></div>';
+    return d;
+  }
+  var AUTO_KINDS = { gameday: gamedaySlide, weather: weatherSlide, stats: statsSlide, insta: instaSlide };
+
   function show(){
     clearTimeout(timer);
     if(next){ list = next; next = null; idx = -1; }
@@ -324,6 +481,9 @@
       L.appendChild(el);
       if(it.kind === 'menu'){ fitMenu(el); if(document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ fitMenu(el); }); }
       reveal(); timer = setTimeout(go, list.length === 1 ? 60000 : hold); preloadNext();
+    } else if(AUTO_KINDS[it.kind]){
+      L.appendChild(AUTO_KINDS[it.kind](it));
+      reveal(); timer = setTimeout(go, list.length === 1 ? 60000 : hold);
     } else if(it.type === 'video'){
       var v = document.createElement('video');
       v.muted = true; v.setAttribute('muted',''); v.playsInline = true; v.setAttribute('playsinline',''); v.preload = 'auto';
@@ -357,11 +517,12 @@
         if(build && d.build && d.build !== build){ location.reload(); return; }
         build = d.build || build;
         storeName = d.location || storeName;
-        setTicker(d.ticker);
+        storeTz = d.tz || storeTz;
+        setTicker(d.ticker, d.wait);
         setReady(d.ready);
         return whenFonts().then(function(){
         var items = expandMenus(d.items || []);
-        var sig = function(a){ return JSON.stringify(a.map(function(x){ return [x.id, x.seconds, x.url, x.title, x.menu || null, x.qr || null, x.page || '']; })); };
+        var sig = function(a){ return JSON.stringify(a.map(function(x){ return AUTO_KINDS[x.kind] ? x : [x.id, x.seconds, x.url, x.title, x.menu || null, x.qr || null, x.page || '']; })); };
         var firstLoad = !started; started = true;
         if(firstLoad || sig(items) !== sig(list)){
           var cur = list[idx];
