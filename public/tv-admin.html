@@ -55,6 +55,26 @@
   .tick-row{margin-bottom:10px;}
   .tick-row label{display:block;font-size:12px;font-weight:700;margin-bottom:4px;}
   .empty{color:var(--muted);text-align:center;padding:20px;}
+  .af{padding:14px 0;border-bottom:1px dotted var(--line);}
+  .af:first-child{padding-top:0;}
+  .af:last-child{border-bottom:0;padding-bottom:0;}
+  .af-h{display:flex;align-items:center;gap:10px;justify-content:space-between;flex-wrap:wrap;}
+  .af-h b{font-size:16px;}
+  .af p{margin-top:4px;}
+  .sw{position:relative;width:46px;height:26px;border-radius:13px;background:#ccc;border:0;padding:0;flex:none;transition:background .2s;}
+  .sw::after{content:"";position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 2px rgba(0,0,0,.3);}
+  .sw.on{background:var(--green);}
+  .sw.on::after{left:23px;}
+  .stat{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:6px;padding:4px 8px;margin:4px 6px 0 0;font-size:13px;}
+  .games{margin-top:8px;}
+  .game{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px dotted var(--line);font-size:14px;flex-wrap:wrap;}
+  .addgame{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:10px;}
+  .addgame select,.addgame input{font:inherit;padding:6px 8px;border:1.5px solid var(--line);border-radius:6px;background:#fff;color:var(--ink);}
+  .addgame input[type=text]{width:auto;flex:1;min-width:130px;}
+  .inl{display:inline-flex;gap:6px;align-items:center;margin-top:8px;flex-wrap:wrap;}
+  .inl input{width:auto !important;}
+  ol.steps{margin:8px 0 0 20px;font-size:14px;}
+  ol.steps li{margin:3px 0;}
   @media (max-width:560px){ .item{grid-template-columns:1fr;} .thumb{width:100%;} }
   #login{max-width:360px;margin:40px auto;}
   .hidden{display:none !important;}
@@ -97,6 +117,10 @@
       <div class="err" id="create-err"></div>
     </div>
 
+    <h2>Automatic slides</h2>
+    <p class="sub" style="margin-bottom:10px;">These add themselves to the TVs when there's something to show, and leave when there isn't. Nothing to upload.</p>
+    <div id="auto" class="box"><p class="empty" style="padding:6px;">Loading…</p></div>
+
     <h2>Playing now</h2>
     <p class="sub" style="margin-bottom:10px;">Plays top to bottom, then repeats. Leave days, times and dates empty to show it all the time. Times run past midnight too (e.g. 23:00 to 03:00 for late night).</p>
     <div id="items"></div>
@@ -116,7 +140,8 @@
 
     <h2>Screens</h2>
     <div class="box" id="screens"></div>
-    <p class="sub" style="margin-top:8px;">You get an email if a screen stops checking in for 20 minutes while its store is open, and another when it's back.</p>
+    <p class="sub" style="margin-top:8px;">You get an email if a screen stops checking in for 20 minutes while its store is open, and another when it's back. Turn on phone alerts below to get them as a notification too.</p>
+    <div class="box" id="phone" style="margin-top:10px;"></div>
 
     <h2>TV links</h2>
     <div class="box links" id="links"></div>
@@ -147,7 +172,118 @@ function login(){
 $('pw').addEventListener('keydown', function(e){ if(e.key==='Enter') login(); });
 (function(){ var s = remember(); if(s){ $('pw').value = s; login(); } })();
 
+// ── Automatic slides (game day, cold weather, wing report, pickup wait, Instagram) + phone alerts ──
+var AUTO = null;
+function loadAuto(){ return api('/api/tvauto/state').then(function(d){ AUTO = d; renderAuto(); }).catch(function(e){ $('auto').innerHTML = '<p class="err">'+esc(e.message)+'</p>'; }); }
+function saveAuto(patch, quiet){
+  return api('/api/tvauto/settings', { json:{ patch:patch } }).then(function(d){ AUTO = d; renderAuto(); if(!quiet) flashAuto(); })
+    .catch(function(e){ alert('Not saved: '+e.message); loadAuto(); });
+}
+function flashAuto(){ var s = $('auto-saved'); if(s){ s.classList.add('show'); setTimeout(function(){ s.classList.remove('show'); }, 1500); } }
+function sw(on, fn){ return '<button class="sw'+(on?' on':'')+'" aria-pressed="'+on+'" onclick="'+fn+'"></button>'; }
+function storeChips(list, fn){ return LOCS.map(function(l){ var on = list.indexOf(l.id) >= 0; return '<button class="chip'+(on?' on':'')+'" onclick="'+fn+'(\''+l.id+'\')">'+esc(locName(l.id))+'</button>'; }).join(''); }
+// Game times in the team's city (Jets: Winnipeg time, everything else: Regina time), whatever phone this is on
+function fmtGame(g){
+  var d = new Date(g.start), tz = g.team === 'jets' ? 'America/Winnipeg' : 'America/Regina';
+  var o = function(x){ x.timeZone = tz; return x; };
+  try { return d.toLocaleDateString('en-CA', o({ weekday:'short', month:'short', day:'numeric' }))+' · '+d.toLocaleTimeString('en-CA', o({ hour:'numeric', minute:'2-digit' }))+(g.team === 'jets' ? ' Wpg' : ''); }
+  catch(e){ return d.toLocaleString(); }
+}
+function teamLabel(g){ return g.team === 'jets' ? '🏒 Jets' : g.team === 'riders' ? '🏈 Riders' : '🎉 ' + (g.label || 'Game'); }
+function renderAuto(){
+  var S = AUTO.settings, G = S.gameday;
+  var jets = AUTO.jets || {};
+  var stores = AUTO.stores || [];
+  var h = '';
+  // Game day
+  h += '<div class="af"><div class="af-h"><b>🏒🏈 Game day</b>'+sw(G.enabled, 'saveAuto({gameday:{enabled:'+(!G.enabled)+'}})')+'</div>'+
+    '<p class="sub">On game day the store counts down to puck drop or kickoff, then goes back to normal 3 hours after the start. Jets games come in automatically; add Riders games (or anything else) below.</p>'+
+    '<div class="row"><span class="lbl">Jets games show at</span>'+storeChips(G.teams.jets, 'teamStore.bind(null,\'jets\')')+'</div>'+
+    '<div class="row"><span class="lbl">Riders games show at</span>'+storeChips(G.teams.riders, 'teamStore.bind(null,\'riders\')')+'</div>'+
+    '<div class="row" style="flex-wrap:nowrap;"><span class="lbl" style="white-space:nowrap;">Game deal</span><input type="text" id="gd-deal" maxlength="140" value="'+esc(G.deal)+'" placeholder="e.g. 2 lb wings + fries $29.99 on game nights"></div>'+
+    '<div class="inl"><button class="btn-sm btn-red" onclick="saveAuto({gameday:{deal:$(\'gd-deal\').value}})">Save deal</button><span class="saved" id="auto-saved">Saved ✓</span></div>'+
+    '<div class="games"><span class="lbl">Next Jets games (automatic)</span>'+
+      ((jets.next || []).length ? jets.next.map(function(g){ return '<div class="game"><span>🏒 Jets '+(g.home ? 'vs' : '@')+' '+esc(g.opponent)+(g.playoff ? ' · PLAYOFFS' : '')+'</span><span>'+esc(fmtGame(g))+'</span></div>'; }).join('')
+        : '<div class="game"><span style="color:var(--muted);">'+(jets.error ? 'The NHL schedule didn\'t load ('+esc(jets.error)+'). Add the game below if it\'s today.' : jets.at ? 'No upcoming games found.' : 'Loading the schedule… (a minute after an update)')+'</span></div>')+
+    '</div>'+
+    '<div class="games"><span class="lbl">Games you added</span>'+
+      ((G.games || []).length ? G.games.map(function(g){ return '<div class="game"><span>'+esc(teamLabel(g))+(g.opponent ? ' vs '+esc(g.opponent) : '')+' · <span style="color:var(--muted)">'+esc((g.stores && g.stores.length ? g.stores : G.teams[g.team] || []).map(locName).join(', ') || 'no stores')+'</span></span><span>'+esc(fmtGame(g))+' <button class="btn-ghost btn-sm" onclick="delGame(\''+esc(g.id)+'\')">Remove</button></span></div>'; }).join('')
+        : '<div class="game"><span style="color:var(--muted);">None yet.</span></div>')+
+    '</div>'+
+    '<div class="addgame"><select id="ng-team" onchange="$(\'ng-label\').style.display=this.value===\'other\'?\'\':\'none\'"><option value="riders">🏈 Riders</option><option value="jets">🏒 Jets</option><option value="other">🎉 Other</option></select>'+
+      '<input type="text" id="ng-label" placeholder="Event, e.g. Grey Cup" style="display:none;">'+
+      '<input type="text" id="ng-opp" placeholder="Opponent, e.g. Blue Bombers">'+
+      '<input type="date" id="ng-date"><input type="time" id="ng-time" value="19:00">'+
+      '<button class="btn-sm btn-red" onclick="addGame()">Add game</button></div>'+
+    '<p class="sub" style="font-size:12px;">Time is the store\'s local time. Riders games show at the Regina stores, Jets games at Winnipeg (change above). "Other" shows at every store.</p>'+
+  '</div>';
+  // Cold weather
+  h += '<div class="af"><div class="af-h"><b>❄️ Too cold to cook</b>'+sw(S.weather.enabled, 'saveAuto({weather:{enabled:'+(!S.weather.enabled)+'}})')+'</div>'+
+    '<p class="sub">When it feels this cold (or colder) at a store, its TVs show “Too cold to cook. We got you.” with the order-online QR code.</p>'+
+    '<div class="inl"><span class="lbl">Feels like</span><input type="number" class="secs" id="wx-th" min="-50" max="0" value="'+esc(S.weather.threshold)+'"> °C or colder <button class="btn-sm btn-ghost" onclick="saveAuto({weather:{threshold:Number($(\'wx-th\').value)}})">Save</button></div>'+
+    '<div>'+stores.map(function(s){ return '<span class="stat">'+esc(locName(s.id))+': '+(s.weather ? 'feels like <b>'+esc(s.weather.feels)+'°</b>'+(s.weather.feels <= S.weather.threshold && S.weather.enabled ? ' · <b style="color:var(--red)">showing now</b>' : '') : '<span style="color:var(--muted)">checking…</span>')+'</span>'; }).join('')+'</div>'+
+  '</div>';
+  // Wing report
+  h += '<div class="af"><div class="af-h"><b>📊 The Wing Report (live stats)</b>'+sw(S.stats.enabled, 'saveAuto({stats:{enabled:'+(!S.stats.enabled)+'}})')+'</div>'+
+    '<p class="sub">Orders today, wing orders today, the #1 flavour this week and how many flavours got tried, read from each store\'s Clover every 15 minutes. Order counts only show once they\'re worth bragging about.</p>'+
+    '<div class="inl"><span class="lbl">Show order counts from</span><input type="number" class="secs" id="st-min" min="0" max="500" value="'+esc(S.stats.minOrders)+'"> orders a day <button class="btn-sm btn-ghost" onclick="saveAuto({stats:{minOrders:Number($(\'st-min\').value)}})">Save</button></div>'+
+    '<div>'+stores.map(function(s){ var t = s.stats;
+      return '<span class="stat"><b>'+esc(locName(s.id))+'</b>: '+(!t ? '<span style="color:var(--muted)">counting…</span>' : t.error ? '<span style="color:#C41408">'+esc(t.error)+'</span>'
+        : esc(t.ordersToday)+' orders today · '+esc(t.wingOrdersToday)+' wing orders'+(t.topFlavour ? ' · #1 '+esc(t.topFlavour)+' ('+esc(t.topCount)+')' : '')+(t.source === 'website' ? ' <span style="color:var(--muted)">(website orders only: Clover not connected)</span>' : ''))+'</span>'; }).join('')+'</div>'+
+  '</div>';
+  // Pickup wait
+  h += '<div class="af"><div class="af-h"><b>⏱ Pickup wait on screen</b>'+sw(S.wait.enabled, 'saveAuto({wait:{enabled:'+(!S.wait.enabled)+'}})')+'</div>'+
+    '<p class="sub">Shows “Pickup wait now ~15 min” (the same wait as online ordering, auto or set in /admin) at the front of the scrolling bar, or in the corner if the bar is off. Only while the store is open.</p></div>';
+  // Instagram
+  var ig = AUTO.insta || {};
+  h += '<div class="af"><div class="af-h"><b>📸 Newest Instagram post</b>'+sw(S.insta.enabled, 'saveAuto({insta:{enabled:'+(!S.insta.enabled)+'}})')+'</div>'+
+    (ig.ready ? '<p class="sub">Connected to <b>@'+esc(ig.username)+'</b>. The newest post shows on every TV and updates by itself.</p>'
+      : '<p class="sub">'+(ig.error && ig.error !== 'not-set-up' ? '<span class="err" style="margin:0">Instagram said: '+esc(ig.error)+'</span><br>' : '')+'<b>One-time setup (about 10 minutes):</b></p>'+
+        '<ol class="steps"><li>The Instagram account must be a <b>Business</b> or <b>Creator</b> account (Instagram app → Settings → Account type).</li>'+
+        '<li>Go to <b>developers.facebook.com</b> → My Apps → Create app → “Other” → “Business”, then add the product <b>Instagram</b> → “API setup with Instagram login”.</li>'+
+        '<li>Under “Generate access tokens”, add the Instagram account and press <b>Generate token</b>. Copy it.</li>'+
+        '<li>In Railway, add a variable <code>IG_ACCESS_TOKEN</code> with that token. After the redeploy the newest post appears here. It renews itself; you never have to do this again.</li></ol>')+
+  '</div>';
+  $('auto').innerHTML = h;
+  renderPhone();
+}
+function teamStore(team, loc){
+  var cur = AUTO.settings.gameday.teams[team].slice(); var k = cur.indexOf(loc); if(k>=0) cur.splice(k,1); else cur.push(loc);
+  var t = {}; t[team] = cur; saveAuto({ gameday:{ teams:t } });
+}
+function addGame(){
+  var team = $('ng-team').value, date = $('ng-date').value, time = $('ng-time').value;
+  if(!date || !time){ alert('Pick the date and the start time.'); return; }
+  var games = (AUTO.settings.gameday.games || []).slice();
+  games.push({ team:team, label:$('ng-label').value.trim(), opponent:$('ng-opp').value.trim(), date:date, time:time,
+    stores: team === 'other' ? LOCS.map(function(l){ return l.id; }) : [] });
+  saveAuto({ gameday:{ games:games } });
+}
+function delGame(id){ saveAuto({ gameday:{ games:(AUTO.settings.gameday.games || []).filter(function(g){ return g.id !== id; }) } }); }
+
+function renderPhone(){
+  var topic = AUTO.settings.alerts.topic || '';
+  $('phone').innerHTML = '<div class="af-h"><b>📱 Phone alerts (free)</b>'+(topic ? '<span style="color:var(--green);font-weight:700;">On</span>' : '<span style="color:var(--muted);">Off</span>')+'</div>'+
+    '<p class="sub">Get a notification on your phone the moment a TV stops playing, and when it\'s back. Uses the free <b>ntfy</b> app, no account needed.</p>'+
+    '<ol class="steps"><li>Press <b>Make my code</b>, then <b>Save</b>.</li><li>Install <b>ntfy</b> from the Play Store (or App Store).</li>'+
+      '<li>In ntfy tap <b>+</b>, type the code exactly, and subscribe.</li><li>Press <b>Send test</b>. Your phone should buzz.</li></ol>'+
+    '<div class="inl" style="width:100%;"><input type="text" id="ph-topic" value="'+esc(topic)+'" placeholder="Your private alert code" style="flex:1;min-width:220px;font-family:monospace;">'+
+      '<button class="btn-sm btn-ghost" onclick="makeTopic()">Make my code</button><button class="btn-sm btn-red" onclick="saveAuto({alerts:{topic:$(\'ph-topic\').value}})">Save</button>'+
+      '<button class="btn-sm" onclick="testPhone(this)"'+(topic?'':' disabled')+'>Send test</button></div>'+
+    '<p class="sub" style="font-size:12px;margin-top:6px;">Keep the code private: anyone who knows it can see these alerts. Clear it and save to turn phone alerts off.</p>';
+}
+function makeTopic(){
+  var a = new Uint8Array(9); (window.crypto || window.msCrypto).getRandomValues(a);
+  $('ph-topic').value = 'wingo-tv-' + Array.prototype.map.call(a, function(b){ return ('0' + b.toString(36)).slice(-2); }).join('').slice(0, 14);
+}
+function testPhone(b){
+  b.disabled = true; b.textContent = 'Sending…';
+  api('/api/tvauto/test-alert', { json:{} }).then(function(){ b.textContent = 'Sent ✓'; }).catch(function(e){ alert(e.message); b.textContent = 'Send test'; b.disabled = false; });
+}
+setInterval(function(){ if(PW && AUTO && !document.hidden && !document.activeElement.matches('input,textarea,select')) loadAuto(); }, 60000);
+
 function load(){
+  loadAuto();
   api('/api/signage/items').then(function(d){
     ITEMS = d.items || []; renderItems(); renderTickers(d.ticker || {});
     READY = d.ready || {}; renderReady(); renderScreens(d.screens || []);
