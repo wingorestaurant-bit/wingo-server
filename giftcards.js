@@ -16,7 +16,11 @@ module.exports = function setupGiftCards(ctx) {
   const { app, connectDB, LOCATIONS, isAdmin, checkKitchenAuth, sendEmail, alertOwner, escHtml, payReady, CLOVER_ECOMM, clientIp, fetch, ownerEmail } = ctx;
   const path = require('path'), crypto = require('crypto');
   const money = c => '$' + (Math.round(c) / 100).toFixed(2);
-  const SELL_STORE = 'albert-st';   // whose Clover Ecommerce keys take the payment
+  // The buyer picks their Wing-O; that store's Clover Ecommerce keys take the payment. The card itself
+  // works at every store; soldAt records where the money went, so stores can settle up if needed.
+  const SEASON_CLOSED = ctx.SEASON_CLOSED || [];
+  const sellStores = () => Object.keys(LOCATIONS).filter(id => !SEASON_CLOSED.includes(id) && payReady(LOCATIONS[id]));
+  const shortName = id => String((LOCATIONS[id] || {}).name || id).replace(/\s*\(.*\)/, '');
   const SITE = 'https://wingorestaurants.com';
 
   // ── codes ──
@@ -129,6 +133,7 @@ module.exports = function setupGiftCards(ctx) {
       <table style="font:14px Arial,sans-serif;width:100%;border-collapse:collapse;background:#fff;border:1px solid #C8B89A;">
         <tr><td style="padding:8px 12px;color:#7B6A55;">Gift card</td><td style="padding:8px 12px;text-align:right;">${mask(card.code)}</td></tr>
         <tr><td style="padding:8px 12px;color:#7B6A55;">Charged</td><td style="padding:8px 12px;text-align:right;"><b>${money(p.amount)}</b>${p.last4 ? ` · ${escHtml(p.brand || 'card')} ••${escHtml(p.last4)}` : ''}</td></tr>
+        ${p.store ? `<tr><td style="padding:8px 12px;color:#7B6A55;">Bought from</td><td style="padding:8px 12px;text-align:right;">Wing-O ${escHtml(p.store)} <span style="color:#7B6A55;">(usable at every Wing-O)</span></td></tr>` : ''}
         <tr><td style="padding:8px 12px;color:#7B6A55;">Reference</td><td style="padding:8px 12px;text-align:right;">${escHtml(p.ref)}</td></tr></table>
       ${bonus ? `<div style="margin-top:18px;border:3px solid #1A1208;background:#fff;padding:16px 18px;box-shadow:6px 6px 0 #E8190A;text-align:center;">
         <div style="font:bold 12px Arial,sans-serif;letter-spacing:3px;color:#E8190A;">CHRISTMAS BONUS · FOR YOU</div>
@@ -156,8 +161,8 @@ module.exports = function setupGiftCards(ctx) {
   setInterval(deliverDue, 2 * 60e3);
 
   // ── charge a card through Clover Ecommerce ──
-  async function charge(cents, token, email, ip, description) {
-    const loc = LOCATIONS[SELL_STORE];
+  async function charge(storeId, cents, token, email, ip, description) {
+    const loc = LOCATIONS[storeId];
     let r, d;
     try {
       r = await fetch(`${CLOVER_ECOMM.api}/v1/charges`, { method: 'POST',
@@ -189,10 +194,12 @@ module.exports = function setupGiftCards(ctx) {
   app.get('/gift-cards-admin', page('gift-cards-admin.html'));
 
   app.get('/api/giftcards/config', async (req, res) => {
-    const s = await settings(); const loc = LOCATIONS[SELL_STORE];
+    const s = await settings(); const ready = sellStores();
     res.set('Cache-Control', 'no-store').json({
-      sales: s.sales && payReady(loc),
-      pay: payReady(loc) ? { publicKey: loc.cloverPublicKey, merchantId: loc.merchantId, sdk: CLOVER_ECOMM.sdk } : null,
+      sales: s.sales && ready.length > 0,
+      stores: ready.map(id => ({ id, name: shortName(id), city: String(LOCATIONS[id].address || '').replace(/,\s*Unit [^,]+/i, '').split(',').slice(0, 2).join(',').replace(/^#\d+\s*-\s*/, ''),
+        publicKey: LOCATIONS[id].cloverPublicKey, merchantId: LOCATIONS[id].merchantId })),
+      sdk: CLOVER_ECOMM.sdk,
       promo: promoActive(s.promo) ? { every: s.promo.every, bonus: s.promo.bonus, endsAt: s.promo.endsAt, validFrom: s.promo.validFrom, validTo: s.promo.validTo } : null,
       christmas: Date.now() < dayStart('2026-12-25').getTime() + 8 * 3600e3 ? '2026-12-25T08:00:00-06:00' : null,
     });
@@ -212,8 +219,9 @@ module.exports = function setupGiftCards(ctx) {
 
   app.post('/api/giftcards/buy', async (req, res) => {
     if (limited(req, 10)) return res.status(429).json({ error: 'Too many tries. Please wait a few minutes.' });
-    const b = req.body || {}; const s = await settings(); const loc = LOCATIONS[SELL_STORE];
-    if (!s.sales || !payReady(loc)) return res.status(503).json({ error: 'Gift card sales are paused right now. Please try again later or call 639-997-0553.' });
+    const b = req.body || {}; const s = await settings();
+    const store = sellStores().includes(String(b.store)) ? String(b.store) : null;
+    if (!s.sales || !store) return res.status(503).json({ error: 'Gift card sales are paused for that store right now. Please try again later or call 639-997-0553.' });
     const cents = Math.round(Number(b.amount) * 100);
     if (!(cents >= 1000 && cents <= 50000) || cents % 100) return res.status(400).json({ error: 'Pick an amount from $10 to $500, in whole dollars.' });
     const buyer = { name: String(b.buyerName || '').trim().slice(0, 60), email: String(b.buyerEmail || '').trim().slice(0, 120) };
@@ -228,24 +236,24 @@ module.exports = function setupGiftCards(ctx) {
     if (!token) return res.status(400).json({ error: 'Please enter your card details.' });
 
     const purchaseId = 'GC-' + crypto.randomBytes(4).toString('hex').toUpperCase();
-    const pay = await charge(cents, token, buyer.email, clientIp(req), `Wing-O gift card ${money(cents)} (${purchaseId})`);
+    const pay = await charge(store, cents, token, buyer.email, clientIp(req), `Wing-O gift card ${money(cents)} (${purchaseId})`);
     if (!pay.ok && pay.unknown) {
-      alertOwner(`🎁 Gift card payment for ${buyer.name} needs checking`, `<p>${escHtml(buyer.name)} (${escHtml(buyer.email)}) tried to buy a <b>${money(cents)}</b> gift card (ref ${purchaseId}) for ${escHtml(recipient.email)}, but Clover didn't give a clear answer (${escHtml(pay.message)}).</p>
-        <p><b>What to do:</b> check Clover's Transactions. If they were charged, issue the card from wingorestaurants.com/gift-cards-admin (“Issue a card”). If not, nothing is needed.</p>`);
+      alertOwner(`🎁 Gift card payment for ${buyer.name} needs checking`, `<p>${escHtml(buyer.name)} (${escHtml(buyer.email)}) tried to buy a <b>${money(cents)}</b> gift card at <b>${escHtml(shortName(store))}</b> (ref ${purchaseId}) for ${escHtml(recipient.email)}, but that store's Clover didn't give a clear answer (${escHtml(pay.message)}).</p>
+        <p><b>What to do:</b> check ${escHtml(shortName(store))}'s Clover Transactions. If they were charged, issue the card from wingorestaurants.com/gift-cards-admin (“Issue a card”). If not, nothing is needed.</p>`);
       return res.status(502).json({ error: 'We couldn\'t confirm your payment. Please don\'t try again yet: we\'ll check and email you. Questions: 639-997-0553.' });
     }
     if (!pay.ok) return res.status(402).json({ error: `${pay.declined ? 'Your card was declined' : 'The payment didn\'t go through'}: ${pay.message}. Nothing was charged.` });
 
     try {
-      const card = await createCard({ kind: 'purchased', initial: cents, buyer, recipient, message, deliverAt, purchaseId, chargeId: pay.id, card: { brand: pay.brand, last4: pay.last4 } });
+      const card = await createCard({ kind: 'purchased', initial: cents, buyer, recipient, message, deliverAt, purchaseId, soldAt: store, chargeId: pay.id, card: { brand: pay.brand, last4: pay.last4 } });
       let bonus = null; const bc = bonusFor(s.promo, cents);
-      if (bc > 0) bonus = await createCard({ kind: 'bonus', initial: bc, buyer, recipient: { ...buyer }, message: '', deliverAt: null, sentAt: new Date(), purchaseId,
+      if (bc > 0) bonus = await createCard({ kind: 'bonus', initial: bc, buyer, recipient: { ...buyer }, message: '', deliverAt: null, sentAt: new Date(), purchaseId, soldAt: store,
         validFrom: dayStart(s.promo.validFrom), expiresAt: dayEnd(s.promo.validTo) });
       if (deliverAt <= new Date()) await deliver(card);
-      const rc = receiptEmail({ amount: cents, buyerEmail: buyer.email, ref: purchaseId, brand: pay.brand, last4: pay.last4 }, card, bonus);
+      const rc = receiptEmail({ amount: cents, buyerEmail: buyer.email, ref: purchaseId, brand: pay.brand, last4: pay.last4, store: shortName(store) }, card, bonus);
       sendEmail({ to: rc.to, subject: rc.subject, html: rc.html, replyTo: ownerEmail });
-      sendEmail({ to: ownerEmail, subject: `🎁 Gift card sold: ${money(cents)}${bonus ? ' (+' + money(bonus.initial) + ' bonus)' : ''}`,
-        html: `<p style="font-family:Arial,sans-serif;">${escHtml(buyer.name)} bought a ${money(cents)} gift card for ${escHtml(recipient.name || recipient.email)}. Ref ${purchaseId}, ${escHtml(pay.brand)} ••${escHtml(pay.last4)}.${bonus ? ` Bonus card ${money(bonus.initial)} issued.` : ''}</p>` });
+      sendEmail({ to: ownerEmail, subject: `🎁 Gift card sold at ${shortName(store)}: ${money(cents)}${bonus ? ' (+' + money(bonus.initial) + ' bonus)' : ''}`,
+        html: `<p style="font-family:Arial,sans-serif;">${escHtml(buyer.name)} bought a ${money(cents)} gift card for ${escHtml(recipient.name || recipient.email)}, paid to <b>${escHtml(shortName(store))}</b>'s Clover. Ref ${purchaseId}, ${escHtml(pay.brand)} ••${escHtml(pay.last4)}.${bonus ? ` Bonus card ${money(bonus.initial)} issued.` : ''}</p>` });
       console.log(`🎁 Gift card sold ${money(cents)} (${purchaseId})${bonus ? ' + bonus ' + money(bonus.initial) : ''}`);
       res.json({ success: true, ref: purchaseId, amount: cents, deliverAt: card.deliverAt, recipient: recipient.email, bonus: bonus ? { amount: bonus.initial, code: bonus.code, validFrom: bonus.validFrom, validTo: bonus.expiresAt } : null });
     } catch (e) {
@@ -314,20 +322,21 @@ module.exports = function setupGiftCards(ctx) {
   app.post('/api/giftcards/admin/state', async (req, res) => {
     if (!ownerOk(req, res)) return;
     const { cards, txns } = await cols(); const s = await settings();
-    const all = await cards.find({}, { projection: { kind: 1, initial: 1, balance: 1, status: 1, createdAt: 1 } }).toArray();
+    const all = await cards.find({}, { projection: { kind: 1, initial: 1, balance: 1, status: 1, createdAt: 1, soldAt: 1 } }).toArray();
+    const soldByStore = {}; all.filter(c => c.kind === 'purchased').forEach(c => { const k = c.soldAt || 'albert-st'; soldByStore[k] = (soldByStore[k] || 0) + c.initial; });
     const sum = (arr, f) => arr.reduce((t, x) => t + (f(x) || 0), 0);
     const live = all.filter(c => c.status === 'active');
     const used = await txns.find({ type: { $in: ['redeem-store', 'redeem-online'] }, undone: { $ne: true } }, { projection: { amount: 1, store: 1, type: 1 } }).toArray();
     const byStore = {}; used.forEach(t => { const k = t.store || 'online'; byStore[k] = (byStore[k] || 0) - t.amount; });
     res.json({
-      settings: s, salesReady: payReady(LOCATIONS[SELL_STORE]),
+      settings: s, salesReady: sellStores().length > 0, sellStores: sellStores().map(shortName),
       stats: {
-        soldCount: all.filter(c => c.kind === 'purchased').length, sold: sum(all.filter(c => c.kind === 'purchased'), c => c.initial),
+        soldByStore, soldCount: all.filter(c => c.kind === 'purchased').length, sold: sum(all.filter(c => c.kind === 'purchased'), c => c.initial),
         bonusIssued: sum(all.filter(c => c.kind === 'bonus'), c => c.initial), compIssued: sum(all.filter(c => c.kind === 'comp'), c => c.initial),
         redeemed: -sum(used, t => t.amount), outstandingPurchased: sum(live.filter(c => c.kind === 'purchased'), c => c.balance),
         outstandingBonus: sum(live.filter(c => c.kind !== 'purchased'), c => c.balance), redeemedByStore: byStore,
       },
-      recent: (await cards.find({}).sort({ createdAt: -1 }).limit(30).toArray()).map(c => ({ code: c.code, kind: c.kind, initial: c.initial, balance: c.balance, status: c.status,
+      recent: (await cards.find({}).sort({ createdAt: -1 }).limit(30).toArray()).map(c => ({ code: c.code, soldAt: c.soldAt || null, kind: c.kind, initial: c.initial, balance: c.balance, status: c.status,
         buyer: c.buyer, recipient: c.recipient, createdAt: c.createdAt, deliverAt: c.deliverAt, sentAt: c.sentAt, ref: c.purchaseId })),
       stores: Object.entries(LOCATIONS).map(([id, l]) => ({ id, name: l.name })),
     });

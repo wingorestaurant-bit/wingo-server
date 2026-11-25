@@ -140,7 +140,11 @@
         <div class="step">4 · Your details</div>
         <div class="two field"><input id="b-name" placeholder="Your name" autocomplete="name"><input id="b-email" type="email" placeholder="Your email (for the receipt)" autocomplete="email"></div>
 
-        <div class="step">5 · Payment</div>
+        <div class="step">5 · Which Wing-O are you buying from?</div>
+        <div class="opts" id="stores"></div>
+        <p class="small" style="margin-top:6px;">Pick your usual Wing-O: the payment goes to that store. The card can be used at <b>every</b> Wing-O.</p>
+
+        <div class="step">6 · Payment</div>
         <div id="pay-box">
           <div class="cc-grid">
             <label class="cc-l cc-wide">Card number<div class="cc-f" id="cc-number"></div></label>
@@ -161,7 +165,7 @@
 </div>
 <footer><div class="wrap">Wing-O Restaurants · Regina &amp; Winnipeg · <a href="/">wingorestaurants.com</a> · <a href="/order">Order online</a></div></footer>
 <script>
-var CFG = null, AMT = 50, TO_SELF = false, WHEN = 'now', clover = null;
+var CFG = null, AMT = 50, TO_SELF = false, WHEN = 'now', clover = null, STORE = null, sdkLoaded = false;
 var AMTS = [25, 50, 75, 100];
 function $(id){ return document.getElementById(id); }
 function esc(s){ var d=document.createElement('div'); d.textContent = s==null ? '' : String(s); return d.innerHTML; }
@@ -202,23 +206,37 @@ fetch('/api/giftcards/config', { cache:'no-store' }).then(function(r){ return r.
     $('promo').classList.remove('hidden');
   }
   renderAmts();
-  loadClover(c.pay);
+  // The buyer's usual store (remembered from ordering) if it sells cards, otherwise the first one
+  var saved = null; try{ saved = localStorage.getItem('wingo_store'); }catch(e){}
+  STORE = c.stores.some(function(x){ return x.id === saved; }) ? saved : c.stores[0].id;
+  renderStores(); loadClover();
 }).catch(function(){ $('err').textContent = 'Couldn\'t load. Please refresh the page.'; });
 
-function loadClover(p){
-  var s = document.createElement('script'); s.src = p.sdk;
-  s.onload = function(){
-    try{
-      clover = new Clover(p.publicKey, { merchantId:p.merchantId, locale:'en-CA' });
-      var els = clover.elements(); var st = { body:{ fontFamily:'Arial, sans-serif', fontSize:'16px' }, input:{ fontSize:'16px' } };
-      [['CARD_NUMBER','cc-number'],['CARD_DATE','cc-date'],['CARD_CVV','cc-cvv'],['CARD_POSTAL_CODE','cc-postal']].forEach(function(x){
-        var e = els.create(x[0], st); e.mount('#' + x[1]);
-        e.addEventListener('change', function(ev){ var m=''; Object.keys(ev||{}).forEach(function(k){ var f=ev[k]; if(!m && f && f.touched && f.error) m=f.error; }); $('err').textContent = m; });
-      });
-    }catch(e){ $('err').textContent = 'The card form couldn\'t load. Please refresh, or call 639-997-0553.'; }
-  };
+function renderStores(){
+  $('stores').innerHTML = CFG.stores.map(function(x){ return '<button class="opt' + (x.id === STORE ? ' on' : '') + '" onclick="pickStore(\'' + x.id + '\')">' + esc(x.name) + '<br><span style="font-weight:400;font-size:12px;">' + esc(x.city) + '</span></button>'; }).join('');
+  $('stores').style.gridTemplateColumns = 'repeat(' + Math.min(3, CFG.stores.length) + ',1fr)';
+}
+function pickStore(id){ if(id === STORE) return; STORE = id; try{ localStorage.setItem('wingo_store', id); }catch(e){} renderStores(); mountCard(); }
+function loadClover(){
+  if(sdkLoaded) return mountCard();
+  var s = document.createElement('script'); s.src = CFG.sdk;
+  s.onload = function(){ sdkLoaded = true; mountCard(); };
   s.onerror = function(){ $('err').textContent = 'The card form couldn\'t load. Check your connection and refresh.'; };
   document.head.appendChild(s);
+}
+// Each store has its own Clover account, so the card form is rebuilt with that store's keys
+function mountCard(){
+  var p = CFG.stores.filter(function(x){ return x.id === STORE; })[0]; if(!p || !window.Clover) return;
+  ['cc-number','cc-date','cc-cvv','cc-postal'].forEach(function(id){ $(id).innerHTML = ''; });
+  clover = null; $('err').textContent = '';
+  try{
+    clover = new Clover(p.publicKey, { merchantId:p.merchantId, locale:'en-CA' });
+    var els = clover.elements(); var st = { body:{ fontFamily:'Arial, sans-serif', fontSize:'16px' }, input:{ fontSize:'16px' } };
+    [['CARD_NUMBER','cc-number'],['CARD_DATE','cc-date'],['CARD_CVV','cc-cvv'],['CARD_POSTAL_CODE','cc-postal']].forEach(function(x){
+      var e = els.create(x[0], st); e.mount('#' + x[1]);
+      e.addEventListener('change', function(ev){ var m=''; Object.keys(ev||{}).forEach(function(k){ var f=ev[k]; if(!m && f && f.touched && f.error) m=f.error; }); $('err').textContent = m; });
+    });
+  }catch(e){ clover = null; $('err').textContent = 'The card form couldn\'t load. Please refresh, or call 639-997-0553.'; }
 }
 
 function deliverAt(){
@@ -240,7 +258,7 @@ function buy(){
     if(!t || !t.token){ var m = t && t.errors ? Object.keys(t.errors).map(function(k){ var v=t.errors[k]; return typeof v==='string'?v:(v&&v.error)||''; }).filter(Boolean)[0] : ''; throw new Error(m || 'Please check your card details.'); }
     btn.textContent = 'PAYING…';
     return fetch('/api/giftcards/buy', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({
-      amount:AMT, token:t.token, toSelf:TO_SELF, recipientName:rn, recipientEmail:re, message:$('msg').value, buyerName:bn, buyerEmail:be, deliverAt:deliverAt() }) })
+      amount:AMT, store:STORE, token:t.token, toSelf:TO_SELF, recipientName:rn, recipientEmail:re, message:$('msg').value, buyerName:bn, buyerEmail:be, deliverAt:deliverAt() }) })
       .then(function(r){ return r.json().then(function(d){ if(!r.ok) throw new Error(d.error || 'Something went wrong.'); return d; }); });
   }).then(function(d){
     $('form').classList.add('hidden');
