@@ -225,14 +225,11 @@ function renderAuto(){
   '</div>';
   // Wing report
   h += '<div class="af"><div class="af-h"><b>📊 The Wing Report (live stats)</b>'+sw(S.stats.enabled, 'saveAuto({stats:{enabled:'+(!S.stats.enabled)+'}})')+'</div>'+
-    '<p class="sub">Wings sold (every wing order on a ticket counts as 9 wings), the #1 flavour this week and how many flavours got tried, read from each store\'s Clover every 15 minutes. No order counts are shown.</p>'+
-    '<p class="sub"><b>Slow day?</b> If today hasn\'t reached the number below, the TV shows the past week instead, then the past month, then “1M+ since day one”. The number on screen is always a real count.</p>'+
-    '<div class="inl"><span class="lbl">Show today from</span><input type="number" class="secs" id="st-min" min="0" max="100000" value="'+esc(S.stats.minWings)+'"> wings <button class="btn-sm btn-ghost" onclick="saveAuto({stats:{minWings:Number($(\'st-min\').value)}})">Save</button></div>'+
-    '<div>'+stores.map(function(s){ var t = s.stats, min = Number(S.stats.minWings) || 0;
-      var showing = !t || t.error ? '' : t.wingsToday >= min ? 'today' : t.wingsWeek >= min ? 'past week' : t.wingsMonth >= min ? 'past month' : '1M+ since day one';
+    '<p class="sub">Orders today, wing orders today, the #1 flavour this week and how many flavours got tried, read from each store\'s Clover every 15 minutes. Order counts only show once they\'re worth bragging about.</p>'+
+    '<div class="inl"><span class="lbl">Show order counts from</span><input type="number" class="secs" id="st-min" min="0" max="500" value="'+esc(S.stats.minOrders)+'"> orders a day <button class="btn-sm btn-ghost" onclick="saveAuto({stats:{minOrders:Number($(\'st-min\').value)}})">Save</button></div>'+
+    '<div>'+stores.map(function(s){ var t = s.stats;
       return '<span class="stat"><b>'+esc(locName(s.id))+'</b>: '+(!t ? '<span style="color:var(--muted)">counting…</span>' : t.error ? '<span style="color:#C41408">'+esc(t.error)+'</span>'
-        : esc(Number(t.wingsToday).toLocaleString())+' wings today · '+esc(Number(t.wingsWeek).toLocaleString())+' this week · '+esc(Number(t.wingsMonth).toLocaleString())+' this month'+(t.topFlavour ? ' · #1 '+esc(t.topFlavour) : '')+
-          ' · <b>TV shows: '+esc(showing)+'</b>'+(t.source === 'website' ? ' <span style="color:var(--muted)">(website orders only: Clover not connected)</span>' : ''))+'</span>'; }).join('')+'</div>'+
+        : esc(t.ordersToday)+' orders today · '+esc(t.wingOrdersToday)+' wing orders'+(t.topFlavour ? ' · #1 '+esc(t.topFlavour)+' ('+esc(t.topCount)+')' : '')+(t.source === 'website' ? ' <span style="color:var(--muted)">(website orders only: Clover not connected)</span>' : ''))+'</span>'; }).join('')+'</div>'+
   '</div>';
   // Pickup wait
   h += '<div class="af"><div class="af-h"><b>⏱ Pickup wait on screen</b>'+sw(S.wait.enabled, 'saveAuto({wait:{enabled:'+(!S.wait.enabled)+'}})')+'</div>'+

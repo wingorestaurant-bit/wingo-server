@@ -6,9 +6,8 @@
 //    with the game-night deal, then go back to normal 3 hours after the start.
 //  • Cold weather: when it feels like −25 or colder at a store (threshold set at /tv-admin), its TVs
 //    show "Too cold to cook. We got you." Weather from Open-Meteo (free, no key).
-//  • The Wing Report from Clover: wings sold (one wing item = 9 wings), the #1 flavour this week and
-//    how many flavours got tried. On a slow day it shows the last 7 or 30 days instead of today,
-//    and if even that's small, the all-time "1M+" from the home page. Every number is real.
+//  • Bragging stats from Clover: orders today, wing orders today, the most ordered flavour this week
+//    and how many flavours got tried. Only shown when the numbers are worth bragging about.
 //  • Pickup wait: the current online pickup wait (auto or manual) in the corner of every slide.
 //  • Instagram: the newest post on the account whose token is in IG_ACCESS_TOKEN (Railway).
 //  • Phone alerts: TV-down / back-on alerts also go to the ntfy app on the owner's phone
@@ -32,7 +31,7 @@ module.exports = function setupTvLive(ctx) {
   const DEFAULTS = {
     gameday: { enabled: true, deal: 'Order ahead so your wings land before the game starts', teams: { jets: ['winnipeg'], riders: REGINA_STORES }, games: [] },
     weather: { enabled: true, threshold: -25 },
-    stats: { enabled: true, minWings: 500 },
+    stats: { enabled: true, minOrders: 25 },
     wait: { enabled: true },
     insta: { enabled: true },
     alerts: { topic: '' },
@@ -177,65 +176,43 @@ module.exports = function setupTvLive(ctx) {
     }
     return out;
   }
-  // Wings sold: every wing item on a ticket counts as one order of 9 wings (WINGS_PER_ORDER)
-  const WINGS_PER_ORDER = 9;
-  // A running 30-day tally per store: the first read takes 30 days of Clover tickets, after that only the
-  // last 2 hours are re-read each time (tickets get items added after they open)
-  const book = {};   // loc -> { orders: Map(id -> { t, wings, flav: [] }), to }
-  const stats = {};  // loc -> { wingsToday, wingsWeek, wingsMonth, topFlavour, topCount, tried, total, source, at, error }
-  function tally(rows, loc) {
-    const now = Date.now(), today = dayStart(loc), week = now - 7 * 86400e3;
-    const counts = {}; let wingsToday = 0, wingsWeek = 0, wingsMonth = 0;
-    for (const o of rows) {
-      wingsMonth += o.wings;
-      if (o.t >= week) { wingsWeek += o.wings; o.flav.forEach(f => { counts[f] = (counts[f] || 0) + 1; }); }
-      if (o.t >= today) wingsToday += o.wings;
-    }
-    const top = Object.entries(counts).sort((x, y) => y[1] - x[1])[0];
-    return { wingsToday, wingsWeek, wingsMonth, topFlavour: top ? top[0] : null, topCount: top ? top[1] : 0, tried: Object.keys(counts).length, total: flavours().total };
-  }
+  const stats = {};   // loc -> { ordersToday, wingOrdersToday, topFlavour, topCount, tried, total, source, at, error }
   async function refreshStats(loc) {
-    const now = Date.now(), month = now - 30 * 86400e3;
+    const today = dayStart(loc), week = Date.now() - 7 * 86400e3;
+    const counts = {}; let ordersToday = 0, wingOrdersToday = 0, source = 'clover';
+    const add = (f, q) => { counts[f] = (counts[f] || 0) + (q || 1); };
     try {
       if (hasClover(loc)) {
-        const B = book[loc] || (book[loc] = { orders: new Map(), to: 0 });
-        const since = B.to ? Math.max(month, B.to - 2 * 3600e3) : month;
-        for (const o of await cloverOrdersSince(loc, since)) {
-          if (!(Number(o.total) > 0) || /deleted|void/i.test(String(o.state || ''))) { B.orders.delete(o.id); continue; }
-          let wings = 0; const flav = [];
-          for (const li of ((o.lineItems && o.lineItems.elements) || [])) {
+        const orders = await cloverOrdersSince(loc, week);
+        for (const o of orders) {
+          if (!(Number(o.total) > 0) || /deleted|void/i.test(String(o.state || ''))) continue;
+          const items = (o.lineItems && o.lineItems.elements) || [];
+          if (Number(o.createdTime) >= today) { ordersToday++; if (items.some(li => isWing(li.name))) wingOrdersToday++; }
+          for (const li of items) {
             if (li.refunded) continue;
-            if (isWing(li.name)) wings += WINGS_PER_ORDER;
             const mods = ((li.modifications && li.modifications.elements) || []).map(m => m.name).join(',');
-            new Set(flavoursIn(mods + ',' + (li.note || ''))).forEach(f => flav.push(f));
+            new Set(flavoursIn(mods + ',' + (li.note || ''))).forEach(f => add(f, 1));
           }
-          B.orders.set(o.id, { t: Number(o.createdTime), wings, flav });
         }
-        B.to = now;
-        for (const [id, o] of B.orders) if (o.t < month) B.orders.delete(id);
-        stats[loc] = Object.assign(tally([...B.orders.values()], loc), { source: 'clover', at: now, error: null });
       } else {
         // No Clover connection: count the website's own orders instead
+        source = 'website';
         const database = await connectDB();
-        const rows = (await database.collection('orders').find({ locationId: loc, createdAt: { $gte: new Date(month) } }, { projection: { createdAt: 1, items: 1 } }).toArray())
-          .map(o => ({ t: new Date(o.createdAt).getTime(),
-            wings: (o.items || []).reduce((n, i) => n + (isWing(i.name) ? WINGS_PER_ORDER * (Number(i.qty) || 1) : 0), 0),
-            flav: (o.items || []).flatMap(i => { const f = [...new Set(flavoursIn(i.flavor))]; return [].concat(...Array(Number(i.qty) || 1).fill(f)); }) }));
-        stats[loc] = Object.assign(tally(rows, loc), { source: 'website', at: now, error: null });
+        const rows = await database.collection('orders').find({ locationId: loc, createdAt: { $gte: new Date(week) } }, { projection: { createdAt: 1, items: 1 } }).toArray();
+        for (const o of rows) {
+          const items = o.items || [];
+          if (new Date(o.createdAt).getTime() >= today) { ordersToday++; if (items.some(i => isWing(i.name))) wingOrdersToday++; }
+          items.forEach(i => new Set(flavoursIn(i.flavor)).forEach(f => add(f, Number(i.qty) || 1)));
+        }
       }
-    } catch (e) { stats[loc] = Object.assign(stats[loc] || {}, { error: e.message, at: now }); warn('stats ' + loc, e); }
+      const top = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
+      stats[loc] = { ordersToday, wingOrdersToday, topFlavour: top ? top[0] : null, topCount: top ? top[1] : 0, tried: Object.keys(counts).length,
+        total: flavours().total, source, at: Date.now(), error: null };
+    } catch (e) { stats[loc] = Object.assign(stats[loc] || {}, { error: e.message, at: Date.now() }); warn('stats ' + loc, e); }
   }
   async function refreshAllStats() {
     if (!(await settings()).stats.enabled) return;
     for (const loc of stores()) { if (storeOpenNow(loc) || !stats[loc]) await refreshStats(loc); await sleep(500); }
-  }
-  // The biggest true number worth showing: today's wings if they pass the bar, else the last 7 days,
-  // else the last 30 days, else the all-time count from the home page
-  function wingsHeadline(s, min) {
-    if (s.wingsToday >= min) return { wings: s.wingsToday, period: 'today' };
-    if (s.wingsWeek >= min) return { wings: s.wingsWeek, period: 'week' };
-    if (s.wingsMonth >= min) return { wings: s.wingsMonth, period: 'month' };
-    return { wings: null, period: 'ever' };
   }
 
   // ══ INSTAGRAM ══════════════════════════════════════════════
@@ -301,10 +278,11 @@ module.exports = function setupTvLive(ctx) {
       out.slides.push({ id: 'auto-weather', kind: 'weather', seconds: 12, temp: w.temp, feels: w.feels, wind: w.wind, city: w.city, qr: `/images/tv-qr-${loc}.svg` });
     const s = stats[loc];
     if (st.stats.enabled && s && !s.error && Date.now() - s.at < 6 * 3600e3) {
-      const head = wingsHeadline(s, Number(st.stats.minWings) || 0);
+      const showOrders = s.ordersToday >= Number(st.stats.minOrders || 0);
       const showFlavour = s.topFlavour && s.topCount >= 5;
-      out.slides.push({ id: 'auto-stats', kind: 'stats', seconds: 12, wings: head.wings, period: head.period,
-        topFlavour: showFlavour ? s.topFlavour : null, topCount: showFlavour ? s.topCount : 0, tried: s.tried >= 10 ? s.tried : null });
+      if (showOrders || showFlavour)
+        out.slides.push({ id: 'auto-stats', kind: 'stats', seconds: 12, ordersToday: showOrders ? s.ordersToday : null, wingOrdersToday: showOrders && s.wingOrdersToday >= 5 ? s.wingOrdersToday : null,
+          topFlavour: showFlavour ? s.topFlavour : null, topCount: showFlavour ? s.topCount : 0, tried: s.tried >= 10 ? s.tried : null, total: s.total });
     }
     if (st.insta.enabled && insta.post && Date.now() - insta.at < 6 * 3600e3)
       out.slides.push({ id: 'auto-insta-' + insta.post.id, kind: 'insta', seconds: 12, img: insta.post.img, caption: insta.post.caption.slice(0, 220), handle: insta.username, at: insta.post.at });
@@ -372,7 +350,7 @@ module.exports = function setupTvLive(ctx) {
         }
       }
       if (b.weather) { const n = Number(b.weather.threshold); patch.weather = { enabled: bool(b.weather.enabled, cur.weather.enabled), threshold: Number.isFinite(n) ? Math.min(0, Math.max(-50, Math.round(n))) : cur.weather.threshold }; }
-      if (b.stats) { const n = Number(b.stats.minWings); patch.stats = { enabled: bool(b.stats.enabled, cur.stats.enabled), minWings: Number.isFinite(n) ? Math.min(100000, Math.max(0, Math.round(n))) : cur.stats.minWings }; }
+      if (b.stats) { const n = Number(b.stats.minOrders); patch.stats = { enabled: bool(b.stats.enabled, cur.stats.enabled), minOrders: Number.isFinite(n) ? Math.min(500, Math.max(0, Math.round(n))) : cur.stats.minOrders }; }
       if (b.wait) patch.wait = { enabled: bool(b.wait.enabled, cur.wait.enabled) };
       if (b.insta) patch.insta = { enabled: bool(b.insta.enabled, cur.insta.enabled) };
       if (b.alerts) {
