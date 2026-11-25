@@ -438,12 +438,15 @@
   function statsSlide(it){
     var d = document.createElement('div'); d.className = 'auto sx';
     var boxes = [];
-    if(it.ordersToday) boxes.push('<div class="sx-box"><div class="n">'+Number(it.ordersToday).toLocaleString('en-CA')+'</div><div class="l">Orders today</div><div class="s">and the kitchen hasn\'t blinked</div></div>');
-    if(it.wingOrdersToday) boxes.push('<div class="sx-box"><div class="n">'+Number(it.wingOrdersToday).toLocaleString('en-CA')+'</div><div class="l">Wing orders today</div><div class="s">yours could be next</div></div>');
+    // Wings sold: today if it's a big day, else the last 7 or 30 days, else the all-time count
+    var P = { today:['Wings sold today','and the fryer hasn\'t blinked'], week:['Wings sold this past week','yours could be next'],
+      month:['Wings sold this past month','and counting'], ever:['Wings sold since day one','Regina to Winnipeg'] };
+    var per = P[it.period] || P.ever;
+    boxes.push('<div class="sx-box"><div class="n">'+(it.wings ? Number(it.wings).toLocaleString('en-CA') : '1M+')+'</div><div class="l">'+per[0]+'</div><div class="s">'+per[1]+'</div></div>');
     if(it.topFlavour) boxes.push('<div class="sx-box"><div class="n word">'+esc(it.topFlavour)+'</div><div class="l">#1 flavour this week</div><div class="s">ordered '+Number(it.topCount).toLocaleString('en-CA')+' times</div></div>');
     if(it.tried) boxes.push('<div class="sx-box"><div class="n">'+esc(it.tried)+'</div><div class="l">Flavours tried this week</div><div class="s">be the reason it\'s '+(Number(it.tried) + 1)+'</div></div>');
     d.innerHTML = edLine('By the Numbers') + '<div class="kick" style="text-align:center;margin-top:2.6vh;">Extra! Extra! Live from the kitchen</div>'+
-      '<h1 class="big">The Wing Report</h1><div class="sub">Numbers straight from today\'s tickets. No napkins were harmed.</div>'+
+      '<h1 class="big">The Wing Report</h1><div class="sub">Counted straight off the tickets. No napkins were harmed.</div>'+
       '<div class="sx-grid">'+boxes.slice(0, 3).join('')+'</div>';
     return d;
   }
