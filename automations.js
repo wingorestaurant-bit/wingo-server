@@ -15,7 +15,7 @@
 
 module.exports = function setupAutomations(ctx) {
   const { app, connectDB, LOCATIONS, isAdmin, alertOwner, escHtml, locTz, SEASON_CLOSED, siteMenu,
-    getLiveSettings, customerListCol, wpgSendBatch, WPG_FROM, fetch, ownerEmail } = ctx;
+    getLiveSettings, customerListCol, wpgSendBatch, WPG_FROM, fetch, ownerEmail, bulkEmailBudget } = ctx;
   const sleep = ms => new Promise(r => setTimeout(r, ms));
   const round2 = n => Math.round(n * 100) / 100;
   const DAY = 86400000;
@@ -217,7 +217,12 @@ module.exports = function setupAutomations(ctx) {
     const run = { started: new Date(), reason, sent: 0, failed: 0, error: null };
     winbackLast = run;
     try {
-      const list = (await winbackCandidates(database, W)).slice(0, Math.max(1, Number(W.dailyLimit) || 200));
+      // Never more than the daily email budget allows: order emails come first (see EMAIL_DAILY_LIMIT in index.js).
+      // Whoever doesn't fit today is still eligible tomorrow.
+      const budget = bulkEmailBudget ? await bulkEmailBudget() : Infinity;
+      run.budget = Number.isFinite(budget) ? budget : null;
+      const list = (await winbackCandidates(database, W)).slice(0, Math.min(budget, Math.max(1, Number(W.dailyLimit) || 200)));
+      if (!list.length && budget === 0) run.error = 'Daily email budget used up: kept for order emails. Win-back will try again tomorrow.';
       for (let i = 0; i < list.length; i += 100) {
         const batch = list.slice(i, i + 100);
         try {
@@ -352,7 +357,7 @@ module.exports = function setupAutomations(ctx) {
     const email = String((req.body || {}).email || '').trim();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ error: 'Enter a valid email address.' });
     if (!process.env.RESEND_API_KEY) return res.status(503).json({ error: 'Email is not set up (RESEND_API_KEY).' });
-    try { await wpgSendBatch([winbackEmail({ email, name: '', store: 'albert-st', unsubscribe_token: '' }, (await settings(true)).winback, true)]); res.json({ success: true }); }
+    try { await wpgSendBatch([winbackEmail({ email, name: '', store: 'albert-st', unsubscribe_token: '' }, (await settings(true)).winback, true)], { test: true }); res.json({ success: true }); }
     catch (e) { res.status(500).json({ error: String(e.message).slice(0, 200) }); }
   });
   app.post('/api/auto/winback/run', async (req, res) => {

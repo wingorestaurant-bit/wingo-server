@@ -155,6 +155,33 @@ function checkKitchenAuth(loc, pw) {
 }
 
 // ── EMAIL (Resend) ─────────────────────────────────────────────
+// Daily email budget. Resend plans cap how many emails go out a day (the free plan: 100), and once
+// it's used up EVERY email fails, order confirmations and owner alerts included. So bulk emails
+// (win-back, campaigns) may only use what's left after keeping EMAIL_RESERVE for order emails.
+// Counted over the last 24 hours, every email sent by this server. On a plan with no daily cap,
+// set EMAIL_DAILY_LIMIT=0 on Railway to switch the budget off.
+const EMAIL_DAILY_LIMIT = Number(process.env.EMAIL_DAILY_LIMIT ?? 100);
+const EMAIL_RESERVE = Number(process.env.EMAIL_RESERVE ?? 60);
+async function emailsSentLast24h() {
+  try {
+    const database = await connectDB(); if (!database) return 0;
+    const rows = await database.collection('email_log').find({ at: { $gte: new Date(Date.now() - 86400e3) } }, { projection: { n: 1 } }).toArray();
+    return rows.reduce((s, r) => s + (Number(r.n) || 0), 0);
+  } catch (e) { return 0; }
+}
+async function logEmails(n, kind) {
+  try {
+    const database = await connectDB(); if (!database) return;
+    await database.collection('email_log').insertOne({ at: new Date(), n, kind });
+    if (Math.random() < 0.02) await database.collection('email_log').deleteMany({ at: { $lt: new Date(Date.now() - 3 * 86400e3) } });
+  } catch (e) { /* counting must never stop an email */ }
+}
+// How many bulk emails may still go out right now (Infinity when the budget is off)
+async function bulkEmailBudget() {
+  if (!(EMAIL_DAILY_LIMIT > 0)) return Infinity;
+  return Math.max(0, EMAIL_DAILY_LIMIT - EMAIL_RESERVE - await emailsSentLast24h());
+}
+let emailQuotaAlerted = 0;
 async function sendEmail({ to, subject, html, replyTo }) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) { console.warn('No RESEND_API_KEY'); return; }
@@ -165,8 +192,16 @@ async function sendEmail({ to, subject, html, replyTo }) {
       body: JSON.stringify({ from: 'Wing-O Orders <orders@wingorestaurants.com>', to, subject, html, ...(replyTo ? { reply_to: replyTo } : {}) })
     });
     const d = await r.json();
+    logEmails(1, 'order');
     if (d.id) console.log(`✉️ Email sent: ${subject}`);
-    else console.warn('Email error:', JSON.stringify(d));
+    else {
+      console.warn('Email error:', JSON.stringify(d));
+      // Out of daily quota: say so loudly in the logs (an email about it wouldn't get through either)
+      if (/quota|daily/i.test(JSON.stringify(d)) && Date.now() - emailQuotaAlerted > 3600e3) {
+        emailQuotaAlerted = Date.now();
+        console.error('🚨 RESEND DAILY QUOTA REACHED: order and alert emails are not going out. Upgrade the Resend plan or wait for the limit to reset.');
+      }
+    }
   } catch (e) { console.warn('Email failed:', e.message); }
 }
 
@@ -2923,7 +2958,17 @@ function wpgEmailFor(c, row, test) {
     headers: { 'List-Unsubscribe': `<${unsubUrl}>` },
   };
 }
-async function wpgSendBatch(items) {
+// Bulk emails (campaigns, win-back). Refused when they would eat into the emails kept for orders
+// (see EMAIL_DAILY_LIMIT); a single test email to the owner always goes.
+async function wpgSendBatch(items, opts = {}) {
+  if (!opts.test) {
+    const left = await bulkEmailBudget();
+    if (items.length > left) {
+      const e = new Error(`Daily email budget reached (${left} bulk emails left today; the rest are kept for order emails). The rest will go out tomorrow.`);
+      e.budget = true; throw e;
+    }
+  }
+  logEmails(items.length, opts.test ? 'test' : 'bulk');
   const r = await fetch('https://api.resend.com/emails/batch', {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
@@ -2966,6 +3011,10 @@ async function runListCampaign(col, c, pendingQuery, emailFor, run, label) {
       } catch (e) {
         const msg = String(e.message).slice(0, 200);
         console.warn(`${label} email batch failed:`, msg);
+        if (e.budget) {   // today's bulk allowance is used up: put them back, stop, carry on another day
+          await col.updateMany({ _id: { $in: ids } }, { $unset: { [KEY]: '' } });
+          run.error = msg; break;
+        }
         if (/rate|too many/i.test(msg)) {   // too fast: put them back and slow down
           await col.updateMany({ _id: { $in: ids } }, { $unset: { [KEY]: '' } });
           await sleep(3000); continue;
@@ -3037,7 +3086,7 @@ app.post('/api/winnipeg/campaign/test', async (req, res) => {
     if (!process.env.RESEND_API_KEY) return res.status(503).json({ error: 'Set RESEND_API_KEY on Railway first.' });
     const email = String((req.body || {}).email || '').trim();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ error: 'Enter a valid email address.' });
-    await wpgSendBatch([wpgEmailFor(wpgCampaign(req.body.campaign), { email, name: '' }, true)]);
+    await wpgSendBatch([wpgEmailFor(wpgCampaign(req.body.campaign), { email, name: '' }, true)], { test: true });
     res.json({ success: true });
   } catch (e) { res.status(500).json({ error: String(e.message || 'Send failed').slice(0, 200) }); }
 });
@@ -3189,7 +3238,7 @@ app.post('/api/customers/campaign/test', async (req, res) => {
     if (!process.env.RESEND_API_KEY) return res.status(503).json({ error: 'Set RESEND_API_KEY on Railway first.' });
     const email = String((req.body || {}).email || '').trim();
     if (!EMAIL_RE.test(email)) return res.status(400).json({ error: 'Enter a valid email address.' });
-    await wpgSendBatch([custEmailFor(custCampaign(req.body.campaign), { email, name: '' }, true)]);
+    await wpgSendBatch([custEmailFor(custCampaign(req.body.campaign), { email, name: '' }, true)], { test: true });
     res.json({ success: true });
   } catch (e) { res.status(500).json({ error: String(e.message || 'Send failed').slice(0, 200) }); }
 });
@@ -3237,7 +3286,7 @@ app.get('/api/customers/unsubscribe', async (req, res) => {
 // ── AUTOMATIONS (staffing guide, win-back emails, auto wait, Clover sold-out sync) ──
 AUTO = require('./automations')({
   app, connectDB, LOCATIONS, isAdmin, alertOwner, escHtml, locTz, SEASON_CLOSED, siteMenu, getLiveSettings,
-  customerListCol, wpgSendBatch, WPG_FROM, fetch, STORE_HOURS, sendEmail, ownerEmail: ALERT_TO,
+  customerListCol, wpgSendBatch, WPG_FROM, fetch, STORE_HOURS, sendEmail, ownerEmail: ALERT_TO, bulkEmailBudget,
 });
 
 // ── GIFT CARDS (buy online, use online or in any store) ──
