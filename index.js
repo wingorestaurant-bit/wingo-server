@@ -776,11 +776,8 @@ async function signageHeartbeat(database, req, loc) {
   await database.collection('signage_screens').updateOne({ screenId: sid },
     { $set: { screenId: sid, loc, lastSeen: new Date(), agent: String(req.get('user-agent') || '').slice(0, 160), alerted: false },
       $setOnInsert: { name: '', firstSeen: new Date() } }, { upsert: true });
-  if (before && before.alerted) {
-    alertOwner(`📺 ${before.name || 'A TV'} at ${LOCATIONS[loc].name} is back on`,
-      `<p>The TV screen <b>${escHtml(before.name || sid)}</b> at <b>${escHtml(LOCATIONS[loc].name)}</b> is playing again.</p>`);
-    if (TVLIVE) TVLIVE.phone(`TV back on: ${LOCATIONS[loc].name}`, `${before.name || 'A TV'} at ${LOCATIONS[loc].name} is playing again.`, 'white_check_mark');
-  }
+  if (before && before.alerted) alertOwner(`📺 ${before.name || 'A TV'} at ${LOCATIONS[loc].name} is back on`,
+    `<p>The TV screen <b>${escHtml(before.name || sid)}</b> at <b>${escHtml(LOCATIONS[loc].name)}</b> is playing again.</p>`);
 }
 const SCREEN_QUIET_MIN = Number(process.env.TV_ALERT_MINUTES || 20);
 async function checkSignageScreens() {
@@ -795,8 +792,6 @@ async function checkSignageScreens() {
         `<p>The TV screen <b>${escHtml(s.name || s.screenId)}</b> at <b>${escHtml((LOCATIONS[s.loc] || {}).name || s.loc)}</b> hasn't checked in for <b>${mins} minutes</b>, during open hours.</p>
          <p><b>What to check:</b> is the TV on and on the right input, is the streaming stick powered, and is the store Wi‑Fi working? Unplugging the stick for 10 seconds usually fixes it.</p>
          <p>You'll get another email when it's back. To stop alerts for a screen you removed, use “Forget” on wingorestaurants.com/tv-admin.</p>`);
-      if (TVLIVE) TVLIVE.phone(`TV down: ${(LOCATIONS[s.loc] || {}).name || s.loc}`,
-        `${s.name || 'A TV'} at ${(LOCATIONS[s.loc] || {}).name || s.loc} hasn't checked in for ${mins} minutes. Check the TV is on, the stick has power and the Wi-Fi works. Unplugging the stick for 10 seconds usually fixes it.`, 'warning,tv');
     }
   } catch (e) { console.warn('TV screen check failed:', e.message); }
 }
@@ -833,10 +828,7 @@ app.get('/api/signage/playlist', async (req, res) => {
     const s = await signageSettings(database);
     const ticker = s.ticker[loc] !== undefined && s.ticker[loc] !== '' ? s.ticker[loc] : (s.ticker.all || '');
     const ready = s.ready[loc] === false ? [] : await signageReadyOrders(database, loc);
-    // Automatic slides (game day, cold weather, Clover stats, Instagram) and the pickup wait: see tvlive.js
-    const live = TVLIVE ? await TVLIVE.forScreen(loc).catch(e => { console.warn('TV live slides:', e.message); return { slides: [], wait: null }; }) : { slides: [], wait: null };
-    res.json({ build: BUILD_ID, items: TVLIVE ? TVLIVE.mix(items, live.slides) : items, ticker, ready, wait: live.wait,
-      tz: LOCATIONS[loc] ? locTz(LOCATIONS[loc]) : null, location: LOCATIONS[loc] ? LOCATIONS[loc].name : null });
+    res.json({ build: BUILD_ID, items, ticker, ready, location: LOCATIONS[loc] ? LOCATIONS[loc].name : null });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
@@ -1832,7 +1824,6 @@ async function getLiveSettings(fresh) {
 }
 let AUTO = null;   // set up near the end of this file (require('./automations'))
 let GIFT = null;   // set up near the end of this file (require('./giftcards'))
-let TVLIVE = null; // set up near the end of this file (require('./tvlive'))
 async function waitMinsFor(locId) {
   const { wait } = await getLiveSettings();
   return Number(wait[locId]) || DEFAULT_WAIT_MINS;
@@ -3252,11 +3243,6 @@ AUTO = require('./automations')({
 // ── GIFT CARDS (buy online, use online or in any store) ──
 GIFT = require('./giftcards')({
   app, connectDB, LOCATIONS, isAdmin, checkKitchenAuth, sendEmail, alertOwner, escHtml, payReady, CLOVER_ECOMM, clientIp, fetch, ownerEmail: ALERT_TO, SEASON_CLOSED,
-});
-
-// ── TV LIVE SLIDES (game day, cold weather, Clover stats, Instagram, pickup wait, phone alerts) ──
-TVLIVE = require('./tvlive')({
-  app, connectDB, LOCATIONS, SEASON_CLOSED, locTz, signageAuth, storeLocalNow, storeOpenNow, getLiveSettings, fetch, fs, path,
 });
 
 // ── SPA FALLBACK ───────────────────────────────────────────────
