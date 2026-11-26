@@ -195,6 +195,10 @@ function renderAuto(){
   var jets = AUTO.jets || {};
   var stores = AUTO.stores || [];
   var h = '';
+  // Today's special
+  var SP = S.special || { enabled: true };
+  h += '<div class="af"><div class="af-h"><b>🔥 Today\'s special</b>'+sw(SP.enabled, 'saveAuto({special:{enabled:'+(!SP.enabled)+'}})')+'</div>'+
+    '<p class="sub">Every day the TVs lead with that day\'s deal (89¢ wings Sunday, BOGO boneless Monday, AYCE Tuesday…) with tomorrow\'s as a teaser and the order QR code. It plays first and again halfway through the loop. The deals are the same list as the home page\'s “Today\'s coupon”, so change them there and the TVs follow.</p></div>';
   // Game day
   h += '<div class="af"><div class="af-h"><b>🏒🏈 Game day</b>'+sw(G.enabled, 'saveAuto({gameday:{enabled:'+(!G.enabled)+'}})')+'</div>'+
     '<p class="sub">On game day the store counts down to puck drop or kickoff, then goes back to normal 3 hours after the start. Jets games come in automatically; add Riders games (or anything else) below.</p>'+
