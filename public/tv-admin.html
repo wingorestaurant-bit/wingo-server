@@ -239,13 +239,15 @@ function renderAuto(){
     '<p class="sub">Shows “Pickup wait now ~15 min” (the same wait as online ordering, auto or set in /admin) at the front of the scrolling bar, or in the corner if the bar is off. Only while the store is open.</p></div>';
   // Instagram
   var ig = AUTO.insta || {};
-  h += '<div class="af"><div class="af-h"><b>📸 Newest Instagram post</b>'+sw(S.insta.enabled, 'saveAuto({insta:{enabled:'+(!S.insta.enabled)+'}})')+'</div>'+
+  h += '<div class="af"><div class="af-h"><b>📸 Instagram</b>'+sw(S.insta.enabled, 'saveAuto({insta:{enabled:'+(!S.insta.enabled)+'}})')+'</div>'+
     (ig.ready ? '<p class="sub">Connected to <b>@'+esc(ig.username)+'</b>. The newest post shows on every TV and updates by itself.</p>'
-      : '<p class="sub">'+(ig.error && ig.error !== 'not-set-up' ? '<span class="err" style="margin:0">Instagram said: '+esc(ig.error)+'</span><br>' : '')+'<b>One-time setup (about 10 minutes):</b></p>'+
+      : '<p class="sub">The TVs show a <b>“Follow us on Instagram”</b> slide with a QR code that opens @wingorestaurants. Nothing to set up.'+
+        (ig.error && ig.error !== 'not-set-up' ? '<br><span class="err" style="margin:0">Instagram said: '+esc(ig.error)+'</span>' : '')+'</p>'+
+        '<details style="margin-top:6px;"><summary style="cursor:pointer;font-size:14px;font-weight:700;">Optional: show the newest post instead (needs a Meta developer setup)</summary>'+
         '<ol class="steps"><li>The Instagram account must be a <b>Business</b> or <b>Creator</b> account (Instagram app → Settings → Account type).</li>'+
         '<li>Go to <b>developers.facebook.com</b> → My Apps → Create app → “Other” → “Business”, then add the product <b>Instagram</b> → “API setup with Instagram login”.</li>'+
         '<li>Under “Generate access tokens”, add the Instagram account and press <b>Generate token</b>. Copy it.</li>'+
-        '<li>In Railway, add a variable <code>IG_ACCESS_TOKEN</code> with that token. After the redeploy the newest post appears here. It renews itself; you never have to do this again.</li></ol>')+
+        '<li>In Railway, add a variable <code>IG_ACCESS_TOKEN</code> with that token. After the redeploy the newest post appears here. It renews itself; you never have to do this again.</li></ol></details>')+
   '</div>';
   $('auto').innerHTML = h;
   renderPhone();

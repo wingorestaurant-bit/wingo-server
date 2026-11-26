@@ -143,6 +143,9 @@
   .ig h1 span{color:#E8190A;}
   .ig .cap{font:3.2vh/1.45 "Special Elite",monospace;color:#E9DCC1;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden;max-width:46vw;}
   .ig .handle{margin-top:3vh;}
+  .igq{flex:none;background:#fff;padding:2.4vh;border:.6vh solid #F4EBD7;box-shadow:1.6vh 1.6vh 0 #E8190A;text-align:center;}
+  .layer .igq img{width:56vh;height:56vh;display:block;}
+  .igq p{font-family:Oswald;font-weight:700;font-size:3vh;letter-spacing:.6vh;color:#1A1208;margin-top:1.4vh;}
 
   /* Pickup wait (when the scrolling bar is off) */
   #wait{display:none;position:absolute;right:1.6vw;bottom:1.6vh;z-index:4;background:#1A1208;color:#fff;font-family:Oswald;font-weight:700;font-size:2.8vh;letter-spacing:.3vh;
@@ -458,7 +461,16 @@
       '<div class="handle"><span class="stampbox">@'+esc(it.handle || 'wingorestaurants')+'</span></div></div>';
     return d;
   }
-  var AUTO_KINDS = { gameday: gamedaySlide, weather: weatherSlide, stats: statsSlide, insta: instaSlide };
+  // Instagram not connected: a "follow us" QR code to the profile
+  function igFollowSlide(it){
+    var d = document.createElement('div'); d.className = 'auto ig';
+    d.innerHTML = '<div class="igq"><img src="'+esc(it.qr)+'" alt=""><p>SCAN · FOLLOW</p></div><div>'+
+      '<div class="kick">📸 Follow the sauce</div><h1 class="big">The wings are here.<br>The <span>gossip</span> is on Instagram.</h1>'+
+      '<div class="cap">New flavours, deals and Sauce Boss specials hit Instagram first. Point your camera at the code.</div>'+
+      '<div class="handle"><span class="stampbox">@'+esc(it.handle || 'wingorestaurants')+'</span></div></div>';
+    return d;
+  }
+  var AUTO_KINDS = { gameday: gamedaySlide, weather: weatherSlide, stats: statsSlide, insta: instaSlide, igfollow: igFollowSlide };
 
   function show(){
     clearTimeout(timer);

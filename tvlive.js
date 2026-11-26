@@ -242,6 +242,7 @@ module.exports = function setupTvLive(ctx) {
   // A long-lived token from "Instagram API with Instagram Login". It's refreshed weekly (they last 60 days);
   // the refreshed one is kept in Mongo so the Railway variable only needs setting once.
   let insta = { post: null, username: '', at: 0, error: null };
+  const IG_HANDLE = 'wingorestaurants';   // the follow-us slide (public/images/tv-qr-instagram.svg points here)
   async function igToken() {
     const database = await connectDB();
     const d = database ? await database.collection('settings').findOne({ key: 'tv_auto_secret' }) : null;
@@ -308,6 +309,9 @@ module.exports = function setupTvLive(ctx) {
     }
     if (st.insta.enabled && insta.post && Date.now() - insta.at < 6 * 3600e3)
       out.slides.push({ id: 'auto-insta-' + insta.post.id, kind: 'insta', seconds: 12, img: insta.post.img, caption: insta.post.caption.slice(0, 220), handle: insta.username, at: insta.post.at });
+    // No Instagram connection (or it's down): a "follow us" slide with a QR code to the profile instead
+    else if (st.insta.enabled)
+      out.slides.push({ id: 'auto-igfollow', kind: 'igfollow', seconds: 12, handle: IG_HANDLE, qr: '/images/tv-qr-instagram.svg' });
     if (st.wait.enabled && open) {
       // Same default as online ordering and the auto wait: 20 minutes until one is picked in /admin
       const mins = Number(((await getLiveSettings()).wait || {})[loc]) || 20;
