@@ -11,6 +11,7 @@
 //    and if even that's small, the all-time "1M+" from the home page. Every number is real.
 //  • Pickup wait: the current online pickup wait (auto or manual) in the corner of every slide.
 //  • Instagram: the newest post on the account whose token is in IG_ACCESS_TOKEN (Railway).
+//  • Today's special: the day's deal from the home page's DEALS list, with tomorrow's as a teaser.
 //  • Phone alerts: TV-down / back-on alerts also go to the ntfy app on the owner's phone
 //    (free push notifications: install "ntfy", subscribe to the topic shown at /tv-admin).
 //
@@ -35,6 +36,7 @@ module.exports = function setupTvLive(ctx) {
     stats: { enabled: true, minWings: 500 },
     wait: { enabled: true },
     insta: { enabled: true },
+    special: { enabled: true },
     alerts: { topic: '' },
   };
   let cache = null;
@@ -274,6 +276,41 @@ module.exports = function setupTvLive(ctx) {
     } catch (e) { insta = Object.assign(insta, { error: e.message, at: Date.now() }); warn('Instagram', e); }
   }
 
+  // ══ TODAY'S SPECIAL ════════════════════════════════════════
+  // The daily deals are the home page's own list (public/home.html, `var DEALS=[...]`, Sunday first),
+  // so changing a deal there changes it on the TVs too.
+  let dealsCache = null;
+  function deals() {
+    if (dealsCache) return dealsCache;
+    try {
+      const src = fs.readFileSync(path.join(__dirname, 'public', 'home.html'), 'utf8');
+      const start = src.indexOf('var DEALS=[');
+      if (start < 0) throw new Error('DEALS not found');
+      let i = src.indexOf('[', start), depth = 0, quote = null, end = -1;
+      for (; i < src.length; i++) {
+        const ch = src[i];
+        if (quote) { if (ch === '\\') i++; else if (ch === quote) quote = null; continue; }
+        if (ch === '"' || ch === "'" || ch === '`') quote = ch; else if (ch === '[' || ch === '{') depth++; else if ((ch === ']' || ch === '}') && --depth === 0) { end = i; break; }
+      }
+      const list = require('vm').runInNewContext('(' + src.slice(src.indexOf('[', start), end + 1) + ')', {}, { timeout: 1000 });
+      dealsCache = Array.isArray(list) && list.length === 7 ? list : [];
+    } catch (e) { warn('daily deals', e); dealsCache = []; }
+    return dealsCache;
+  }
+  // A photo that fits the deal, different for each day of the week
+  // (tv-deal-*.jpg are bone-in-only crops of the combo and lunch-deal photos, without their printed text)
+  const dealPhoto = h => /boneless/i.test(h) ? '/images/boneless-wings.jpg' : /rib/i.test(h) ? '/images/ribs.jpg' : /burger/i.test(h) ? '/images/burger.jpg'
+    : /all you can eat|ayce/i.test(h) ? '/images/wings-half.jpg' : /3 for|\$30/i.test(h) ? '/images/tv-deal-3-for-30.jpg'
+    : /wing night/i.test(h) ? '/images/tv-deal-wing-night.jpg' : /wing/i.test(h) ? '/images/wings-flying.jpg' : '/images/wings-hero.jpg';
+  function specialFor(loc) {
+    const D = deals(); if (!D.length) return null;
+    const dow = storeLocalNow(loc).dow, t = D[dow], n = D[(dow + 1) % 7];
+    if (!t || !t.h) return null;
+    return { id: 'auto-special-' + dow, kind: 'special', seconds: 15, priority: true, day: t.d || '', headline: t.h, text: t.p || '',
+      big: Array.isArray(t.big) ? t.big.slice(0, 2).map(String) : [], img: dealPhoto(t.h), qr: `/images/tv-qr-${loc}.svg`,
+      tomorrow: n && n.h ? { day: n.d || '', headline: n.h } : null };
+  }
+
   // ══ PHONE ALERTS (ntfy) ════════════════════════════════════
   async function phone(title, message, tags) {
     try {
@@ -291,12 +328,15 @@ module.exports = function setupTvLive(ctx) {
     if (!LOCATIONS[loc]) return out;
     const open = storeOpenNow(loc);
     const g = await gameFor(loc).catch(() => null);
+    // Today's special leads the loop (after the game, on game day) and comes back halfway through
+    const sp = st.special.enabled ? specialFor(loc) : null;
     if (g) {
       const T = TEAM[g.team] || TEAM.other;
       out.slides.push({ id: 'auto-gameday', kind: 'gameday', seconds: 15, priority: true,
         game: { team: g.team, teamName: g.team === 'other' ? (g.label || 'Game') : T.name, opponent: g.opponent || '', home: g.home !== false, start: g.start, startWord: T.start, sport: T.sport, playoff: !!g.playoff },
         deal: st.gameday.deal || '' });
     }
+    if (sp) out.slides.push(sp);
     const w = weather[loc];
     if (st.weather.enabled && w && Date.now() - w.at < 3 * 3600e3 && w.feels <= Number(st.weather.threshold))
       out.slides.push({ id: 'auto-weather', kind: 'weather', seconds: 12, temp: w.temp, feels: w.feels, wind: w.wind, city: w.city, qr: `/images/tv-qr-${loc}.svg` });
@@ -379,6 +419,7 @@ module.exports = function setupTvLive(ctx) {
       if (b.stats) { const n = Number(b.stats.minWings); patch.stats = { enabled: bool(b.stats.enabled, cur.stats.enabled), minWings: Number.isFinite(n) ? Math.min(100000, Math.max(0, Math.round(n))) : cur.stats.minWings }; }
       if (b.wait) patch.wait = { enabled: bool(b.wait.enabled, cur.wait.enabled) };
       if (b.insta) patch.insta = { enabled: bool(b.insta.enabled, cur.insta.enabled) };
+      if (b.special) patch.special = { enabled: bool(b.special.enabled, cur.special.enabled) };
       if (b.alerts) {
         const topic = String(b.alerts.topic || '').trim();
         if (topic && !/^[A-Za-z0-9_-]{12,64}$/.test(topic)) return res.status(400).json({ error: 'The alert code must be 12–64 letters, numbers, - or _.' });

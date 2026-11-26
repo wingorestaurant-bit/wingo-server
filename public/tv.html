@@ -143,6 +143,27 @@
   .ig h1 span{color:#E8190A;}
   .ig .cap{font:3.2vh/1.45 "Special Elite",monospace;color:#E9DCC1;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden;max-width:46vw;}
   .ig .handle{margin-top:3vh;}
+  /* Today's special: red, loud, the deal huge */
+  .sp{flex-direction:row;padding:0;background:#E8190A;color:#fff;}
+  .sp::after{display:none;}
+  .sp-l{flex:1.15;display:flex;flex-direction:column;justify-content:center;padding:5vh 3.4vw 4vh 4.4vw;position:relative;
+    background:radial-gradient(ellipse at 20% 30%, #FF3A22, rgba(232,25,10,0) 65%), repeating-linear-gradient(-45deg, rgba(0,0,0,.05) 0 1.4vh, rgba(0,0,0,0) 1.4vh 2.8vh);}
+  .sp-k{font-family:Oswald;font-weight:700;font-size:3.2vh;letter-spacing:1vh;color:#FFD23F;text-transform:uppercase;}
+  .sp-big{font-family:"Bebas Neue";line-height:.82;margin:1.6vh 0 .6vh;text-shadow:1.2vh 1.2vh 0 #1A1208;}
+  .sp-big b{display:block;font-weight:400;font-size:30vh;color:#fff;letter-spacing:.01em;}
+  .sp-big span{display:block;font-size:11vh;color:#FFD23F;letter-spacing:.06em;margin-top:1vh;text-shadow:.6vh .6vh 0 #1A1208;}
+  .sp-h{font-family:"Playfair Display",Georgia,serif;font-weight:900;font-size:6.6vh;line-height:1.02;margin-top:2.4vh;}
+  .sp-p{font:3vh/1.4 "Special Elite",monospace;margin-top:1.6vh;max-width:46vw;color:#FFF3E6;}
+  .sp-t{position:absolute;left:4.4vw;bottom:3.4vh;font-family:Oswald;font-weight:700;font-size:2.5vh;letter-spacing:.45vh;text-transform:uppercase;color:#1A1208;background:#FFD23F;padding:.7vh 1.6vh;transform:rotate(-1deg);}
+  .sp-r{flex:1;position:relative;overflow:hidden;border-left:1.2vh solid #1A1208;}
+  .sp-r > img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(1.2) contrast(1.05);}
+  .sp-stamp{position:absolute;left:3vh;top:3vh;width:21vh;height:21vh;border-radius:50%;background:#FFD23F;color:#1A1208;border:.6vh solid #1A1208;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    font-family:"Bebas Neue";transform:rotate(-12deg);box-shadow:.8vh .8vh 0 rgba(0,0,0,.35);text-align:center;line-height:.9;}
+  .sp-stamp small{font-size:2.8vh;letter-spacing:.3vh;}
+  .sp-stamp b{font-weight:400;font-size:5.4vh;}
+  .sp-qr{position:absolute;right:3vh;bottom:3vh;background:#fff;padding:1.6vh;border:.5vh solid #1A1208;box-shadow:1vh 1vh 0 #1A1208;text-align:center;}
+  .layer .sp-qr img{width:22vh;height:22vh;display:block;}
+  .sp-qr p{font-family:Oswald;font-weight:700;font-size:1.9vh;letter-spacing:.35vh;color:#1A1208;margin-top:.8vh;}
   .igq{flex:none;background:#fff;padding:2.4vh;border:.6vh solid #F4EBD7;box-shadow:1.6vh 1.6vh 0 #E8190A;text-align:center;}
   .layer .igq img{width:56vh;height:56vh;display:block;}
   .igq p{font-family:Oswald;font-weight:700;font-size:3vh;letter-spacing:.6vh;color:#1A1208;margin-top:1.4vh;}
@@ -470,7 +491,25 @@
       '<div class="handle"><span class="stampbox">@'+esc(it.handle || 'wingorestaurants')+'</span></div></div>';
     return d;
   }
-  var AUTO_KINDS = { gameday: gamedaySlide, weather: weatherSlide, stats: statsSlide, insta: instaSlide, igfollow: igFollowSlide };
+  function specialSlide(it){
+    var d = document.createElement('div'); d.className = 'auto sp';
+    var big = it.big || [];
+    // "BOGO / RIBS" already says "BOGO Ribs": skip a headline that only repeats the big words
+    var words = function(x){ return String(x).toLowerCase().split(/[^a-z0-9$¢%]+/).filter(Boolean); };
+    var bigW = words(big.join(' ')), repeats = big.length && words(it.headline).every(function(w){ return bigW.indexOf(w) >= 0; });
+    d.innerHTML = '<div class="sp-l">'+
+        '<div class="sp-k">🔥 Today\'s special · '+esc(it.day)+'</div>'+
+        (big.length ? '<div class="sp-big"><b>'+esc(big[0])+'</b>'+(big[1] ? '<span>'+esc(big[1])+'</span>' : '')+'</div>' : '')+
+        (repeats ? '' : '<div class="sp-h">'+esc(it.headline)+'</div>')+
+        (it.text ? '<div class="sp-p">'+esc(it.text)+'</div>' : '')+
+        (it.tomorrow ? '<div class="sp-t">Tomorrow: '+esc(it.tomorrow.headline)+'</div>' : '')+
+      '</div><div class="sp-r"><img src="'+esc(it.img)+'" alt="">'+
+        '<div class="sp-stamp"><small>TODAY</small><b>ONLY</b><small>'+esc(String(it.day).slice(0, 3).toUpperCase())+'</small></div>'+
+        (it.qr ? '<div class="sp-qr"><img src="'+esc(it.qr)+'" alt=""><p>SCAN · ORDER</p></div>' : '')+
+      '</div>';
+    return d;
+  }
+  var AUTO_KINDS = { gameday: gamedaySlide, weather: weatherSlide, stats: statsSlide, insta: instaSlide, igfollow: igFollowSlide, special: specialSlide };
 
   function show(){
     clearTimeout(timer);
