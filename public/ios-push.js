@@ -29,12 +29,40 @@
     var icon = bn.firstElementChild;
     if (icon && /🔔/.test(icon.textContent)) icon.innerHTML = '<img src="/images/sauce-boss-avatar.png" alt="" style="width:40px;height:40px;border-radius:50%;border:2px solid #E8190A;background:#fff;display:block;">';
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bossBanner); else bossBanner();
+  function onReady(fn) { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn); else fn(); }
+  onReady(bossBanner);
+  // wingorestaurants.com/order?alerts=1 opens the alerts ask straight away (for Instagram, QR codes, texts)
+  var askNow = /[?&]alerts=1\b/.test(location.search);
+
+  // A slim strip above the menu bar that's always there until alerts are on: the banner shows once in a
+  // while, this is the way back to it. × hides it for a week.
+  function strip(html, onTap) {
+    onReady(function () {
+      if (document.getElementById('ios-alert-strip') || Date.now() - Number(store('wingo_ios_strip_off') || 0) < 7 * 86400e3) return;
+      var nav = document.querySelector('nav'); if (!nav) return;
+      var d = document.createElement('div'); d.id = 'ios-alert-strip';
+      d.style.cssText = 'display:flex;align-items:center;gap:10px;background:#1A1208;color:#fff;padding:8px 12px;font:700 13px/1.3 Arial,sans-serif;border-bottom:2px solid #E8190A;cursor:pointer;';
+      d.innerHTML = '<img src="/images/sauce-boss-avatar.png" alt="" style="width:28px;height:28px;border-radius:50%;border:2px solid #E8190A;background:#fff;flex:none;">' +
+        '<span style="flex:1;">' + html + '</span><button type="button" aria-label="Hide" style="background:none;border:0;color:#888;font-size:20px;padding:0 4px;">×</button>';
+      d.addEventListener('click', function (e) {
+        if (e.target.tagName === 'BUTTON') { store('wingo_ios_strip_off', String(Date.now())); d.remove(); return; }
+        onTap();
+      });
+      nav.parentNode.insertBefore(d, nav);
+    });
+  }
 
   // ── Opened from the Home Screen: alerts work, so ask (the tap on "Enable" is the gesture iOS needs) ──
   if (standalone) {
-    if ('Notification' in window && Notification.permission === 'default' && Date.now() - Number(store('wingo_ios_alert_ask') || 0) > 3 * 86400e3) {
-      setTimeout(function () { var b = banner(); if (b) { b.style.display = 'flex'; store('wingo_ios_alert_ask', String(Date.now())); } }, 2500);
+    var perm = 'Notification' in window ? Notification.permission : 'unsupported';
+    if (perm === 'default') {
+      if (askNow || Date.now() - Number(store('wingo_ios_alert_ask') || 0) > 3 * 86400e3) {
+        setTimeout(function () { var b = banner(); if (b) { b.style.display = 'flex'; store('wingo_ios_alert_ask', String(Date.now())); } }, askNow ? 600 : 2500);
+      }
+      strip('🔔 Turn on the Sauce Boss deal alerts <span style="color:#FFD23F;">TAP HERE</span>', function () { window.enableNotifications(); });
+    } else if (perm === 'denied') {
+      // Once refused, only iPhone Settings can turn them back on
+      strip('🔕 Alerts are off. Turn on: <span style="color:#FFD23F;">Settings → Notifications → Wing-O</span>', function () {});
     }
     return;
   }
@@ -83,6 +111,8 @@
     guide();
   };
   window.wingoIosAlertGuide = guide;
+  strip('🔔 The Sauce Boss wants you on the deal alerts list <span style="color:#FFD23F;">HOW?</span>', guide);
+  if (askNow) onReady(function () { setTimeout(guide, 500); });
 
   // Nudge iPhone visitors once every 2 weeks, since the Android-only install prompt never shows on iOS
   if (Date.now() - Number(store('wingo_ios_nudge') || 0) > 14 * 86400e3) {
