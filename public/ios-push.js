@@ -17,6 +17,19 @@
   var tooOld = ver < 16.04;
   function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } }
   function banner() { return document.getElementById('notif-banner'); }
+  // On iPhone the alerts banner is the Sauce Boss asking
+  function bossBanner() {
+    var bn = banner(); if (!bn || bn.getAttribute('data-boss')) return;
+    bn.setAttribute('data-boss', '1');
+    var divs = bn.querySelectorAll('div');
+    for (var i = 0; i < divs.length; i++) {
+      if (divs[i].textContent.trim() === 'GET DEAL ALERTS') divs[i].textContent = 'THE SAUCE BOSS WANTS YOU IN';
+      else if (/^Daily deals/i.test(divs[i].textContent.trim())) divs[i].textContent = 'Deals & free wings on your phone';
+    }
+    var icon = bn.firstElementChild;
+    if (icon && /🔔/.test(icon.textContent)) icon.innerHTML = '<img src="/images/sauce-boss-avatar.png" alt="" style="width:40px;height:40px;border-radius:50%;border:2px solid #E8190A;background:#fff;display:block;">';
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bossBanner); else bossBanner();
 
   // ── Opened from the Home Screen: alerts work, so ask (the tap on "Enable" is the gesture iOS needs) ──
   if (standalone) {
@@ -30,31 +43,36 @@
   var css = document.createElement('style');
   css.textContent =
     '#ios-guide{position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center;}' +
-    '#ios-guide .sheet{background:#F4EBD7;color:#1A1208;width:100%;max-width:480px;border-radius:16px 16px 0 0;padding:20px 20px calc(22px + env(safe-area-inset-bottom));font-family:Arial,sans-serif;box-shadow:0 -10px 40px rgba(0,0,0,.4);animation:iosup .25s ease;}' +
+    '#ios-guide .sheet{background:#F4EBD7;color:#1A1208;width:100%;max-width:480px;border-radius:18px 18px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom));font-family:Arial,sans-serif;box-shadow:0 -10px 40px rgba(0,0,0,.4);animation:iosup .25s ease;}' +
     '@keyframes iosup{from{transform:translateY(100%);}to{transform:none;}}' +
-    '#ios-guide h3{font:900 22px Georgia,serif;margin:0 0 4px;}' +
-    '#ios-guide .sub{color:#5A4A35;font-size:14px;margin-bottom:14px;}' +
-    '#ios-guide ol{list-style:none;margin:0;padding:0;}' +
-    '#ios-guide li{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-top:1px dashed #C8B89A;font-size:15px;line-height:1.4;}' +
-    '#ios-guide li b.n{flex:none;width:26px;height:26px;border-radius:50%;background:#E8190A;color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;}' +
-    '#ios-guide .ico{display:inline-block;vertical-align:-4px;margin:0 2px;}' +
-    '#ios-guide button.ok{margin-top:14px;width:100%;background:#1A1208;color:#fff;border:0;border-radius:8px;padding:13px;font:700 15px Arial,sans-serif;letter-spacing:1px;}';
+    '#ios-guide .boss{display:flex;gap:12px;align-items:center;}' +
+    '#ios-guide .boss img{width:64px;height:64px;border-radius:50%;border:3px solid #E8190A;background:#fff;flex:none;object-fit:cover;}' +
+    '#ios-guide .bubble{background:#fff;border:2px solid #1A1208;border-radius:14px;padding:9px 12px;position:relative;font-size:15px;line-height:1.35;}' +
+    '#ios-guide .bubble:before{content:"";position:absolute;left:-9px;top:20px;border:8px solid transparent;border-right-color:#1A1208;border-left:0;}' +
+    '#ios-guide .bubble b{display:block;font:900 19px Georgia,serif;margin-bottom:2px;}' +
+    '#ios-guide .first{margin-top:12px;background:#1A1208;color:#FFD23F;border-radius:8px;padding:8px 10px;font-size:14px;font-weight:700;text-align:center;}' +
+    '#ios-guide .tiles{display:flex;align-items:center;gap:8px;margin-top:14px;}' +
+    '#ios-guide .tile{flex:1;background:#fff;border:2px solid #1A1208;border-radius:12px;padding:12px 6px 10px;text-align:center;font-size:14px;font-weight:700;box-shadow:3px 3px 0 #E8190A;}' +
+    '#ios-guide .tile svg{display:block;margin:0 auto 6px;}' +
+    '#ios-guide .tile small{display:block;font-weight:400;color:#7B6A55;font-size:11px;margin-top:3px;}' +
+    '#ios-guide .to{font-size:22px;font-weight:900;color:#E8190A;}' +
+    '#ios-guide .then{text-align:center;font-size:14px;margin-top:12px;color:#3A2C1A;}' +
+    '#ios-guide button.ok{margin-top:12px;width:100%;background:#E8190A;color:#fff;border:0;border-radius:10px;padding:14px;font:700 16px Arial,sans-serif;letter-spacing:1.5px;box-shadow:0 3px 0 #A8120A;}';
   document.head.appendChild(css);
-  var SHARE = '<svg class="ico" width="18" height="22" viewBox="0 0 18 22" aria-label="Share"><path d="M9 1v13M4.5 5.5L9 1l4.5 4.5" fill="none" stroke="#1F6FEB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 9H3.5a1.5 1.5 0 0 0-1.5 1.5v8A1.5 1.5 0 0 0 3.5 20h11a1.5 1.5 0 0 0 1.5-1.5v-8A1.5 1.5 0 0 0 14.5 9H12" fill="none" stroke="#1F6FEB" stroke-width="2" stroke-linecap="round"/></svg>';
-  var ADD = '<svg class="ico" width="20" height="20" viewBox="0 0 20 20" aria-label="Add"><rect x="1.5" y="1.5" width="17" height="17" rx="4" fill="none" stroke="#1A1208" stroke-width="1.8"/><path d="M10 6v8M6 10h8" stroke="#1A1208" stroke-width="1.8" stroke-linecap="round"/></svg>';
-  function step(n, html) { return '<li><b class="n">' + n + '</b><span>' + html + '</span></li>'; }
+  var SHARE = '<svg width="30" height="36" viewBox="0 0 18 22" aria-hidden="true"><path d="M9 1v13M4.5 5.5L9 1l4.5 4.5" fill="none" stroke="#1F6FEB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 9H3.5a1.5 1.5 0 0 0-1.5 1.5v8A1.5 1.5 0 0 0 3.5 20h11a1.5 1.5 0 0 0 1.5-1.5v-8A1.5 1.5 0 0 0 14.5 9H12" fill="none" stroke="#1F6FEB" stroke-width="2" stroke-linecap="round"/></svg>';
+  var ADD = '<svg width="34" height="34" viewBox="0 0 20 20" aria-hidden="true"><rect x="1.5" y="1.5" width="17" height="17" rx="4" fill="none" stroke="#1A1208" stroke-width="1.8"/><path d="M10 6v8M6 10h8" stroke="#1A1208" stroke-width="1.8" stroke-linecap="round"/></svg>';
   function guide() {
     if (document.getElementById('ios-guide')) return;
-    var steps = '', n = 1;
-    if (tooOld) steps += step(n++, 'Update your iPhone first: <b>Settings → General → Software Update</b> (alerts need iOS 16.4 or newer).');
-    if (inApp) steps += step(n++, 'You\'re inside another app\'s browser. Tap <b>•••</b> (top right) and choose <b>Open in browser</b> / <b>Open in Safari</b>.');
-    steps += step(n++, 'Tap the <b>Share</b> button ' + SHARE + ' in Safari\'s toolbar.');
-    steps += step(n++, 'Scroll down and tap <b>Add to Home Screen</b> ' + ADD + ', then <b>Add</b>.');
-    steps += step(n++, 'Open <b>Wing-O</b> from your Home Screen and tap <b>Enable</b>. That\'s it: deals land on your phone. 🍗');
+    // Only one thing to fix first, if anything: an in-app browser or an old iPhone
+    var first = inApp ? 'First: tap ••• and choose “Open in Safari”' : tooOld ? 'First: update your iPhone (Settings → General → Software Update)' : '';
     var d = document.createElement('div'); d.id = 'ios-guide';
-    d.innerHTML = '<div class="sheet" role="dialog" aria-label="Get deal alerts on iPhone"><h3>🔔 Deal alerts on iPhone</h3>' +
-      '<div class="sub">iPhones send alerts to apps on your Home Screen, so add Wing-O there first. It takes 10 seconds and it\'s free.</div>' +
-      '<ol>' + steps + '</ol><button class="ok" type="button">GOT IT</button></div>';
+    d.innerHTML = '<div class="sheet" role="dialog" aria-label="The Sauce Boss wants you on the list">' +
+      '<div class="boss"><img src="/images/sauce-boss-avatar.png" alt="Sauce Boss"><div class="bubble"><b>The Sauce Boss wants you on the list.</b>Deals, free wings & new flavours, straight to your phone. 🍗</div></div>' +
+      (first ? '<div class="first">' + first + '</div>' : '') +
+      '<div class="tiles"><div class="tile">' + SHARE + 'Tap Share<small>or ••• then Share</small></div><div class="to">→</div>' +
+        '<div class="tile">' + ADD + 'Add to Home Screen</div></div>' +
+      '<div class="then">Then open <b>Wing-O</b> from your Home Screen and tap <b>Enable</b>.</div>' +
+      '<button class="ok" type="button">OK, BOSS 👊</button></div>';
     d.addEventListener('click', function (e) { if (e.target === d || e.target.classList.contains('ok')) d.remove(); });
     document.body.appendChild(d);
   }
