@@ -2164,22 +2164,39 @@ app.get('/api/loyalty/admin/members', async (req, res) => {
 });
 
 // ── PUSH NOTIFICATIONS ────────────────────────────────────────
+// Which push service a subscription belongs to (Apple = iPhone/iPad/Mac Safari, FCM = Android/Chrome)
+const pushDevice = endpoint => /push\.apple\.com/.test(endpoint || '') ? 'iphone' : /fcm\.googleapis|android\.googleapis/.test(endpoint || '') ? 'android' : 'other';
+const pushErrText = e => String((e && (e.body || e.message)) || 'unknown').replace(/\s+/g, ' ').slice(0, 200);
 app.post('/api/push/subscribe', async (req, res) => {
   const { subscription, info } = req.body;
   if (!subscription || !subscription.endpoint) return res.json({ success: false, error: 'Invalid subscription' });
   try {
     const database = await connectDB();
     if (!database) return res.json({ success: false, error: 'Database unavailable' });
-    await database.collection('push_subs').updateOne(
+    const r = await database.collection('push_subs').updateOne(
       { endpoint: subscription.endpoint },
       {
-        $set: { subscription, updatedAt: new Date(), userAgent: info?.userAgent || '', location: info?.location || '' },
+        $set: { subscription, updatedAt: new Date(), userAgent: info?.userAgent || '', location: info?.location || '', device: pushDevice(subscription.endpoint) },
         $setOnInsert: { createdAt: new Date() }
       },
       { upsert: true }
     );
-    console.log(`🔔 Push subscriber saved: ${subscription.endpoint.slice(-30)}`);
-    res.json({ success: true });
+    console.log(`🔔 Push subscriber saved (${pushDevice(subscription.endpoint)}): ${subscription.endpoint.slice(-30)}`);
+    // A welcome alert right away, so the customer (and the owner testing on a phone) sees it works.
+    // If the push service refuses it, the reason is kept on the subscription for /push-admin.
+    let welcome = 'skipped';
+    if (webpush && r.upsertedCount) {
+      try {
+        await webpush.sendNotification(subscription, JSON.stringify({ title: "You're on the list! 🍗", body: 'The Sauce Boss will send you the best deals first. Talk soon.',
+          icon: '/images/logo.jpg', badge: '/images/logo.jpg', url: '/order', timestamp: Date.now() }), { TTL: 3600 });
+        welcome = 'sent';
+      } catch (e) {
+        welcome = 'failed';
+        console.warn(`Welcome push failed (${pushDevice(subscription.endpoint)}): ${e.statusCode || ''} ${pushErrText(e)}`);
+        await database.collection('push_subs').updateOne({ endpoint: subscription.endpoint }, { $set: { lastError: `${e.statusCode || ''} ${pushErrText(e)}`.trim(), lastErrorAt: new Date() } });
+      }
+    }
+    res.json({ success: true, welcome });
   } catch (e) { console.error('Push subscribe error:', e.message); res.json({ success: false, error: e.message }); }
 });
 
@@ -2198,8 +2215,13 @@ app.get('/api/push/count', async (req, res) => {
   }
   try {
     const database = await connectDB();
-    const count = await database.collection('push_subs').countDocuments();
-    res.json({ success: true, count });
+    const subs = await database.collection('push_subs').find({}, { projection: { endpoint: 1, lastError: 1, lastErrorAt: 1, createdAt: 1 } }).toArray();
+    const devices = { iphone: 0, android: 0, other: 0 };
+    subs.forEach(s => { devices[pushDevice(s.endpoint)]++; });
+    // The last few delivery problems, newest first, so a failing iPhone shows why
+    const errors = subs.filter(s => s.lastError).sort((a, b) => new Date(b.lastErrorAt) - new Date(a.lastErrorAt)).slice(0, 5)
+      .map(s => ({ device: pushDevice(s.endpoint), error: s.lastError, at: s.lastErrorAt }));
+    res.json({ success: true, count: subs.length, devices, errors });
   } catch (e) { res.json({ success: false, count: 0 }); }
 });
 
@@ -2219,12 +2241,20 @@ app.post('/api/push/send', async (req, res) => {
       url: url || '/', timestamp: Date.now()
     });
     let sent = 0, failed = 0, expired = [];
+    const byDevice = { iphone: { sent: 0, failed: 0 }, android: { sent: 0, failed: 0 }, other: { sent: 0, failed: 0 } };
+    const problems = [];
     await Promise.all(subs.map(async (sub) => {
-      try { await webpush.sendNotification(sub.subscription, payload); sent++; }
+      const dev = pushDevice(sub.endpoint);
+      try { await webpush.sendNotification(sub.subscription, payload, { TTL: 86400 }); sent++; byDevice[dev].sent++; }
       catch (e) {
-        failed++;
+        failed++; byDevice[dev].failed++;
         if (e.statusCode === 410 || e.statusCode === 404) expired.push(sub.endpoint);
-        console.warn(`Push failed for ${sub.endpoint.slice(-20)}: ${e.message}`);
+        else {
+          const msg = `${e.statusCode || ''} ${pushErrText(e)}`.trim();
+          if (problems.length < 5) problems.push({ device: dev, error: msg });
+          database.collection('push_subs').updateOne({ endpoint: sub.endpoint }, { $set: { lastError: msg, lastErrorAt: new Date() } }).catch(() => {});
+        }
+        console.warn(`Push failed for ${dev} ${sub.endpoint.slice(-20)}: ${e.statusCode || ''} ${pushErrText(e)}`);
       }
     }));
     if (expired.length) {
@@ -2232,7 +2262,7 @@ app.post('/api/push/send', async (req, res) => {
       console.log(`🧹 Removed ${expired.length} expired push subscriptions`);
     }
     console.log(`🔔 Push sent: ${sent} success, ${failed} failed`);
-    res.json({ success: true, sent, failed, total: subs.length });
+    res.json({ success: true, sent, failed, total: subs.length, byDevice, problems, expired: expired.length });
   } catch (e) { console.error('Push send error:', e.message); res.json({ success: false, error: e.message }); }
 });
 

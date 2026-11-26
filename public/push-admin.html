@@ -84,7 +84,9 @@ input[type=password]{letter-spacing:2px;}
       <div class="stat">
         <div class="stat-num" id="sub-count">0</div>
         <div class="stat-lbl">Active Subscribers</div>
+        <div id="sub-devices" style="margin-top:6px;font-size:13px;color:#aaa;"></div>
       </div>
+      <div id="sub-errors" style="display:none;margin:0 0 14px;padding:10px 12px;border:1px solid #E8190A;border-radius:6px;font-size:12px;line-height:1.5;color:#ddd;background:rgba(232,25,10,.08);"></div>
 
       <label class="label">Notification Title</label>
       <input type="text" id="notif-title" placeholder="🔥 Thursday Deal">
@@ -159,7 +161,7 @@ async function login(){
       return;
     }
     document.getElementById('stored-pw').value = pw;
-    document.getElementById('sub-count').textContent = d.count;
+    showCounts(d);
     document.getElementById('step1').style.display = 'none';
     document.getElementById('step2').style.display = 'block';
     loadDonation();
@@ -167,6 +169,19 @@ async function login(){
     statusEl.textContent = 'Connection error — check server';
   }
   btn.textContent = 'LOGIN →'; btn.disabled = false;
+}
+
+// Subscribers by phone type, and the latest delivery problems (an iPhone that never gets alerts shows why here)
+function escTxt(s){ var d=document.createElement('div'); d.textContent = s==null ? '' : String(s); return d.innerHTML; }
+function showCounts(d){
+  document.getElementById('sub-count').textContent = d.count;
+  var dv = d.devices || {};
+  document.getElementById('sub-devices').textContent = d.devices ? ('📱 iPhone: ' + (dv.iphone||0) + '  ·  🤖 Android: ' + (dv.android||0) + (dv.other ? '  ·  Other: ' + dv.other : '')) : '';
+  var box = document.getElementById('sub-errors'), errs = d.errors || [];
+  box.style.display = errs.length ? 'block' : 'none';
+  box.innerHTML = errs.length ? '<b style="color:#fff;">Recent delivery problems</b><br>' + errs.map(function(e){
+    return (e.device === 'iphone' ? '📱 iPhone' : e.device === 'android' ? '🤖 Android' : 'Other') + ': ' + escTxt(e.error) + (e.at ? ' <span style="color:#888;">(' + escTxt(new Date(e.at).toLocaleString('en-CA', {timeZone:'America/Regina'})) + ')</span>' : '');
+  }).join('<br>') : '';
 }
 
 function switchTab(name){
@@ -258,10 +273,14 @@ async function send(){
     var d = await r.json();
     if(d.success){
       statusEl.className = 'status ok';
-      statusEl.textContent = '✅ Sent to ' + d.sent + ' subscribers! (' + d.failed + ' failed)';
+      var bd = d.byDevice || {};
+      statusEl.textContent = '✅ Sent to ' + d.sent + ' subscribers! (' + d.failed + ' failed)' +
+        (d.byDevice ? '  ·  📱 iPhone ' + bd.iphone.sent + ' sent' + (bd.iphone.failed ? ', ' + bd.iphone.failed + ' failed' : '') +
+          '  ·  🤖 Android ' + bd.android.sent + ' sent' + (bd.android.failed ? ', ' + bd.android.failed + ' failed' : '') : '') +
+        (d.expired ? '  ·  ' + d.expired + ' old subscriptions removed' : '');
       var rc = await fetch(API_BASE + '/api/push/count?password=' + encodeURIComponent(pw));
       var rd = await rc.json();
-      if(rd.success) document.getElementById('sub-count').textContent = rd.count;
+      if(rd.success) showCounts(rd);
     } else {
       statusEl.className = 'status err';
       statusEl.textContent = 'Error: ' + (d.error || 'Unknown');
