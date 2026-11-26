@@ -298,9 +298,10 @@ module.exports = function setupTvLive(ctx) {
     return dealsCache;
   }
   // A photo that fits the deal, different for each day of the week
-  const dealPhoto = h => /boneless/i.test(h) ? '/images/boneless-sauce.jpg' : /rib/i.test(h) ? '/images/ribs.jpg' : /burger/i.test(h) ? '/images/burger.jpg'
-    : /all you can eat|ayce/i.test(h) ? '/images/wings-half.jpg' : /3 for|\$30/i.test(h) ? '/images/wings-bowls.jpg'
-    : /wing night/i.test(h) ? '/images/platter-making-love.jpg' : /wing/i.test(h) ? '/images/wings-flying.jpg' : '/images/wings-hero.jpg';
+  // (tv-deal-*.jpg are bone-in-only crops of the combo and lunch-deal photos, without their printed text)
+  const dealPhoto = h => /boneless/i.test(h) ? '/images/boneless-wings.jpg' : /rib/i.test(h) ? '/images/ribs.jpg' : /burger/i.test(h) ? '/images/burger.jpg'
+    : /all you can eat|ayce/i.test(h) ? '/images/wings-half.jpg' : /3 for|\$30/i.test(h) ? '/images/tv-deal-3-for-30.jpg'
+    : /wing night/i.test(h) ? '/images/tv-deal-wing-night.jpg' : /wing/i.test(h) ? '/images/wings-flying.jpg' : '/images/wings-hero.jpg';
   function specialFor(loc) {
     const D = deals(); if (!D.length) return null;
     const dow = storeLocalNow(loc).dow, t = D[dow], n = D[(dow + 1) % 7];
