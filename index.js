@@ -1447,7 +1447,7 @@ app.post('/api/catering', async (req, res) => {
     const billLabel = {
       card:    'Pay in full on pickup/delivery (card or cash)',
       deposit: '50% DEPOSIT NOW — balance on pickup/delivery',
-      po:      'COMPANY CARD / PO ON FILE'
+      po:      'COMPANY CARD ON FILE'
     }[b.billing] || 'Pay in full on pickup/delivery';
 
     let whenStr = b.date || '';
